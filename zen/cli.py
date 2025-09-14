@@ -71,9 +71,23 @@ def main(
     if chat or (agent and agent == "chat"):
         # Start interactive chat mode
         import asyncio
-        from zen.ui.interactive import InteractiveChat
+        import os
         
-        chat_session = InteractiveChat()
+        # Auto-detect mobile/compact mode
+        is_mobile = (
+            os.environ.get("COMPACT_MODE") == "1" or
+            os.environ.get("TERMUX_VERSION") or
+            int(os.environ.get("COLUMNS", 80)) < 60
+        )
+        
+        if is_mobile:
+            from zen.ui.mobile import MobileChat
+            console.print("[cyan]🧘 zenOS Mobile Mode[/cyan]")
+            chat_session = MobileChat()
+        else:
+            from zen.ui.interactive import InteractiveChat
+            chat_session = InteractiveChat()
+        
         asyncio.run(chat_session.start())
         return
     
