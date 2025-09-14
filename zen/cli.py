@@ -38,6 +38,7 @@ console = Console()
 @click.option("--upgrade-only", is_flag=True, help="Only upgrade the prompt, don't execute")
 @click.option("--debug", is_flag=True, help="Enable debug mode")
 @click.option("--version", is_flag=True, help="Show version")
+@click.option("--chat", is_flag=True, help="Start interactive chat mode")
 def main(
     agent: Optional[str],
     prompt: Optional[str],
@@ -48,6 +49,7 @@ def main(
     upgrade_only: bool,
     debug: bool,
     version: bool,
+    chat: bool,
 ) -> None:
     """
     🧘 zenOS - The Zen of AI Workflow Orchestration
@@ -55,6 +57,7 @@ def main(
     Run AI agents with zen-like simplicity.
     
     Examples:
+        zen chat                      # Start interactive chat mode
         zen troubleshoot "fix my git issue"
         zen critic "review this prompt"
         zen --list
@@ -63,6 +66,15 @@ def main(
     
     if version:
         console.print(f"[cyan]zenOS version {__version__}[/cyan]")
+        return
+    
+    if chat or (agent and agent == "chat"):
+        # Start interactive chat mode
+        import asyncio
+        from zen.ui.interactive import InteractiveChat
+        
+        chat_session = InteractiveChat()
+        asyncio.run(chat_session.start())
         return
     
     if list_agents:
@@ -74,8 +86,8 @@ def main(
         return
     
     if not agent:
-        console.print("[red]Error:[/red] Please specify an agent or use --list to see available agents")
-        console.print("\n[dim]Usage: zen <agent> \"your prompt\"[/dim]")
+        console.print("[red]Error:[/red] Please specify an agent or use --chat for interactive mode")
+        console.print("\n[dim]Usage: zen chat  OR  zen <agent> \"your prompt\"[/dim]")
         sys.exit(1)
     
     if not prompt and not upgrade_only:

@@ -56,5 +56,5 @@ ENV PYTHONUNBUFFERED=1 \
     ZEN_CONFIG_PATH=/config \
     HOME=/home/zen
 
-# Default command
-CMD ["python", "-m", "zen.cli"]
+# Default command - start in chat mode
+CMD ["python", "-m", "zen.cli", "chat"]

@@ -25,7 +25,7 @@ services:
     depends_on:
       - zen-memory
       - zen-cache
-    command: ["zen", "chat"]  # Default to interactive mode
+    command: ["python", "-m", "zen.cli", "chat"]  # Default to interactive chat mode
 
   # PostgreSQL for conversation history & vector storage
   zen-memory:
