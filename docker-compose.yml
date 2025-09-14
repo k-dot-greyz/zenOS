@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # Core zenOS CLI service
+  zen-cli:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: zenos/cli:latest
+    container_name: zen-cli
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - ZEN_CONFIG_PATH=/config
+      - ZEN_DB_URL=postgresql://zen:${DB_PASSWORD:-zenpass}@zen-memory:5432/zenos
+      - REDIS_URL=redis://zen-cache:6379
+    volumes:
+      - ./config:/config
+      - ./workspace:/workspace
+      - ~/.zenOS:/home/zen/.zenOS
+      - ./zen:/app/zen:ro  # Mount source code for development
+    networks:
+      - zen-network
+    stdin_open: true
+    tty: true
+    depends_on:
+      - zen-memory
+      - zen-cache
+    command: ["zen", "chat"]  # Default to interactive mode
+
+  # PostgreSQL for conversation history & vector storage
+  zen-memory:
+    image: postgres:15-alpine
+    container_name: zen-memory
+    environment:
+      - POSTGRES_DB=zenos
+      - POSTGRES_USER=zen
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-zenpass}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    volumes:
+      - zen-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - zen-network
+    ports:
+      - "5432:5432"  # Expose for development
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zen -d zenos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and rate limiting
+  zen-cache:
+    image: redis:7-alpine
+    container_name: zen-cache
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - zen-cache:/data
+    networks:
+      - zen-network
+    ports:
+      - "6379:6379"  # Expose for development
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: Local embedding service for semantic search
+  zen-embeddings:
+    image: zenos/embeddings:latest
+    build: 
+      context: ./services/embeddings
+      dockerfile: Dockerfile
+    container_name: zen-embeddings
+    environment:
+      - MODEL_NAME=all-MiniLM-L6-v2
+      - PORT=8001
+    networks:
+      - zen-network
+    ports:
+      - "8001:8001"
+    profiles:
+      - embeddings  # Only start when --profile embeddings is used
+
+  # Optional: Web UI for browser-based interaction
+  zen-ui:
+    image: zenos/ui:latest
+    build:
+      context: ./web-ui
+      dockerfile: Dockerfile
+    container_name: zen-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://zen-cli:8080
+      - NODE_ENV=production
+    networks:
+      - zen-network
+    depends_on:
+      - zen-cli
+    profiles:
+      - ui  # Only start when --profile ui is used
+
+volumes:
+  zen-data:
+    driver: local
+  zen-cache:
+    driver: local
+
+networks:
+  zen-network:
+    driver: bridge
+    name: zen-network
