@@ -26,6 +26,7 @@ from rich.text import Text
 from zen.providers.openrouter import OpenRouterProvider, ModelTier
 from zen.utils.config import Config
 from zen.ui.display import DisplayManager
+from zen.core.context import ContextManager, AgentPersonality
 
 console = Console()
 
@@ -79,6 +80,7 @@ class InteractiveChat:
         self.config = Config()
         self.provider = None
         self.display = DisplayManager()
+        self.context = ContextManager()  # Project and personality awareness
         self.session_id = None
         self.current_model = self.config.config.default_model
         self.conversation_history = []
@@ -112,6 +114,11 @@ class InteractiveChat:
             '/save': self.save_conversation,
             '/reset': self.reset_conversation,
             '/debug': self.toggle_debug,
+            '/personality': self.switch_personality,
+            '/personas': self.list_personalities,
+            '/project': self.show_project_context,
+            '/git': self.show_git_context,
+            '/genesis': self.show_genesis_wisdom,
         }
     
     def _setup_keybindings(self):
@@ -268,11 +275,15 @@ class InteractiveChat:
             )
     
     def _build_prompt_with_context(self, prompt: str) -> str:
-        """Build prompt with conversation history and file context."""
+        """Build prompt with conversation history, file context, and personality."""
         parts = []
+        
+        # Add personality and project context
+        parts.append(self.context.format_context_for_prompt())
         
         # Add recent conversation history
         if len(self.conversation_history) > 1:
+            parts.append("\n--- Recent Conversation ---")
             recent = self.conversation_history[-6:]  # Last 3 exchanges
             for msg in recent:
                 if msg['role'] == 'user':
@@ -291,11 +302,9 @@ class InteractiveChat:
                     pass
         
         # Add current prompt
-        if parts:
-            parts.append(f"\n--- Current Request ---\nUser: {prompt}")
-            return "\n\n".join(parts)
-        else:
-            return prompt
+        parts.append(f"\n--- Current Request ---\nUser: {prompt}")
+        
+        return "\n\n".join(parts)
     
     async def handle_command(self, command: str):
         """Handle slash commands."""
@@ -315,13 +324,27 @@ class InteractiveChat:
         help_table.add_column("Command", style="cyan")
         help_table.add_column("Description", style="white")
         
+        # Basic commands
         help_table.add_row("/help", "Show this help message")
         help_table.add_row("/exit, /quit", "Exit chat mode")
         help_table.add_row("/clear", "Clear the screen")
         help_table.add_row("/history", "Show conversation history")
-        help_table.add_row("/model <name>", "Switch to a different model")
-        help_table.add_row("/models", "List available models")
+        
+        help_table.add_section()  # AI Model section
+        help_table.add_row("/model <name>", "Switch to a different AI model")
+        help_table.add_row("/models", "List available AI models")
+        
+        help_table.add_section()  # Personality section
+        help_table.add_row("/personality <name>", "Switch personality (professor/architect/oracle/intern/sovereign)")
+        help_table.add_row("/personas", "List available personalities")
+        
+        help_table.add_section()  # Context section
         help_table.add_row("/context <file>", "Add file to context")
+        help_table.add_row("/project", "Show project awareness")
+        help_table.add_row("/git", "Show git repository info")
+        help_table.add_row("/genesis", "Show genesis wisdom")
+        
+        help_table.add_section()  # Session management
         help_table.add_row("/cost", "Show cost breakdown")
         help_table.add_row("/save <file>", "Save conversation to file")
         help_table.add_row("/reset", "Reset conversation history")
@@ -481,3 +504,108 @@ class InteractiveChat:
         self.config.config.debug = not self.config.config.debug
         status = "enabled" if self.config.config.debug else "disabled"
         console.print(f"[yellow]Debug mode {status}[/yellow]")
+    
+    async def switch_personality(self, personality_name: str):
+        """Switch to a different personality profile."""
+        if not personality_name:
+            current = self.context.current_personality.value
+            console.print(f"[cyan]Current personality: {current}[/cyan]")
+            return
+        
+        # Map names to personalities
+        personality_map = {
+            'professor': AgentPersonality.PROFESSOR,
+            'architect': AgentPersonality.ARCHITECT,
+            'oracle': AgentPersonality.ORACLE,
+            'intern': AgentPersonality.INTERN,
+            'sovereign': AgentPersonality.SOVEREIGN,
+        }
+        
+        personality = personality_map.get(personality_name.lower())
+        if personality:
+            self.context.set_personality(personality)
+        else:
+            console.print(f"[red]Unknown personality: {personality_name}[/red]")
+            console.print("Available: professor, architect, oracle, intern, sovereign")
+    
+    async def list_personalities(self, args: str = ""):
+        """List available personality profiles."""
+        table = Table(title="🎭 Personality Profiles", show_header=True)
+        table.add_column("Name", style="cyan")
+        table.add_column("Role", style="yellow")
+        table.add_column("Focus", style="green")
+        
+        for personality in AgentPersonality:
+            profile = self.context.PERSONALITIES[personality]
+            table.add_row(
+                personality.value,
+                profile.role,
+                ", ".join(profile.focus[:2])
+            )
+        
+        console.print(table)
+        
+        # Show current personality
+        current = self.context.current_personality.value
+        console.print(f"\n[cyan]Current: {current}[/cyan]")
+    
+    async def show_project_context(self, args: str = ""):
+        """Show project awareness information."""
+        context = self.context.project_context
+        
+        if not context:
+            console.print("[yellow]No project context available[/yellow]")
+            return
+        
+        console.print(Panel.fit(
+            f"[bold]Project Context[/bold]\n\n"
+            f"Workspace: {self.context.workspace}\n"
+            f"Is zenOS: {context.get('is_zenos', False)}\n"
+            f"Version: {context.get('zenos_version', 'unknown')}\n\n"
+            f"[dim]Structure preview:[/dim]\n{context.get('structure', 'N/A')[:300]}...",
+            title="📁 Project Awareness",
+            border_style="green"
+        ))
+    
+    async def show_git_context(self, args: str = ""):
+        """Show git repository information."""
+        context = self.context.git_context
+        
+        if not context:
+            console.print("[yellow]No git context available[/yellow]")
+            return
+        
+        commits = "\n".join(context.get('recent_commits', [])[:3])
+        
+        console.print(Panel.fit(
+            f"[bold]Git Context[/bold]\n\n"
+            f"Branch: [cyan]{context.get('branch', 'unknown')}[/cyan]\n"
+            f"Remote: {context.get('remote', 'N/A')}\n\n"
+            f"[dim]Recent commits:[/dim]\n{commits}\n\n"
+            f"[dim]Changes:[/dim]\n{context.get('diff_stat', 'No changes')[:200]}",
+            title="🔀 Git Awareness",
+            border_style="magenta"
+        ))
+    
+    async def show_genesis_wisdom(self, args: str = ""):
+        """Show loaded genesis documents and wisdom."""
+        if not self.context.genesis_docs:
+            console.print("[yellow]No genesis documents found[/yellow]")
+            console.print("[dim]Place them in ai-inbox/ or .zenOS/genesis/[/dim]")
+            return
+        
+        console.print(Panel.fit(
+            f"[bold]Genesis Documents Loaded[/bold]\n\n"
+            f"📜 {', '.join(self.context.genesis_docs.keys())}\n\n"
+            f"[cyan]Core Principles:[/cyan]\n"
+            f"• Sovereignty over features\n"
+            f"• Systems over goals\n"
+            f"• The empire is the real product\n"
+            f"• Build your native kernel's environment\n\n"
+            f"[dim]Cultural Touchstones:[/dim]\n"
+            f"• Earl of Lemongrab - The 'Why'\n"
+            f"• Patrick Bateman - The Persona Engine\n"
+            f"• Lisan al Gaib - The Systems-Master",
+            title="🧬 Genesis Wisdom",
+            border_style="gold1"
+        ))
