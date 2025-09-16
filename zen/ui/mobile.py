@@ -177,12 +177,13 @@ class MobileUI:
 
 class MobileChat:
     """
-    Simplified chat interface for mobile.
+    Enhanced mobile chat interface with Termux integration.
     """
     
     def __init__(self):
         """Initialize mobile chat."""
         self.ui = MobileUI()
+        self.termux = TermuxInterface()
         self.shortcuts = {
             "/h": "/help",
             "/q": "/exit",
@@ -191,19 +192,48 @@ class MobileChat:
             "/s": "/save",
             "/r": "/reset",
             "/?": "/cost",
+            "/v": "/voice",     # Voice input
+            "/cb": "/clipboard", # Clipboard input
+            "/sh": "/share",    # Share output
+            "/n": "/notify",    # Enable notifications
         }
+        
+        # Battery-aware mode
+        self.eco_mode = False
+        self._check_battery()
         
         # Import the real chat for backend
         from zen.ui.interactive import InteractiveChat
         self.backend = InteractiveChat()
     
+    def _check_battery(self):
+        """Check battery and enable eco mode if low."""
+        if self.termux.is_termux():
+            battery = self.termux.battery_status()
+            if battery and battery.get('percentage', 100) < 20:
+                self.eco_mode = True
+                self.ui.console.print("[yellow]⚠️ Low battery - eco mode enabled[/yellow]")
+    
     async def start(self):
-        """Start mobile chat session."""
+        """Start enhanced mobile chat session."""
+        # Acquire wake lock for long sessions
+        if self.termux.is_termux():
+            self.termux.wake_lock_acquire()
+        
         # Show compact welcome
         self.ui.show_welcome()
         
+        # Check for Termux API
+        if self.termux.is_termux() and self.termux.is_api_available():
+            self.ui.console.print("[green]✅ Termux API detected - voice & clipboard enabled![/green]")
+        
         # Delegate to backend with mobile UI overrides
-        await self.backend.start()
+        try:
+            await self.backend.start()
+        finally:
+            # Release wake lock when done
+            if self.termux.is_termux():
+                self.termux.wake_lock_release()
     
     def expand_shortcut(self, command: str) -> str:
         """Expand mobile shortcuts."""
@@ -256,23 +286,81 @@ class MobileChat:
                     lines.append(" ".join(current))
         
         return "\n".join(lines)
+    
+    async def handle_voice_input(self) -> Optional[str]:
+        """Get voice input from user."""
+        if not self.termux.is_api_available():
+            self.ui.show_error("Termux API not available")
+            return None
+        
+        self.ui.console.print("[cyan]🎤 Listening...[/cyan]")
+        text = self.termux.voice_input()
+        
+        if text:
+            self.ui.console.print(f"[green]You said: {text}[/green]")
+            # Haptic feedback
+            self.termux.vibrate(100)
+        else:
+            self.ui.show_error("No voice input received")
+        
+        return text
+    
+    async def handle_clipboard_input(self) -> Optional[str]:
+        """Get clipboard content as input."""
+        text = self.termux.clipboard_get()
+        
+        if text:
+            preview = text[:50] + "..." if len(text) > 50 else text
+            self.ui.console.print(f"[green]📋 Clipboard: {preview}[/green]")
+        else:
+            self.ui.show_error("Clipboard is empty")
+        
+        return text
+    
+    def share_output(self, text: str):
+        """Share output via Android share sheet."""
+        if self.termux.is_termux():
+            self.termux.share(text, title="zenOS Output")
+            self.ui.console.print("[green]📤 Shared![/green]")
+        else:
+            self.ui.show_error("Share not available")
+    
+    def notify_complete(self, query: str, response: str):
+        """Send notification when query completes."""
+        if self.termux.is_api_available():
+            preview = response[:100] + "..." if len(response) > 100 else response
+            self.termux.notify(
+                title="🧘 zenOS Complete",
+                content=preview,
+                actions=["Share", "Copy"]
+            )
+            # Vibrate to notify
+            self.termux.vibrate(200)
 
 
-# Voice integration for Termux
-class VoiceInterface:
+# Enhanced Termux integration
+class TermuxInterface:
     """
-    Voice input/output for mobile.
+    Complete Termux API integration for mobile.
     """
     
     @staticmethod
-    def is_available() -> bool:
-        """Check if voice is available."""
+    def is_termux() -> bool:
+        """Check if running in Termux."""
+        return (
+            os.environ.get("TERMUX_VERSION") is not None or
+            os.path.exists("/data/data/com.termux")
+        )
+    
+    @staticmethod
+    def is_api_available() -> bool:
+        """Check if Termux:API is installed."""
         return os.path.exists("/data/data/com.termux/files/usr/bin/termux-speech-to-text")
     
     @staticmethod
-    def listen() -> Optional[str]:
-        """Get voice input."""
-        if not VoiceInterface.is_available():
+    def voice_input() -> Optional[str]:
+        """Get voice input via Termux API."""
+        if not TermuxInterface.is_api_available():
             return None
         
         import subprocess
@@ -283,24 +371,160 @@ class VoiceInterface:
                 text=True,
                 timeout=30
             )
-            return result.stdout.strip()
+            return result.stdout.strip() if result.returncode == 0 else None
         except:
             return None
     
-    @staticmethod 
-    def speak(text: str):
-        """Speak text."""
-        if not VoiceInterface.is_available():
+    @staticmethod
+    def speak(text: str, language: str = "en-US", pitch: float = 1.0, rate: float = 1.0):
+        """Speak text via Termux TTS."""
+        if not TermuxInterface.is_api_available():
+            return
+        
+        import subprocess
+        try:
+            cmd = ["termux-tts-speak"]
+            cmd.extend(["-l", language])
+            cmd.extend(["-p", str(pitch)])
+            cmd.extend(["-r", str(rate)])
+            cmd.append(text)
+            subprocess.run(cmd, timeout=30)
+        except:
+            pass
+    
+    @staticmethod
+    def clipboard_get() -> Optional[str]:
+        """Get clipboard content."""
+        if not TermuxInterface.is_termux():
+            return None
+        
+        import subprocess
+        try:
+            result = subprocess.run(
+                ["termux-clipboard-get"],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            return result.stdout.strip() if result.returncode == 0 else None
+        except:
+            return None
+    
+    @staticmethod
+    def clipboard_set(text: str):
+        """Set clipboard content."""
+        if not TermuxInterface.is_termux():
             return
         
         import subprocess
         try:
             subprocess.run(
-                ["termux-tts-speak", text],
-                timeout=30
+                ["termux-clipboard-set"],
+                input=text,
+                text=True,
+                timeout=5
             )
         except:
             pass
+    
+    @staticmethod
+    def notify(title: str, content: str, actions: Optional[List[str]] = None):
+        """Send notification."""
+        if not TermuxInterface.is_api_available():
+            return
+        
+        import subprocess
+        try:
+            cmd = ["termux-notification"]
+            cmd.extend(["--title", title])
+            cmd.extend(["--content", content])
+            
+            if actions:
+                for action in actions:
+                    cmd.extend(["--action", action])
+            
+            subprocess.run(cmd, timeout=5)
+        except:
+            pass
+    
+    @staticmethod
+    def vibrate(duration_ms: int = 200):
+        """Vibrate the device."""
+        if not TermuxInterface.is_api_available():
+            return
+        
+        import subprocess
+        try:
+            subprocess.run(
+                ["termux-vibrate", "-d", str(duration_ms)],
+                timeout=2
+            )
+        except:
+            pass
+    
+    @staticmethod
+    def battery_status() -> Optional[Dict[str, Any]]:
+        """Get battery status."""
+        if not TermuxInterface.is_api_available():
+            return None
+        
+        import subprocess
+        import json
+        try:
+            result = subprocess.run(
+                ["termux-battery-status"],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                return json.loads(result.stdout)
+        except:
+            pass
+        return None
+    
+    @staticmethod
+    def share(text: str, title: Optional[str] = None):
+        """Share text via Android share sheet."""
+        if not TermuxInterface.is_termux():
+            return
+        
+        import subprocess
+        try:
+            cmd = ["termux-share"]
+            if title:
+                cmd.extend(["--title", title])
+            cmd.extend(["--text", text])
+            subprocess.run(cmd, timeout=5)
+        except:
+            pass
+    
+    @staticmethod
+    def wake_lock_acquire():
+        """Acquire wake lock to keep CPU running."""
+        if not TermuxInterface.is_termux():
+            return
+        
+        import subprocess
+        try:
+            subprocess.run(["termux-wake-lock"], timeout=2)
+        except:
+            pass
+    
+    @staticmethod
+    def wake_lock_release():
+        """Release wake lock."""
+        if not TermuxInterface.is_termux():
+            return
+        
+        import subprocess
+        try:
+            subprocess.run(["termux-wake-unlock"], timeout=2)
+        except:
+            pass
+
+# Legacy alias for backwards compatibility
+VoiceInterface = TermuxInterface
 
 
 # Auto-detect and setup

@@ -9,18 +9,24 @@
 ## ✨ Features
 
 - 🚀 **Simple CLI**: One command to rule them all - `zen`
+- 📱 **Mobile-First**: Native Termux support with voice & gesture integration
 - 🤖 **Modular Agents**: Composable, reusable AI agents
 - 🔒 **Security First**: Built-in defense against prompt injection
 - 🎯 **Auto-Critique**: Every prompt automatically upgraded for better results
+- 🔋 **Battery-Aware**: Automatic eco mode for mobile devices
 - 📦 **Zero Config**: Works out of the box, extensible when needed
 - 🌈 **Beautiful Output**: Rich terminal interface with progress indicators
+- 💾 **Smart Caching**: Offline access to previous AI responses
 
 ## 🚀 Quick Start
 
 ### Installation
 
 ```bash
-# One-line installer (coming soon)
+# Mobile (Termux) - One-line installer 📱
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+
+# Desktop - One-line installer (coming soon)
 curl -sSL https://get.zenos.ai | bash
 
 # Or via pip (coming soon)
@@ -32,11 +38,19 @@ cd zenOS
 pip install -e .
 ```
 
+📱 **[Full Mobile Setup Guide](QUICKSTART_TERMUX.md)** | 🖥️ **[Desktop Guide](QUICKSTART_WINDOWS.md)**
+
 ### Basic Usage
 
 ```bash
 # Run an agent
 zen troubleshoot "fix my git commit issue"
+
+# Mobile voice input (Termux)
+zen-voice "explain quantum computing"
+
+# Mobile clipboard input
+zen-clip  # Processes clipboard content
 
 # Review a prompt
 zen critic "analyze this prompt for improvements"
@@ -49,6 +63,9 @@ zen --create my-agent
 
 # Disable auto-critique for speed
 zen --no-critique assistant "quick question"
+
+# Battery-aware mode (auto on mobile)
+zen --eco "run in low power mode"
 ```
 
 ## 🏗️ Architecture
