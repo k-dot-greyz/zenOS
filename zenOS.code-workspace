@@ -13,5 +13,16 @@
 			"path": "../Prompt_OS"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.wordWrap": "wordWrapColumn",
+		"cursor.composer.queueMessageDefaultBehavior": "queue",
+		"cursor.composer.collapsePaneInputBoxPills": true,
+		"cursor.composer.shouldAllowCustomModes": true,
+		"cursor.composer.shouldChimeAfterChatFinishes": true,
+		"cursor.composer.shouldShowMarkdownHoverParticipantActions2": true,
+		"cursor.composer.textSizeScale": 1,
+		"cursor.enable_agent_window_setting": true,
+		"cursor.general.gitGraphIndexing": "enabled",
+		"cursor.preferNotificationsSameAsChat": true
+	}
 }

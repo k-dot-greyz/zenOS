@@ -299,23 +299,121 @@ alias c='zen "write code for: "'
 
 ---
 
-## 🚀 Advanced: Local Models
+## 🚀 True Offline Mode - No Internet Required!
 
-### Install Ollama on Termux
+### One-Line Offline Setup
 ```bash
-# This is experimental but works!
-pkg install golang
-git clone https://github.com/ollama/ollama
-cd ollama
-go build .
-./ollama serve &
-
-# Pull a small model
-./ollama pull phi-2
-
-# Configure zenOS to use it
-export ZEN_LOCAL_MODEL="ollama:phi-2"
+# Automatic offline setup with model download
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/setup-offline.sh | bash
 ```
+
+### What This Does
+1. ✅ Installs Ollama (or llama.cpp as fallback)
+2. ✅ Downloads mobile-optimized models
+3. ✅ Creates offline launcher (`zen-offline`)
+4. ✅ Configures automatic fallback
+
+### Recommended Models by Device
+
+#### Low-End Phones (< 2GB RAM)
+```bash
+ollama pull qwen:0.5b    # 395MB - Tiny but capable
+ollama pull tinyllama     # 637MB - Best tiny model
+```
+
+#### Mid-Range Phones (2-4GB RAM)  
+```bash
+ollama pull phi-2         # 1.6GB - Best quality/size ratio
+ollama pull gemma:2b      # 1.4GB - Google's efficient model
+ollama pull stablelm2:1.6b # 980MB - Good balance
+```
+
+#### Flagship Phones (4GB+ RAM)
+```bash
+ollama pull llama3:3b     # 2GB - Powerful
+ollama pull mistral:7b-q4 # 4GB - Desktop quality
+```
+
+### Usage Examples
+
+#### Fully Offline Mode
+```bash
+# Force offline mode (no internet used)
+zen --offline "explain quantum computing"
+
+# Use specific local model
+zen --offline --model phi-2 "write a python function"
+
+# Offline with voice
+zen-voice --offline "tell me a joke"
+```
+
+#### Smart Hybrid Mode
+```bash
+# Uses online when available, falls back to offline
+zen "your question"
+
+# Prefer offline when available (saves data)
+export ZEN_PREFER_OFFLINE=true
+zen "your question"
+```
+
+#### Battery-Aware Mode
+```bash
+# Automatically uses lighter models when battery is low
+zen --eco "your question"
+
+# Combines with offline for ultimate efficiency
+zen --offline --eco "quick question"
+```
+
+### Managing Offline Models
+
+#### List Installed Models
+```bash
+ollama list
+
+# Or via zenOS
+zen --offline --list-models
+```
+
+#### Remove Models (Save Space)
+```bash
+ollama rm model-name
+```
+
+#### Update Models
+```bash
+ollama pull model-name
+```
+
+### Offline Performance Tips
+
+1. **Pre-download models on WiFi**
+   ```bash
+   # Download all mobile models at once
+   for model in qwen:0.5b tinyllama phi-2; do
+       ollama pull $model
+   done
+   ```
+
+2. **Use quantized versions**
+   ```bash
+   # Q4 = 4-bit quantization (smaller, faster)
+   ollama pull llama3:7b-q4_0
+   ```
+
+3. **Cache responses locally**
+   ```bash
+   export ZEN_CACHE_DIR=~/.zen-cache
+   export ZEN_CACHE_TTL_HOURS=168  # 1 week
+   ```
+
+4. **Batch process when online**
+   ```bash
+   # Process multiple queries when connected
+   zen --batch queries.txt > responses.txt
+   ```
 
 ---
 

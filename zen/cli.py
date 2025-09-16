@@ -39,6 +39,9 @@ console = Console()
 @click.option("--debug", is_flag=True, help="Enable debug mode")
 @click.option("--version", is_flag=True, help="Show version")
 @click.option("--chat", is_flag=True, help="Start interactive chat mode")
+@click.option("--offline", is_flag=True, help="Force offline mode with local models")
+@click.option("--model", "-m", help="Specify model to use")
+@click.option("--eco", is_flag=True, help="Battery-saving eco mode (mobile)")
 def main(
     agent: Optional[str],
     prompt: Optional[str],
@@ -50,6 +53,9 @@ def main(
     debug: bool,
     version: bool,
     chat: bool,
+    offline: bool,
+    model: Optional[str],
+    eco: bool,
 ) -> None:
     """
     🧘 zenOS - The Zen of AI Workflow Orchestration
@@ -73,6 +79,18 @@ def main(
         import asyncio
         import os
         
+        # Configure offline/eco modes
+        if offline:
+            os.environ['ZEN_PREFER_OFFLINE'] = 'true'
+            console.print("[green]🔌 Offline mode enabled - using local models[/green]")
+        
+        if eco:
+            os.environ['ZEN_ECO_MODE'] = 'true'
+            console.print("[yellow]🔋 Eco mode enabled - optimizing for battery[/yellow]")
+        
+        if model:
+            os.environ['ZEN_DEFAULT_MODEL'] = model
+        
         # Auto-detect mobile/compact mode
         is_mobile = (
             os.environ.get("COMPACT_MODE") == "1" or
@@ -83,6 +101,15 @@ def main(
         if is_mobile:
             from zen.ui.mobile import MobileChat
             console.print("[cyan]🧘 zenOS Mobile Mode[/cyan]")
+            
+            # Show offline status if available
+            if offline:
+                from zen.providers.offline import get_offline_manager
+                mgr = get_offline_manager()
+                status = mgr.get_status()
+                if status['recommended_model']:
+                    console.print(f"[green]📱 Using {status['recommended_model']} (optimized for your device)[/green]")
+            
             chat_session = MobileChat()
         else:
             from zen.ui.interactive import InteractiveChat
