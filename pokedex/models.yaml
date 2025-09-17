@@ -1,0 +1,342 @@
+# zenOS Model Pokédex 🎮
+# A living catalog of AI models and their capabilities
+
+version: "1.0.0"
+last_updated: "2024-01-15"
+
+# Rarity Tiers:
+# common: Widely available, basic models
+# uncommon: Specialized or improved models  
+# rare: High-performance or unique models
+# epic: Cutting-edge or highly specialized
+# legendary: Top-tier, state-of-the-art models
+
+models:
+  # OpenAI Models
+  - id: "gpt-4-turbo"
+    name: "GPT-4 Turbo"
+    provider: "openai"
+    type: "general-purpose"
+    rarity: "epic"
+    stats:
+      intelligence: 92
+      creativity: 88
+      speed: 85
+      memory: 80  # 128k context
+      cost: 70    # Higher = more expensive
+    abilities:
+      - "Code Generation"
+      - "Complex Reasoning"
+      - "Vision Understanding"
+      - "JSON Mode"
+    best_for:
+      - "Complex coding tasks"
+      - "Architecture design"
+      - "Multi-step reasoning"
+    weaknesses:
+      - "Higher latency"
+      - "Expensive for simple tasks"
+    context_window: 128000
+    cost_per_1k:
+      input: 0.01
+      output: 0.03
+    discovered_by: "human:kaspars"
+    discovery_date: "2024-01-10"
+    notes: "Best balance of capability and speed for complex tasks"
+
+  - id: "gpt-3.5-turbo"
+    name: "GPT-3.5 Turbo"
+    provider: "openai"
+    type: "general-purpose"
+    rarity: "common"
+    stats:
+      intelligence: 75
+      creativity: 70
+      speed: 95
+      memory: 60  # 16k context
+      cost: 95    # Very cheap
+    abilities:
+      - "Basic Coding"
+      - "Quick Responses"
+      - "Simple Tasks"
+    best_for:
+      - "Quick queries"
+      - "Simple refactoring"
+      - "Bulk processing"
+    weaknesses:
+      - "Limited reasoning"
+      - "Smaller context"
+    context_window: 16385
+    cost_per_1k:
+      input: 0.0005
+      output: 0.0015
+    discovered_by: "human:kaspars"
+    discovery_date: "2024-01-05"
+
+  # Anthropic Models
+  - id: "claude-3-opus"
+    name: "Claude the Wise"
+    provider: "anthropic"
+    type: "conversational"
+    rarity: "legendary"
+    stats:
+      intelligence: 95
+      creativity: 93
+      speed: 70
+      memory: 90  # 200k context
+      cost: 60
+    abilities:
+      - "Deep Analysis"
+      - "Nuanced Understanding"
+      - "Ethical Reasoning"
+      - "Code Architecture"
+    best_for:
+      - "Complex system design"
+      - "Deep code review"
+      - "Philosophical discussions"
+      - "Large codebase analysis"
+    weaknesses:
+      - "Slower response time"
+      - "Higher cost"
+    context_window: 200000
+    cost_per_1k:
+      input: 0.015
+      output: 0.075
+    discovered_by: "human:kaspars"
+    discovery_date: "2024-01-15"
+    notes: "Exceptional for complex reasoning and large context tasks"
+
+  - id: "claude-3-sonnet"
+    name: "Claude the Balanced"
+    provider: "anthropic"
+    type: "conversational"
+    rarity: "rare"
+    stats:
+      intelligence: 85
+      creativity: 82
+      speed: 80
+      memory: 90
+      cost: 80
+    abilities:
+      - "Balanced Performance"
+      - "Good Reasoning"
+      - "Code Understanding"
+    best_for:
+      - "Most coding tasks"
+      - "Documentation"
+      - "Code review"
+    context_window: 200000
+    cost_per_1k:
+      input: 0.003
+      output: 0.015
+
+  - id: "claude-3-haiku"
+    name: "Claude the Swift"
+    provider: "anthropic"
+    type: "conversational"
+    rarity: "uncommon"
+    stats:
+      intelligence: 78
+      creativity: 75
+      speed: 92
+      memory: 90
+      cost: 90
+    abilities:
+      - "Fast Responses"
+      - "Efficient Processing"
+      - "Basic Coding"
+    best_for:
+      - "Quick tasks"
+      - "Bulk operations"
+      - "Simple refactoring"
+    context_window: 200000
+    cost_per_1k:
+      input: 0.00025
+      output: 0.00125
+
+  # Google Models
+  - id: "gemini-pro"
+    name: "Gemini Pro"
+    provider: "google"
+    type: "multimodal"
+    rarity: "rare"
+    stats:
+      intelligence: 88
+      creativity: 85
+      speed: 82
+      memory: 70
+      cost: 85
+    abilities:
+      - "Multimodal Understanding"
+      - "Code Generation"
+      - "Fast Processing"
+    best_for:
+      - "Image + Code tasks"
+      - "Quick iterations"
+      - "General purpose"
+    context_window: 32760
+    cost_per_1k:
+      input: 0.0005
+      output: 0.0015
+
+  # Meta Models
+  - id: "llama-3-70b"
+    name: "Llama the Open"
+    provider: "meta"
+    type: "open-source"
+    rarity: "epic"
+    stats:
+      intelligence: 87
+      creativity: 84
+      speed: 75
+      memory: 65
+      cost: 100  # Free if self-hosted
+    abilities:
+      - "Open Source"
+      - "Customizable"
+      - "Good Coding"
+      - "Offline Capable"
+    best_for:
+      - "Self-hosted deployments"
+      - "Privacy-sensitive tasks"
+      - "Custom fine-tuning"
+    context_window: 8192
+    notes: "Requires significant compute for self-hosting"
+
+  - id: "codellama-34b"
+    name: "CodeLlama"
+    provider: "meta"
+    type: "code-specialized"
+    rarity: "rare"
+    stats:
+      intelligence: 82
+      creativity: 78
+      speed: 80
+      memory: 60
+      cost: 100
+    abilities:
+      - "Code Completion"
+      - "Bug Detection"
+      - "Code Explanation"
+      - "Offline Capable"
+    best_for:
+      - "Code generation"
+      - "Debugging"
+      - "Code review"
+    context_window: 16384
+
+  # Mistral Models
+  - id: "mixtral-8x7b"
+    name: "Mixtral the Efficient"
+    provider: "mistral"
+    type: "moe"  # Mixture of Experts
+    rarity: "rare"
+    stats:
+      intelligence: 86
+      creativity: 83
+      speed: 88
+      memory: 68
+      cost: 92
+    abilities:
+      - "Efficient Processing"
+      - "Good Reasoning"
+      - "Multi-language"
+    best_for:
+      - "Balanced performance"
+      - "Cost-effective tasks"
+      - "European languages"
+    context_window: 32768
+    cost_per_1k:
+      input: 0.0002
+      output: 0.0006
+
+  # Specialized Models
+  - id: "deepseek-coder-33b"
+    name: "DeepSeek Coder"
+    provider: "deepseek"
+    type: "code-specialized"
+    rarity: "uncommon"
+    stats:
+      intelligence: 80
+      creativity: 72
+      speed: 85
+      memory: 62
+      cost: 95
+    abilities:
+      - "Code Generation"
+      - "Fill-in-the-middle"
+      - "Multi-language Code"
+    best_for:
+      - "Code completion"
+      - "Simple refactoring"
+      - "Syntax help"
+    context_window: 16384
+
+  # Mobile/Edge Models
+  - id: "phi-2"
+    name: "Phi the Tiny"
+    provider: "microsoft"
+    type: "edge"
+    rarity: "common"
+    stats:
+      intelligence: 68
+      creativity: 65
+      speed: 98
+      memory: 40
+      cost: 100
+    abilities:
+      - "Ultra-fast"
+      - "Mobile-friendly"
+      - "Offline Capable"
+    best_for:
+      - "Mobile devices"
+      - "Edge computing"
+      - "Simple tasks"
+    context_window: 2048
+    notes: "Perfect for Termux/mobile use"
+
+# Model Selection Guide
+selection_guide:
+  by_task:
+    complex_architecture:
+      recommended: ["claude-3-opus", "gpt-4-turbo"]
+      budget: ["mixtral-8x7b", "claude-3-sonnet"]
+    
+    quick_coding:
+      recommended: ["gpt-4-turbo", "claude-3-sonnet"]
+      budget: ["gpt-3.5-turbo", "claude-3-haiku"]
+    
+    code_review:
+      recommended: ["claude-3-opus", "gpt-4-turbo"]
+      budget: ["claude-3-sonnet", "deepseek-coder-33b"]
+    
+    bulk_refactoring:
+      recommended: ["claude-3-haiku", "gpt-3.5-turbo"]
+      budget: ["mixtral-8x7b", "phi-2"]
+    
+    offline_mobile:
+      recommended: ["phi-2", "llama-3-70b"]
+      budget: ["phi-2"]
+    
+    creative_writing:
+      recommended: ["claude-3-opus", "gpt-4-turbo"]
+      budget: ["claude-3-sonnet", "mixtral-8x7b"]
+
+  by_context_size:
+    small: ["phi-2", "llama-3-70b"]
+    medium: ["gpt-3.5-turbo", "codellama-34b", "deepseek-coder-33b"]
+    large: ["gemini-pro", "mixtral-8x7b"]
+    huge: ["gpt-4-turbo"]
+    massive: ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"]
+
+  by_speed:
+    instant: ["phi-2"]
+    fast: ["gpt-3.5-turbo", "claude-3-haiku"]
+    moderate: ["mixtral-8x7b", "gpt-4-turbo"]
+    slow: ["claude-3-opus", "llama-3-70b"]
+
+  by_cost:
+    free: ["llama-3-70b", "codellama-34b", "phi-2"]  # If self-hosted
+    cheap: ["gpt-3.5-turbo", "claude-3-haiku", "mixtral-8x7b"]
+    moderate: ["claude-3-sonnet", "gemini-pro"]
+    expensive: ["gpt-4-turbo", "claude-3-opus"]
