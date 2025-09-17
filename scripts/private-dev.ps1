@@ -7,7 +7,7 @@ param(
 )
 
 # Configuration
-$PRIVATE_REPO = "https://github.com/kasparsgreizis/zenOS-private.git"
+$PRIVATE_REPO = "https://github.com/kasparsgreizis/zenOS-dev.git"
 $DEVELOPMENT_BRANCH = "development"
 $MAIN_BRANCH = "main"
 
@@ -116,8 +116,8 @@ function Promote-To-Public {
 }
 
 function Show-Status {
-    Write-Host "📊 zenOS Development Status" -ForegroundColor Cyan
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    Write-Host "zenOS Development Status" -ForegroundColor Cyan
+    Write-Host "================================================"
     
     # Current branch
     $currentBranch = git branch --show-current
