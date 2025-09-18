@@ -9,6 +9,9 @@ from rich.console import Console
 from zen.core.agent import AgentRegistry
 from zen.providers.openrouter import OpenRouterProvider, ModelTier
 from zen.utils.config import Config
+from zen.core.security import SecurityFramework
+from zen.core.critique import AutoCritique
+from zen.utils.mobile_optimizer import get_optimizer, is_mobile
 
 console = Console()
 
@@ -23,12 +26,19 @@ class Launcher:
         self.debug = debug
         self.config = Config()
         self.registry = AgentRegistry()
+        self.security = SecurityFramework()
         self.current_agent = None
         self.provider = None
-        
+        self.critique = None
+        self.optimizer = None
+
         # Initialize provider if configured
         if self.config.config.openrouter_api_key:
             self.provider = OpenRouterProvider(self.config.config.openrouter_api_key)
+            self.critique = AutoCritique(self.provider, self.debug)
+
+        if is_mobile():
+            self.optimizer = get_optimizer()
     
     def load_agent(self, name: str):
         """Load an agent by name."""
@@ -36,7 +46,7 @@ class Launcher:
         if self.debug:
             console.print(f"[dim]Loaded agent: {name}[/dim]")
     
-    async def critique_prompt_async(self, prompt: str) -> str:
+    async def enhance_prompt_async(self, prompt: str) -> str:
         """
         Enhance a prompt using the critique system.
         
@@ -49,44 +59,15 @@ class Launcher:
         if not self.config.config.auto_critique:
             return prompt
         
-        if not self.provider:
-            console.print("[yellow]Warning: No AI provider configured for auto-critique[/yellow]")
+        if not self.critique:
+            console.print("[yellow]Warning: Auto-critique is not available.[/yellow]")
             return prompt
-        
-        critique_prompt = f"""
-        Please analyze and improve this prompt for clarity, specificity, and effectiveness:
-        
-        Original prompt: {prompt}
-        
-        Provide an enhanced version that:
-        1. Is more specific and clear
-        2. Includes relevant context
-        3. Guides toward a better response
-        4. Maintains the original intent
-        
-        Return only the improved prompt, nothing else.
-        """
-        
-        try:
-            enhanced = ""
-            async with self.provider:
-                async for chunk in self.provider.complete(
-                    critique_prompt,
-                    model="anthropic/claude-3-haiku",  # Use fast model for critique
-                    temperature=0.3,
-                    max_tokens=500
-                ):
-                    enhanced += chunk
-            
-            return enhanced.strip() or prompt
-        except Exception as e:
-            if self.debug:
-                console.print(f"[red]Critique failed: {e}[/red]")
-            return prompt
-    
-    def critique_prompt(self, prompt: str) -> str:
-        """Synchronous wrapper for critique_prompt_async."""
-        return asyncio.run(self.critique_prompt_async(prompt))
+
+        return await self.critique.enhance_prompt(prompt)
+
+    def enhance_prompt(self, prompt: str) -> str:
+        """Synchronous wrapper for enhance_prompt_async."""
+        return asyncio.run(self.enhance_prompt_async(prompt))
     
     async def execute_async(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """
@@ -101,24 +82,48 @@ class Launcher:
         """
         if not self.current_agent:
             raise ValueError("No agent loaded")
-        
+
+        # 1. Security Scan
+        security_report = self.security.scan_prompt(prompt)
+        if not security_report["safe"]:
+            console.print(f"[yellow]Warning: Potential security risk detected: {security_report['risk_level']}[/yellow]")
+            for issue in security_report["issues"]:
+                console.print(f"[yellow] - {issue['type']}: {issue['pattern']}[/yellow]")
+
+        # 2. Sanitize Prompt
+        sanitized_prompt = self.security.sanitize_prompt(prompt)
+        if sanitized_prompt != prompt and self.debug:
+            console.print("[dim]Prompt was sanitized.[/dim]")
+
         # If agent is a simple one without AI, just execute it
         if hasattr(self.current_agent, 'execute_func'):
-            return self.current_agent.execute(prompt, variables)
+            return await self.current_agent.execute(sanitized_prompt, variables, launcher=self)
         
         # For AI-powered agents, use the provider
         if not self.provider:
             raise ValueError("No AI provider configured. Set OPENROUTER_API_KEY.")
         
         # Render the full prompt with agent template
-        rendered_prompt = self.current_agent.render_prompt(prompt, variables)
+        rendered_prompt = self.current_agent.render_prompt(sanitized_prompt, variables)
         
+        # Check cache if optimizer is available
+        if self.optimizer:
+            model = variables.get("model", self.config.config.default_model)
+            cached_response = self.optimizer.cache.get(rendered_prompt, model)
+            if cached_response:
+                console.print(cached_response)
+                return cached_response
+
         # Get response from AI
         response = ""
         async with self.provider:
             # Determine model based on agent requirements
             model = variables.get("model", self.config.config.default_model)
             
+            # Use optimizer if available
+            if self.optimizer:
+                model = self.optimizer.battery.get_optimal_model(model)
+
             async for chunk in self.provider.complete(
                 rendered_prompt,
                 model=model,
@@ -130,6 +135,15 @@ class Launcher:
                 if self.config.config.stream_responses:
                     console.print(chunk, end="")
         
+        # Cache the response if optimizer is available
+        if self.optimizer:
+            model = variables.get("model", self.config.config.default_model)
+            self.optimizer.cache.set(rendered_prompt, model, response)
+
+        # 3. Validate Response
+        if not self.security.validate_response(response):
+            console.print("[bold red]Warning: AI response may contain sensitive information.[/bold red]")
+
         return response
     
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
