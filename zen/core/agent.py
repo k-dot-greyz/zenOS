@@ -163,6 +163,51 @@ class AgentRegistry:
         from zen.agents import builtin_agents
         for name, agent in builtin_agents.items():
             self._agents[name] = agent
+        
+        # Load PromptOS agents
+        self._load_promptos_agents()
+    
+    def _load_promptos_agents(self) -> None:
+        """Load PromptOS agents."""
+        try:
+            from zen.agents.promptos import (
+                PromptCriticAgent,
+                SystemTroubleshooterAgent,
+                PromptSecurityAgent
+            )
+            
+            # Create agent manifests for PromptOS agents
+            prompt_critic_manifest = AgentManifest(
+                name="prompt_critic",
+                description="Analyzes and improves AI prompts using PromptOS critique system",
+                version="1.0.0",
+                author="PromptOS",
+                tags=["critique", "prompt", "improvement"]
+            )
+            
+            system_troubleshooter_manifest = AgentManifest(
+                name="system_troubleshooter", 
+                description="Diagnoses and fixes development environment issues",
+                version="1.0.0",
+                author="PromptOS",
+                tags=["troubleshooting", "system", "diagnostics"]
+            )
+            
+            prompt_security_manifest = AgentManifest(
+                name="prompt_security",
+                description="Analyzes prompts for security vulnerabilities and attack patterns",
+                version="1.0.0", 
+                author="PromptOS",
+                tags=["security", "prompt", "vulnerability"]
+            )
+            
+            # Register agents
+            self._agents["prompt_critic"] = PromptCriticAgent()
+            self._agents["system_troubleshooter"] = SystemTroubleshooterAgent()
+            self._agents["prompt_security"] = PromptSecurityAgent()
+            
+        except ImportError as e:
+            print(f"Warning: Could not load PromptOS agents: {e}")
     
     def get_agent(self, name: str) -> Agent:
         """Get an agent by name."""

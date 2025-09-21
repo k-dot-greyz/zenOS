@@ -9,6 +9,7 @@ from rich.console import Console
 from zen.core.agent import AgentRegistry
 from zen.providers.openrouter import OpenRouterProvider, ModelTier
 from zen.utils.config import Config
+from zen.agents.promptos.prompt_critic import PromptCriticAgent
 
 console = Console()
 
@@ -25,10 +26,13 @@ class Launcher:
         self.registry = AgentRegistry()
         self.current_agent = None
         self.provider = None
+        self.prompt_critic = None
         
         # Initialize provider if configured
         if self.config.config.openrouter_api_key:
             self.provider = OpenRouterProvider(self.config.config.openrouter_api_key)
+            # Initialize PromptOS critique system
+            self.prompt_critic = PromptCriticAgent()
     
     def load_agent(self, name: str):
         """Load an agent by name."""
@@ -38,7 +42,7 @@ class Launcher:
     
     async def critique_prompt_async(self, prompt: str) -> str:
         """
-        Enhance a prompt using the critique system.
+        Enhance a prompt using the PromptOS critique system.
         
         Args:
             prompt: Original prompt
@@ -49,39 +53,18 @@ class Launcher:
         if not self.config.config.auto_critique:
             return prompt
         
-        if not self.provider:
-            console.print("[yellow]Warning: No AI provider configured for auto-critique[/yellow]")
+        if not self.prompt_critic:
+            console.print("[yellow]Warning: PromptOS critique system not available[/yellow]")
             return prompt
         
-        critique_prompt = f"""
-        Please analyze and improve this prompt for clarity, specificity, and effectiveness:
-        
-        Original prompt: {prompt}
-        
-        Provide an enhanced version that:
-        1. Is more specific and clear
-        2. Includes relevant context
-        3. Guides toward a better response
-        4. Maintains the original intent
-        
-        Return only the improved prompt, nothing else.
-        """
-        
         try:
-            enhanced = ""
-            async with self.provider:
-                async for chunk in self.provider.complete(
-                    critique_prompt,
-                    model="anthropic/claude-3-haiku",  # Use fast model for critique
-                    temperature=0.3,
-                    max_tokens=500
-                ):
-                    enhanced += chunk
-            
-            return enhanced.strip() or prompt
-        except Exception as e:
+            # Use PromptOS critique system
+            improved_prompt = self.prompt_critic.get_improved_prompt(prompt)
             if self.debug:
-                console.print(f"[red]Critique failed: {e}[/red]")
+                console.print("[dim]Prompt enhanced using PromptOS critique system[/dim]")
+            return improved_prompt
+        except Exception as e:
+            console.print(f"[yellow]Warning: Critique failed: {e}[/yellow]")
             return prompt
     
     def critique_prompt(self, prompt: str) -> str:
