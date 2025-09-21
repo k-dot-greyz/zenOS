@@ -23,7 +23,31 @@
 
 ## 🚀 Quick Start
 
-### One Command Installation! ⚡
+### **One-Command Setup (All Platforms)** ⚡
+
+```bash
+# Clone and setup in one command - works everywhere!
+git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py
+```
+
+### **Platform-Specific One-Liners**
+
+**🖥️ Windows (PowerShell)**
+```powershell
+git clone https://github.com/kasparsgreizis/zenOS.git; cd zenOS; python setup.py
+```
+
+**🐧 Linux/macOS**
+```bash
+git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py
+```
+
+**📱 Mobile (Termux)**
+```bash
+git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py
+```
+
+### **Legacy Installers (Still Available)**
 
 **📱 Mobile (Android/Termux)**
 ```bash
@@ -42,9 +66,10 @@ curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh
 
 ### Detailed Guides
 
-📱 **[Full Mobile Guide](QUICKSTART_MOBILE.md)** - Complete Termux setup  
-🖥️ **[Full Windows Guide](QUICKSTART_WINDOWS.md)** - PowerShell installation  
-🐧 **[Full Linux Guide](QUICKSTART_LINUX.md)** - Terminal installation
+📱 **[Full Mobile Guide](docs/guides/QUICKSTART_MOBILE.md)** - Complete Termux setup  
+🖥️ **[Full Windows Guide](docs/guides/QUICKSTART_WINDOWS.md)** - PowerShell installation  
+🐧 **[Full Linux Guide](docs/guides/QUICKSTART_LINUX.md)** - Terminal installation  
+🚀 **[Setup Guide](docs/guides/SETUP_GUIDE.md)** - Unified setup system documentation
 
 ### Basic Usage
 

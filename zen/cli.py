@@ -295,6 +295,36 @@ def run_agent(
         sys.exit(1)
 
 
+@cli.command()
+@click.option('--unattended', is_flag=True, help='Run in unattended mode')
+@click.option('--validate-only', is_flag=True, help='Only validate environment')
+@click.option('--phase', type=click.Choice(['detection', 'validation', 'git_setup', 'mcp_setup', 'zenos_setup', 'integration', 'verification']), help='Start from specific phase')
+def setup(unattended, validate_only, phase):
+    """Setup zenOS development environment"""
+    from zen.setup.unified_setup import UnifiedSetupManager
+    
+    manager = UnifiedSetupManager(unattended=unattended)
+    
+    if validate_only:
+        success = manager._run_validation_phase()
+    elif phase:
+        # Start from specific phase
+        phase_map = {
+            'detection': manager._run_detection_phase,
+            'validation': manager._run_validation_phase,
+            'git_setup': manager._run_git_setup_phase,
+            'mcp_setup': manager._run_mcp_setup_phase,
+            'zenos_setup': manager._run_zenos_setup_phase,
+            'integration': manager._run_integration_phase,
+            'verification': manager._run_verification_phase
+        }
+        success = phase_map[phase]()
+    else:
+        success = manager.run_setup()
+    
+    if not success:
+        sys.exit(1)
+
 # Add plugin commands to CLI
 cli.add_command(plugins)
 cli.add_command(receive)
