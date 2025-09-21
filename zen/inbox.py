@@ -92,11 +92,12 @@ class InboxManager:
         return True
 
 @click.group()
-def inbox():
-    """zenOS Inbox System - Process incoming items"""
+@click.alias('inbox')
+def receive():
+    """zenOS Receive System - Process incoming items"""
     pass
 
-@inbox.command()
+@receive.command()
 @click.argument('item_type')
 @click.argument('content')
 @click.option('--metadata', help='JSON metadata for the item')
@@ -115,7 +116,7 @@ def add(item_type: str, content: str, metadata: str = None):
     item_id = manager.add_item(item_type, content, metadata_dict)
     click.echo(f"Added {item_type} item: {item_id}")
 
-@inbox.command()
+@receive.command()
 @click.option('--status', help='Filter by status (new, processing, processed)')
 def list(status: str = None):
     """List items in the inbox"""
@@ -135,7 +136,7 @@ def list(status: str = None):
         
         click.echo(f"{status_emoji} {item['id']} - {item['type']} - {item['content'][:50]}...")
 
-@inbox.command()
+@receive.command()
 @click.argument('item_id')
 @click.argument('to_status')
 def move(item_id: str, to_status: str):
@@ -160,4 +161,4 @@ def move(item_id: str, to_status: str):
         click.echo(f"Failed to move {item_id}")
 
 if __name__ == "__main__":
-    inbox()
+    receive()

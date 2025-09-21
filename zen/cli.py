@@ -25,7 +25,7 @@ from zen.core.agent import AgentRegistry
 from zen.utils.config import Config
 from zen import __version__
 from zen.cli_plugins import plugins
-from zen.inbox import inbox
+from zen.inbox import receive
 
 console = Console()
 
@@ -297,7 +297,7 @@ def run_agent(
 
 # Add plugin commands to CLI
 cli.add_command(plugins)
-cli.add_command(inbox)
+cli.add_command(receive)
 
 if __name__ == "__main__":
     cli()

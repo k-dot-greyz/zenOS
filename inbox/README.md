@@ -29,13 +29,19 @@ The zenOS inbox is where all incoming items get processed before being integrate
 
 ```bash
 # Process a new tool
-zen inbox process-tool https://github.com/user/tool-repo
+zen receive add tool "https://github.com/user/tool-repo"
 
 # Add a new idea
-zen inbox add-idea "Voice-controlled plugin management"
+zen receive add idea "Voice-controlled plugin management"
 
 # Process context update
-zen inbox process-context "New conversation about mobile UI"
+zen receive add context "New conversation about mobile UI"
+
+# List all items
+zen receive list
+
+# Move item to processing
+zen receive move item-id processing
 ```
 
 ## 📋 Status Tracking
