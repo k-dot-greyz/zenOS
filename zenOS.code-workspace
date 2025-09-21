@@ -23,6 +23,7 @@
 		"cursor.composer.textSizeScale": 1,
 		"cursor.enable_agent_window_setting": true,
 		"cursor.general.gitGraphIndexing": "enabled",
-		"cursor.preferNotificationsSameAsChat": true
+		"cursor.preferNotificationsSameAsChat": true,
+		"powershell.cwd": "zenOS"
 	}
 }

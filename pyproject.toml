@@ -61,10 +61,8 @@ Documentation = "https://zenos.ai/docs"
 Repository = "https://github.com/kasparsgreizis/zenOS"
 Issues = "https://github.com/kasparsgreizis/zenOS/issues"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["zen*"]
-exclude = ["tests*"]
+[tool.setuptools]
+packages = ["zen"]
 
 [tool.black]
 line-length = 100

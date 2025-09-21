@@ -8,8 +8,17 @@ Forget the proot/Arch complexity. Let's run zenOS directly on Termux - fast, nat
 
 ## 🎯 One-Line Install (The Dream)
 ```bash
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+# Complete airi-zenOS bridge setup
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/ultimate-bridge-setup.sh | bash
 ```
+
+**What this installs:**
+- ✅ zenOS core system
+- ✅ airi integration
+- ✅ Voice bridge system
+- ✅ Offline AI models
+- ✅ Mobile optimizations
+- ✅ All shortcuts and aliases
 
 ---
 
@@ -37,6 +46,24 @@ pip install -e .
 cp env.example .env
 # Use nano or vim to add your OpenRouter key
 nano .env
+```
+
+### Step 2.5: Install airi (Mobile AI Assistant)
+```bash
+# Install airi for mobile AI integration
+pkg install proot-distro
+proot-distro install airi
+```
+
+### Step 2.6: Install Offline Models
+```bash
+# Install Ollama for local AI processing
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Download mobile-optimized models
+ollama pull phi-2        # 1.6GB - Perfect for Pixel 9a
+ollama pull tinyllama    # 637MB - Ultra-lightweight
+ollama pull qwen:0.5b    # 395MB - Minimal but capable
 ```
 
 ### Step 3: Termux Optimizations
@@ -84,6 +111,12 @@ source ~/.bashrc
 
 # Now just type 'zen' from anywhere!
 zen "explain quantum computing"
+
+# New bridge system commands!
+zen voice "speak your question"     # Voice input
+zen offline "work without internet" # Offline mode
+zen airi "enhanced processing"      # airi integration
+zen interactive                     # Full bridge mode
 ```
 
 ---
@@ -421,11 +454,24 @@ ollama pull model-name
 
 Your phone is now a portable AI powerhouse. You can:
 - 💬 Chat with AI anywhere
-- 🎤 Use voice input
+- 🎤 Use voice input with Termux API
 - 📋 Integrate with clipboard
 - 🔔 Get notifications
 - ⚡ Run offline with local models
 - 🌐 Connect to remote backends
+- 🌉 Use airi-zenOS bridge system
+- 🤖 Process with mobile-optimized AI
+
+**Available Commands:**
+```bash
+zen                    # Main AI interface
+zen voice             # Voice input mode
+zen offline           # Offline processing
+zen airi              # airi integration
+zen interactive       # Full bridge mode
+zen status            # Check system status
+zen context           # Show mobile context
+```
 
 **Welcome to the future, where your phone IS your computer!** 🧘📱
 

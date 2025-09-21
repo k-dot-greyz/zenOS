@@ -4,9 +4,6 @@ Auto-critique system for zenOS.
 
 from typing import Dict, Any, Optional
 from zen.providers.openrouter import OpenRouterProvider
-from rich.console import Console
-
-console = Console()
 
 
 class AutoCritique:
@@ -14,55 +11,27 @@ class AutoCritique:
     Automatic critique and improvement system for prompts and responses.
     """
     
-    def __init__(self, provider: Optional[OpenRouterProvider] = None, debug: bool = False):
+    def __init__(self, provider: Optional[OpenRouterProvider] = None):
         """Initialize the auto-critique system."""
         self.provider = provider
-        self.debug = debug
     
-    async def enhance_prompt(self, prompt: str) -> str:
+    async def critique_prompt(self, prompt: str) -> Dict[str, Any]:
         """
-        Enhance a prompt using the critique system.
+        Critique a prompt and suggest improvements.
         
         Args:
-            prompt: Original prompt
+            prompt: The prompt to critique
         
         Returns:
-            Enhanced prompt
+            Dictionary with critique and improved version
         """
-        if not self.provider:
-            console.print("[yellow]Warning: No AI provider configured for auto-critique[/yellow]")
-            return prompt
-
-        critique_prompt = f"""
-        Please analyze and improve this prompt for clarity, specificity, and effectiveness:
-
-        Original prompt: {prompt}
-
-        Provide an enhanced version that:
-        1. Is more specific and clear
-        2. Includes relevant context
-        3. Guides toward a better response
-        4. Maintains the original intent
-
-        Return only the improved prompt, nothing else.
-        """
-
-        try:
-            enhanced = ""
-            async with self.provider:
-                async for chunk in self.provider.complete(
-                    critique_prompt,
-                    model="anthropic/claude-3-haiku",  # Use fast model for critique
-                    temperature=0.3,
-                    max_tokens=500
-                ):
-                    enhanced += chunk
-
-            return enhanced.strip() or prompt
-        except Exception as e:
-            if self.debug:
-                console.print(f"[red]Critique failed: {e}[/red]")
-            return prompt
+        # TODO: Implement full critique logic
+        return {
+            "original": prompt,
+            "critique": "Prompt could be more specific",
+            "improved": prompt,
+            "suggestions": []
+        }
     
     async def critique_response(self, response: str, original_prompt: str) -> Dict[str, Any]:
         """

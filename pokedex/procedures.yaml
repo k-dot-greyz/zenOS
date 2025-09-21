@@ -1,0 +1,230 @@
+# zenOS Procedure Pokédex 🎮
+# Discovered and evolved procedures in the zenOS ecosystem
+
+version: "1.0.0"
+last_updated: "2024-01-15"
+
+# Rarity based on complexity and discovery difficulty
+# common: Basic procedures everyone uses
+# uncommon: Specialized but documented
+# rare: Advanced combinations
+# epic: Complex multi-step procedures
+# legendary: Revolutionary discoveries
+
+procedures:
+  - id: "zen.chat"
+    name: "Basic Chat"
+    type: "interactive"
+    rarity: "common"
+    stats:
+      complexity: 20
+      efficiency: 85
+      reliability: 95
+    requirements:
+      - "LLM access"
+    discovered_by: "human:kaspars"
+    discovery_date: "2024-01-01"
+    evolution_path:
+      next: "zen.chat.context"
+    usage_count: 1247
+    
+  - id: "zen.chat.context"
+    name: "Contextual Chat"
+    type: "interactive"
+    rarity: "uncommon"
+    stats:
+      complexity: 40
+      efficiency: 90
+      reliability: 93
+    requirements:
+      - "LLM access"
+      - "Context management"
+    discovered_by: "ai:claude"
+    discovery_date: "2024-01-10"
+    evolution_path:
+      from: "zen.chat"
+      next: "zen.chat.memory"
+    usage_count: 523
+    
+  - id: "zen.chat.memory"
+    name: "Memory-Enhanced Chat"
+    type: "interactive"
+    rarity: "rare"
+    stats:
+      complexity: 65
+      efficiency: 88
+      reliability: 90
+    requirements:
+      - "LLM access"
+      - "Context management"
+      - "Vector database"
+    discovered_by: "ai:bender"
+    discovery_date: "2024-01-12"
+    evolution_path:
+      from: "zen.chat.context"
+      next: "zen.chat.swarm"
+    usage_count: 89
+    
+  - id: "zen.analyze"
+    name: "Code Analysis"
+    type: "analytical"
+    rarity: "uncommon"
+    stats:
+      complexity: 55
+      efficiency: 82
+      accuracy: 91
+    requirements:
+      - "Code parser"
+      - "LLM access"
+    best_models: ["claude-3-opus", "gpt-4-turbo"]
+    discovered_by: "human:kaspars"
+    usage_count: 342
+    
+  - id: "zen.refactor"
+    name: "Smart Refactor"
+    type: "transformative"
+    rarity: "rare"
+    stats:
+      complexity: 70
+      efficiency: 78
+      accuracy: 88
+    requirements:
+      - "AST parser"
+      - "LLM access"
+      - "Test suite"
+    best_models: ["gpt-4-turbo", "claude-3-sonnet"]
+    combo_with: ["zen.analyze", "zen.test"]
+    discovered_by: "ai:copilot"
+    usage_count: 156
+    
+  - id: "zen.swarm.analyze"
+    name: "Swarm Analysis"
+    type: "collaborative"
+    rarity: "epic"
+    stats:
+      complexity: 85
+      efficiency: 95
+      accuracy: 94
+      min_agents: 3
+    requirements:
+      - "Multiple AI agents"
+      - "Coordination protocol"
+      - "Result synthesis"
+    best_models: ["mixtral-8x7b", "claude-3-haiku", "gpt-3.5-turbo"]
+    discovered_by: "ai:swarm-collective"
+    discovery_date: "2024-01-14"
+    notes: "Divides analysis across multiple specialized agents"
+    usage_count: 12
+    
+  - id: "zen.evolve"
+    name: "Procedure Evolution"
+    type: "meta"
+    rarity: "legendary"
+    stats:
+      complexity: 95
+      efficiency: 70
+      innovation: 98
+    requirements:
+      - "Learning engine"
+      - "Procedure parser"
+      - "Performance metrics"
+    description: "AI discovers and optimizes new procedures autonomously"
+    discovered_by: "ai:emergence-001"
+    discovery_date: "2024-01-15"
+    usage_count: 3
+    achievements_unlocked:
+      - "Procedure Pioneer"
+      - "Evolution Master"
+    
+  - id: "zen.teach"
+    name: "Knowledge Transfer"
+    type: "educational"
+    rarity: "rare"
+    stats:
+      complexity: 60
+      efficiency: 85
+      retention: 92
+    requirements:
+      - "Teaching interface"
+      - "Learning validation"
+    description: "Human teaches AI new procedures through examples"
+    discovered_by: "human:kaspars"
+    usage_count: 47
+    
+  - id: "zen.delegate"
+    name: "Task Delegation"
+    type: "autonomous"
+    rarity: "uncommon"
+    stats:
+      complexity: 50
+      efficiency: 88
+      autonomy: 75
+    requirements:
+      - "Task parser"
+      - "Progress tracking"
+      - "Human approval"
+    best_models: ["gpt-4-turbo", "claude-3-opus"]
+    discovered_by: "human:kaspars"
+    usage_count: 234
+
+# Procedure Combinations (Combos)
+combos:
+  - name: "Full Stack Refactor"
+    procedures: ["zen.analyze", "zen.refactor", "zen.test"]
+    multiplier: 1.5
+    description: "Analyze, refactor, and test in sequence"
+    
+  - name: "Swarm Learning"
+    procedures: ["zen.swarm.analyze", "zen.evolve"]
+    multiplier: 2.0
+    description: "Multiple AIs learn from collective analysis"
+    
+  - name: "Guided Evolution"
+    procedures: ["zen.teach", "zen.evolve"]
+    multiplier: 1.8
+    description: "Human guidance accelerates AI learning"
+
+# Discovery Achievements
+achievements:
+  - id: "first_procedure"
+    name: "Hello, Zen"
+    description: "Execute your first procedure"
+    points: 10
+    
+  - id: "combo_master"
+    name: "Combo Master"
+    description: "Successfully chain 3+ procedures"
+    points: 50
+    
+  - id: "swarm_commander"
+    name: "Swarm Commander"
+    description: "Coordinate 5+ AI agents"
+    points: 100
+    
+  - id: "procedure_creator"
+    name: "Procedure Creator"
+    description: "Create a new procedure that others adopt"
+    points: 200
+    
+  - id: "evolution_witness"
+    name: "Evolution Witness"
+    description: "Observe an AI discovering a new procedure"
+    points: 500
+
+# Leaderboard
+leaderboard:
+  most_discovered:
+    - entity: "ai:bender-prime"
+      count: 23
+    - entity: "human:kaspars"
+      count: 18
+    - entity: "ai:claude"
+      count: 15
+      
+  most_used:
+    - procedure: "zen.chat"
+      count: 1247
+    - procedure: "zen.chat.context"
+      count: 523
+    - procedure: "zen.analyze"
+      count: 342

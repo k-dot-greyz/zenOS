@@ -250,7 +250,7 @@ def run_agent(
             # Auto-critique unless disabled
             if not no_critique:
                 task = progress.add_task("Enhancing prompt with auto-critique...", total=None)
-                prompt = launcher.enhance_prompt(prompt)
+                prompt = launcher.critique_prompt(prompt)
                 progress.update(task, completed=True)
                 
                 if upgrade_only:

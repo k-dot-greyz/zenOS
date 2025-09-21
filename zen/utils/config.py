@@ -162,6 +162,26 @@ class Config:
             setattr(self.config, key, value)
     
     @property
+    def agents_dir(self) -> Path:
+        """Get the agents directory path."""
+        return self.config.agents_dir
+    
+    @property
+    def modules_dir(self) -> Path:
+        """Get the modules directory path."""
+        return self.config.modules_dir
+    
+    @property
+    def workspace_dir(self) -> Path:
+        """Get the workspace directory path."""
+        return self.config.workspace_dir
+    
+    @property
+    def config_dir(self) -> Path:
+        """Get the config directory path."""
+        return self.config.config_dir
+    
+    @property
     def is_configured(self) -> bool:
         """Check if zenOS is properly configured."""
         return bool(self.config.openrouter_api_key)
