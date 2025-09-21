@@ -113,12 +113,13 @@ zenOS/
 
 ## 📚 Documentation
 
-- [Quick Start Guide](QUICKSTART.md)
-- [Mobile Setup (Termux)](QUICKSTART_TERMUX.md)
-- [airi Integration](docs/AIRI_INTEGRATION.md)
-- [Mobile UI Framework](MOBILE_UI_FRAMEWORK.md)
-- [Plugin System](PLUGIN_SYSTEM_SPECIFICATION.md)
-- [AI Integration Blueprint](AI_INTEGRATION_BLUEPRINT.md)
+- [Quick Start Guide](docs/guides/QUICKSTART.md)
+- [Mobile Setup (Termux)](docs/guides/QUICKSTART_MOBILE.md)
+- [Windows Setup](docs/guides/QUICKSTART_WINDOWS.md)
+- [Linux Setup](docs/guides/QUICKSTART_LINUX.md)
+- [AI Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)
+- [Plugin System](docs/planning/PLUGIN_SYSTEM_SPECIFICATION.md)
+- [Mobile UI Framework](docs/planning/MOBILE_UI_FRAMEWORK.md)
 
 ## 🤝 Contributing
 
