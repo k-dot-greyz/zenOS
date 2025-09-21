@@ -11,6 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+from zen.utils.safe_commands import SafeCommandExecutor
 
 class GitSetupManager:
     """Manages git repository setup and configuration"""
@@ -18,36 +19,29 @@ class GitSetupManager:
     def __init__(self, zenos_root: Path):
         self.zenos_root = zenos_root
         self.gitignore_path = self.zenos_root / ".gitignore"
+        self.safe_executor = SafeCommandExecutor()
         
     def is_git_repo(self) -> bool:
         """Check if the current directory is a Git repository"""
-        try:
-            result = subprocess.run(
-                ["git", "rev-parse", "--git-dir"],
-                cwd=self.zenos_root,
-                capture_output=True,
-                text=True,
-                check=False
-            )
-            return result.returncode == 0
-        except FileNotFoundError:
-            return False
+        result = self.safe_executor.run_command(
+            ["git", "rev-parse", "--git-dir"],
+            cwd=self.zenos_root,
+            timeout=5
+        )
+        return result['success']
     
     def init_repository(self) -> bool:
         """Initialize a new git repository"""
-        try:
-            result = subprocess.run(
-                ["git", "init"],
-                cwd=self.zenos_root,
-                capture_output=True,
-                text=True,
-                check=True
-            )
+        result = self.safe_executor.run_command(
+            ["git", "init"],
+            cwd=self.zenos_root,
+            timeout=10
+        )
+        if result['success']:
             print(f"  ✅ Git repository initialized")
-            return True
-        except subprocess.CalledProcessError as e:
-            print(f"  ❌ Failed to initialize git repository: {e}")
-            return False
+        else:
+            print(f"  ❌ Failed to initialize git repository: {result['stderr']}")
+        return result['success']
     
     def setup_gitignore(self) -> bool:
         """Setup comprehensive .gitignore file"""
