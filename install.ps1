@@ -92,7 +92,7 @@ function Main {
     Write-Host "  Windows: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_WINDOWS.md"
     Write-Host "  Linux: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_LINUX.md"
     Write-Host ""
-    Write-Host "🧘 Welcome to zenOS! Enjoy the zen! ✨" -ForegroundColor Magenta
+    Write-Host "Welcome to zenOS! Enjoy the zen!" -ForegroundColor Magenta
 }
 
 # Run main function

@@ -1,8 +1,16 @@
 #!/bin/bash
-# zenOS Universal Installer - One Command to Rule Them All! 🧘
+# zenOS Universal Installer - One Command to Rule Them All!
 # Usage: curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
 
 set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
 
 echo "🧘 zenOS Universal Installer"
 echo "=========================="
@@ -31,39 +39,54 @@ echo ""
 install_deps() {
     case $PLATFORM in
         "termux")
-            echo "📦 Installing Termux packages..."
+            echo -e "${YELLOW}📦 Installing Termux packages...${NC}"
             pkg update -y && pkg upgrade -y
             pkg install -y python python-pip git curl
             
-            echo "🐍 Installing Python packages..."
-            pip install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
+            pip install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
+                echo -e "${RED}❌ Failed to install Python packages${NC}"
+                echo "Trying alternative installation..."
+                pip install --user --break-system-packages rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            }
             
-            echo "📥 Downloading NLTK data..."
-            python3 -m textblob.download_corpora
+            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
+            python3 -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
             ;;
         "linux")
-            echo "🐍 Installing Python packages..."
-            pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
+            pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
+                echo -e "${RED}❌ Failed to install Python packages${NC}"
+                echo "Trying with sudo..."
+                sudo pip3 install rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            }
             
-            echo "📥 Downloading NLTK data..."
-            python3 -m textblob.download_corpora
+            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
+            python3 -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
             ;;
         "macos")
-            echo "🐍 Installing Python packages..."
-            pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
+            pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
+                echo -e "${RED}❌ Failed to install Python packages${NC}"
+                echo "Trying with sudo..."
+                sudo pip3 install rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            }
             
-            echo "📥 Downloading NLTK data..."
-            python3 -m textblob.download_corpora
+            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
+            python3 -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
             ;;
         "windows")
-            echo "🐍 Installing Python packages..."
-            pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk
+            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
+            pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
+                echo -e "${RED}❌ Failed to install Python packages${NC}"
+                exit 1
+            }
             
-            echo "📥 Downloading NLTK data..."
-            python -m textblob.download_corpora
+            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
+            python -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
             ;;
         *)
-            echo "❌ Unsupported platform: $OSTYPE"
+            echo -e "${RED}❌ Unsupported platform: $OSTYPE${NC}"
             echo "Please install manually: https://github.com/kasparsgreizis/zenOS"
             exit 1
             ;;
@@ -170,7 +193,7 @@ main() {
     echo "  Windows: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_WINDOWS.md"
     echo "  Linux: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_LINUX.md"
     echo ""
-    echo "🧘 Welcome to zenOS! Enjoy the zen! ✨"
+    echo "Welcome to zenOS! Enjoy the zen!"
 }
 
 # Run main function
