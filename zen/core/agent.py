@@ -52,7 +52,7 @@ class Agent(ABC):
         self.config = Config()
     
     @abstractmethod
-    def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
+    async def execute(self, prompt: str, variables: Dict[str, Any], launcher: Optional[Any] = None) -> Any:
         """Execute the agent with the given prompt and variables."""
         pass
     
@@ -114,7 +114,7 @@ class Agent(ABC):
 class YAMLAgent(Agent):
     """Agent defined by a YAML manifest file."""
     
-    def execute(self, prompt: str, variables: Dict[str, Any]) -> str:
+    async def execute(self, prompt: str, variables: Dict[str, Any], launcher: Optional[Any] = None) -> str:
         """Execute the agent by rendering the prompt."""
         return self.render_prompt(prompt, variables)
 
@@ -126,10 +126,10 @@ class PythonAgent(Agent):
         super().__init__(manifest)
         self.execute_func = execute_func
     
-    def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
+    async def execute(self, prompt: str, variables: Dict[str, Any], launcher: Optional[Any] = None) -> Any:
         """Execute the agent using the provided function."""
         rendered_prompt = self.render_prompt(prompt, variables)
-        return self.execute_func(rendered_prompt, variables)
+        return await self.execute_func(rendered_prompt, variables, launcher)
 
 
 class AgentRegistry:
