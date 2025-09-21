@@ -10,6 +10,9 @@
 
 - 🚀 **Simple CLI**: One command to rule them all - `zen`
 - 📱 **Mobile-First**: Native Termux support with voice & gesture integration
+- 🌉 **Bridge System**: Seamless airi-zenOS integration for mobile AI
+- 🎤 **Voice Interface**: Voice input/output with Termux API
+- 🔋 **Offline Mode**: Local AI processing with Ollama integration
 - 🤖 **Modular Agents**: Composable, reusable AI agents
 - 🔒 **Security First**: Built-in defense against prompt injection
 - 🎯 **Auto-Critique**: Every prompt automatically upgraded for better results
@@ -51,6 +54,15 @@ zen-voice "explain quantum computing"
 
 # Mobile clipboard input
 zen-clip  # Processes clipboard content
+
+# airi integration (mobile)
+zen airi "enhanced mobile processing"
+
+# Offline mode (local AI)
+zen offline "work without internet"
+
+# Bridge system (airi + zenOS)
+zen interactive  # Full bridge mode
 
 # Review a prompt
 zen critic "analyze this prompt for improvements"
@@ -98,10 +110,12 @@ zenOS/
 
 ## 📚 Documentation
 
-- [Quick Start Guide](docs/quickstart.md)
-- [Agent Development](docs/agents.md)
-- [Configuration](docs/configuration.md)
-- [API Reference](docs/api.md)
+- [Quick Start Guide](QUICKSTART.md)
+- [Mobile Setup (Termux)](QUICKSTART_TERMUX.md)
+- [airi Integration](docs/AIRI_INTEGRATION.md)
+- [Mobile UI Framework](MOBILE_UI_FRAMEWORK.md)
+- [Plugin System](PLUGIN_SYSTEM_SPECIFICATION.md)
+- [AI Integration Blueprint](AI_INTEGRATION_BLUEPRINT.md)
 
 ## 🤝 Contributing
 

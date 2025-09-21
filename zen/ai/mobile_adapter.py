@@ -8,6 +8,7 @@ import os
 import json
 import subprocess
 import tempfile
+import time
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from pathlib import Path
@@ -268,7 +269,7 @@ class MobileAIAdapter:
             clipboard_content=self.termux_api.get_clipboard(),
             device_model="Pixel 9a",
             mode="mobile",
-            timestamp=str(os.time()),
+            timestamp=str(int(time.time())),
             has_internet=self._check_internet(),
             is_charging=battery_status.get('plugged') != 'UNPLUGGED'
         )
