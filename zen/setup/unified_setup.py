@@ -128,43 +128,43 @@ class UnifiedSetupManager:
     
     def _run_detection_phase(self) -> bool:
         """Phase 1: Environment detection and analysis"""
-        print("\n🔍 Phase 1: Environment Detection")
+        print("\n[DETECT] Phase 1: Environment Detection")
         print("-" * 40)
         
         self.context = self.env_detector.detect_environment(self.zenos_root)
         
-        print(f"  📱 Platform: {self.context.platform}")
-        print(f"  🐚 Shell: {self.context.shell}")
-        print(f"  🐍 Python: {self.context.python_version}")
-        print(f"  📦 Git: {'✅ Available' if self.context.git_available else '❌ Missing'}")
-        print(f"  🟢 Node: {'✅ Available' if self.context.node_available else '❌ Missing'}")
-        print(f"  📱 Termux: {'✅ Yes' if self.context.is_termux else '❌ No'}")
+        print(f"  Platform: {self.context.platform}")
+        print(f"  Shell: {self.context.shell}")
+        print(f"  Python: {self.context.python_version}")
+        print(f"  Git: {'[OK] Available' if self.context.git_available else '[FAIL] Missing'}")
+        print(f"  Node: {'[OK] Available' if self.context.node_available else '[FAIL] Missing'}")
+        print(f"  Termux: {'[OK] Yes' if self.context.is_termux else '[FAIL] No'}")
         
         self.current_phase = SetupPhase.VALIDATION
         return True
     
     def _run_validation_phase(self) -> bool:
         """Phase 2: System validation with AI troubleshooting"""
-        print("\n✅ Phase 2: System Validation")
+        print("\n[OK] Phase 2: System Validation")
         print("-" * 40)
         
         validation_results = self.troubleshooter.validate_system(self.context)
         
         if validation_results['issues']:
-            print(f"  ⚠️  Found {len(validation_results['issues'])} issues")
+            print(f"  [WARN] Found {len(validation_results['issues'])} issues")
             
             if not self.unattended:
-                print("  🧠 Running AI diagnosis...")
+                print("  [AI] Running AI diagnosis...")
                 diagnosis = self.troubleshooter.diagnose_issues(validation_results['issues'])
                 
                 if diagnosis['fixes']:
-                    print("  🔧 Applying AI-suggested fixes...")
+                    print("  [FIX] Applying AI-suggested fixes...")
                     if not self.troubleshooter.apply_fixes(diagnosis['fixes']):
-                        print("  ❌ Some fixes failed, continuing with manual intervention...")
+                        print("  [FAIL] Some fixes failed, continuing with manual intervention...")
                 else:
-                    print("  ⚠️  No automated fixes available, manual intervention required")
+                    print("  [WARN] No automated fixes available, manual intervention required")
         else:
-            print("  ✅ All validations passed!")
+            print("  [OK] All validations passed!")
         
         self.current_phase = SetupPhase.GIT_SETUP
         return True
@@ -597,6 +597,7 @@ def main():
     parser = argparse.ArgumentParser(description='zenOS Unified Setup Manager')
     parser.add_argument('--path', type=Path, help='Path to zenOS root directory')
     parser.add_argument('--unattended', action='store_true', help='Run in unattended mode')
+    parser.add_argument('--validate-only', action='store_true', help='Only validate environment, no setup')
     parser.add_argument('--phase', choices=[p.value for p in SetupPhase], help='Start from specific phase')
     
     args = parser.parse_args()
@@ -606,7 +607,32 @@ def main():
         unattended=args.unattended
     )
     
-    success = manager.run_setup()
+    if args.validate_only:
+        # Run detection first to set up context
+        if not manager._run_detection_phase():
+            print("Failed to detect environment")
+            sys.exit(1)
+        success = manager._run_validation_phase()
+    elif args.phase:
+        # Run specific phase (with detection first if needed)
+        if args.phase != 'detection':
+            if not manager._run_detection_phase():
+                print("Failed to detect environment")
+                sys.exit(1)
+        
+        phase_map = {
+            'detection': manager._run_detection_phase,
+            'validation': manager._run_validation_phase,
+            'git_setup': manager._run_git_setup_phase,
+            'mcp_setup': manager._run_mcp_setup_phase,
+            'zenos_setup': manager._run_zenos_setup_phase,
+            'integration': manager._run_integration_phase,
+            'verification': manager._run_verification_phase
+        }
+        success = phase_map[args.phase]()
+    else:
+        success = manager.run_setup()
+    
     sys.exit(0 if success else 1)
 
 if __name__ == '__main__':
