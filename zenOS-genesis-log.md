@@ -1,4 +1,4 @@
-# Improve termux repo for mobile integration
+WO# Improve termux repo for mobile integration
 _Exported on 9/17/2025 at 18:00:43 GMT+3 from Cursor (1.6.26)_
 
 ---
