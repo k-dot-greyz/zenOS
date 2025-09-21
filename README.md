@@ -40,34 +40,11 @@ iwr -useb https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.ps
 curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
 ```
 
-### Manual Installation (if you prefer)
+### Detailed Guides
 
-**📱 Mobile (Android/Termux)**
-```bash
-git clone https://github.com/kasparsgreizis/zenOS.git
-cd zenOS
-chmod +x install_termux.sh
-./install_termux.sh
-```
-📱 **[Full Mobile Guide](QUICKSTART_MOBILE.md)**
-
-**🖥️ Windows**
-```bash
-git clone https://github.com/kasparsgreizis/zenOS.git
-cd zenOS
-pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk
-python -m textblob.download_corpora
-```
-🖥️ **[Full Windows Guide](QUICKSTART_WINDOWS.md)**
-
-**🐧 Linux**
-```bash
-git clone https://github.com/kasparsgreizis/zenOS.git
-cd zenOS
-pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk
-python3 -m textblob.download_corpora
-```
-🐧 **[Full Linux Guide](QUICKSTART_LINUX.md)**
+📱 **[Full Mobile Guide](QUICKSTART_MOBILE.md)** - Complete Termux setup  
+🖥️ **[Full Windows Guide](QUICKSTART_WINDOWS.md)** - PowerShell installation  
+🐧 **[Full Linux Guide](QUICKSTART_LINUX.md)** - Terminal installation
 
 ### Basic Usage
 

@@ -17,33 +17,24 @@
 
 ---
 
-## Step 2: Download zenOS (1 minute)
+## Step 2: One-Command Install! ⚡ (1 minute)
 Open PowerShell and run:
 ```powershell
-# Go to your desktop (or wherever you want)
-cd ~/Desktop
-
-# Download zenOS
-git clone https://github.com/kasparsgreizis/zenOS.git
-
-# Enter the folder
-cd zenOS
+iwr -useb https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.ps1 | iex
 ```
+
+This will:
+- Auto-detect Windows
+- Download zenOS
+- Install Python packages
+- Download NLTK data
+- Install the sample plugin
+- Test everything
+- Set up your environment
 
 ---
 
-## Step 3: Install Dependencies (2 minutes)
-```powershell
-# Install Python packages
-pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk
-
-# Download NLTK data for plugins
-python -m textblob.download_corpora
-```
-
----
-
-## Step 4: Add Your API Key (1 minute)
+## Step 3: Add Your API Key (1 minute)
 ```powershell
 # Copy the example config
 copy env.example .env
@@ -59,7 +50,7 @@ In Notepad:
 
 ---
 
-## Step 5: Test zenOS! 🎉
+## Step 4: Test zenOS! 🎉
 ```powershell
 # Set up environment
 $env:PYTHONPATH = "$PWD"
@@ -79,7 +70,7 @@ python zen/cli.py plugins execute com.example.text-processor text.summarize "Hel
 
 ---
 
-## Step 6: Use AI Agents! 🤖
+## Step 5: Use AI Agents! 🤖
 ```powershell
 # Test the troubleshooter agent
 python zen/cli.py run troubleshooter "My computer is running slow"

@@ -17,38 +17,25 @@
 
 ---
 
-## Step 2: Download zenOS (1 minute)
+## Step 2: One-Command Install! ⚡ (1 minute)
 Open Termux and run:
 ```bash
-# Go to home directory
-cd ~
-
-# Download zenOS
-git clone https://github.com/kasparsgreizis/zenOS.git
-
-# Enter the folder
-cd zenOS
-```
-
----
-
-## Step 3: Install Everything (3 minutes)
-```bash
-# Run the Termux-optimized install script
-chmod +x install_termux.sh
-./install_termux.sh
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
 ```
 
 This will:
+- Auto-detect Termux
+- Download zenOS
 - Update Termux packages
 - Install Python and dependencies
 - Download NLTK data
 - Install the sample plugin
 - Test everything
+- Set up your environment
 
 ---
 
-## Step 4: Add Your API Key (1 minute)
+## Step 3: Add Your API Key (1 minute)
 ```bash
 # Copy the example config
 cp env.example .env
@@ -64,7 +51,7 @@ In the editor:
 
 ---
 
-## Step 5: Test zenOS! 🎉
+## Step 4: Test zenOS! 🎉
 ```bash
 # Set up environment
 export PYTHONPATH="$PWD"
@@ -81,7 +68,7 @@ python3 zen/cli.py plugins execute com.example.text-processor text.summarize "He
 
 ---
 
-## Step 6: Use AI Agents! 🤖
+## Step 5: Use AI Agents! 🤖
 ```bash
 # Test the troubleshooter agent
 python3 zen/cli.py run troubleshooter "My phone is running slow"
