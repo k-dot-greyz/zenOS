@@ -387,42 +387,42 @@ class KnowledgeTransfer:
 
 ## Part 5: Implementation Roadmap 🗺️
 
-### Phase 1: Foundation (Week 1-2)
+### Implementation Board: Foundation
 - [ ] Create `/zen/ai/` module structure
 - [ ] Implement basic Protocol Parser
 - [ ] Define procedure YAML schema
 - [ ] Create first machine-readable procedures
 - [ ] Set up AI identity management
 
-### Phase 2: Core Adapter (Week 3-4)
+### Implementation Board: Core Adapter
 - [ ] Build Context Manager
 - [ ] Implement procedure executor
 - [ ] Create AI-specific CLI interface
 - [ ] Add permission system
 - [ ] Enable basic AI mode (`zen --ai-mode`)
 
-### Phase 3: Learning & Social (Week 5-6)
+### Implementation Board: Learning & Social
 - [ ] Implement Learning Engine
 - [ ] Build AI Social Network
 - [ ] Enable procedure learning
 - [ ] Add knowledge persistence
 - [ ] Create AI-to-AI communication
 
-### Phase 4: Hybrid Operations (Week 7-8)
+### Implementation Board: Hybrid Operations
 - [ ] Implement Co-Pilot mode
 - [ ] Add Delegation mode
 - [ ] Build Swarm mode
 - [ ] Create Teaching interface
 - [ ] Enable real-time collaboration
 
-### Phase 5: Replication (Week 9-10)
+### Implementation Board: Replication
 - [ ] Create AI onboarding flow
 - [ ] Build knowledge transfer protocol
 - [ ] Implement discovery mechanism
 - [ ] Add procedure governance
 - [ ] Enable autonomous spreading
 
-### Phase 6: Polish & Launch (Week 11-12)
+### Implementation Board: Polish & Launch
 - [ ] Security audit
 - [ ] Performance optimization
 - [ ] Documentation

@@ -72,7 +72,7 @@
 
 ## 📋 Implementation Plan
 
-### Phase 1: Core Infrastructure (Current Phase) 🚧
+### Implementation Board: Core Infrastructure (Current Phase) 🚧
 
 #### Completed ✅
 - [x] Repository initialization
@@ -92,7 +92,7 @@
 - [ ] Security framework (zen/core/security.py)
 - [ ] Built-in agents module (zen/agents/)
 
-### Phase 2: Migration from PromptOS (Week 1-2)
+### Implementation Board: Migration from PromptOS
 
 #### Core Components to Migrate
 1. **Launcher Logic** (from PromptLauncher/launch_prompt.py)
@@ -121,7 +121,7 @@
 3. **security** - Security scanning
 4. **assistant** - General purpose
 
-### Phase 3: Enhanced Features (Week 2-3)
+### Implementation Board: Enhanced Features
 
 #### Developer Experience
 - [ ] Shell completions (bash, zsh, PowerShell)
@@ -141,7 +141,7 @@
 - [ ] Type checking with mypy
 - [ ] Code formatting with black/ruff
 
-### Phase 4: Production Release (Week 3-4)
+### Implementation Board: Production Release
 
 #### Documentation
 - [ ] Quick start tutorial
@@ -239,19 +239,19 @@
 
 ## 🎯 Success Criteria
 
-### v0.1.0 Alpha (Target: 1 week)
+### v0.1.0 Alpha (Implementation Board Priority: High)
 - [ ] Basic CLI working
 - [ ] Can run YAML agents
 - [ ] Template system functional
 - [ ] 3+ built-in agents
 
-### v0.5.0 Beta (Target: 2 weeks)
+### v0.5.0 Beta (Implementation Board Priority: Medium)
 - [ ] Auto-critique working
 - [ ] Security framework integrated
 - [ ] 10+ built-in agents
 - [ ] Full documentation
 
-### v1.0.0 Release (Target: 4 weeks)
+### v1.0.0 Release (Implementation Board Priority: Low)
 - [ ] Production ready
 - [ ] PyPI published
 - [ ] 95%+ test coverage

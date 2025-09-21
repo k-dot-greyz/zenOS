@@ -527,28 +527,28 @@ zen marketplace search "testing"
 
 ## 🎯 Implementation Priority
 
-### Week 1: Core CLI
+### Implementation Board: Core CLI
 1. Basic Docker setup
 2. OpenRouter integration
 3. Simple query/response
 4. Streaming output
 5. Basic context (files)
 
-### Week 2: Intelligence
+### Implementation Board: Intelligence
 1. Conversation history
 2. Project understanding
 3. Smart model routing
 4. Cost tracking
 5. Auto-critique
 
-### Week 3: Polish
+### Implementation Board: Polish
 1. Beautiful Rich UI
 2. Interactive mode
 3. Shell completions
 4. Error handling
 5. Progress indicators
 
-### Week 4: Launch
+### Implementation Board: Launch
 1. Documentation
 2. Install script
 3. Demo video
