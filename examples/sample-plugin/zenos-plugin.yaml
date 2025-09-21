@@ -1,0 +1,129 @@
+plugin:
+  # Basic Information
+  id: "com.example.text-processor"
+  name: "Text Processor"
+  version: "1.0.0"
+  author: "zenOS Team"
+  email: "team@zenos.ai"
+  description: "A sample text processing plugin for zenOS"
+  homepage: "https://github.com/zenos-ai/sample-plugin"
+  license: "MIT"
+  
+  # Plugin Classification
+  category: "text-processing"
+  subcategories: ["nlp", "transformation", "analysis"]
+  tags: ["ai", "mobile", "voice", "offline"]
+  
+  # Compatibility Matrix
+  compatibility:
+    min_zenos_version: "1.0.0"
+    max_zenos_version: "2.0.0"
+    platforms: ["android", "ios", "web"]
+    architectures: ["arm64", "x86_64"]
+    python_version: ">=3.8"
+  
+  # Plugin Capabilities
+  capabilities:
+    - "text_processing"
+    - "nlp"
+    - "transformation"
+    - "analysis"
+    - "mobile_optimized"
+  
+  # Entry Points
+  entry_points:
+    main: "src/main.py"
+    mobile: "src/mobile.py"
+    web: "src/web.py"
+    cli: "src/cli.py"
+  
+  # Dependencies
+  dependencies:
+    python:
+      - "nltk>=3.8"
+      - "textblob>=0.17.0"
+    system: []
+    zenos:
+      - "zenos-core>=1.0.0"
+  
+  # Configuration Schema
+  config_schema:
+    language:
+      type: "string"
+      default: "en"
+      description: "Language for text processing"
+    max_length:
+      type: "integer"
+      min: 100
+      max: 10000
+      default: 1000
+      description: "Maximum text length to process"
+    enable_sentiment:
+      type: "boolean"
+      default: true
+      description: "Enable sentiment analysis"
+  
+  # Mobile-Specific Optimizations
+  mobile:
+    battery_aware: true
+    offline_capable: true
+    voice_input: true
+    gesture_support:
+      - "swipe_left"
+      - "swipe_right"
+      - "long_press"
+    ui_components:
+      main_screen: "ui/main_screen.jsx"
+      settings: "ui/settings.jsx"
+    performance_profile: "balanced"
+  
+  # Security & Permissions
+  permissions:
+    - "file_system_read"
+    - "file_system_write"
+  
+  # Procedures
+  procedures:
+    - id: "text.process"
+      name: "Process Text"
+      description: "Process and analyze text content"
+      input_types: ["text", "file"]
+      output_types: ["text", "json"]
+      parameters:
+        operation:
+          type: "enum"
+          options: ["analyze", "summarize", "translate", "sentiment"]
+          default: "analyze"
+          description: "Type of processing to perform"
+        language:
+          type: "string"
+          default: "en"
+          description: "Target language for processing"
+    
+    - id: "text.summarize"
+      name: "Summarize Text"
+      description: "Create a summary of the input text"
+      input_types: ["text", "file"]
+      output_types: ["text", "markdown"]
+      parameters:
+        max_sentences:
+          type: "integer"
+          min: 1
+          max: 20
+          default: 5
+          description: "Maximum number of sentences in summary"
+        style:
+          type: "enum"
+          options: ["bullet", "paragraph", "outline"]
+          default: "bullet"
+    
+    - id: "text.sentiment"
+      name: "Sentiment Analysis"
+      description: "Analyze sentiment of text"
+      input_types: ["text", "file"]
+      output_types: ["json"]
+      parameters:
+        detailed:
+          type: "boolean"
+          default: false
+          description: "Include detailed sentiment breakdown"

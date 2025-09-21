@@ -102,35 +102,13 @@ class Launcher:
         if not self.current_agent:
             raise ValueError("No agent loaded")
         
-        # If agent is a simple one without AI, just execute it
-        if hasattr(self.current_agent, 'execute_func'):
+        # Check if agent has async execution method
+        if hasattr(self.current_agent, 'execute_async'):
+            return await self.current_agent.execute_async(prompt, variables)
+        elif hasattr(self.current_agent, 'execute'):
             return self.current_agent.execute(prompt, variables)
-        
-        # For AI-powered agents, use the provider
-        if not self.provider:
-            raise ValueError("No AI provider configured. Set OPENROUTER_API_KEY.")
-        
-        # Render the full prompt with agent template
-        rendered_prompt = self.current_agent.render_prompt(prompt, variables)
-        
-        # Get response from AI
-        response = ""
-        async with self.provider:
-            # Determine model based on agent requirements
-            model = variables.get("model", self.config.config.default_model)
-            
-            async for chunk in self.provider.complete(
-                rendered_prompt,
-                model=model,
-                temperature=self.config.config.temperature,
-                max_tokens=self.config.config.max_tokens,
-                stream=self.config.config.stream_responses
-            ):
-                response += chunk
-                if self.config.config.stream_responses:
-                    console.print(chunk, end="")
-        
-        return response
+        else:
+            raise ValueError(f"Agent {self.current_agent.manifest.name} has no execute method")
     
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """Synchronous wrapper for execute_async."""

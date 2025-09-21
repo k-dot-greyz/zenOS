@@ -2,7 +2,9 @@
 General-purpose assistant agent.
 """
 
+import asyncio
 from zen.core.agent import Agent, AgentManifest
+from zen.providers.openrouter import OpenRouterProvider
 
 
 class AssistantAgent(Agent):
@@ -28,9 +30,19 @@ Be conversational and engaging while maintaining professionalism."""
         )
         super().__init__(manifest)
     
-    def execute(self, prompt: str, variables: dict) -> str:
-        """Execute the assistant agent."""
+    async def execute_async(self, prompt: str, variables: dict) -> str:
+        """Execute the assistant agent asynchronously."""
         rendered_prompt = self.render_prompt(prompt, variables)
-        # For now, just return the rendered prompt
-        # In a real implementation, this would call the AI provider
-        return f"Assistant Agent Response:\n{rendered_prompt}"
+        
+        try:
+            async with OpenRouterProvider() as provider:
+                response = ""
+                async for chunk in provider.complete(rendered_prompt, stream=True):
+                    response += chunk
+                return response
+        except Exception as e:
+            return f"Error calling AI provider: {e}\n\nRendered prompt:\n{rendered_prompt}"
+    
+    def execute(self, prompt: str, variables: dict) -> str:
+        """Execute the assistant agent (sync wrapper)."""
+        return asyncio.run(self.execute_async(prompt, variables))
