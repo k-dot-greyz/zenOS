@@ -23,7 +23,24 @@
 
 ## 🚀 Quick Start
 
-### Choose Your Platform
+### One Command Installation! ⚡
+
+**📱 Mobile (Android/Termux)**
+```bash
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+```
+
+**🖥️ Windows (PowerShell)**
+```powershell
+iwr -useb https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.ps1 | iex
+```
+
+**🐧 Linux/macOS**
+```bash
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+```
+
+### Manual Installation (if you prefer)
 
 **📱 Mobile (Android/Termux)**
 ```bash
