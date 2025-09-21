@@ -60,19 +60,21 @@ class Agent(ABC):
         """Render the final prompt using templates and modules."""
         # Merge variables
         all_vars = {
-            **self.manifest.variables,
+            **(self.manifest.variables or {}),
             **variables,
             "user_prompt": prompt,
+            "prompt": prompt,  # Also add as 'prompt' for template compatibility
         }
         
         # Load and render modules
         rendered_modules = {}
-        for module_type, module_names in self.manifest.modules.items():
-            rendered_modules[module_type] = []
-            for module_name in module_names:
-                module_content = self.load_module(module_type, module_name)
-                rendered_content = self.template_engine.render(module_content, all_vars)
-                rendered_modules[module_type].append(rendered_content)
+        if self.manifest.modules:
+            for module_type, module_names in self.manifest.modules.items():
+                rendered_modules[module_type] = []
+                for module_name in module_names:
+                    module_content = self.load_module(module_type, module_name)
+                    rendered_content = self.template_engine.render(module_content, all_vars)
+                    rendered_modules[module_type].append(rendered_content)
         
         # Combine everything into final prompt
         final_vars = {
