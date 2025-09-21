@@ -1,218 +1,174 @@
-# 🧘 zenOS Quick Start for Linux/WSL
-## The "Linux Chad" Edition
+# 🧘 zenOS Quick Start for Linux
+## The "Just Make It Work" Guide
 
 ### What You Need
-- Linux/WSL with Docker installed
-- An OpenRouter API key
-- A terminal that doesn't suck (so... any Linux terminal)
+- Linux with Python 3.8+
+- An OpenRouter API key (we'll get this in Step 1)
+- That's it!
 
 ---
 
-## Step 0: Make Sure Docker Works (WSL only)
+## Step 1: Get Your AI Key (2 minutes)
+1. Go to https://openrouter.ai/keys
+2. Sign up (it's free to start)
+3. Click "Create Key"
+4. Copy the key that starts with `sk-or-v1-...`
+5. Keep this tab open, you'll need it in a second
+
+---
+
+## Step 2: Download zenOS (1 minute)
+Open terminal and run:
 ```bash
-# Check if Docker is running
-docker --version
+# Go to your home directory
+cd ~
 
-# If not, install it (Ubuntu/Debian)
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+# Download zenOS
+git clone https://github.com/kasparsgreizis/zenOS.git
 
-# Add yourself to docker group (no more sudo!)
-sudo usermod -aG docker $USER
-newgrp docker
+# Enter the folder
+cd zenOS
 ```
 
 ---
 
-## Step 1: Get Your AI Key (2 min)
+## Step 3: Install Dependencies (2 minutes)
 ```bash
-# Open browser from terminal like a boss
-xdg-open https://openrouter.ai/keys 2>/dev/null || echo "Go to https://openrouter.ai/keys"
-```
-1. Sign up (free $5 credit)
-2. Create a key
-3. Copy the `sk-or-v1-...` key
+# Install Python packages
+pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk
 
----
-
-## Step 2: One-Line Install (30 seconds)
-```bash
-# Clone and enter
-git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS
-
-# Setup your key (replace YOUR_KEY_HERE with your actual key)
-cp env.example .env && sed -i 's/sk-or-v1-your-api-key-here/YOUR_KEY_HERE/' .env
-
-# Or if you want to edit manually
-nano .env  # or vim if you're hardcore
+# Download NLTK data for plugins
+python3 -m textblob.download_corpora
 ```
 
 ---
 
-## Step 3: Launch (1 minute)
+## Step 4: Add Your API Key (1 minute)
 ```bash
-# Make script executable and run
-chmod +x start.sh
-./start.sh
-
-# Or just docker-compose directly
-docker-compose up -d
-```
-
----
-
-## Step 4: Enter the Zen Zone 🧘
-```bash
-# Jump straight into chat
-docker-compose exec zen-cli bash
-
-# Or even better - alias it!
-alias zen='docker-compose -f ~/zenOS/docker-compose.yml exec zen-cli bash'
-```
-
-Now you're chatting! No bullshit, just AI.
-
----
-
-## 🚀 Power User Setup (Optional)
-
-### Add to your `.bashrc` or `.zshrc`:
-```bash
-# zenOS aliases
-alias zen='cd ~/zenOS && docker-compose exec zen-cli bash'
-alias zen-up='cd ~/zenOS && docker-compose up -d'
-alias zen-down='cd ~/zenOS && docker-compose down'
-alias zen-logs='cd ~/zenOS && docker-compose logs -f zen-cli'
-alias zen-cost='cd ~/zenOS && docker-compose exec zen-cli python -c "print(\"Check /cost in chat\")"'
-
-# Quick model switcher
-zen-opus() {
-    cd ~/zenOS && docker-compose exec zen-cli bash -c "echo '/model opus' | python -m zen.cli chat"
-}
-```
-
-### Even Faster Setup Script:
-```bash
-# Save this as setup-zen.sh
-#!/bin/bash
-set -e
-
-echo "🧘 Setting up zenOS..."
-
-# Clone
-git clone https://github.com/kasparsgreizis/zenOS.git ~/zenOS
-cd ~/zenOS
-
-# Get API key
-echo "Enter your OpenRouter API key (sk-or-v1-...):"
-read -s API_KEY
-
-# Setup env
+# Copy the example config
 cp env.example .env
-sed -i "s/sk-or-v1-your-api-key-here/$API_KEY/" .env
 
-# Start
-docker-compose up -d
+# Edit it with your favorite editor
+nano .env
+```
 
-echo "✨ Ready! Run: docker-compose exec zen-cli bash"
+In the editor:
+1. Find the line: `OPENROUTER_API_KEY=sk-or-v1-your-api-key-here`
+2. Replace `sk-or-v1-your-api-key-here` with YOUR key from Step 1
+3. Save and exit (Ctrl+X, then Y, then Enter)
+
+---
+
+## Step 5: Test zenOS! 🎉
+```bash
+# Set up environment
+export PYTHONPATH="$PWD"
+
+# Test the system
+python3 zen/cli.py --help
+
+# Install a sample plugin
+python3 zen/cli.py plugins install ./examples/sample-plugin --local
+
+# List your plugins
+python3 zen/cli.py plugins list
+
+# Test a plugin
+python3 zen/cli.py plugins execute com.example.text-processor text.summarize "Hello from zenOS!"
 ```
 
 ---
 
-## 🎮 Inside Chat Commands
-
-| Command | What it Does | Cost |
-|---------|-------------|------|
-| `/model haiku` | Fast & cheap | $0.001/msg |
-| `/model sonnet` | Balanced (default) | $0.01/msg |
-| `/model opus` | Big brain mode | $0.05/msg |
-| `/context file.py` | Add file to convo | Free |
-| `/cost` | See damage to wallet | Free |
-| `/save` | Save conversation | Free |
-| `Ctrl+D` | GTFO | Free |
-
----
-
-## 🔥 WSL-Specific Tips
-
-### Docker Desktop Integration
-If using Docker Desktop on Windows with WSL2:
+## Step 6: Use AI Agents! 🤖
 ```bash
-# Check if Docker Desktop is integrated
-docker context ls
+# Test the troubleshooter agent
+python3 zen/cli.py run troubleshooter "My computer is running slow"
 
-# Should show "default" pointing to Docker Desktop
-```
+# Test the critic agent  
+python3 zen/cli.py run critic "Write a function that adds two numbers"
 
-### File Access from Windows
-```bash
-# Your zenOS is at:
-# Windows: \\wsl$\Ubuntu\home\YOUR_USER\zenOS
-# WSL: ~/zenOS
-
-# Open in Windows Explorer from WSL
-explorer.exe .
-```
-
-### Performance Boost
-```bash
-# Add to .wslconfig in Windows user folder
-[wsl2]
-memory=8GB
-processors=4
-swap=2GB
+# Test the assistant agent
+python3 zen/cli.py run assistant "What is the meaning of life?"
 ```
 
 ---
 
-## 🛠️ Troubleshooting
+## 🎮 Plugin Commands
 
-### "Cannot connect to Docker daemon"
 ```bash
-# Start Docker service
-sudo service docker start
+# List all plugins
+python3 zen/cli.py plugins list
 
-# Or if using Docker Desktop, make sure it's running on Windows
+# Install a plugin from GitHub
+python3 zen/cli.py plugins install https://github.com/username/plugin-repo
+
+# Install a plugin locally
+python3 zen/cli.py plugins install ./path/to/plugin --local
+
+# Execute a plugin procedure
+python3 zen/cli.py plugins execute plugin-id procedure-id "input data"
+
+# Test a plugin
+python3 zen/cli.py plugins test plugin-id
+
+# Show plugin stats
+python3 zen/cli.py plugins stats
 ```
 
-### "Permission denied"
+---
+
+## 🤖 AI Agent Commands
+
 ```bash
-# Fix docker permissions
-sudo usermod -aG docker $USER
-newgrp docker
+# Use the troubleshooter agent
+python3 zen/cli.py run troubleshooter "Your problem here"
+
+# Use the critic agent
+python3 zen/cli.py run critic "Your prompt here"
+
+# Use the assistant agent
+python3 zen/cli.py run assistant "Your question here"
 ```
 
-### "Port already in use"
+---
+
+## 💰 About Costs
+
+- **Haiku** (fast): ~$0.001 per message
+- **Sonnet** (default): ~$0.01 per message
+- **Opus** (powerful): ~$0.05 per message
+
+You get $5 free credit when you sign up to OpenRouter!
+
+---
+
+## 🔄 To Start Again Later
 ```bash
-# Kill whatever's using the ports
-docker-compose down
-docker system prune -a  # Nuclear option
+cd ~/zenOS
+export PYTHONPATH="$PWD"
+python3 zen/cli.py --help
 ```
+
+---
+
+## 🆘 If Something Goes Wrong
+
+### "Module not found" errors
+→ Make sure you set `export PYTHONPATH="$PWD"` in your terminal
+
+### "API key error"
+→ Check your .env file has the right key
+
+### "No response from AI"
+→ Check you have internet and your API key is valid
+
+### "Plugin installation failed"
+→ Make sure you have all dependencies installed: `pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk`
 
 ---
 
 ## 🎯 That's It!
 
-You now have a LOCAL AI that:
-- Runs in Docker (no Python dependency hell)
-- Uses ANY model via OpenRouter
-- Costs pennies instead of $20/month
-- Works offline (after first pull)
-- Has a beautiful terminal UI
+You now have a powerful AI plugin system with working agents! No Docker needed, just Python and your terminal. 🧘
 
-**Linux/WSL Master Race!** 🐧✨
-
----
-
-## Bonus: Make it Even Better
-
-```bash
-# Install rich terminal stuff
-pip install rich prompt-toolkit
-
-# Get better terminal (if on WSL)
-sudo apt install zsh oh-my-zsh terminator
-
-# Peak aesthetics
-echo "Welcome to zenOS 🧘" | cowsay | lolcat
-```
+**Pro tip**: Try installing plugins from GitHub repos - just add a `zenos-plugin.yaml` file and boom, instant zenOS integration!

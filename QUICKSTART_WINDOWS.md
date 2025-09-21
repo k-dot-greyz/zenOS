@@ -2,7 +2,7 @@
 ## The "Just Make It Work" Guide
 
 ### What You Need
-- Windows with Docker Desktop installed
+- Windows 10/11 with Python 3.8+
 - An OpenRouter API key (we'll get this in Step 1)
 - That's it!
 
@@ -32,7 +32,18 @@ cd zenOS
 
 ---
 
-## Step 3: Add Your API Key (1 minute)
+## Step 3: Install Dependencies (2 minutes)
+```powershell
+# Install Python packages
+pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk
+
+# Download NLTK data for plugins
+python -m textblob.download_corpora
+```
+
+---
+
+## Step 4: Add Your API Key (1 minute)
 ```powershell
 # Copy the example config
 copy env.example .env
@@ -48,38 +59,76 @@ In Notepad:
 
 ---
 
-## Step 4: Start zenOS (2 minutes)
-Back in PowerShell:
+## Step 5: Test zenOS! 🎉
 ```powershell
-# Start everything
-.\start.ps1
-```
+# Set up environment
+$env:PYTHONPATH = "$PWD"
 
-Wait for it to say `✨ zenOS is ready!`
+# Test the system
+python zen/cli.py --help
+
+# Install a sample plugin
+python zen/cli.py plugins install ./examples/sample-plugin --local
+
+# List your plugins
+python zen/cli.py plugins list
+
+# Test a plugin
+python zen/cli.py plugins execute com.example.text-processor text.summarize "Hello from zenOS!"
+```
 
 ---
 
-## Step 5: CHAT! 🎉
+## Step 6: Use AI Agents! 🤖
 ```powershell
-# Enter the chat
-docker-compose exec zen-cli bash
-```
+# Test the troubleshooter agent
+python zen/cli.py run troubleshooter "My computer is running slow"
 
-You're now in chat mode! Just start typing:
-- "What is zenOS?"
-- "Explain quantum computing like I'm 5"
-- "Write me a haiku about coding"
+# Test the critic agent  
+python zen/cli.py run critic "Write a function that adds two numbers"
+
+# Test the assistant agent
+python zen/cli.py run assistant "What is the meaning of life?"
+```
 
 ---
 
-## 🎮 Quick Commands Inside Chat
+## 🎮 Plugin Commands
 
-- `/help` - See all commands
-- `/model haiku` - Use fast/cheap model
-- `/model opus` - Use powerful model  
-- `/cost` - Check how much you've spent
-- `/exit` - Leave chat
-- `Ctrl+D` - Quick exit
+```powershell
+# List all plugins
+python zen/cli.py plugins list
+
+# Install a plugin from GitHub
+python zen/cli.py plugins install https://github.com/username/plugin-repo
+
+# Install a plugin locally
+python zen/cli.py plugins install ./path/to/plugin --local
+
+# Execute a plugin procedure
+python zen/cli.py plugins execute plugin-id procedure-id "input data"
+
+# Test a plugin
+python zen/cli.py plugins test plugin-id
+
+# Show plugin stats
+python zen/cli.py plugins stats
+```
+
+---
+
+## 🤖 AI Agent Commands
+
+```powershell
+# Use the troubleshooter agent
+python zen/cli.py run troubleshooter "Your problem here"
+
+# Use the critic agent
+python zen/cli.py run critic "Your prompt here"
+
+# Use the assistant agent
+python zen/cli.py run assistant "Your question here"
+```
 
 ---
 
@@ -93,30 +142,19 @@ You get $5 free credit when you sign up to OpenRouter!
 
 ---
 
-## 🛑 To Stop zenOS
-Exit the chat first (Ctrl+D), then:
-```powershell
-docker-compose down
-```
-
----
-
 ## 🔄 To Start Again Later
 ```powershell
 cd ~/Desktop/zenOS
-docker-compose up -d
-docker-compose exec zen-cli bash
+$env:PYTHONPATH = "$PWD"
+python zen/cli.py --help
 ```
 
 ---
 
 ## 🆘 If Something Goes Wrong
 
-### "Docker not running"
-→ Open Docker Desktop app first
-
-### "Can't find docker-compose"
-→ Docker Desktop should have installed it. Try restarting PowerShell.
+### "Module not found" errors
+→ Make sure you set `$env:PYTHONPATH = "$PWD"` in PowerShell
 
 ### "API key error"
 → Check your .env file has the right key
@@ -124,10 +162,13 @@ docker-compose exec zen-cli bash
 ### "No response from AI"
 → Check you have internet and your API key is valid
 
+### "Plugin installation failed"
+→ Make sure you have all dependencies installed: `pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk`
+
 ---
 
 ## 🎯 That's It!
 
-You now have a powerful AI assistant in your terminal. No cloud subscriptions, no web browser needed. Just you, your terminal, and zen. 🧘
+You now have a powerful AI plugin system with working agents! No Docker needed, just Python and your terminal. 🧘
 
-**Pro tip**: Once you're comfortable, try `/model opus` for complex tasks - it's like switching from a Honda to a Ferrari!
+**Pro tip**: Try installing plugins from GitHub repos - just add a `zenos-plugin.yaml` file and boom, instant zenOS integration!

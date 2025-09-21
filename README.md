@@ -23,25 +23,34 @@
 
 ## 🚀 Quick Start
 
-### Installation
+### Choose Your Platform
 
+**📱 Mobile (Android/Termux)**
 ```bash
-# Mobile (Termux) - One-line installer 📱
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
-
-# Desktop - One-line installer (coming soon)
-curl -sSL https://get.zenos.ai | bash
-
-# Or via pip (coming soon)
-pip install zenos
-
-# Or from source
 git clone https://github.com/kasparsgreizis/zenOS.git
 cd zenOS
-pip install -e .
+chmod +x install_termux.sh
+./install_termux.sh
 ```
+📱 **[Full Mobile Guide](QUICKSTART_MOBILE.md)**
 
-📱 **[Full Mobile Setup Guide](QUICKSTART_TERMUX.md)** | 🖥️ **[Desktop Guide](QUICKSTART_WINDOWS.md)**
+**🖥️ Windows**
+```bash
+git clone https://github.com/kasparsgreizis/zenOS.git
+cd zenOS
+pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk
+python -m textblob.download_corpora
+```
+🖥️ **[Full Windows Guide](QUICKSTART_WINDOWS.md)**
+
+**🐧 Linux**
+```bash
+git clone https://github.com/kasparsgreizis/zenOS.git
+cd zenOS
+pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk
+python3 -m textblob.download_corpora
+```
+🐧 **[Full Linux Guide](QUICKSTART_LINUX.md)**
 
 ### Basic Usage
 
