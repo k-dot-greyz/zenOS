@@ -66,10 +66,15 @@ curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh
 
 ### Detailed Guides
 
+🚀 **[Dev Environment Setup](docs/guides/DEV_ENVIRONMENT_SETUP.md)** - **Your anchor point for all dev setups**  
 📱 **[Full Mobile Guide](docs/guides/QUICKSTART_MOBILE.md)** - Complete Termux setup  
 🖥️ **[Full Windows Guide](docs/guides/QUICKSTART_WINDOWS.md)** - PowerShell installation  
 🐧 **[Full Linux Guide](docs/guides/QUICKSTART_LINUX.md)** - Terminal installation  
 🚀 **[Setup Guide](docs/guides/SETUP_GUIDE.md)** - Unified setup system documentation
+
+### Quick Reference
+
+📋 **[Dev Setup Cheat Sheet](DEV_SETUP_CHEAT_SHEET.md)** - One-page reference for all platforms
 
 ### Basic Usage
 
