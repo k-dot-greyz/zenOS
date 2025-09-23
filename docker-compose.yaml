@@ -1,0 +1,48 @@
+# docker-compose.yml for zenOS TEST on Windows
+version: '3.8'
+services:
+
+  # -- The Central Brain --
+  nemotron_llm:
+    image: ollama/ollama
+    container_name: zen_brain_test
+    restart: unless-stopped
+    volumes:
+      - ./ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # -- The Nervous System (MCP) --
+  mcp_server:
+    build:
+      context: ./prompt_os/mcp_config
+      dockerfile: Dockerfile  # We'll create this next
+    container_name: zen_mcp_test
+    restart: unless-stopped
+    volumes:
+      - ./prompt_os:/app/prompt_os # Mount the repo code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - nemotron_llm
+
+  # -- Management UI --
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: zen_ui_manager_test
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  portainer_data:

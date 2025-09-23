@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../Prompt_OS"
+		},
+		{
+			"path": "../Operation-Atlas"
 		}
 	],
 	"settings": {
