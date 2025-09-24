@@ -1,121 +1,125 @@
-# 🧘 zenOS - The Zen of AI Workflow Orchestration
+# 🧠 Neuro-Spicy DevKit
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+<p align="center">  
+  <!-- Optional: ASCII Art or a simple banner image -->  
+  <pre>🧠 Neuro-Spicy DevKit
+═══════════════════════════════════════
+Lean • Mean • Accessible • Cross-Platform</pre>  
+</p>
 
-**zenOS** is a powerful, modular AI agent orchestration framework that brings zen-like simplicity to complex AI workflows.
+<p align="center">  
+  <!-- Badges: License, Platform, etc. -->  
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">  
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg" alt="Platform">  
+  <img src="https://img.shields.io/badge/Status-Ready%20for%20Release-green.svg" alt="Status">
+</p>
+
+> **A lean, mean development environment setup tool designed for ADHD/autism-friendly workflows.**
+
+<!--   
+  GIF DEMO: A short, silent GIF showing the init script and health check.  
+  This is the most powerful part of the README.  
+-->  
+<!-- ![Demo GIF](link-to-your-demo.gif) -->
 
 ## ✨ Features
 
-- 🚀 **Simple CLI**: One command to rule them all - `zen`
-- 📱 **Mobile-First**: Native Termux support with voice & gesture integration
-- 🌉 **Bridge System**: Seamless airi-zenOS integration for mobile AI
-- 🎤 **Voice Interface**: Voice input/output with Termux API
-- 🔋 **Offline Mode**: Local AI processing with Ollama integration
-- 🤖 **Modular Agents**: Composable, reusable AI agents
-- 🔒 **Security First**: Built-in defense against prompt injection
-- 🎯 **Auto-Critique**: Every prompt automatically upgraded for better results
-- 🔋 **Battery-Aware**: Automatic eco mode for mobile devices
-- 📦 **Zero Config**: Works out of the box, extensible when needed
-- 🌈 **Beautiful Output**: Rich terminal interface with progress indicators
-- 💾 **Smart Caching**: Offline access to previous AI responses
+- 🚀 **One-Command Setup**: Interactive initialization with guided prompts
+- 🔧 **Cross-Platform**: Windows (PowerShell) and Linux/macOS (Bash) support
+- 📦 **Portable**: Easy to clone, customize, and share
+- 🎯 **Lean & Mean**: Focused on essential tools only
+- 🔒 **Secure**: MIT licensed with no personal data collection
+- 🌈 **Customizable**: JSON-based profile system for different workflows
+- 📚 **Well-Documented**: Clear guides for beginners and advanced users
 
 ## 🚀 Quick Start
+
+### Prerequisites
+
+- **Windows**: PowerShell 5.1+ or PowerShell Core
+- **Linux/macOS**: Bash shell
+- **Git**: For version control
+- **Node.js**: For MCP servers (optional)
 
 ### Installation
 
 ```bash
-# Mobile (Termux) - One-line installer 📱
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+# Clone the repository
+git clone https://github.com/yourusername/neuro-spicy-devkit.git
+cd neuro-spicy-devkit
 
-# Desktop - One-line installer (coming soon)
-curl -sSL https://get.zenos.ai | bash
+# Run the interactive setup
+# Windows
+.\init.ps1
 
-# Or via pip (coming soon)
-pip install zenos
-
-# Or from source
-git clone https://github.com/kasparsgreizis/zenOS.git
-cd zenOS
-pip install -e .
+# Linux/macOS
+./init.sh
 ```
 
-📱 **[Full Mobile Setup Guide](QUICKSTART_TERMUX.md)** | 🖥️ **[Desktop Guide](QUICKSTART_WINDOWS.md)**
+The interactive setup will guide you through:
+1. **Git Configuration** - Set up your name and email
+2. **GitHub Token** - Configure GitHub authentication
+3. **Cursor Setup** - Configure AI-powered development
+4. **Health Check** - Verify all tools are working
 
-### Basic Usage
-
-```bash
-# Run an agent
-zen troubleshoot "fix my git commit issue"
-
-# Mobile voice input (Termux)
-zen-voice "explain quantum computing"
-
-# Mobile clipboard input
-zen-clip  # Processes clipboard content
-
-# airi integration (mobile)
-zen airi "enhanced mobile processing"
-
-# Offline mode (local AI)
-zen offline "work without internet"
-
-# Bridge system (airi + zenOS)
-zen interactive  # Full bridge mode
-
-# Review a prompt
-zen critic "analyze this prompt for improvements"
-
-# List available agents
-zen --list
-
-# Create a new agent
-zen --create my-agent
-
-# Disable auto-critique for speed
-zen --no-critique assistant "quick question"
-
-# Battery-aware mode (auto on mobile)
-zen --eco "run in low power mode"
-```
-
-## 🏗️ Architecture
-
-zenOS is built on a modular architecture that separates concerns:
+## 📁 Project Structure
 
 ```
-zenOS/
-├── zen/                    # Core package
-│   ├── cli.py             # CLI interface
-│   ├── core/              # Core functionality
-│   ├── agents/            # Built-in agents
-│   └── utils/             # Utilities
-├── agents/                # User-defined agents
-├── modules/               # Modular components
-│   ├── roles/            # Who you are
-│   ├── tasks/            # What you do
-│   ├── contexts/         # Where/why you operate
-│   └── constraints/      # Rules and limits
-└── configs/              # Configuration
+neuro-spicy-devkit/
+├── init.ps1                     # Windows quick launcher
+├── init.sh                      # Linux/macOS quick launcher
+├── scripts/                     # Core setup scripts
+│   ├── neuro-spicy-init.ps1     # Windows interactive setup
+│   ├── neuro-spicy-init.sh     # Linux/macOS interactive setup
+│   ├── health-check-core.ps1   # Windows health check
+│   ├── health-check-core.sh    # Linux/macOS health check
+│   └── ...
+├── docs/                        # Documentation
+│   ├── CORE_FOCUS_PLAN.md      # Core philosophy
+│   ├── AESTHETICS_GUIDE.md     # Style guide and visual standards
+│   ├── QUICK_REFERENCE.md      # Essential info for contributors
+│   ├── BASH_LINUX_DEFAULT.md   # Bash/Linux guide
+│   └── BEGINNER_JOURNEY.md      # Beginner's guide
+├── portable-dev-env/            # Portable development environment
+│   ├── cursor/                  # Cursor configuration
+│   ├── vscode/                  # VSCode configuration
+│   ├── profiles/                # Profile templates
+│   └── docs/                    # Usage documentation
+└── LICENSE                      # MIT License
 ```
 
-## 🤖 Built-in Agents
+## 🎯 Core Philosophy
 
-- **troubleshooter**: System diagnostics and automated fixes
-- **critic**: Prompt analysis and improvement
-- **security**: Security analysis and threat detection
-- **assistant**: General-purpose AI assistant
-- More coming soon...
+The Neuro-Spicy DevKit follows these principles:
+
+1. **Simplicity First**: Minimal setup, maximum productivity
+2. **Portability**: Easy to share and customize
+3. **Accessibility**: ADHD/autism-friendly workflows
+4. **Cross-Platform**: Works everywhere
+5. **Open Source**: MIT licensed, community-driven
 
 ## 📚 Documentation
 
-- [Quick Start Guide](QUICKSTART.md)
-- [Mobile Setup (Termux)](QUICKSTART_TERMUX.md)
-- [airi Integration](docs/AIRI_INTEGRATION.md)
-- [Mobile UI Framework](MOBILE_UI_FRAMEWORK.md)
-- [Plugin System](PLUGIN_SYSTEM_SPECIFICATION.md)
-- [AI Integration Blueprint](AI_INTEGRATION_BLUEPRINT.md)
+- **[Core Focus Plan](docs/CORE_FOCUS_PLAN.md)** - Understanding the philosophy
+- **[Aesthetics Guide](docs/AESTHETICS_GUIDE.md)** - Style guide and visual standards
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Essential info for contributors
+- **[Bash/Linux Default](docs/BASH_LINUX_DEFAULT.md)** - Linux/macOS setup guide
+- **[Beginner's Journey](docs/BEGINNER_JOURNEY.md)** - Step-by-step guide for new users
+- **[Usage Guide](portable-dev-env/docs/USAGE_GUIDE.md)** - Advanced usage patterns
+
+## 🔧 Customization
+
+The devkit uses a profile-based system for customization:
+
+```json
+{
+  "name": "frontend-developer",
+  "description": "Frontend development profile",
+  "tools": ["node", "npm", "git"],
+  "mcp_servers": ["docker", "github"],
+  "shell_config": "bash"
+}
+```
 
 ## 🤝 Contributing
 
@@ -123,12 +127,12 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📄 License
 
-zenOS is MIT licensed. See [LICENSE](LICENSE) for details.
+Neuro-Spicy DevKit is MIT licensed. See [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-zenOS is the evolution of PromptOS, rebuilt from the ground up with a focus on simplicity, security, and developer experience.
+Built with ❤️ for the neurodivergent developer community.
 
 ---
 
-**"The path to AI enlightenment begins with a single command: `zen`"** 🧘
+**"Code with confidence, develop with purpose"** 🧠✨
