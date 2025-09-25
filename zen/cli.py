@@ -24,11 +24,21 @@ from zen.core.launcher import Launcher
 from zen.core.agent import AgentRegistry
 from zen.utils.config import Config
 from zen import __version__
+from zen.cli_plugins import plugins
+from zen.inbox import receive
 
 console = Console()
 
 
-@click.command()
+@click.group()
+@click.option("--version", is_flag=True, help="Show version")
+def cli(version: bool):
+    """🧘 zenOS - The Zen of AI Workflow Orchestration"""
+    if version:
+        console.print(f"zenOS v{__version__}")
+        return
+
+@cli.command()
 @click.argument("agent", required=False)
 @click.argument("prompt", required=False)
 @click.option("--list", "list_agents", is_flag=True, help="List all available agents")
@@ -37,12 +47,11 @@ console = Console()
 @click.option("--no-critique", is_flag=True, help="Disable auto-critique")
 @click.option("--upgrade-only", is_flag=True, help="Only upgrade the prompt, don't execute")
 @click.option("--debug", is_flag=True, help="Enable debug mode")
-@click.option("--version", is_flag=True, help="Show version")
 @click.option("--chat", is_flag=True, help="Start interactive chat mode")
 @click.option("--offline", is_flag=True, help="Force offline mode with local models")
 @click.option("--model", "-m", help="Specify model to use")
 @click.option("--eco", is_flag=True, help="Battery-saving eco mode (mobile)")
-def main(
+def run(
     agent: Optional[str],
     prompt: Optional[str],
     list_agents: bool,
@@ -286,5 +295,39 @@ def run_agent(
         sys.exit(1)
 
 
+@cli.command()
+@click.option('--unattended', is_flag=True, help='Run in unattended mode')
+@click.option('--validate-only', is_flag=True, help='Only validate environment')
+@click.option('--phase', type=click.Choice(['detection', 'validation', 'git_setup', 'mcp_setup', 'zenos_setup', 'integration', 'verification']), help='Start from specific phase')
+def setup(unattended, validate_only, phase):
+    """Setup zenOS development environment"""
+    from zen.setup.unified_setup import UnifiedSetupManager
+    
+    manager = UnifiedSetupManager(unattended=unattended)
+    
+    if validate_only:
+        success = manager._run_validation_phase()
+    elif phase:
+        # Start from specific phase
+        phase_map = {
+            'detection': manager._run_detection_phase,
+            'validation': manager._run_validation_phase,
+            'git_setup': manager._run_git_setup_phase,
+            'mcp_setup': manager._run_mcp_setup_phase,
+            'zenos_setup': manager._run_zenos_setup_phase,
+            'integration': manager._run_integration_phase,
+            'verification': manager._run_verification_phase
+        }
+        success = phase_map[phase]()
+    else:
+        success = manager.run_setup()
+    
+    if not success:
+        sys.exit(1)
+
+# Add plugin commands to CLI
+cli.add_command(plugins)
+cli.add_command(receive)
+
 if __name__ == "__main__":
-    main()
+    cli()

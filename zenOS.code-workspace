@@ -13,10 +13,14 @@
 			"path": "../Prompt_OS"
 		},
 		{
+<<<<<<< HEAD
 			"path": "../Operation-Atlas"
 		},
 		{
 			"path": "../neuro-spicy-devkit"
+=======
+			"path": "../mcp-config"
+>>>>>>> feature/add-donation-template
 		}
 	],
 	"settings": {

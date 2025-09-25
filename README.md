@@ -34,6 +34,7 @@ Lean • Mean • Accessible • Cross-Platform</pre>
 
 ## 🚀 Quick Start
 
+<<<<<<< HEAD
 ### Prerequisites
 
 - **Windows**: PowerShell 5.1+ or PowerShell Core
@@ -61,6 +62,60 @@ The interactive setup will guide you through:
 2. **GitHub Token** - Configure GitHub authentication
 3. **Cursor Setup** - Configure AI-powered development
 4. **Health Check** - Verify all tools are working
+=======
+### **One-Command Setup (All Platforms)** ⚡
+
+```bash
+# Clone and setup in one command - works everywhere!
+git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py
+```
+
+### **Platform-Specific One-Liners**
+
+**🖥️ Windows (PowerShell)**
+```powershell
+git clone https://github.com/kasparsgreizis/zenOS.git; cd zenOS; python setup.py
+```
+
+**🐧 Linux/macOS**
+```bash
+git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py
+```
+
+**📱 Mobile (Termux)**
+```bash
+git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py
+```
+
+### **Legacy Installers (Still Available)**
+
+**📱 Mobile (Android/Termux)**
+```bash
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+```
+
+**🖥️ Windows (PowerShell)**
+```powershell
+iwr -useb https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.ps1 | iex
+```
+
+**🐧 Linux/macOS**
+```bash
+curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+```
+
+### Detailed Guides
+
+🚀 **[Dev Environment Setup](docs/guides/DEV_ENVIRONMENT_SETUP.md)** - **Your anchor point for all dev setups**  
+📱 **[Full Mobile Guide](docs/guides/QUICKSTART_MOBILE.md)** - Complete Termux setup  
+🖥️ **[Full Windows Guide](docs/guides/QUICKSTART_WINDOWS.md)** - PowerShell installation  
+🐧 **[Full Linux Guide](docs/guides/QUICKSTART_LINUX.md)** - Terminal installation  
+🚀 **[Setup Guide](docs/guides/SETUP_GUIDE.md)** - Unified setup system documentation
+
+### Quick Reference
+
+📋 **[Dev Setup Cheat Sheet](DEV_SETUP_CHEAT_SHEET.md)** - One-page reference for all platforms
+>>>>>>> feature/add-donation-template
 
 ## 📁 Project Structure
 
@@ -100,6 +155,7 @@ The Neuro-Spicy DevKit follows these principles:
 
 ## 📚 Documentation
 
+<<<<<<< HEAD
 - **[Core Focus Plan](docs/CORE_FOCUS_PLAN.md)** - Understanding the philosophy
 - **[Aesthetics Guide](docs/AESTHETICS_GUIDE.md)** - Style guide and visual standards
 - **[Quick Reference](docs/QUICK_REFERENCE.md)** - Essential info for contributors
@@ -120,6 +176,15 @@ The devkit uses a profile-based system for customization:
   "shell_config": "bash"
 }
 ```
+=======
+- [Quick Start Guide](docs/guides/QUICKSTART.md)
+- [Mobile Setup (Termux)](docs/guides/QUICKSTART_MOBILE.md)
+- [Windows Setup](docs/guides/QUICKSTART_WINDOWS.md)
+- [Linux Setup](docs/guides/QUICKSTART_LINUX.md)
+- [AI Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)
+- [Plugin System](docs/planning/PLUGIN_SYSTEM_SPECIFICATION.md)
+- [Mobile UI Framework](docs/planning/MOBILE_UI_FRAMEWORK.md)
+>>>>>>> feature/add-donation-template
 
 ## 🤝 Contributing
 
