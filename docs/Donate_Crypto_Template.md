@@ -12,7 +12,14 @@ Support this project and neuro-spicy-devkit development:
     - **ADA:** `your_ADA_address`
     - **POL (Polygon):** `your_POL_address`
     - **AVAX (Avalanche):** `your_AVAX_address`
-    - *(Add more chains as needed)*
+    - **LTC (Litecoin):** `your_LTC_address`
+    - **NEAR:** `your_NEAR_address`
+    - **XRP:** `your_XRP_address`
+    - **SUI:** `your_SUI_address`
+    - **KSM (Kusama):** `your_KSM_address`
+    - **ICP (Internet Computer):** `your_ICP_address`
+    - **APT (Aptos):** `your_APT_address`
+    - **ALGO (Algorand):** `your_ALGO_address`
 
 **Donor Tips:**
 - Send only to listed addresses (no DM for details needed).
