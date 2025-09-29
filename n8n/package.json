@@ -1,0 +1,60 @@
+{
+  "name": "zenOS-n8n-integration",
+  "version": "1.0.0",
+  "description": "n8n workflow for zenOS AI Post Template Selector - Beautiful web interface for social media content automation",
+  "main": "zenOS_template_selector.json",
+  "scripts": {
+    "setup": "./setup.sh",
+    "test": "echo \"No tests specified yet. See README.md for manual testing.\"",
+    "validate": "node -e \"console.log('Validating workflow JSON...'); JSON.parse(require('fs').readFileSync('zenOS_template_selector.json', 'utf8')); console.log('✅ Workflow JSON is valid!');\""
+  },
+  "keywords": [
+    "zenOS",
+    "n8n",
+    "automation",
+    "templates",
+    "social-media",
+    "ai",
+    "workflow",
+    "content-creation",
+    "productivity",
+    "clipboard"
+  ],
+  "author": {
+    "name": "k.greyZ",
+    "email": "kaspars.greizis@gmail.com",
+    "url": "https://github.com/k-dot-greyz"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k-dot-greyz/zenOS.git",
+    "directory": "n8n"
+  },
+  "homepage": "https://github.com/k-dot-greyz/zenOS/tree/main/n8n",
+  "bugs": {
+    "url": "https://github.com/k-dot-greyz/zenOS/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "n8n": {
+    "workflow": "zenOS_template_selector.json",
+    "webhook": "/template-selector",
+    "description": "AI Post Template Selector with beautiful web UI"
+  },
+  "zenOS": {
+    "module": "n8n-integration",
+    "version": "1.0.0",
+    "templates": "../ai_post_templates.yaml",
+    "philosophy": "where productivity meets personality"
+  }
+}
