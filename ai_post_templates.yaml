@@ -1,0 +1,21 @@
+ai_post_templates:
+  engineers_log:
+    title: Engineer's Log
+    vibe: Classic Humble Brag
+    template: 'Just tinkered with some automated agents for objective daily briefings.
+      The first report on my project landed: ''Exceptional productivity and technical
+      sophistication.'' I guess data-driven feedback loops really do tell the story.
+      Fun experiment. (Attach screenshot)'
+  alchemists_field_notes:
+    title: Alchemist's Field Notes
+    vibe: Philosophical Flex
+    template: Exploring the idea that our systems reflect our inner state, I ran a
+      raw analysis on my own work. The agent surfaced highlights like 'neurodivergent-friendly
+      design' and a 'joyful, comprehensive nature.' Fascinating when machines echo
+      the philosophy woven into code. (Attach screenshot)
+  overlords_decree:
+    title: Overlord's Decree
+    vibe: Pure, Unfiltered Chaos
+    template: 'Ran a diagnostic on my systems. The output was inevitable: ''Keep up
+      the excellent work.'' Always satisfying when the creation recognizes the creator.
+      (Attach screenshot)'
