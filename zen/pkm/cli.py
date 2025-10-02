@@ -206,7 +206,7 @@ def stats(config: Optional[str]):
     pkm_config = PKMConfig.load(config_path)
     storage = PKMStorage(pkm_config)
     
-    stats = storage.get_storage_stats()
+    stats = storage.get_statistics()
     conversations = storage.list_conversations()
     knowledge_entries = storage.list_knowledge_entries()
     

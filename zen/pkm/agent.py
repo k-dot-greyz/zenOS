@@ -342,7 +342,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     
     async def _handle_stats(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """Handle statistics display."""
-        stats = self.storage.get_storage_stats()
+        stats = self.storage.get_statistics()
         
         # Get additional stats
         conversations = self.storage.list_conversations()

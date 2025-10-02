@@ -8,7 +8,7 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Dict, Any, Iterator
-from dataclasses import asyncio
+import asyncio
 
 from .config import PKMConfig
 from .models import Conversation, KnowledgeEntry, Message, MessageRole
@@ -268,28 +268,6 @@ class PKMStorage:
         
         return cleaned_count
     
-    def get_storage_stats(self) -> Dict[str, Any]:
-        """Get storage statistics."""
-        conversations = self.list_conversations()
-        knowledge_entries = self.list_knowledge_entries()
-        
-        total_size = 0
-        for file_path in self.conversations_dir.glob("*.json"):
-            total_size += file_path.stat().st_size
-        
-        for file_path in self.knowledge_base_dir.glob("*.json"):
-            total_size += file_path.stat().st_size
-        
-        return {
-            "conversations_count": len(conversations),
-            "knowledge_entries_count": len(knowledge_entries),
-            "total_size_bytes": total_size,
-            "total_size_mb": round(total_size / (1024 * 1024), 2),
-            "conversations_dir": str(self.conversations_dir),
-            "knowledge_base_dir": str(self.knowledge_base_dir),
-            "exports_dir": str(self.exports_dir),
-        }
-    
     def _conversation_to_markdown(self, conversation: Conversation) -> str:
         """Convert conversation to Markdown format."""
         lines = [
@@ -343,3 +321,24 @@ class PKMStorage:
             ])
         
         return "\n".join(lines)
+    
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get storage statistics."""
+        conversations = self.list_conversations()
+        
+        total_messages = sum(len(conv.messages) for conv in conversations)
+        total_size = sum(conv.file_size or 0 for conv in conversations)
+        
+        status_counts = {}
+        for conv in conversations:
+            status = conv.status.value
+            status_counts[status] = status_counts.get(status, 0) + 1
+        
+        return {
+            "total_conversations": len(conversations),
+            "total_messages": total_messages,
+            "total_size_bytes": total_size,
+            "total_size_mb": round(total_size / (1024 * 1024), 2),
+            "status_breakdown": status_counts,
+            "storage_path": str(self.config.conversations_dir),
+        }
