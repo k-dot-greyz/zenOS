@@ -53,7 +53,7 @@ async def demo_pkm_module():
     
     # 3. Show Current Statistics
     console.print("\n[cyan]3. Current PKM statistics...[/cyan]")
-    stats = storage.get_storage_stats()
+    stats = storage.get_statistics()
     console.print(f"📊 Conversations: {stats['conversations_count']}")
     console.print(f"📊 Knowledge entries: {stats['knowledge_entries_count']}")
     console.print(f"📊 Storage size: {stats['total_size_mb']} MB")
