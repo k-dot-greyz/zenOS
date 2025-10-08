@@ -136,7 +136,9 @@ class ZenRepoManager:
             for repo in repos:
                 repo_name = repo['name']
 
-                if repo_exists_locally(repo_name, config['destination']):
+                already_local = repo_exists_locally(repo_name, config['destination'])
+                
+                if already_local:
                     success, action = update_repository(repo_name, config['destination'], config['dry_run'])
                 else:
                     success, action = clone_repository(repo, config['destination'], config['dry_run'])
@@ -144,7 +146,7 @@ class ZenRepoManager:
                 all_results.append({
                     'username': username,
                     'repo_name': repo_name,
-                    'action': 'update' if repo_exists_locally(repo_name, config['destination']) else 'clone',
+                    'action': 'update' if already_local else 'clone',
                     'success': success,
                     'message': action
                 })
