@@ -34,13 +34,35 @@ class Colors:
     END = '\033[0m'
 
 def print_colored(message: str, color: str = Colors.WHITE) -> None:
-    """Print colored output"""
+    """
+    Prints a message to the terminal wrapped in ANSI color codes.
+    
+    The message is stripped of non-ASCII characters (removing emojis and other non-ASCII glyphs) for Windows compatibility before printing.
+    
+    Parameters:
+        message (str): The text to print.
+        color (str): ANSI color code or sequence to prepend to the message (defaults to Colors.WHITE).
+    """
     # Remove emojis for Windows compatibility
     clean_message = message.encode('ascii', 'ignore').decode('ascii')
     print(f"{color}{clean_message}{Colors.END}")
 
 def parse_arguments():
-    """Parse command line arguments"""
+    """
+    Builds and parses the command-line arguments used to control cloning and updating repositories.
+    
+    Parses options for GitHub usernames (-u/--username), destination directory (-d/--destination), preview mode (--dry-run), JSON output path (--json), auto-confirm (-y/--yes), including private repositories (--include-private), and excluding forks (--exclude-forks). The help epilog includes usage examples and environment variable guidance.
+    
+    Returns:
+        argparse.Namespace: Parsed arguments with attributes:
+            username (list[str] | None),
+            destination (Path | None),
+            dry_run (bool),
+            json (Path | None),
+            yes (bool),
+            include_private (bool),
+            exclude_forks (bool).
+    """
     parser = argparse.ArgumentParser(
         description="Clone or update all repositories from GitHub accounts",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -104,7 +126,14 @@ Environment Variables:
     return parser.parse_args()
 
 def check_dependencies() -> bool:
-    """Check if required dependencies are available"""
+    """
+    Verify that required external dependencies for the script are available.
+    
+    When a dependency is missing, prints a colored warning with installation guidance.
+    
+    Returns:
+        bool: `True` if all required dependencies are present, `False` otherwise.
+    """
     missing = []
 
     # Check if requests is available
@@ -127,7 +156,27 @@ def check_dependencies() -> bool:
     return True
 
 def get_configuration(args) -> Dict:
-    """Get configuration from arguments and environment variables"""
+    """
+    Build runtime configuration from parsed CLI arguments and environment variables.
+    
+    Parameters:
+        args (argparse.Namespace): Parsed command-line arguments with attributes
+            `username` (list[str] | None), `destination` (str | Path | None),
+            `dry_run` (bool), `yes` (bool), `include_private` (bool),
+            `exclude_forks` (bool), and `json` (str | None).
+    
+    Returns:
+        dict: Configuration mapping with keys:
+            - `usernames` (list[str]): GitHub usernames determined from `args.username`,
+              the `GITHUB_USERNAME` environment variable, or the default "k-dot-greyz".
+            - `destination` (Path): Resolved destination directory from `args.destination`,
+              the `REPO_DEST_DIR` environment variable, or a sensible platform-specific default.
+            - `dry_run` (bool): Whether to perform a dry run.
+            - `auto_confirm` (bool): Whether to skip interactive confirmation.
+            - `include_private` (bool): Whether to include private repositories.
+            - `exclude_forks` (bool): Whether to exclude forked repositories.
+            - `json_output` (str | None): Path to write JSON results, if provided.
+    """
     config = {}
 
     # Get usernames
@@ -167,7 +216,15 @@ def get_configuration(args) -> Dict:
     return config
 
 def get_github_token() -> Optional[str]:
-    """Get GitHub token from environment variables"""
+    """
+    Retrieve and validate a GitHub personal access token from the GITHUB_TOKEN environment variable.
+    
+    If the environment variable is missing, prints guidance on how to create and set a token and returns None.
+    If a token is present, validates it by calling the GitHub API; on success prints the authenticated username and returns the token, otherwise prints an error and returns None.
+    
+    Returns:
+        token (str) or None: The validated GitHub token if available and valid, otherwise None.
+    """
     token = os.environ.get('GITHUB_TOKEN')
     if not token:
         print_colored("❌ GITHUB_TOKEN environment variable not found", Colors.RED)
@@ -194,7 +251,16 @@ def get_github_token() -> Optional[str]:
         return None
 
 def ensure_destination_dir(destination: Path, dry_run: bool = False) -> bool:
-    """Create destination directory if it doesn't exist"""
+    """
+    Ensure the destination directory exists, creating it unless `dry_run` is True.
+    
+    Parameters:
+        destination (Path): The target directory path to verify or create.
+        dry_run (bool): If True, do not create the directory; only report the intended action.
+    
+    Returns:
+        bool: `True` if the destination is confirmed (or would be created in dry-run), `False` if directory creation failed.
+    """
     try:
         if not dry_run:
             destination.mkdir(parents=True, exist_ok=True)
@@ -205,7 +271,18 @@ def ensure_destination_dir(destination: Path, dry_run: bool = False) -> bool:
         return False
 
 def confirm_action(message: str, auto_confirm: bool = False) -> bool:
-    """Get user confirmation for an action"""
+    """
+    Prompt the user to confirm an action.
+    
+    If `auto_confirm` is True, the function skips prompting and returns True immediately. On KeyboardInterrupt (e.g., Ctrl-C) it prints a cancellation message and returns False.
+    
+    Parameters:
+        message (str): The prompt message shown to the user.
+        auto_confirm (bool): If True, bypass the prompt and treat the action as confirmed.
+    
+    Returns:
+        bool: `True` if the action is confirmed, `False` otherwise.
+    """
     if auto_confirm:
         return True
 
@@ -217,7 +294,18 @@ def confirm_action(message: str, auto_confirm: bool = False) -> bool:
         return False
 
 def fetch_all_repos(token: str, username: str, include_private: bool = False, exclude_forks: bool = False) -> List[Dict]:
-    """Fetch all repositories from GitHub API for a specific user with pagination"""
+    """
+    Fetch repositories for the given GitHub username and return them as a list.
+    
+    Parameters:
+        token (str): GitHub API token used for authenticated requests.
+        username (str): GitHub username to fetch repositories for. Use the special value 'authenticated_user' to fetch repositories for the authenticated account.
+        include_private (bool): If True, include private repositories in the results.
+        exclude_forks (bool): If True, exclude forked repositories from the results.
+    
+    Returns:
+        repos (List[Dict]): A list of repository objects (dictionaries) as returned by the GitHub API, filtered according to the parameters. May contain a partial set of repositories if a network or request error occurs during pagination.
+    """
     print_colored(f"🔍 Fetching repositories for user: {username}", Colors.BLUE)
 
     repos = []
@@ -269,12 +357,36 @@ def fetch_all_repos(token: str, username: str, include_private: bool = False, ex
     return repos
 
 def repo_exists_locally(repo_name: str, destination: Path) -> bool:
-    """Check if repository exists locally"""
+    """
+    Determine whether a repository directory exists under the given destination and contains a Git metadata directory.
+    
+    Returns:
+        True if a directory named `repo_name` exists inside `destination` and contains a `.git` directory, False otherwise.
+    """
     repo_path = destination / repo_name
     return repo_path.exists() and (repo_path / '.git').exists()
 
 def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tuple[bool, str]:
-    """Clone a repository"""
+    """
+    Clone a GitHub repository into the specified destination directory.
+    
+    Parameters:
+        repo (Dict): Repository metadata containing at least:
+            - 'name' (str): repository name used for the target directory.
+            - 'clone_url' (str): HTTPS clone URL.
+            - 'private' (bool, optional): whether the repository is private (used to enable token auth).
+        destination (Path): Directory where the repository should be cloned.
+        dry_run (bool): If True, do not perform cloning; only report intended actions.
+    
+    Returns:
+        Tuple[bool, str]: (success, status)
+            - success: `True` if the operation completed successfully or was a dry run, `False` otherwise.
+            - status: one of:
+                - "cloned" — repository was cloned successfully
+                - "dry_run" — operation was simulated
+                - "clone_failed" — git clone returned a non-zero exit code
+                - "error" — an unexpected exception occurred during cloning
+    """
     repo_name = repo['name']
     clone_url = repo['clone_url']
     repo_path = destination / repo_name
@@ -313,7 +425,22 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
         return False, "error"
 
 def update_repository(repo_name: str, destination: Path, dry_run: bool = False) -> Tuple[bool, str]:
-    """Pull latest changes for existing repository"""
+    """
+    Update an existing local Git repository by pulling its latest changes.
+    
+    Parameters:
+        repo_name (str): Name of the repository directory to update.
+        destination (Path): Parent directory containing the repository.
+        dry_run (bool): If True, do not perform network or filesystem changes; only reports the intended action.
+    
+    Returns:
+        tuple: (success, status) where `success` is `True` for successful or simulated updates and `False` for failures, and `status` is one of:
+            - "updated": repository was successfully pulled
+            - "dry_run": action was simulated (no changes)
+            - "not_git_repo": target directory is not a Git repository
+            - "pull_failed": `git pull` returned a non-zero exit code
+            - "error": an unexpected exception occurred during the update
+    """
     repo_path = destination / repo_name
 
     action = "DRY RUN: Would update" if dry_run else "Updating"
@@ -356,7 +483,14 @@ def update_repository(repo_name: str, destination: Path, dry_run: bool = False) 
         return False, "error"
 
 def save_results_to_json(config: Dict, all_results: List[Dict], json_file: Path) -> None:
-    """Save operation results to JSON file"""
+    """
+    Write a JSON file containing a timestamp, a subset of the runtime configuration, and the collected repository results.
+    
+    Parameters:
+        config (Dict): Runtime configuration dictionary. Expected keys used: 'usernames', 'destination', 'dry_run', 'include_private', 'exclude_forks'.
+        all_results (List[Dict]): List of per-repository result records to include under the 'results' key.
+        json_file (Path): Filesystem path where the JSON output will be written.
+    """
     data = {
         'timestamp': datetime.now().isoformat(),
         'configuration': {
@@ -377,7 +511,11 @@ def save_results_to_json(config: Dict, all_results: List[Dict], json_file: Path)
         print_colored(f"❌ Failed to save results: {e}", Colors.RED)
 
 def main():
-    """Main execution function"""
+    """
+    Orchestrates the complete CLI workflow to fetch, clone, and update GitHub repositories for the configured users.
+    
+    Performs argument parsing, dependency checks, configuration and token validation, destination preparation, and optional user confirmation; then iterates over each configured username to fetch repositories, cloning new repositories or updating existing local clones, while collecting per-repo results and aggregate statistics. Writes a JSON results file when requested and emits colored console output summarizing per-user and final totals. May terminate the process with non-zero exit codes on missing dependencies, invalid token, destination errors, or when operations fail.
+    """
     args = parse_arguments()
 
     print_colored("🚀 zenOS GitHub Repository Manager", Colors.BOLD)

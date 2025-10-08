@@ -22,7 +22,11 @@ console = Console()
 
 @click.group()
 def pkm():
-    """🧘 PKM - Personal Knowledge Management for Google Gemini conversations"""
+    """
+    PKM command-line interface group that exposes commands to extract, process, search, export, and manage scheduled jobs for Google Gemini conversation personal knowledge management.
+    
+    This Click command group wires the CLI entry point for managing conversations, the knowledge base, configuration, and scheduling operations.
+    """
     pass
 
 
@@ -30,7 +34,13 @@ def pkm():
 @click.option("--limit", "-l", type=int, help="Maximum number of conversations to extract")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def extract(limit: Optional[int], config: Optional[str]):
-    """Extract conversations from Google Gemini"""
+    """
+    Start extraction of conversations from Google Gemini and save them to configured storage.
+    
+    Parameters:
+        limit (Optional[int]): If provided, override the configured maximum number of conversations to extract for this run.
+        config (Optional[str]): Path to a PKM configuration file to load; if omitted, the default configuration is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     
@@ -43,6 +53,11 @@ def extract(limit: Optional[int], config: Optional[str]):
     ))
     
     async def run_extraction():
+        """
+        Run the conversation extraction process and print a concise summary or errors to the console.
+        
+        On success, prints a confirmation plus the number of conversations extracted, total messages, and elapsed time. On failure, prints a failure notice and each reported error.
+        """
         async with GeminiExtractor(pkm_config) as extractor:
             result = await extractor.extract_conversations(limit)
             
@@ -63,7 +78,15 @@ def extract(limit: Optional[int], config: Optional[str]):
 @click.option("--limit", "-l", type=int, default=10, help="Maximum number of conversations to show")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def list_conversations(limit: int, config: Optional[str]):
-    """List extracted conversations"""
+    """
+    List recent extracted conversations and print them as a Rich table to the console.
+    
+    Displays up to `limit` conversations with columns for ID, title (truncated to 50 characters), message count, last-updated timestamp, and status. If no conversations are found, prints a notice advising to run the extractor.
+    
+    Parameters:
+        limit (int): Maximum number of conversations to display.
+        config (Optional[str]): Path to a PKM config file; when None, the default configuration location is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     storage = PKMStorage(pkm_config)
@@ -98,7 +121,14 @@ def list_conversations(limit: int, config: Optional[str]):
 @click.option("--limit", "-l", type=int, default=10, help="Maximum number of results to show")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def search(query: str, limit: int, config: Optional[str]):
-    """Search through conversations"""
+    """
+    Search conversations for a query and display matching conversations in a formatted table.
+    
+    Parameters:
+        query (str): Search query string used to match conversations.
+        limit (int): Maximum number of conversations to retrieve.
+        config (Optional[str]): Path to a PKM configuration file; if None, the default configuration is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     storage = PKMStorage(pkm_config)
@@ -134,7 +164,14 @@ def search(query: str, limit: int, config: Optional[str]):
 @pkm.command()
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def process(config: Optional[str]):
-    """Process conversations and extract knowledge"""
+    """
+    Process stored conversations to generate and save knowledge entries.
+    
+    Loads the PKM configuration (from `config` if provided), iterates over conversations that have not been processed, processes each conversation to produce knowledge items, saves the updated conversation back to storage, and reports counts of conversations processed and knowledge entries created.
+    
+    Parameters:
+        config (Optional[str]): Path to a PKM configuration file. If None, the default configuration location is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     storage = PKMStorage(pkm_config)
@@ -146,6 +183,11 @@ def process(config: Optional[str]):
     ))
     
     async def run_processing():
+        """
+        Process all conversations that lack a 'processed_at' metadata entry, persist processed conversations to storage, and print a summary.
+        
+        For each unprocessed conversation this function processes it with the ConversationProcessor, saves the processed conversation to storage, counts knowledge entries associated with that conversation, and prints totals for conversations processed and knowledge entries created.
+        """
         conversations = storage.list_conversations()
         processed_count = 0
         knowledge_entries = 0
@@ -176,7 +218,16 @@ def process(config: Optional[str]):
 @click.option("--limit", "-l", type=int, help="Maximum number of items to export")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def export(format: str, limit: Optional[int], config: Optional[str]):
-    """Export conversations and knowledge base"""
+    """
+    Export stored conversations and the knowledge base to files in the requested format.
+    
+    Exports conversations and knowledge entries using the PKM configuration and storage, prints the resulting export file paths to the console, and reports failures if an exception occurs. Supported formats include "json" and "markdown".
+    
+    Parameters:
+    	format (str): Output format to use for exports (e.g., "json" or "markdown").
+    	limit (Optional[int]): Maximum number of conversations/knowledge entries to include; if None, export all available items.
+    	config (Optional[str]): Path to a PKM configuration file; if None, the default configuration is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     storage = PKMStorage(pkm_config)
@@ -201,7 +252,14 @@ def export(format: str, limit: Optional[int], config: Optional[str]):
 @pkm.command()
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def stats(config: Optional[str]):
-    """Show PKM statistics"""
+    """
+    Display PKM statistics and storage directory information.
+    
+    Loads the PKM configuration (optionally from the provided path), gathers metrics from storage, and prints a summary table with counts and settings plus the conversations, knowledge base, and exports directory paths.
+    
+    Parameters:
+        config (Optional[str]): Path to a PKM configuration file; when omitted the default configuration is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     storage = PKMStorage(pkm_config)
@@ -244,7 +302,14 @@ def schedule():
 @schedule.command("list")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def schedule_list(config: Optional[str]):
-    """List scheduled jobs"""
+    """
+    List scheduled PKM jobs.
+    
+    Load the PKM configuration from the given path (or the default location) and invoke the scheduler to print the configured scheduled jobs.
+    
+    Parameters:
+        config (Optional[str]): Path to a PKM configuration file. If omitted, the default configuration location is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     scheduler = PKMScheduler(pkm_config)
@@ -255,7 +320,13 @@ def schedule_list(config: Optional[str]):
 @click.argument("job_name")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def schedule_run(job_name: str, config: Optional[str]):
-    """Run a specific job immediately"""
+    """
+    Run a scheduled PKM job by name immediately.
+    
+    Parameters:
+    	job_name (str): The identifier of the scheduled job to run.
+    	config (Optional[str]): Path to a PKM configuration file; if omitted, the default config is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     scheduler = PKMScheduler(pkm_config)
@@ -270,7 +341,12 @@ def schedule_run(job_name: str, config: Optional[str]):
 @schedule.command("start")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def schedule_start(config: Optional[str]):
-    """Start the scheduler daemon"""
+    """
+    Start the PKM scheduler daemon (demo implementation).
+    
+    Parameters:
+        config (Optional[str]): Path to a PKM configuration file. If `None`, the default configuration location is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     scheduler = PKMScheduler(pkm_config)
@@ -285,7 +361,12 @@ def schedule_start(config: Optional[str]):
 @schedule.command("stop")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def schedule_stop(config: Optional[str]):
-    """Stop the scheduler daemon"""
+    """
+    Stop the PKM scheduler daemon.
+    
+    Parameters:
+        config (str | None): Path to a PKM configuration file to use; if omitted, the default configuration is loaded.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     scheduler = PKMScheduler(pkm_config)
@@ -297,7 +378,12 @@ def schedule_stop(config: Optional[str]):
 @pkm.command()
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def config_show(config: Optional[str]):
-    """Show current PKM configuration"""
+    """
+    Display the current PKM configuration in a formatted table to the console.
+    
+    Parameters:
+        config (Optional[str]): Path to a PKM configuration file. If omitted, the default configuration location is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     
@@ -317,7 +403,14 @@ def config_show(config: Optional[str]):
 @pkm.command()
 @click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
 def setup(config: Optional[str]):
-    """Setup PKM module"""
+    """
+    Initialize PKM directories and persist the configuration.
+    
+    Loads the PKM configuration from the given path (or the default if None), ensures the PKM root, conversations, knowledge base, and exports directories exist, saves the configuration (written to pkm_dir/config.yaml), and prints next-step instructions for extracting, processing, and searching conversations.
+    
+    Parameters:
+        config (Optional[str]): Path to a configuration file to load; if omitted, the default configuration location is used.
+    """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
     

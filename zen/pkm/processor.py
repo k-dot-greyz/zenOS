@@ -17,11 +17,28 @@ class ConversationProcessor:
     """Process conversations to extract knowledge and insights."""
     
     def __init__(self, config: PKMConfig, storage: PKMStorage):
+        """
+        Initialize ConversationProcessor with PKM configuration and a storage backend.
+        
+        Parameters:
+            config (PKMConfig): Configuration that controls feature toggles (e.g., auto_summarize, extract_keywords, generate_tags) and processing metadata.
+            storage (PKMStorage): Storage backend used to persist extracted KnowledgeEntry objects.
+        """
         self.config = config
         self.storage = storage
     
     async def process_conversation(self, conversation: Conversation) -> Conversation:
-        """Process a conversation to extract insights and knowledge."""
+        """
+        Process a Conversation to extract summaries, keywords, tags, and knowledge entries, persist extracted entries, and annotate the conversation with processing metadata.
+        
+        Depending on the processor configuration, this method may generate and attach a summary, keywords, and tags to the provided Conversation. It always extracts knowledge entries from the conversation, persists each entry using the configured storage, and updates conversation.metadata with the following keys: `processed_at` (ISO timestamp), `knowledge_entries_count`, and `processing_version`.
+        
+        Parameters:
+            conversation (Conversation): The conversation to process; the object is updated in place.
+        
+        Returns:
+            Conversation: The same Conversation instance, updated with any generated summary, keywords, tags, knowledge entries persistence, and metadata.
+        """
         # Generate summary if enabled
         if self.config.auto_summarize:
             conversation.summary = await self._generate_summary(conversation)
@@ -51,7 +68,14 @@ class ConversationProcessor:
         return conversation
     
     async def _generate_summary(self, conversation: Conversation) -> str:
-        """Generate a summary of the conversation."""
+        """
+        Builds a concise extractive summary of the given conversation.
+        
+        Constructs summary parts from user and assistant messages: lists up to five prominent topics extracted from user messages, notes the total message count, and includes up to two assistant sentences containing signals such as "important", "key", "note", "remember", "consider", "suggest", or "recommend". Returns "Empty conversation" when there are no messages and "No summary available" when no summaryable parts are found.
+        
+        Returns:
+            summary (str): A human-readable summary describing topics, message count, and key assistant insights, or the literal strings "Empty conversation" or "No summary available" when applicable.
+        """
         # Simple extractive summarization
         # In a real implementation, you'd use an AI model for this
         
@@ -98,7 +122,17 @@ class ConversationProcessor:
         return '. '.join(summary_parts) if summary_parts else "No summary available"
     
     async def _extract_keywords(self, conversation: Conversation) -> List[str]:
-        """Extract keywords from the conversation."""
+        """
+        Extracts the most frequent keywords from all messages in a conversation.
+        
+        Aggregates message text, normalizes to lowercase, filters out common stop words and short tokens (<= 3 characters), and selects the top 10 words by frequency.
+        
+        Parameters:
+            conversation (Conversation): Conversation whose messages will be analyzed.
+        
+        Returns:
+            List[str]: Top keywords (lowercase) ordered by descending frequency, up to 10 items.
+        """
         all_text = []
         
         for message in conversation.messages:
@@ -130,7 +164,17 @@ class ConversationProcessor:
         return [word for word, count in sorted_words[:10]]
     
     async def _generate_tags(self, conversation: Conversation) -> List[str]:
-        """Generate tags for the conversation."""
+        """
+        Derive topical and keyword-based tags from a conversation.
+        
+        Analyzes the conversation content and keywords to produce a concise set of tags. The result includes up to the top keyword-derived tags combined with topic heuristics (e.g., programming, ai, database, help, explanation, example), duplicates removed and limited to 10 tags.
+        
+        Parameters:
+            conversation (Conversation): Conversation object whose messages will be analyzed for tag generation.
+        
+        Returns:
+            List[str]: A list of unique tags derived from the conversation, limited to at most 10 items.
+        """
         tags = []
         
         # Extract tags from keywords
@@ -167,7 +211,14 @@ class ConversationProcessor:
         return list(set(tags))[:10]
     
     async def _extract_knowledge_entries(self, conversation: Conversation) -> List[KnowledgeEntry]:
-        """Extract knowledge entries from the conversation."""
+        """
+        Scan assistant messages in a conversation and produce KnowledgeEntry objects for detected code blocks, lists/structured items, and definition-like explanations.
+        
+        Each returned KnowledgeEntry represents a discovered artifact (code, list, or definition) and includes source metadata (conversation id, message index, timestamps), a confidence score, tags, and extracted keywords.
+        
+        Returns:
+            List[KnowledgeEntry]: A list of knowledge entries extracted from the conversation.
+        """
         entries = []
         
         for i, message in enumerate(conversation.messages):
@@ -230,7 +281,17 @@ class ConversationProcessor:
         return entries
     
     async def _extract_keywords_from_text(self, text: str) -> List[str]:
-        """Extract keywords from a text string."""
+        """
+        Extracts the most frequent keywords from a block of text.
+        
+        Filters out common stop words and words of three characters or fewer, normalizes to lowercase, and returns up to five keywords sorted by descending frequency.
+        
+        Parameters:
+            text (str): Source text to extract keywords from.
+        
+        Returns:
+            List[str]: Up to five keywords ordered by frequency (most frequent first).
+        """
         words = re.findall(r'\b\w+\b', text.lower())
         common_words = {
             'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',

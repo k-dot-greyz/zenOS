@@ -46,7 +46,14 @@ class PKMConfig:
     cron_schedule: str = "0 */6 * * *"  # Every 6 hours
     
     def __post_init__(self):
-        """Initialize paths and load environment variables."""
+        """
+        Load environment variables from a .env file and ensure PKM directories exist.
+        
+        This sets the instance attributes `gemini_session_cookie` and `gemini_csrf_token`
+        from the environment variables `GEMINI_SESSION_COOKIE` and `GEMINI_CSRF_TOKEN`,
+        and creates the directories referenced by `pkm_dir`, `conversations_dir`,
+        `knowledge_base_dir`, and `exports_dir` if they do not already exist.
+        """
         load_dotenv()
         
         # Load from environment
@@ -59,7 +66,14 @@ class PKMConfig:
             path.mkdir(parents=True, exist_ok=True)
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert config to dictionary."""
+        """
+        Return a dictionary representation of the configuration suitable for serialization.
+        
+        The returned mapping uses string values for Path attributes (`pkm_dir`, `conversations_dir`, `knowledge_base_dir`, `exports_dir`) and preserves primitive values for the remaining fields.
+        
+        Returns:
+            Dict[str, Any]: Mapping of configuration keys to JSON-serializable values.
+        """
         return {
             "pkm_dir": str(self.pkm_dir),
             "conversations_dir": str(self.conversations_dir),
@@ -81,7 +95,11 @@ class PKMConfig:
         }
     
     def save(self, path: Optional[Path] = None):
-        """Save configuration to file."""
+        """
+        Persist the PKMConfig to a YAML file.
+        
+        If `path` is not provided, writes to `pkm_dir / "config.yaml"`. The file contains the configuration as produced by `to_dict()`, with Path values represented as strings.
+        """
         import yaml
         
         if path is None:
@@ -92,7 +110,17 @@ class PKMConfig:
     
     @classmethod
     def load(cls, path: Optional[Path] = None) -> "PKMConfig":
-        """Load configuration from file."""
+        """
+        Create and return a PKMConfig populated from a YAML configuration file on disk.
+        
+        If `path` is not provided, the method reads ~/.zenOS/pkm/config.yaml. If the file exists, keys in the YAML that match PKMConfig attributes update the returned instance; attributes whose names end with `_dir` are converted to `Path` objects. Keys not present on PKMConfig are ignored. If the file is missing or empty, returns a PKMConfig with default values.
+        
+        Parameters:
+            path (Optional[Path]): Path to the YAML configuration file. Defaults to ~/.zenOS/pkm/config.yaml.
+        
+        Returns:
+            PKMConfig: A configuration instance populated with values from the file (or defaults if the file is absent).
+        """
         import yaml
         
         if path is None:

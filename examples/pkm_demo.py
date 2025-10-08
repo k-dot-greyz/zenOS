@@ -26,7 +26,11 @@ console = Console()
 
 
 async def demo_pkm_module():
-    """Demonstrate PKM module functionality."""
+    """
+    Run an interactive demo that walks through PKM (Personal Knowledge Management) module features.
+    
+    Displays setup and storage initialization, current storage statistics, guidance for extracting Google Gemini conversations (notes when session cookies are missing), processing and search examples, scheduling overview, export options, and available CLI commands and next steps for getting started.
+    """
     
     console.print(Panel.fit(
         "[bold cyan]🧘 PKM Module Demo[/bold cyan]\n"
@@ -147,7 +151,11 @@ async def demo_pkm_module():
 
 
 def main():
-    """Main function."""
+    """
+    Run the PKM module demo and handle top-level errors.
+    
+    Executes the asynchronous demo_pkm_module coroutine. If interrupted by the user, prints a notice; if any other exception occurs, prints the error and exits the process with status code 1.
+    """
     try:
         asyncio.run(demo_pkm_module())
     except KeyboardInterrupt:

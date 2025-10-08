@@ -26,22 +26,43 @@ class GeminiExtractor:
     """Extractor for Google Gemini web conversations."""
     
     def __init__(self, config: PKMConfig):
+        """
+        Initialize the GeminiExtractor with the provided PKM configuration and default internal state.
+        
+        Parameters:
+            config (PKMConfig): Configuration containing HTTP settings (user agent, optional session cookie, timeouts) and storage settings (format and directories). The configuration is stored on the instance for use during extraction.
+        """
         self.config = config
         self.session: Optional[aiohttp.ClientSession] = None
         self.base_url = "https://gemini.google.com"
         
     async def __aenter__(self):
-        """Async context manager entry."""
+        """
+        Enter the context manager and ensure an HTTP session is available.
+        
+        Ensures the extractor has an initialized HTTP session for subsequent network operations.
+        
+        Returns:
+            The extractor instance.
+        """
         await self._create_session()
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit."""
+        """
+        Close the extractor's HTTP session when exiting the asynchronous context manager.
+        
+        If a ClientSession was created, this awaits its closure to release network resources.
+        """
         if self.session:
             await self.session.close()
     
     async def _create_session(self):
-        """Create aiohttp session with proper headers."""
+        """
+        Initialize self.session as an aiohttp.ClientSession configured for Gemini scraping.
+        
+        Uses self.config.gemini_user_agent for the User-Agent header, self.config.gemini_session_cookie (if present) to populate a session cookie, and self.config.conversation_timeout to set the client timeout. Sets headers for common HTML requests and assigns the created ClientSession to self.session.
+        """
         headers = {
             "User-Agent": self.config.gemini_user_agent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -64,13 +85,13 @@ class GeminiExtractor:
     
     async def extract_conversations(self, max_conversations: Optional[int] = None) -> ExtractionResult:
         """
-        Extract conversations from Google Gemini.
+        Extract Google Gemini conversations and produce an ExtractionResult summarizing the run.
         
-        Args:
-            max_conversations: Maximum number of conversations to extract
-            
+        Parameters:
+            max_conversations (Optional[int]): Maximum number of conversations to extract; if None, extract all discovered conversations.
+        
         Returns:
-            ExtractionResult with extraction statistics
+            ExtractionResult: Aggregated extraction statistics and lists of errors/warnings collected during the run.
         """
         start_time = datetime.now()
         result = ExtractionResult(
@@ -137,7 +158,18 @@ class GeminiExtractor:
         return result
     
     async def _get_conversation_list(self, max_conversations: Optional[int] = None) -> List[str]:
-        """Get list of conversation URLs from Gemini."""
+        """
+        Retrieve a list of Gemini conversation URLs, optionally limited to a maximum count.
+        
+        Parameters:
+            max_conversations (Optional[int]): Maximum number of conversation URLs to return. If None, no limit is applied.
+        
+        Returns:
+            List[str]: A list of conversation page URLs. Returns an empty list on HTTP errors or other failures.
+        
+        Raises:
+            RuntimeError: If the HTTP session has not been initialized.
+        """
         if not self.session:
             raise RuntimeError("Session not initialized")
         
@@ -180,7 +212,18 @@ class GeminiExtractor:
             return []
     
     async def _extract_single_conversation(self, url: str) -> Optional[Conversation]:
-        """Extract a single conversation from its URL."""
+        """
+        Attempt to extract a Conversation object from the given Gemini conversation URL.
+        
+        Parameters:
+            url (str): The full URL of the conversation page to fetch and parse.
+        
+        Returns:
+            Optional[Conversation]: A populated Conversation when extraction succeeds and messages are found, `None` if the page cannot be fetched, contains no messages, or extraction fails.
+        
+        Raises:
+            RuntimeError: If the HTTP session has not been initialized.
+        """
         if not self.session:
             raise RuntimeError("Session not initialized")
         
@@ -222,7 +265,12 @@ class GeminiExtractor:
             return None
     
     def _extract_conversation_id(self, url: str) -> str:
-        """Extract conversation ID from URL."""
+        """
+        Derive a conversation identifier from the conversation URL.
+        
+        Returns:
+            str: The last path segment of the URL as the identifier, or a fallback of the form `conv_<timestamp>` when no usable path segment is found.
+        """
         # Extract ID from URL path
         path_parts = urlparse(url).path.split('/')
         if len(path_parts) > 1:
@@ -230,7 +278,17 @@ class GeminiExtractor:
         return f"conv_{int(time.time())}"
     
     def _extract_title(self, soup: BeautifulSoup) -> str:
-        """Extract conversation title from HTML."""
+        """
+        Extracts a conversation title from a BeautifulSoup-parsed HTML document.
+        
+        Searches common title locations and returns the first non-empty title found.
+        
+        Parameters:
+            soup (BeautifulSoup): Parsed HTML to search for a conversation title.
+        
+        Returns:
+            str: The extracted title, or "Untitled Conversation" if no title is found.
+        """
         # Look for title in various places
         title_selectors = [
             'h1',
@@ -247,7 +305,17 @@ class GeminiExtractor:
         return "Untitled Conversation"
     
     def _extract_messages(self, soup: BeautifulSoup) -> List[Message]:
-        """Extract messages from conversation HTML."""
+        """
+        Parse a conversation page and return the extracted messages in chronological order.
+        
+        This attempts to locate structured message elements (common container tags and class patterns) and extract their textual content.
+        Message role is inferred from container classes (containers with "assistant" or "bot" are marked as assistant; others are marked as user).
+        If no structured messages are found, a heuristic fallback splits the page text into lines and converts up to 10 non-trivial lines into user messages.
+        Timestamps on returned messages are set at extraction time.
+        
+        Returns:
+            list[Message]: A list of extracted messages; may be empty if no usable content is found.
+        """
         messages = []
         
         # This is a simplified implementation
@@ -292,7 +360,17 @@ class GeminiExtractor:
         return messages
     
     async def _save_conversation(self, conversation: Conversation):
-        """Save conversation to storage."""
+        """
+        Persist a Conversation to disk in the configured storage format and update its metadata.
+        
+        Parameters:
+            conversation (Conversation): The conversation to persist; its `id` is used to name output files.
+        
+        Details:
+            - Writes a JSON file if configuration is `"json"` or `"both"`.
+            - Writes a Markdown file if configuration is `"markdown"` or `"both"`.
+            - Updates `conversation.file_path` to the path of the last-written file and sets `conversation.file_size` to that file's size in bytes.
+        """
         # Save as JSON
         if self.config.storage_format in ["json", "both"]:
             json_path = self.config.conversations_dir / f"{conversation.id}.json"
@@ -309,7 +387,17 @@ class GeminiExtractor:
                 f.write(markdown_content)
     
     def _conversation_to_markdown(self, conversation: Conversation) -> str:
-        """Convert conversation to Markdown format."""
+        """
+        Render a Conversation object as a Markdown document.
+        
+        Produces a Markdown string containing the conversation metadata (title, ID, created/updated timestamps, URL, and status), followed by each message as a section prefixed with a role-specific emoji and timestamp. If present, appends optional sections for Summary, Keywords, and Tags.
+        
+        Parameters:
+            conversation (Conversation): The conversation to convert into Markdown.
+        
+        Returns:
+            str: The full Markdown document representing the conversation.
+        """
         lines = [
             f"# {conversation.title}",
             f"",

@@ -27,18 +27,47 @@ class Colors:
     END = '\033[0m'
 
 def print_colored(message: str, color: str = Colors.WHITE) -> None:
-    """Print colored output"""
+    """
+    Print a message to the terminal wrapped in ANSI color codes.
+    
+    Strips non-ASCII characters (e.g., emojis) for Windows compatibility, wraps the cleaned message with the provided color code, and resets terminal styling after printing.
+    """
     # Remove emojis for Windows compatibility
     clean_message = message.encode('ascii', 'ignore').decode('ascii')
     print(f"{color}{clean_message}{Colors.END}")
 
 def is_git_repository(path: Path) -> bool:
-    """Check if a directory is a git repository"""
+    """
+    Determine whether the given path is a Git repository.
+    
+    Parameters:
+        path (Path): Directory to inspect.
+    
+    Returns:
+        bool: True if the path contains a '.git' directory, False otherwise.
+    """
     git_dir = path / '.git'
     return git_dir.exists() and git_dir.is_dir()
 
 def get_git_info(repo_path: Path) -> Dict:
-    """Get git repository information"""
+    """
+    Gather metadata about a Git repository located at repo_path.
+    
+    Parameters:
+        repo_path (Path): Path to the repository root (directory containing the work tree).
+    
+    Returns:
+        info (Dict): Dictionary with repository metadata containing the following keys:
+            - path (str): Absolute or relative string path of the repository.
+            - name (str): Repository directory name.
+            - status (str): One of 'valid', 'invalid', 'unknown', or starts with 'error:' followed by an error message when retrieval failed.
+            - remote_url (str | None): URL of the 'origin' remote, or None if not configured.
+            - branch (str | None): Current branch name, or None if unavailable.
+            - last_commit (str | None): Short hash, subject, and date of the latest commit (formatted), or None if unavailable.
+            - ahead_behind (str | None): Ahead/behind shorthand from `git status` (e.g., 'ahead 1, behind 2'), or None if not applicable.
+            - uncommitted_changes (bool): True if there are uncommitted changes in the working tree, False otherwise.
+            - has_staged_changes (bool): True if any changes are staged for commit, False otherwise.
+    """
     info = {
         'path': str(repo_path),
         'name': repo_path.name,
@@ -137,7 +166,18 @@ def get_git_info(repo_path: Path) -> Dict:
     return info
 
 def scan_for_repositories(root_paths: List[Path], max_depth: int = 10, exclude_patterns: List[str] = None) -> List[Dict]:
-    """Scan filesystem for git repositories"""
+    """
+    Scan the given root paths for Git repositories by locating `.git` directories.
+    
+    Parameters:
+        root_paths (List[Path]): Root directories to search for repositories.
+        max_depth (int): Maximum directory depth relative to each root at which repositories are considered.
+        exclude_patterns (List[str] | None): Substring patterns; any repository path containing one of these will be skipped.
+            Defaults to ['node_modules', '.git', '__pycache__', '.venv', 'venv', 'env'] when omitted.
+    
+    Returns:
+        List[Dict]: A list of repository information dictionaries (one per detected repository).
+    """
     if exclude_patterns is None:
         exclude_patterns = ['node_modules', '.git', '__pycache__', '.venv', 'venv', 'env']
 
@@ -194,7 +234,14 @@ def scan_for_repositories(root_paths: List[Path], max_depth: int = 10, exclude_p
     return repositories
 
 def get_default_scan_paths() -> List[Path]:
-    """Get default paths to scan based on platform"""
+    """
+    Provide sensible filesystem locations to scan for Git repositories on the current platform.
+    
+    On Windows, this includes common user directories (e.g., Documents/Code, source/repos, Projects, dev) under %USERPROFILE% and common drive-level folders (e.g., C:/dev). On Unix-like systems, this includes common development locations under the user's home (e.g., Documents/Code, Projects, dev, src) and system paths like /opt and /usr/local/src. Only paths that currently exist are returned.
+    
+    Returns:
+        List[Path]: Existing Path objects to use as default scan roots.
+    """
     paths = []
 
     if sys.platform == "win32":
@@ -238,7 +285,14 @@ def get_default_scan_paths() -> List[Path]:
     return existing_paths
 
 def print_repository_summary(repositories: List[Dict]) -> None:
-    """Print a summary of found repositories"""
+    """
+    Print a concise summary of the scanned repositories to the terminal.
+    
+    Prints counts for total repositories, valid repositories, invalid/problematic repositories, repositories with a remote origin, and repositories with uncommitted changes.
+    
+    Parameters:
+    	repositories (List[Dict]): List of repository info dictionaries. Each dictionary is expected to include at least the keys `'status'`, `'remote_url'`, and `'uncommitted_changes'`.
+    """
     print_colored(f"\n{'='*60}", Colors.BLUE)
     print_colored("📊 REPOSITORY SCAN SUMMARY", Colors.BOLD)
     print_colored(f"{'='*60}", Colors.BLUE)
@@ -258,7 +312,24 @@ def print_repository_summary(repositories: List[Dict]) -> None:
         print_colored(f"📝 With uncommitted changes: {with_changes}", Colors.YELLOW)
 
 def print_repository_details(repositories: List[Dict], show_details: bool = False) -> None:
-    """Print detailed repository information"""
+    """
+    Print a human-readable, colorized list of repositories with optional per-repository details.
+    
+    Displays each repository's index, validity status, name, filesystem path, current branch, remote (display name or "local only"), uncommitted change indicator (with staged/unstaged hint), ahead/behind status if present, and the last commit when `show_details` is true.
+    
+    Parameters:
+        repositories (List[Dict]): List of repository info dictionaries. Each dictionary is expected to contain the keys:
+            - name (str)
+            - path (str or Path)
+            - status (str) — e.g., 'valid' or other status strings
+            - branch (str or None)
+            - remote_url (str or None)
+            - uncommitted_changes (bool)
+            - has_staged_changes (bool)
+            - ahead_behind (str or None)
+            - last_commit (str or None)
+        show_details (bool): If true, include the last commit information for each repository.
+    """
     if not repositories:
         print_colored("❌ No repositories found!", Colors.RED)
         return
@@ -301,7 +372,15 @@ def print_repository_details(repositories: List[Dict], show_details: bool = Fals
         print()
 
 def save_to_json(repositories: List[Dict], output_file: Path) -> None:
-    """Save repository data to JSON file"""
+    """
+    Write the given repository metadata to a UTF-8 JSON file and print a confirmation message.
+    
+    The output JSON contains three top-level keys: `scan_timestamp` (ISO timestamp when the file was written), `total_repositories` (number of repository entries), and `repositories` (the provided list of repository dictionaries). The file is written with pretty-printed indentation.
+    
+    Parameters:
+        repositories (List[Dict]): List of repository metadata dictionaries as produced by the scanner.
+        output_file (Path): Filesystem path to the JSON file to write.
+    """
     data = {
         'scan_timestamp': datetime.now().isoformat(),
         'total_repositories': len(repositories),
@@ -314,7 +393,11 @@ def save_to_json(repositories: List[Dict], output_file: Path) -> None:
     print_colored(f"💾 Results saved to: {output_file}", Colors.GREEN)
 
 def main():
-    """Main function"""
+    """
+    Parse command-line arguments, scan the specified (or default) filesystem paths for Git repositories, and print or save the aggregated results.
+    
+    Parses CLI options (paths, max depth, exclude patterns, JSON output, details, quiet), determines scan paths, runs the repository scan, prints a colorized summary and optional per-repository details, and optionally writes results to a JSON file. Exits with status 1 if no valid scan paths are available.
+    """
     parser = argparse.ArgumentParser(
         description="Scan local filesystem for git repositories",
         formatter_class=argparse.RawDescriptionHelpFormatter,
