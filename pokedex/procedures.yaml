@@ -150,7 +150,7 @@ procedures:
     description: "Human teaches AI new procedures through examples"
     discovered_by: "human:kaspars"
     usage_count: 47
-    
+
   - id: "zen.delegate"
     name: "Task Delegation"
     type: "autonomous"
@@ -167,22 +167,103 @@ procedures:
     discovered_by: "human:kaspars"
     usage_count: 234
 
+  - id: "zen.repo.scan"
+    name: "Repository Discovery"
+    type: "analytical"
+    rarity: "common"
+    stats:
+      complexity: 30
+      efficiency: 95
+      accuracy: 98
+    requirements:
+      - "Filesystem access"
+      - "Git repository detection"
+    description: "Scan local filesystem for all git repositories"
+    discovered_by: "ai:repository-manager"
+    discovery_date: "2025-01-08"
+    usage_count: 89
+    tools: ["find_all_local_repos.py", "zen_repo_manager.py scan"]
+
+  - id: "zen.repo.audit"
+    name: "Repository Audit"
+    type: "analytical"
+    rarity: "uncommon"
+    stats:
+      complexity: 45
+      efficiency: 88
+      accuracy: 94
+    requirements:
+      - "Repository scanning"
+      - "Status analysis"
+      - "Health scoring"
+    description: "Comprehensive audit of repository health and status"
+    discovered_by: "ai:repository-manager"
+    discovery_date: "2025-01-08"
+    usage_count: 67
+    tools: ["zen_repo_manager.py audit", "repositories-mcp audit_repositories"]
+
+  - id: "zen.repo.sync"
+    name: "Repository Sync"
+    type: "operational"
+    rarity: "uncommon"
+    stats:
+      complexity: 55
+      efficiency: 85
+      reliability: 90
+    requirements:
+      - "Git operations"
+      - "Remote access"
+      - "Conflict resolution"
+    description: "Synchronize repositories with remote sources"
+    discovered_by: "ai:repository-manager"
+    discovery_date: "2025-01-08"
+    usage_count: 43
+    tools: ["clone_all_repos.py", "zen_repo_manager.py sync", "repositories-mcp clone_repository"]
+
+  - id: "zen.repo.status"
+    name: "Repository Status"
+    type: "monitoring"
+    rarity: "common"
+    stats:
+      complexity: 25
+      efficiency: 98
+      accuracy: 100
+    requirements:
+      - "Git status"
+      - "Branch information"
+      - "Remote status"
+    description: "Get current status of repositories"
+    discovered_by: "ai:repository-manager"
+    discovery_date: "2025-01-08"
+    usage_count: 156
+    tools: ["zen_repo_manager.py status", "repositories-mcp get_repository_status"]
+
 # Procedure Combinations (Combos)
 combos:
   - name: "Full Stack Refactor"
     procedures: ["zen.analyze", "zen.refactor", "zen.test"]
     multiplier: 1.5
     description: "Analyze, refactor, and test in sequence"
-    
+
   - name: "Swarm Learning"
     procedures: ["zen.swarm.analyze", "zen.evolve"]
     multiplier: 2.0
     description: "Multiple AIs learn from collective analysis"
-    
+
   - name: "Guided Evolution"
     procedures: ["zen.teach", "zen.evolve"]
     multiplier: 1.8
     description: "Human guidance accelerates AI learning"
+
+  - name: "Repository Health Check"
+    procedures: ["zen.repo.scan", "zen.repo.audit", "zen.repo.status"]
+    multiplier: 1.6
+    description: "Complete repository discovery, audit, and status assessment"
+
+  - name: "Repository Maintenance"
+    procedures: ["zen.repo.audit", "zen.repo.sync", "zen.repo.status"]
+    multiplier: 1.7
+    description: "Audit repositories, sync with remotes, and verify status"
 
 # Discovery Achievements
 achievements:
