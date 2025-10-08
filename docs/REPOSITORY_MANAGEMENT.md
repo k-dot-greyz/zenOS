@@ -271,7 +271,7 @@ python clone_all_repos.py -u personal -u work -u oss --yes
 ## Integration Examples
 
 ### With AI Assistants
-```
+```text
 "Scan my local repositories and audit their health"
 "Clone all repositories from user 'octocat'"
 "Check the status of repositories in ~/projects"

@@ -311,12 +311,18 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
             
             # Process the conversation
             processed_conversation = await self.processor.process_conversation(conversation)
-            self.storage.save_conversation(processed_conversation)
+            
+            # Save the processed conversation and check for failure
+            if not self.storage.save_conversation(processed_conversation):
+                raise RuntimeError(
+                    f"Failed to persist processed conversation {conversation.id} ('{conversation.title}'). "
+                    f"Storage may be unavailable or disk may be full."
+                )
+            
             processed_count += 1
             
-            # Count knowledge entries
-            entries = self.storage.search_knowledge_entries(conversation.id)
-            knowledge_entries += len(entries)
+            # Count knowledge entries from metadata (added during processing)
+            knowledge_entries += processed_conversation.metadata.get("knowledge_entries_count", 0)
         
         return f"""✅ **Processing Completed**
 
