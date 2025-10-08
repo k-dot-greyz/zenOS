@@ -26,6 +26,11 @@ class PKMAgent(Agent):
     """Personal Knowledge Management agent for zenOS."""
     
     def __init__(self):
+        """
+        Initialize the PKM agent and its core components.
+        
+        Creates an AgentManifest describing the agent and its prompt template, passes it to the base Agent initializer, loads PKM configuration, and constructs the storage, conversation processor, and scheduler instances used by the agent.
+        """
         manifest = AgentManifest(
             name="pkm",
             description="Personal Knowledge Management - Extract and manage Google Gemini conversations",
@@ -53,7 +58,16 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
         self.scheduler = PKMScheduler(self.config)
     
     async def execute_async(self, prompt: str, variables: dict) -> str:
-        """Execute the PKM agent asynchronously."""
+        """
+        Dispatches a PKM prompt to the appropriate handler and returns the handler's response.
+        
+        Parameters:
+            prompt (str): The user's PKM prompt or command string.
+            variables (dict): Runtime variables or context passed to handlers.
+        
+        Returns:
+            str: The textual response produced by the selected handler. If an unhandled exception occurs, returns an error message beginning with "Error executing PKM command:".
+        """
         try:
             # Parse the command from the prompt
             command = self._parse_command(prompt)
@@ -81,11 +95,27 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
             return f"Error executing PKM command: {e}"
     
     def execute(self, prompt: str, variables: dict) -> str:
-        """Execute the PKM agent (sync wrapper)."""
+        """
+        Execute a prompt using the PKM agent and return the agent's response.
+        
+        Parameters:
+            prompt (str): The user prompt or command to execute.
+            variables (dict): Optional runtime variables supplied to the execution context.
+        
+        Returns:
+            str: The agent's response text.
+        """
         return asyncio.run(self.execute_async(prompt, variables))
     
     def _parse_command(self, prompt: str) -> Dict[str, Any]:
-        """Parse command from user prompt."""
+        """
+        Determine an action and its arguments from a user PKM prompt.
+        
+        Returns:
+            result (Dict[str, Any]): Mapping with keys:
+                - "action": one of "extract", "list", "search", "process", "schedule", "export", "stats", "help", or "query".
+                - "args": the remaining prompt text after the recognized command (for "query", the original prompt is returned).
+        """
         prompt_lower = prompt.lower().strip()
         
         if prompt_lower.startswith("extract"):
@@ -108,7 +138,18 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
             return {"action": "query", "args": prompt}
     
     async def _handle_extract(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle conversation extraction."""
+        """
+        Extract conversations into local storage and return a human-readable extraction report.
+        
+        Reads an optional numeric limit from command["args"] to cap the number of conversations to extract, then runs the extraction using GeminiExtractor. On success returns a formatted summary with counts (extracted, processed, total messages), duration, storage location, and next-step guidance. On an extraction failure returns a formatted list of errors and warnings. On unexpected exceptions returns a concise error message containing the exception.
+        
+        Parameters:
+            command (Dict[str, Any]): Parsed command dictionary; expected to contain an optional "args" entry representing a numeric limit for extraction.
+            variables (Dict[str, Any]): Additional runtime variables (may be unused by this handler).
+        
+        Returns:
+            str: A human-readable report describing the extraction outcome (success summary, failure details, or error message).
+        """
         args = command["args"]
         max_conversations = None
         
@@ -158,7 +199,16 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
             return f"❌ **Extraction Error:** {e}"
     
     async def _handle_list(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle listing conversations."""
+        """
+        List recent conversations and present a summary.
+        
+        Parameters:
+            command (Dict[str, Any]): Parsed command with an "args" entry optionally containing a numeric limit for results.
+            variables (Dict[str, Any]): Execution variables and context (unused by this handler but passed through by the agent).
+        
+        Returns:
+            str: A user-facing summary message. The handler also prints a formatted table of recent conversations to the console and returns a short summary with next-step guidance.
+        """
         args = command["args"]
         limit = 10
         
@@ -196,7 +246,16 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
         return f"📊 **Found {len(conversations)} conversations**\n\nUse `zen pkm search <query>` to search through conversations or `zen pkm stats` for detailed statistics."
     
     async def _handle_search(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle searching conversations."""
+        """
+        Search stored conversations for the provided query and display results in a formatted table.
+        
+        Parameters:
+        	command (Dict[str, Any]): Command dictionary; expects the search text in `command["args"]`.
+        	variables (Dict[str, Any]): Runtime variables or context (not required for search).
+        
+        Returns:
+        	result (str): A user-facing summary message indicating the search outcome (error when missing query, no matches, or a summary of found conversations).
+        """
         query = command["args"]
         
         if not query:
@@ -232,7 +291,13 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
         return f"📊 **Found {len(conversations)} conversations matching '{query}'**\n\nUse `zen pkm list` to see all conversations or refine your search query."
     
     async def _handle_process(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle conversation processing."""
+        """
+        Process unprocessed conversations to extract knowledge, save updated conversations, and count created knowledge entries.
+        
+        The returned string is a user-facing, formatted summary that includes the number of conversations processed, the number of knowledge entries created, the knowledge base storage location, and brief next-step guidance.
+        Returns:
+            summary (str): Formatted summary of processing results and next steps.
+        """
         console.print("[cyan]🔄 Processing conversations for knowledge extraction...[/cyan]")
         
         conversations = self.storage.list_conversations()
@@ -266,7 +331,19 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 - Use `zen pkm stats` to view detailed statistics"""
     
     async def _handle_schedule(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle scheduling operations."""
+        """
+        Dispatch and execute PKM scheduler commands extracted from the parsed user command.
+        
+        Supports the following subcommands in command["args"]:
+        - "list": list scheduled jobs via the scheduler.
+        - "start": start the scheduler (demo implementation; does not spawn a background daemon here).
+        - "stop": stop the scheduler.
+        - "run <job_name>": run a specific scheduled job immediately.
+        - any other value: return a brief help text describing available scheduler commands and default jobs.
+        
+        Returns:
+            str: A user-facing status message describing the outcome or help text for the requested scheduler action.
+        """
         args = command["args"].lower().strip()
         
         if args == "list":
@@ -305,7 +382,16 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 - `cleanup_old_data` - Clean up old data files"""
     
     async def _handle_export(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle data export."""
+        """
+        Export conversations and the knowledge base to a chosen format and return a human-readable status message.
+        
+        Parameters:
+            command (Dict[str, Any]): Parsed command object; expected to contain an "args" string indicating the export format ("json", "markdown", or "md"). If empty or missing, defaults to "json".
+            variables (Dict[str, Any]): Additional runtime variables (not required for export).
+        
+        Returns:
+            str: A formatted message describing the result. On success, includes paths to the exported conversations and knowledge base and the export directory. If the format is unsupported, returns an error message indicating valid formats. If an exception occurs during export, returns a failure message containing the exception text.
+        """
         args = command["args"].lower().strip()
         format_type = "json"
         
@@ -341,7 +427,12 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
             return f"❌ **Export Failed:** {e}"
     
     async def _handle_stats(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle statistics display."""
+        """
+        Render PKM storage and content statistics as a formatted markdown string.
+        
+        Returns:
+            A string containing a human-readable Markdown summary of storage metrics (conversation and knowledge entry counts, total size, processed conversation count), content metrics (total and average message counts), relevant directory paths (conversations, knowledge base, exports), and current configuration flags (auto-summarize, extract keywords, generate tags, storage format).
+        """
         stats = self.storage.get_statistics()
         
         # Get additional stats
@@ -375,7 +466,12 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 - Storage format: {self.config.storage_format}"""
     
     async def _handle_help(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
-        """Handle help command."""
+        """
+        Return the help text describing available PKM agent commands, scheduling controls, configuration, examples, workflow, and a demo disclaimer.
+        
+        Returns:
+            help_text (str): A Markdown-formatted help message that lists core commands (extract, list, search, process, export, stats), scheduling commands, configuration notes (environment variables and config path), usage examples, a recommended workflow, and a note that the implementation is a demo.
+        """
         return """🧘 **PKM Agent Help**
 
 **Personal Knowledge Management for Google Gemini Conversations**
@@ -415,7 +511,16 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 **Note:** This is a demo implementation. Real Google Gemini extraction requires proper authentication and API access."""
     
     async def _handle_general_query(self, prompt: str, variables: Dict[str, Any]) -> str:
-        """Handle general queries about PKM."""
+        """
+        Generate expert, practical Personal Knowledge Management (PKM) guidance in response to a free-form user query.
+        
+        Parameters:
+            prompt (str): The user's PKM-related question or request.
+            variables (Dict[str, Any]): Optional runtime variables or context that may influence response generation.
+        
+        Returns:
+            str: A consolidated response containing actionable advice on PKM topics (extraction, organization, search, automation). On failure, an error message recommending `zen pkm help`.
+        """
         # Use AI to provide helpful responses about PKM
         try:
             async with OpenRouterProvider() as provider:

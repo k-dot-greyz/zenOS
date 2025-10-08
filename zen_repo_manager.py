@@ -40,10 +40,28 @@ class ZenRepoManager:
     """Unified repository management system"""
 
     def __init__(self):
+        """
+        Initialize the ZenRepoManager instance.
+        
+        Creates and stores a Colors helper on self.colors for colored terminal output.
+        """
         self.colors = Colors()
 
     def command_scan(self, args) -> int:
-        """Scan for local repositories"""
+        """
+        Scan the filesystem for local Git repositories and optionally print details or save results to JSON.
+        
+        Parameters:
+            args (argparse.Namespace): Parsed command-line arguments. Recognized attributes:
+                - path (List[str] | str, optional): Paths to scan; if omitted, default scan paths are used.
+                - max_depth (int, optional): Maximum directory depth to search (default 10).
+                - exclude (List[str], optional): Glob patterns to exclude from scanning.
+                - details (bool, optional): If true, print per-repository detailed information.
+                - json (str, optional): File path to write scan results in JSON format.
+        
+        Returns:
+            int: Exit code — `0` on success, `1` if no valid scan paths were provided.
+        """
         print_colored("🔍 Scanning for local repositories...", self.colors.BOLD)
 
         # Get scan paths
@@ -78,7 +96,15 @@ class ZenRepoManager:
         return 0
 
     def command_sync(self, args) -> int:
-        """Sync repositories with remote sources"""
+        """
+        Synchronize configured GitHub repositories into the local destination.
+        
+        Parameters:
+            args (argparse.Namespace): Parsed command-line arguments used to derive configuration for the sync operation.
+        
+        Returns:
+            int: Exit code — `0` on successful completion or when the user declines to proceed, `1` on fatal errors (for example when a GitHub token is unavailable or the destination directory cannot be ensured).
+        """
         print_colored("🔄 Syncing repositories...", self.colors.BOLD)
 
         # This combines local scanning with GitHub operations
@@ -130,7 +156,15 @@ class ZenRepoManager:
         return 0
 
     def command_status(self, args) -> int:
-        """Check status of repositories"""
+        """
+        Scan provided or default filesystem paths for Git repositories, aggregate their statuses, and print a formatted status report.
+        
+        Parameters:
+            args (argparse.Namespace): Parsed command-line arguments. If `args.path` is present and non-empty, those paths are used for scanning; otherwise default scan paths are used.
+        
+        Returns:
+            int: Exit code `0` on success.
+        """
         print_colored("📊 Checking repository status...", self.colors.BOLD)
 
         # Get repositories
@@ -148,7 +182,17 @@ class ZenRepoManager:
         return 0
 
     def command_audit(self, args) -> int:
-        """Perform comprehensive repository audit"""
+        """
+        Run a full audit of local repositories and present the results.
+        
+        Scans the default repository paths, generates a detailed audit, prints a human-readable audit report, and if the provided args include an `output` path, saves the audit to that file.
+        
+        Parameters:
+            args (argparse.Namespace): Parsed command arguments. May include an optional `output` attribute (str or pathlib.Path) specifying a file path to write the audit JSON.
+        
+        Returns:
+            int: Exit code (`0` on success).
+        """
         print_colored("🔍 Performing repository audit...", self.colors.BOLD)
 
         # Get repositories
@@ -166,7 +210,24 @@ class ZenRepoManager:
         return 0
 
     def _analyze_repo_status(self, repositories: List[Dict]) -> Dict:
-        """Analyze repository status"""
+        """
+        Produce a summary report of repository health and distribution.
+        
+        Parameters:
+            repositories (List[Dict]): List of repository info dictionaries. Each dictionary may contain the keys
+                'status' (str), 'branch' (str), 'uncommitted_changes' (truthy if present),
+                'ahead_behind' (truthy if present), and 'remote_url' (str or falsy).
+        
+        Returns:
+            Dict: Summary report with the following keys:
+                - total_repos (int): Total number of repositories processed.
+                - by_status (Dict[str, int]): Counts of repositories grouped by their 'status' value.
+                - by_branch (Dict[str, int]): Counts of repositories grouped by their 'branch' value.
+                - uncommitted_changes (int): Number of repositories with uncommitted changes.
+                - ahead_behind (int): Number of repositories reported as ahead/behind their remote.
+                - no_remote (int): Number of repositories missing a remote URL.
+                - errors (int): Number of repositories whose status is 'error' or 'invalid'.
+        """
         report = {
             'total_repos': len(repositories),
             'by_status': {},
@@ -199,7 +260,19 @@ class ZenRepoManager:
         return report
 
     def _print_status_report(self, report: Dict) -> None:
-        """Print status report"""
+        """
+        Prints a formatted, colorized repository status report to the console.
+        
+        Parameters:
+            report (Dict): Aggregated status data with these keys:
+                - total_repos (int): Total number of repositories scanned.
+                - by_status (Dict[str, int]): Counts of repositories grouped by status (e.g., 'valid', 'invalid').
+                - by_branch (Dict[str, int]): Counts of repositories per branch name.
+                - uncommitted_changes (int): Number of repositories with uncommitted changes.
+                - ahead_behind (int): Number of repositories that are ahead of or behind their remote.
+                - no_remote (int): Number of repositories without a configured remote.
+                - errors (int): Number of repositories with errors or invalid state.
+        """
         print_colored(f"\n{'='*50}", self.colors.BLUE)
         print_colored("📊 REPOSITORY STATUS REPORT", self.colors.BOLD)
         print_colored(f"{'='*50}", self.colors.BLUE)
@@ -222,7 +295,20 @@ class ZenRepoManager:
         print_colored(f"  ❌ Errors: {report['errors']}", self.colors.RED)
 
     def _perform_audit(self, repositories: List[Dict]) -> Dict:
-        """Perform comprehensive repository audit"""
+        """
+        Builds a comprehensive audit for the given repositories.
+        
+        Parameters:
+            repositories (List[Dict]): A list of repository status dictionaries (one per repository) to evaluate.
+        
+        Returns:
+            Dict: An audit object containing:
+                - timestamp: ISO-8601 timestamp when the audit was created.
+                - summary: Aggregated status summary for all repositories.
+                - issues: Flattened list of detected issues across repositories.
+                - recommendations: Flattened list of recommendations across repositories.
+                - repositories: Per-repository audit entries with issues, recommendations, and health score.
+        """
         audit = {
             'timestamp': datetime.now().isoformat(),
             'summary': {},
@@ -250,7 +336,27 @@ class ZenRepoManager:
         return audit
 
     def _audit_single_repo(self, repo: Dict) -> Dict:
-        """Audit a single repository"""
+        """
+        Evaluate a repository for health issues and generate recommendations and a numeric health score.
+        
+        Parameters:
+            repo (Dict): Repository metadata with expected keys:
+                - name: repository name
+                - path: filesystem path
+                - status: status string (e.g., "valid", "error")
+                - remote_url: remote repository URL or falsy if none
+                - uncommitted_changes: truthy if there are uncommitted changes
+                - ahead_behind: string describing ahead/behind state (may include "behind")
+                - last_commit: string containing an ISO-8601 datetime (used to compute age)
+        
+        Returns:
+            Dict: Audit summary containing:
+                - repo_name (str): repository name
+                - path (str): repository path
+                - issues (List[str]): detected problems
+                - recommendations (List[str]): actionable suggestions
+                - health_score (int): overall health between 0 and 100 (higher is better)
+        """
         issues = []
         recommendations = []
 
@@ -291,7 +397,16 @@ class ZenRepoManager:
         }
 
     def _print_audit_report(self, audit: Dict) -> None:
-        """Print audit report"""
+        """
+        Prints a formatted audit report summarizing repository health, issues, and recommendations.
+        
+        Parameters:
+            audit (Dict): Audit object with keys:
+                - summary (Dict): overall counts (e.g., 'total_repos', 'by_status', 'errors').
+                - issues (List[str]): collected critical issue messages.
+                - recommendations (List[str]): collected recommendation messages.
+                - repositories (List[Dict]): per-repo audit entries; each entry must include a 'health_score' numeric value.
+        """
         print_colored(f"\n{'='*60}", self.colors.BLUE)
         print_colored("🔍 REPOSITORY AUDIT REPORT", self.colors.BOLD)
         print_colored(f"{'='*60}", self.colors.BLUE)
@@ -330,7 +445,16 @@ class ZenRepoManager:
             print_colored(f"  🔴 Critical (<50): {critical}", self.colors.RED)
 
     def _save_audit_report(self, audit: Dict, output_file: Path) -> None:
-        """Save audit report to file"""
+        """
+        Write the audit dictionary to the given file as pretty-printed UTF-8 JSON and report success or failure.
+        
+        Parameters:
+            audit (Dict): Audit data structure to serialize to JSON.
+            output_file (Path): Path to the file where the JSON will be written; parent directories must exist.
+        
+        Notes:
+            On success prints a confirmation message. On failure prints an error message with the exception details; exceptions are not propagated.
+        """
         try:
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(audit, f, indent=2, ensure_ascii=False)
@@ -339,7 +463,14 @@ class ZenRepoManager:
             print_colored(f"❌ Failed to save audit report: {e}", self.colors.RED)
 
 def main():
-    """Main entry point"""
+    """
+    Parse command-line arguments and dispatch the selected subcommand to the ZenRepoManager.
+    
+    Sets up the CLI with subcommands: scan (discover local repositories), sync (synchronize with remote GitHub repositories), status (check repository status), and audit (generate repository audit). Adds command-specific and global options, creates a ZenRepoManager instance, and invokes the matching command handler. If no command is provided or the command is unknown, prints help or an error and returns a non-zero exit code.
+    
+    Returns:
+        int: Exit code where `0` indicates success and `1` indicates an error, missing command, or unknown command.
+    """
     parser = argparse.ArgumentParser(
         description="zenOS Repository Manager - Unified Git Repository Management",
         formatter_class=argparse.RawDescriptionHelpFormatter
