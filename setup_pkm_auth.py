@@ -8,6 +8,14 @@ import sys
 from pathlib import Path
 
 def main():
+    """
+    Guide the user through PKM Gemini authentication setup by printing step-by-step instructions and validating the environment.
+    
+    Prints guidance on obtaining Gemini cookies/tokens and how to configure them (environment variables or a .env file), then checks that the "zen/pkm" directory exists and that the GEMINI_SESSION_COOKIE and GEMINI_CSRF_TOKEN environment variables are present.
+    
+    Returns:
+        True if the "zen/pkm" directory exists and both GEMINI_SESSION_COOKIE and GEMINI_CSRF_TOKEN are set, False otherwise.
+    """
     print("PKM Module Authentication Setup")
     print("=" * 40)
     
