@@ -1,0 +1,5 @@
+# CODEOWNERS file for zenOS repository
+# This file defines who is responsible for code review
+# All files require approval from @k-dot-greyz
+
+* @k-dot-greyz
