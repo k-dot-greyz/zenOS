@@ -212,9 +212,11 @@ def test_processor():
         config.auto_summarize = True
         config.extract_keywords = True
         config.generate_tags = True
+        config.pkm_dir = Path("test_pkm_processor")
         
-        # Initialize processor
-        processor = ConversationProcessor(config)
+        # Initialize storage and processor
+        storage = PKMStorage(config)
+        processor = ConversationProcessor(config, storage)
         print("✅ ConversationProcessor initialized")
         
         # Create test conversation

@@ -240,7 +240,7 @@ class ConversationProcessor:
                         entry_type="code",
                         confidence=0.9,
                         tags=["code", "programming"],
-                        keywords=await self._extract_keywords_from_text(code_block)
+                        keywords=self._extract_keywords_from_text(code_block)
                     )
                     entries.append(entry)
                 
@@ -257,7 +257,7 @@ class ConversationProcessor:
                         entry_type="list",
                         confidence=0.8,
                         tags=["list", "structured"],
-                        keywords=await self._extract_keywords_from_text(content)
+                        keywords=self._extract_keywords_from_text(content)
                     )
                     entries.append(entry)
                 
@@ -274,13 +274,13 @@ class ConversationProcessor:
                         entry_type="definition",
                         confidence=0.85,
                         tags=["definition", "explanation"],
-                        keywords=await self._extract_keywords_from_text(content)
+                        keywords=self._extract_keywords_from_text(content)
                     )
                     entries.append(entry)
         
         return entries
     
-    async def _extract_keywords_from_text(self, text: str) -> List[str]:
+    def _extract_keywords_from_text(self, text: str) -> List[str]:
         """
         Extracts the most frequent keywords from a block of text.
         
