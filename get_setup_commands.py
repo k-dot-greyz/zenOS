@@ -30,14 +30,14 @@ def get_windows_commands():
     """Windows-specific setup commands"""
     return {
         "platform": "Windows",
-        "one_liner": "git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "winget install Git.Git",
             "winget install Python.Python.3.11", 
             "winget install OpenJS.NodeJS"
         ],
         "setup": [
-            "git clone https://github.com/kasparsgreizis/zenOS.git",
+            "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
             "python setup.py --unattended"
         ],
@@ -48,7 +48,7 @@ def get_linux_commands():
     """Linux-specific setup commands"""
     return {
         "platform": "Linux",
-        "one_liner": "git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "sudo apt update && sudo apt install git python3 python3-pip nodejs",
             "# Or for other distros:",
@@ -56,7 +56,7 @@ def get_linux_commands():
             "# sudo pacman -S git python python-pip nodejs     # Arch"
         ],
         "setup": [
-            "git clone https://github.com/kasparsgreizis/zenOS.git",
+            "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS", 
             "python3 setup.py --unattended"
         ],
@@ -67,14 +67,14 @@ def get_macos_commands():
     """macOS-specific setup commands"""
     return {
         "platform": "macOS",
-        "one_liner": "git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "brew install git python node",
             "# If you don't have Homebrew:",
             "# /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
         ],
         "setup": [
-            "git clone https://github.com/kasparsgreizis/zenOS.git",
+            "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
             "python3 setup.py --unattended"
         ],
@@ -85,13 +85,13 @@ def get_generic_commands():
     """Generic setup commands for unknown platforms"""
     return {
         "platform": "Unknown",
-        "one_liner": "git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "Install Git, Python 3.7+, and Node.js (optional)",
             "See docs/guides/DEV_ENVIRONMENT_SETUP.md for details"
         ],
         "setup": [
-            "git clone https://github.com/kasparsgreizis/zenOS.git",
+            "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
             "python setup.py --unattended"
         ],
@@ -106,13 +106,13 @@ def get_termux_commands():
     """Termux-specific setup commands"""
     return {
         "platform": "Termux (Android)",
-        "one_liner": "pkg update && pkg upgrade && pkg install git python nodejs && git clone https://github.com/kasparsgreizis/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": "pkg update && pkg upgrade && pkg install git python nodejs && git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "pkg update && pkg upgrade",
             "pkg install git python nodejs"
         ],
         "setup": [
-            "git clone https://github.com/kasparsgreizis/zenOS.git",
+            "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
             "python setup.py --unattended"
         ],

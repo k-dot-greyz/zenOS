@@ -19,24 +19,24 @@ You'll learn how to:
 
 #### Desktop (Windows/Mac/Linux)
 ```bash
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
 ```
 
 #### Mobile (Termux/Android)
 ```bash
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
 ```
 
 #### Offline Mode (No Internet)
 ```bash
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/setup-offline.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup-offline.sh | bash
 ```
 
 ### Manual Setup
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/kasparsgreizis/zenOS.git
+   git clone https://github.com/k-dot-greyz/zenOS.git
    cd zenOS
    ```
 

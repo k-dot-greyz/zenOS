@@ -67,7 +67,7 @@ Since Docker in Termux can be a pain, let's also set up native:
 pacman -S python python-pip git
 
 # Clone zenOS
-git clone https://github.com/kasparsgreizis/zenOS.git
+git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
 # Install directly (screw Docker on mobile)

@@ -82,7 +82,7 @@ class OpenRouterSync:
         async with httpx.AsyncClient() as client:
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "HTTP-Referer": "https://github.com/kasparsgreizis/zenOS",
+                "HTTP-Referer": "https://github.com/k-dot-greyz/zenOS",
                 "X-Title": "zenOS Pokédex"
             }
             

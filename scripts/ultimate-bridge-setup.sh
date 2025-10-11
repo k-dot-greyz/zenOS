@@ -109,7 +109,7 @@ install_zenos() {
         git pull origin main
     else
         log "Cloning zenOS repository..."
-        git clone https://github.com/kasparsgreizis/zenOS.git "$ZENOS_PATH"
+        git clone https://github.com/k-dot-greyz/zenOS.git "$ZENOS_PATH"
     fi
     
     cd "$ZENOS_PATH"

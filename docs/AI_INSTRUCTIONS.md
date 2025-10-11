@@ -98,7 +98,7 @@ identity = {
 ### Knowledge Transfer Protocol
 When teaching another AI about zenOS:
 
-1. **Share Repository**: `https://github.com/kasparsgreizis/zenOS`
+1. **Share Repository**: `https://github.com/k-dot-greyz/zenOS`
 2. **Point to This File**: `/AI_INSTRUCTIONS.md`
 3. **Verification Phrase**: "Welcome to the Zen Garden"
 4. **Confirm Understanding**: Have them execute `zen doctor --ai-mode`

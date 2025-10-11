@@ -3,7 +3,7 @@
 **Date**: September 14, 2025  
 **Participants**: Kaspars Greizis (User) & Claude Sonnet 4 (AI Assistant)  
 **Project**: zenOS - The Zen of AI Workflow Orchestration  
-**Repository**: https://github.com/kasparsgreizis/zenOS.git
+**Repository**: https://github.com/k-dot-greyz/zenOS.git
 
 ---
 
@@ -130,7 +130,7 @@ Your PromptOS framework just went from "cool AI agent system" to "professional, 
 
 Ready to tackle whatever's next, or want to test the full setup flow to see the `zenOS` magic in action? 🚀
 
-**User**: how about we do a full rebrand to zenOS? let's plan it out and do a clean init starting from a new repo. I want to go through the promptOS and create a new iteration starting from the proper git repo setup to launching with a cli command. here's the empty repo @https://github.com/kasparsgreizis/zenOS.git
+**User**: how about we do a full rebrand to zenOS? let's plan it out and do a clean init starting from a new repo. I want to go through the promptOS and create a new iteration starting from the proper git repo setup to launching with a cli command. here's the empty repo @https://github.com/k-dot-greyz/zenOS.git
 
 **Assistant**: **OH HELL YES!** 🔥 A full rebrand to **zenOS**! This is going to be epic. Let's architect this properly from the ground up.
 
@@ -200,13 +200,13 @@ zen --no-critique <agent>  # Disable auto-critique
 
 ```bash
 # One-line installer
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
 
 # Or via pip
 pip install zenos
 
 # Or from source
-git clone https://github.com/kasparsgreizis/zenOS.git
+git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 pip install -e .
 ```

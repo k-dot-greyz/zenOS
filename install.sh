@@ -1,6 +1,6 @@
 #!/bin/bash
 # zenOS Universal Installer - One Command to Rule Them All!
-# Usage: curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
 
 set -e
 
@@ -87,7 +87,7 @@ install_deps() {
             ;;
         *)
             echo -e "${RED}❌ Unsupported platform: $OSTYPE${NC}"
-            echo "Please install manually: https://github.com/kasparsgreizis/zenOS"
+            echo "Please install manually: https://github.com/k-dot-greyz/zenOS"
             exit 1
             ;;
     esac
@@ -151,7 +151,7 @@ main() {
     # Clone repository if not already present
     if [[ ! -d "zenOS" ]]; then
         echo "📥 Cloning zenOS repository..."
-        git clone https://github.com/kasparsgreizis/zenOS.git
+        git clone https://github.com/k-dot-greyz/zenOS.git
     fi
     
     cd zenOS
@@ -189,9 +189,9 @@ main() {
     esac
     echo ""
     echo "📚 Full guides:"
-    echo "  Mobile: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_MOBILE.md"
-    echo "  Windows: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_WINDOWS.md"
-    echo "  Linux: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_LINUX.md"
+    echo "  Mobile: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_MOBILE.md"
+    echo "  Windows: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_WINDOWS.md"
+    echo "  Linux: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_LINUX.md"
     echo ""
     echo "Welcome to zenOS! Enjoy the zen!"
 }
