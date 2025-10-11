@@ -47,7 +47,7 @@ check_zenos() {
     if [ ! -d "$ZENOS_PATH" ]; then
         log_error "zenOS not found at $ZENOS_PATH"
         log "Installing zenOS..."
-        curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+        curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
         if [ $? -eq 0 ]; then
             log_success "zenOS installed successfully"
         else

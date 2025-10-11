@@ -15,7 +15,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # Configuration
-PRIVATE_REPO="https://github.com/kasparsgreizis/zenOS-dev.git"
+PRIVATE_REPO="https://github.com/k-dot-greyz/zenOS-dev.git"
 DEVELOPMENT_BRANCH="development"
 MAIN_BRANCH="main"
 
