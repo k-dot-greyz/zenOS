@@ -1,255 +1,221 @@
-# TTS Queue System for Voice Models/Agents
+# zenOS: The Zen of AI Workflow Orchestration 🧘
 
-A robust, thread-safe Text-to-Speech queue system designed to handle high-frequency TTS requests from sources like streamer donation messages, preventing race conditions and ensuring proper audio playback ordering.
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Status: Alpha](https://img.shields.io/badge/status-alpha-orange)](https://github.com/k-dot-greyz/zenOS)
 
-## Features
+**zenOS** is a personal context operating system designed to transform disparate thoughts, conversations, and data points into a unified, intelligent workflow. It's not just software—it's a philosophy for interacting with your own intellectual and creative landscape.
 
-- **Thread-Safe Operations**: Uses asyncio and threading for concurrent processing
-- **Priority-Based Queue**: Different priority levels for different message types
-- **Audio Overlap Prevention**: Prevents multiple audio streams from playing simultaneously
-- **Rate Limiting**: Configurable rate limiting to prevent system overload
-- **Multiple TTS Engine Support**: Works with pyttsx3, Google TTS, Azure Speech Services
-- **Streamer Bot Integration**: Built-in support for donation, subscription, and chat messages
-- **WebSocket API**: Real-time message handling via WebSocket
-- **Comprehensive Testing**: Full test suite with unit and integration tests
+## What is zenOS?
+
+zenOS aims to squeeze every last drop of human cognition and creativity by establishing a seamless interface with your constantly evolving **Personal Context Core (PCC)**. It reduces cognitive load, fosters semantic connections, and enables effortless exploration of your personal universe of ideas.
+
+### Core Philosophy
+
+- **Effortless Capture**: Ingest context with minimal friction
+- **Semantic Flow**: Surface latent connections across your knowledge graph
+- **Minimal Cognitive Load**: Act as an intelligent extension of memory
+- **Playful Exploration**: Encourage divergent thinking and experimental branches
+- **Personal Sovereignty**: Your data, your control, always
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│             Personal Context Core (PCC)          │
+│  Living database of knowledge & conversations    │
+│  Vector embeddings • Semantic retrieval          │
+└────────────────┬────────────────────────────────┘
+                 │
+        ┌────────┴────────┐
+        │   Bender 🤖     │
+        │  AI Assistant   │
+        └────────┬────────┘
+                 │
+    ┌────────────┴────────────┐
+    │                         │
+┌───▼────┐              ┌─────▼─────┐
+│  CLI   │              │  Plugins  │
+│ Tools  │              │  System   │
+└────────┘              └───────────┘
+```
+
+### Core Components
+
+1. **Personal Context Core (PCC)**
+   - Central database of your knowledge, conversations, and creative output
+   - Advanced text embeddings and vector search
+   - Your ultimate long-term memory
+
+2. **Bender 🤖**
+   - Primary AI interface and "consciousness" of zenOS
+   - Manages context ingestion and retrieval
+   - Synthesizes answers and draws semantic connections
+
+3. **Repository Management**
+   - Comprehensive git repository organization
+   - Multi-account GitHub integration
+   - Automated health auditing and maintenance
+
+4. **Plugin System**
+   - Extensible architecture for custom workflows
+   - PKM (Personal Knowledge Management) integration
+   - MCP server support for AI assistants
 
 ## Quick Start
 
 ### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/k-dot-greyz/zenOS.git
+cd zenOS
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Or install as a package
+pip install -e .
 ```
 
 ### Basic Usage
 
-```python
-import asyncio
-from tts_queue_system import TTSQueueManager, TTSConfig, MessagePriority
+```bash
+# Start zenOS CLI
+zen
 
-async def main():
-    # Create configuration
-    config = TTSConfig(
-        max_queue_size=1000,
-        max_concurrent_workers=3,
-        rate_limit_per_minute=60
-    )
-    
-    # Create TTS manager
-    tts_manager = TTSQueueManager(config)
-    
-    # Set up TTS engine (example with pyttsx3)
-    import pyttsx3
-    engine = pyttsx3.init()
-    
-    async def tts_engine(text: str, **kwargs) -> bytes:
-        # Your TTS implementation here
-        return b"audio_data"
-    
-    tts_manager.set_tts_engine(tts_engine)
-    
-    # Start the system
-    await tts_manager.start()
-    
-    # Add messages
-    tts_manager.add_message("Hello world!", MessagePriority.NORMAL)
-    tts_manager.add_message("Urgent message!", MessagePriority.URGENT)
-    
-    # Wait for processing
-    await asyncio.sleep(5)
-    
-    # Stop the system
-    await tts_manager.stop()
+# Chat with Bender
+zen chat "Help me organize my thoughts"
 
-asyncio.run(main())
+# Manage repositories
+zen repo scan
+zen repo audit
+
+# View available procedures
+zen procedures list
+
+# Get help
+zen help
 ```
 
-## Architecture
+### Configuration
 
-### Core Components
-
-1. **TTSQueueManager**: Main orchestrator that manages the queue and workers
-2. **TTSWorker**: Individual worker threads that process TTS requests
-3. **AudioManager**: Handles audio playback scheduling and overlap prevention
-4. **RateLimiter**: Implements rate limiting to prevent system overload
-5. **TTSMessage**: Data structure representing a TTS request
-
-### Priority System
-
-Messages are processed based on priority levels:
-
-- **URGENT**: High-value donations ($100+), critical alerts
-- **HIGH**: Regular donations, subscriptions, follows, raids
-- **NORMAL**: Commands, general alerts
-- **LOW**: Regular chat messages (if enabled)
-
-### Race Condition Prevention
-
-The system prevents race conditions through:
-
-1. **Thread-Safe Queues**: Using Python's `queue.PriorityQueue`
-2. **Audio Overlap Detection**: Prevents multiple audio streams
-3. **Atomic Operations**: All queue operations are atomic
-4. **Worker Synchronization**: Coordinated worker management
-
-## Streamer Bot Integration
-
-The system includes built-in support for common streamer bot scenarios:
-
-```python
-from tts_integration_example import StreamerBotIntegration
-
-# Create streamer bot
-streamer_bot = StreamerBotIntegration(tts_manager)
-
-# Process different types of events
-streamer_bot.process_donation("VIP_User", 150.0, "Keep up the great work!")
-streamer_bot.process_subscription("NewSub", 1, "First time subscribing!")
-streamer_bot.process_follow("NewFollower")
-streamer_bot.process_chat_message("Moderator", "!tts Welcome everyone!", is_mod=True)
-```
-
-## TTS Engine Integration
-
-### pyttsx3 (Offline, Fast)
-
-```python
-from tts_integration_example import Pyttsx3TTSEngine
-
-engine = Pyttsx3TTSEngine(voice_id="english", rate=200)
-tts_manager.set_tts_engine(engine.generate_audio)
-```
-
-### Google Text-to-Speech (Online, High Quality)
-
-```python
-from tts_integration_example import GTTS_Engine
-
-engine = GTTS_Engine(language='en', tld='com')
-tts_manager.set_tts_engine(engine.generate_audio)
-```
-
-### Azure Speech Services (Enterprise)
-
-```python
-from tts_integration_example import AzureTTS_Engine
-
-engine = AzureTTS_Engine(
-    subscription_key="your_key",
-    region="your_region",
-    voice_name="en-US-AriaNeural"
-)
-tts_manager.set_tts_engine(engine.generate_audio)
-```
-
-## WebSocket API
-
-Start a WebSocket server for real-time message handling:
-
-```python
-from tts_integration_example import WebSocketServer
-
-# Create WebSocket server
-server = WebSocketServer(streamer_bot, host="localhost", port=8765)
-
-# Start server
-await server.start_server()
-```
-
-### WebSocket Message Format
-
-```json
-{
-  "type": "donation",
-  "donor_name": "JohnDoe",
-  "amount": 25.0,
-  "message": "Great stream!"
-}
-```
-
-## Configuration
-
-The system can be configured via JSON:
-
-```json
-{
-  "tts_queue": {
-    "max_queue_size": 1000,
-    "max_concurrent_workers": 3,
-    "rate_limit_per_minute": 60,
-    "enable_priority_queue": true
-  },
-  "streamer_bot": {
-    "priorities": {
-      "donation": "URGENT",
-      "subscription": "HIGH",
-      "chat": "LOW"
-    }
-  }
-}
-```
-
-## Testing
-
-Run the test suite:
+Copy the example environment file and configure:
 
 ```bash
-pytest test_tts_queue_system.py -v
+cp env.example .env
+# Edit .env with your settings
 ```
 
-## Performance Considerations
+## Features
 
-### Queue Size
-- Set `max_queue_size` based on expected peak load
-- Monitor queue size via `get_stats()`
+### 🧠 Personal Knowledge Management
+- Semantic search across your knowledge base
+- Context-aware retrieval and synthesis
+- Automatic link discovery between ideas
 
-### Worker Count
-- More workers = higher throughput but more resource usage
-- Recommended: 2-4 workers for most use cases
+### 📦 Repository Management
+- Local repository discovery and cataloging
+- GitHub integration with multi-account support
+- Automated health scoring and recommendations
+- Unified CLI interface for all operations
 
-### Rate Limiting
-- Prevents overwhelming TTS engines
-- Adjust `rate_limit_per_minute` based on TTS engine capabilities
+### 🔌 Plugin System
+- Extensible architecture
+- Custom workflow integration
+- MCP server support
+- Easy plugin development
 
-### Memory Usage
-- Each queued message consumes memory
-- Consider implementing message persistence for very high loads
+### 🤖 AI Integration
+- Multiple AI provider support
+- Context-aware responses
+- Conversation history management
+- Swarm collaboration mode
 
-## Error Handling
+### 📱 Mobile Support
+- React Native mobile app (in development)
+- Cross-platform sync
+- Offline-first design
 
-The system includes comprehensive error handling:
+## Development
 
-- **Queue Full**: Raises `RuntimeError` when queue is full
-- **TTS Engine Errors**: Retries failed messages up to `max_retries`
-- **Audio Playback Errors**: Graceful fallback and logging
-- **Worker Errors**: Automatic worker recovery
+### Project Structure
 
-## Monitoring
-
-Get real-time statistics:
-
-```python
-stats = tts_manager.get_stats()
-print(f"Queue size: {stats['queue_size']}")
-print(f"Processed: {stats['total_processed']}")
-print(f"Failed: {stats['total_failed']}")
-print(f"Active workers: {stats['active_workers']}")
 ```
+zenOS/
+├── zen/                    # Core Python package
+│   ├── cli.py             # CLI interface
+│   ├── agents/            # AI agent implementations
+│   ├── pkm/               # Personal knowledge management
+│   ├── plugins/           # Plugin system
+│   └── core/              # Core utilities
+├── docs/                   # Documentation
+├── scripts/               # Utility scripts
+├── workspace/             # Mobile app workspace
+└── tests/                 # Test suite
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=zen --cov-report=term-missing
+
+# Run specific test file
+pytest test_zenos.py -v
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Documentation
+
+- [Genesis & Philosophy](docs/GENESIS.md) - Project origin and core principles
+- [AI Instructions](docs/AI_INSTRUCTIONS.md) - Guide for AI agents
+- [Setup Guide](docs/guides/SETUP_GUIDE.md) - Detailed setup instructions
+- [Quickstart Guide](docs/guides/QUICKSTART.md) - Get started quickly
+- [Repository Management](docs/REPOSITORY_MANAGEMENT.md) - Repo tools documentation
+
+## Use Cases
+
+- **Developers**: Manage multiple projects, codebases, and documentation
+- **Researchers**: Connect ideas across papers, notes, and conversations
+- **Creatives**: Track projects, inspiration, and creative evolution
+- **ADHD/Neurodiverse Users**: Reduce cognitive load with intelligent memory extension
+
+## Roadmap
+
+- [x] Core CLI framework
+- [x] Repository management system
+- [x] Plugin architecture
+- [x] PKM integration
+- [ ] Vector database implementation
+- [ ] Mobile app beta
+- [ ] GlitchBlow hardware integration
+- [ ] Multi-user collaboration features
 
 ## License
 
-MIT License - see LICENSE file for details.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 
-For issues and questions:
-- Create an issue on GitHub
-- Check the documentation
-- Review the test cases for usage examples
+- [GitHub Issues](https://github.com/k-dot-greyz/zenOS/issues)
+- [Documentation](https://zenos.ai/docs)
+- [Discord Community](https://discord.gg/zenos) (coming soon)
+
+## Acknowledgments
+
+Built with ❤️ by [Kaspars Greizis](https://github.com/k-dot-greyz) and the zenOS community.
+
+---
+
+*"In the chaos of information, find your zen."* 🧘✨
