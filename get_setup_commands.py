@@ -27,7 +27,17 @@ def detect_environment():
         return get_generic_commands()
 
 def get_windows_commands():
-    """Windows-specific setup commands"""
+    """
+    Provide a command set for setting up the development environment on Windows.
+    
+    Returns:
+        commands (dict): Dictionary with the following keys:
+            platform (str): Human-readable platform name ("Windows").
+            one_liner (str): Single-shell command that clones the zenOS repo and starts setup.
+            prerequisites (list[str]): Commands to install required tools (Git, Python, NodeJS) on Windows.
+            setup (list[str]): Step-by-step commands to clone the repo and run unattended setup.
+            validation (str): Command to validate the installed setup.
+    """
     return {
         "platform": "Windows",
         "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
@@ -45,7 +55,17 @@ def get_windows_commands():
     }
 
 def get_linux_commands():
-    """Linux-specific setup commands"""
+    """
+    Provide a dictionary of recommended setup and validation commands tailored for Linux development environments.
+    
+    Returns:
+        dict: A mapping with the following keys:
+            - platform (str): The platform name ("Linux").
+            - one_liner (str): A single command to clone the zenOS repo and start setup.
+            - prerequisites (list[str]): Suggested package installation commands and distro notes.
+            - setup (list[str]): Step-by-step commands to clone the repo and run unattended setup.
+            - validation (str): A command to validate the installation without making changes.
+    """
     return {
         "platform": "Linux",
         "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
@@ -64,7 +84,17 @@ def get_linux_commands():
     }
 
 def get_macos_commands():
-    """macOS-specific setup commands"""
+    """
+    Provide macOS-specific commands and metadata for setting up the development environment.
+    
+    Returns:
+        dict: A dictionary with the following keys:
+            platform (str): Human-readable platform name ("macOS").
+            one_liner (str): Single command to clone the repository and run setup.
+            prerequisites (list[str]): Homebrew-based prerequisite install commands and notes.
+            setup (list[str]): Ordered shell commands to clone the repo, enter it, and run unattended setup.
+            validation (str): Command to validate the installation.
+    """
     return {
         "platform": "macOS",
         "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
@@ -82,7 +112,17 @@ def get_macos_commands():
     }
 
 def get_generic_commands():
-    """Generic setup commands for unknown platforms"""
+    """
+    Provide a canonical set of setup commands for unknown or unsupported platforms.
+    
+    Returns:
+        commands (dict): A mapping with the following keys:
+            - platform (str): Human-readable platform name ("Unknown").
+            - one_liner (str): Single-shell command to clone the repository and run setup.
+            - prerequisites (list[str]): High-level prerequisite instructions or notes.
+            - setup (list[str]): Ordered shell commands to clone the repo and run unattended setup.
+            - validation (str): Command to validate the installation.
+    """
     return {
         "platform": "Unknown",
         "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
@@ -103,7 +143,17 @@ def check_termux():
     return os.environ.get("TERMUX_VERSION") is not None
 
 def get_termux_commands():
-    """Termux-specific setup commands"""
+    """
+    Provide Termux (Android) tailored setup commands for cloning and configuring the repository.
+    
+    Returns:
+        dict: A mapping with the following keys:
+            - platform: Platform name ("Termux (Android)").
+            - one_liner: Single shell command to install prerequisites, clone the repo, and run setup.
+            - prerequisites: List of prerequisite shell commands to run before setup.
+            - setup: Ordered list of commands for manual setup steps.
+            - validation: Command to validate the completed setup.
+    """
     return {
         "platform": "Termux (Android)",
         "one_liner": "pkg update && pkg upgrade && pkg install git python nodejs && git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",

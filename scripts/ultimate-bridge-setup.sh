@@ -99,7 +99,7 @@ install_essentials() {
     log_success "Essential packages installed"
 }
 
-# Install zenOS
+# install_zenos installs or updates the zenOS repository at $ZENOS_PATH, installs its Python dependencies, and creates a .env from env.example if one does not exist.
 install_zenos() {
     log "Installing zenOS..."
     
