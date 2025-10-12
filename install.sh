@@ -35,7 +35,7 @@ fi
 echo "🔍 Detected platform: $PLATFORM"
 echo ""
 
-# Function to install dependencies
+# install_deps installs required system packages and Python dependencies for the detected platform (termux, linux, macos, windows) and attempts to download NLTK corpora.
 install_deps() {
     case $PLATFORM in
         "termux")
@@ -146,7 +146,7 @@ install_sample() {
     echo "✅ Sample plugin installed!"
 }
 
-# Main installation
+# main orchestrates the zenOS installation: clones the repository if missing, installs dependencies, configures the environment, verifies the installation, installs a sample plugin, and prints quick-start and guide links.
 main() {
     # Clone repository if not already present
     if [[ ! -d "zenOS" ]]; then
