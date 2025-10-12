@@ -42,7 +42,9 @@ log_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1" | tee -a "$BRIDGE_LOG"
 }
 
-# Check if zenOS is installed
+# check_zenos verifies presence of zenOS at $ZENOS_PATH and installs it if missing.
+# If zenOS is not found, it runs the remote Termux installer script at
+# https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh; on installation failure the script exits with status 1.
 check_zenos() {
     if [ ! -d "$ZENOS_PATH" ]; then
         log_error "zenOS not found at $ZENOS_PATH"
