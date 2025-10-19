@@ -1,0 +1,92 @@
+{
+  "name": "zenos",
+  "version": "0.1.0",
+  "description": "The Zen of AI Workflow Orchestration",
+  "private": true,
+  "scripts": {
+    "commit": "cz",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "changelog:all": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+    "release": "./scripts/release.sh",
+    "release:patch": "./scripts/release.sh patch",
+    "release:minor": "./scripts/release.sh minor",
+    "release:major": "./scripts/release.sh major",
+    "release:dry": "standard-version --dry-run",
+    "release:auto": "standard-version",
+    "release:alpha": "standard-version --prerelease alpha",
+    "release:beta": "standard-version --prerelease beta"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k-dot-greyz/zenOS.git"
+  },
+  "keywords": [
+    "ai",
+    "workflow",
+    "orchestration",
+    "zen",
+    "mobile",
+    "offline",
+    "voice",
+    "automation"
+  ],
+  "author": "Kaspars Greizis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/k-dot-greyz/zenOS/issues"
+  },
+  "homepage": "https://github.com/k-dot-greyz/zenOS#readme",
+  "devDependencies": {
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "standard-version": "^9.5.0",
+    "conventional-changelog-cli": "^4.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "standard-version": {
+    "types": [
+      {"type": "feat", "section": "✨ Features"},
+      {"type": "fix", "section": "🐛 Bug Fixes"},
+      {"type": "docs", "section": "📚 Documentation"},
+      {"type": "style", "section": "💎 Styles", "hidden": true},
+      {"type": "refactor", "section": "♻️ Code Refactoring"},
+      {"type": "perf", "section": "⚡ Performance Improvements"},
+      {"type": "test", "section": "🧪 Tests", "hidden": true},
+      {"type": "build", "section": "🔧 Build System"},
+      {"type": "ci", "section": "🤖 CI/CD", "hidden": true},
+      {"type": "chore", "section": "🧹 Chores", "hidden": true},
+      {"type": "revert", "section": "⏪ Reverts"},
+      {"type": "mobile", "section": "📱 Mobile"},
+      {"type": "ai", "section": "🧠 AI/ML"},
+      {"type": "plugin", "section": "🔌 Plugins"},
+      {"type": "zen", "section": "🧘 Zen Improvements"}
+    ],
+    "skip": {
+      "bump": false,
+      "changelog": false,
+      "commit": false,
+      "tag": false
+    },
+    "scripts": {
+      "prebump": "echo 'Starting version bump...'",
+      "postbump": "echo 'Version bumped!'",
+      "precommit": "echo 'Committing release...'",
+      "posttag": "echo 'Tagged! Ready to push.'"
+    },
+    "bumpFiles": [
+      {
+        "filename": "pyproject.toml",
+        "updater": "scripts/python-version-updater.js"
+      },
+      {
+        "filename": "zen/__init__.py",
+        "updater": "scripts/python-init-updater.js"
+      }
+    ]
+  }
+}

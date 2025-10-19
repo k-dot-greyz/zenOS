@@ -1,0 +1,44 @@
+# <type>(<scope>): <subject>
+# 
+# <body>
+# 
+# <footer>
+
+# ============== Format ==============
+# type(scope): subject (50 chars max) 
+#
+# Body: Explain what and why (not how)
+# Keep lines under 72 characters
+#
+# Footer: Reference issues, breaking changes
+# ====================================
+
+# ============== Types ===============
+# feat:     ✨ New feature
+# fix:      🐛 Bug fix
+# docs:     📚 Documentation
+# style:    💎 Formatting
+# refactor: ♻️  Code restructuring
+# perf:     ⚡ Performance
+# test:     🧪 Tests
+# build:    🔧 Build/dependencies
+# ci:       🤖 CI/CD
+# chore:    🧹 Maintenance
+# mobile:   📱 Mobile-specific
+# ai:       🧠 AI/ML related
+# plugin:   🔌 Plugin system
+# zen:      🧘 Workflow improvements
+# ====================================
+
+# ============= Scopes ===============
+# core, cli, ui, mobile, plugins,
+# providers, context, setup, docs,
+# test, deps
+# ====================================
+
+# ============ Examples ==============
+# feat(cli): add voice input support
+# fix(mobile): resolve Termux battery issue
+# docs: update installation guide
+# refactor(core)!: redesign plugin API
+# ====================================
