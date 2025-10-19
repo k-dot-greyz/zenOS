@@ -30,7 +30,8 @@
 - [ ] Complex logic is well-documented
 - [ ] API changes are documented
 - [ ] README updated if necessary
-- [ ] CHANGELOG updated if applicable
+- [ ] CHANGELOG.md updated in [Unreleased] section
+- [ ] Following conventional commit format (see CONTRIBUTING.md)
 
 ### Security & Dependencies
 - [ ] No security vulnerabilities introduced
@@ -39,11 +40,12 @@
 - [ ] No debugging code or console logs left in production code
 
 ### Git & Version Control
-- [ ] Commit message is clear and descriptive
+- [ ] Commit message follows conventional format: type(scope): description
 - [ ] Changes are atomic and focused on a single concern
 - [ ] Branch is up to date with main/target branch
 - [ ] No merge conflicts
 - [ ] Files staged for commit are correct
+- [ ] Breaking changes noted with BREAKING CHANGE: footer
 
 ---
 
