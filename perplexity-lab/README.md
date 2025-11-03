@@ -10,7 +10,7 @@ The Perplexity Lab is where AI conversations become actionable insights. It's a 
 
 ## 📁 Structure
 
-```
+```text
 perplexity-lab/
 ├── conversations/        # Archived AI conversations
 ├── templates/           # Reusable templates for research
@@ -27,7 +27,7 @@ perplexity-lab/
 - Capture context and insights
 
 ### 2. Archive Phase
-- Export conversations to markdown
+- Export conversations to Markdown
 - Tag and categorize by topic
 - Store in `conversations/` with date stamps
 
@@ -117,7 +117,7 @@ This lab could become a zenOS plugin providing:
 ## 📋 Quick Start
 
 ### Archive a Conversation
-```bash
+```text
 # Manual method (for now)
 1. Export conversation from Perplexity
 2. Save to conversations/ with format: YYYY-MM-DD-topic.md
@@ -125,7 +125,7 @@ This lab could become a zenOS plugin providing:
 ```
 
 ### Use a Template
-```bash
+```text
 # Create new research session from template
 cp templates/research-template.md conversations/2025-10-24-new-research.md
 ```
