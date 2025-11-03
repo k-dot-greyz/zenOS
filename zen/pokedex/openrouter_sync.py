@@ -74,7 +74,14 @@ class OpenRouterSync:
         self.cache_duration = timedelta(hours=6)  # Cache for 6 hours
         
     async def fetch_models(self) -> List[Dict]:
-        """Fetch current model list from OpenRouter"""
+        """
+        Retrieve the current model list from the OpenRouter API and cache the result locally.
+        
+        If a valid local cache exists, it is returned instead of making a network request. On successful fetch the response is saved to the cache. If the HTTP request fails, the method attempts to return an existing cache (even if expired); if no cache is available, it returns an empty list.
+        
+        Returns:
+            models (List[Dict]): A list of model metadata dictionaries from OpenRouter, or an empty list if fetching fails and no cache is available.
+        """
         # Check cache first
         if self._is_cache_valid():
             return self._load_cache()
@@ -82,7 +89,7 @@ class OpenRouterSync:
         async with httpx.AsyncClient() as client:
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "HTTP-Referer": "https://github.com/kasparsgreizis/zenOS",
+                "HTTP-Referer": "https://github.com/k-dot-greyz/zenOS",
                 "X-Title": "zenOS Pokédex"
             }
             

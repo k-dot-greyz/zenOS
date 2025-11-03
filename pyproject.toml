@@ -34,6 +34,8 @@ dependencies = [
     "aiohttp>=3.8",
     "python-dotenv>=1.0",
     "prompt-toolkit>=3.0",
+    "beautifulsoup4>=4.12.0",
+    "schedule>=1.2.0",
 ]
 
 [project.optional-dependencies]
@@ -56,10 +58,10 @@ zen = "zen.cli:main"
 zenos = "zen.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/kasparsgreizis/zenOS"
+Homepage = "https://github.com/k-dot-greyz/zenOS"
 Documentation = "https://zenos.ai/docs"
-Repository = "https://github.com/kasparsgreizis/zenOS"
-Issues = "https://github.com/kasparsgreizis/zenOS/issues"
+Repository = "https://github.com/k-dot-greyz/zenOS"
+Issues = "https://github.com/k-dot-greyz/zenOS/issues"
 
 [tool.setuptools]
 packages = ["zen"]

@@ -7,7 +7,7 @@ param(
 )
 
 # Configuration
-$PRIVATE_REPO = "https://github.com/kasparsgreizis/zenOS-dev.git"
+$PRIVATE_REPO = "https://github.com/k-dot-greyz/zenOS-dev.git"
 $DEVELOPMENT_BRANCH = "development"
 $MAIN_BRANCH = "main"
 

@@ -383,7 +383,7 @@ zenOS v2.0 Help System
   - Rarity affects power multipliers
   - Tournament mode for multiple fighters
 
-For more: https://github.com/kasparsgreizis/zenOS
+For more: https://github.com/k-dot-greyz/zenOS
     """)
 
 if __name__ == '__main__':

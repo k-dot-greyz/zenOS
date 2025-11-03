@@ -8,7 +8,7 @@
 ## ✅ Current Implementation Status
 
 ### Repository Setup ✓
-- **GitHub**: https://github.com/kasparsgreizis/zenOS.git
+- **GitHub**: https://github.com/k-dot-greyz/zenOS.git
 - **Initial Commit**: Created with hash `fedeb0a`
 - **Status**: Local repository initialized, initial structure committed
 

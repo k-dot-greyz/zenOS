@@ -28,14 +28,14 @@ The airi-zenOS bridge system creates a seamless integration between airi (mobile
 
 ```bash
 # Complete setup in one command
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/ultimate-bridge-setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/ultimate-bridge-setup.sh | bash
 ```
 
 ### Manual Setup
 
 1. **Install zenOS**:
    ```bash
-   curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+   curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
    ```
 
 2. **Install airi**:
@@ -230,8 +230,8 @@ zen "using desktop compute"
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/kasparsgreizis/zenOS/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/kasparsgreizis/zenOS/discussions)
+- **Issues**: [GitHub Issues](https://github.com/k-dot-greyz/zenOS/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/k-dot-greyz/zenOS/discussions)
 - **Documentation**: [zenOS Docs](https://zenos.ai/docs)
 
 ---

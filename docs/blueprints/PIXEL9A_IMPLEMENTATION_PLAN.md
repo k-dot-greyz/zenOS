@@ -20,7 +20,7 @@
 **Step 2: zenOS Mobile-First Setup**
 ```bash
 # One-liner install (from QUICKSTART_TERMUX.md)
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
 
 # This gives us:
 # - Native Python environment
@@ -236,7 +236,7 @@ class MobileAIAdapter:
 echo "🚀 Setting up the ultimate mobile AI stack..."
 
 # 1. Install zenOS
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/termux-install.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
 
 # 2. Setup airi
 pkg install proot-distro

@@ -58,7 +58,7 @@ if [ -d "$HOME/zenOS" ]; then
     git pull
 else
     cd $HOME
-    git clone https://github.com/kasparsgreizis/zenOS.git
+    git clone https://github.com/k-dot-greyz/zenOS.git
 fi
 
 cd $HOME/zenOS
