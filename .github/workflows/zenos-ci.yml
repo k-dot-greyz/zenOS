@@ -34,12 +34,10 @@ jobs:
           pip install black isort flake8 yamllint
       
       - name: Check Python formatting with black
-        run: black --check . || echo "::warning::Black formatting check failed"
-        continue-on-error: true
+        run: black --check .
       
       - name: Check import sorting with isort
-        run: isort --check-only . || echo "::warning::Import sorting check failed"
-        continue-on-error: true
+        run: isort --check-only .
       
       - name: Lint Python with flake8
         run: |
@@ -79,7 +77,6 @@ jobs:
           else
             echo "No tests found, skipping"
           fi
-        continue-on-error: true
 
   # Security checks
   security:
