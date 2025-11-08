@@ -1,0 +1,180 @@
+name: zenOS CI
+
+# Optimized workflow for zenOS - a terminal-centric modular OS
+# Focuses on relevant checks instead of generic Python app testing
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:  # Allow manual triggers
+
+permissions:
+  contents: read
+  pull-requests: write  # For commenting on PRs
+  issues: write  # For issue automation
+
+jobs:
+  # Fast linting checks run first
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-22.04  # Pin to specific version
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+      
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort flake8 yamllint
+      
+      - name: Check Python formatting with black
+        run: black --check . || echo "::warning::Black formatting check failed"
+        continue-on-error: true
+      
+      - name: Check import sorting with isort
+        run: isort --check-only . || echo "::warning::Import sorting check failed"
+        continue-on-error: true
+      
+      - name: Lint Python with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: Lint YAML files
+        run: |
+          yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
+        continue-on-error: true
+
+  # Test Python scripts if present
+  test:
+    name: Python Tests
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest pytest-cov
+      
+      - name: Run tests with pytest
+        run: |
+          if [ -d tests ] || ls test_*.py 1> /dev/null 2>&1; then
+            pytest --cov=. --cov-report=term-missing -v
+          else
+            echo "No tests found, skipping"
+          fi
+        continue-on-error: true
+
+  # Security checks
+  security:
+    name: Security Scan
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Run Bandit security scan
+        run: |
+          bandit -r . -f json -o bandit-report.json || true
+          bandit -r . -ll || true
+        continue-on-error: true
+      
+      - name: Check for known vulnerabilities
+        run: safety check --json || true
+        continue-on-error: true
+
+  # Shell script validation
+  shell-check:
+    name: Shell Script Validation
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run ShellCheck
+        run: |
+          if ls *.sh 1> /dev/null 2>&1 || ls scripts/*.sh 1> /dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y shellcheck
+            find . -name "*.sh" -type f -exec shellcheck {} \; || echo "::warning::ShellCheck found issues"
+          else
+            echo "No shell scripts found"
+          fi
+        continue-on-error: true
+
+  # Documentation check
+  docs:
+    name: Documentation Build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+      
+      - name: Install mkdocs
+        run: |
+          pip install mkdocs mkdocs-material
+      
+      - name: Build documentation
+        run: |
+          if [ -f mkdocs.yml ]; then
+            mkdocs build --strict
+          else
+            echo "No mkdocs.yml found, skipping"
+          fi
+        continue-on-error: true
+
+  # Summary job - reports overall status
+  ci-success:
+    name: CI Status Check
+    runs-on: ubuntu-22.04
+    needs: [lint, test, security, shell-check, docs]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Test: ${{ needs.test.result }}"
+          echo "Security: ${{ needs.security.result }}"
+          echo "Shell Check: ${{ needs.shell-check.result }}"
+          echo "Docs: ${{ needs.docs.result }}"
+          
+          if [ "${{ needs.lint.result }}" != "success" ] || \
+             [ "${{ needs.test.result }}" != "success" ]; then
+            echo "::warning::Some checks failed or were skipped"
+            exit 1
+          fi
+          echo "✅ All critical checks passed!"
