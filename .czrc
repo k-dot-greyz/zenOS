@@ -1,0 +1,154 @@
+{
+  "path": "cz-conventional-changelog",
+  "maxHeaderWidth": 72,
+  "maxLineWidth": 80,
+  "defaultType": "feat",
+  "defaultScope": "",
+  "defaultSubject": "",
+  "defaultBody": "",
+  "defaultIssues": "",
+  "types": {
+    "feat": {
+      "description": "✨ A new feature or capability",
+      "title": "Features"
+    },
+    "fix": {
+      "description": "🐛 A bug fix",
+      "title": "Bug Fixes"
+    },
+    "docs": {
+      "description": "📚 Documentation only changes",
+      "title": "Documentation"
+    },
+    "style": {
+      "description": "💎 Changes that don't affect meaning (formatting, missing semicolons, etc)",
+      "title": "Styles"
+    },
+    "refactor": {
+      "description": "♻️  Code change that neither fixes a bug nor adds a feature",
+      "title": "Code Refactoring"
+    },
+    "perf": {
+      "description": "⚡ Performance improvements",
+      "title": "Performance Improvements"
+    },
+    "test": {
+      "description": "🧪 Adding missing tests or correcting existing tests",
+      "title": "Tests"
+    },
+    "build": {
+      "description": "🔧 Changes to build system or dependencies",
+      "title": "Build System"
+    },
+    "ci": {
+      "description": "🤖 Changes to CI configuration files and scripts",
+      "title": "Continuous Integration"
+    },
+    "chore": {
+      "description": "🧹 Other changes that don't modify src or test files",
+      "title": "Chores"
+    },
+    "revert": {
+      "description": "⏪ Reverts a previous commit",
+      "title": "Reverts"
+    },
+    "mobile": {
+      "description": "📱 Mobile-specific changes and optimizations",
+      "title": "Mobile"
+    },
+    "ai": {
+      "description": "🧠 AI agent or model-related changes",
+      "title": "AI/ML"
+    },
+    "plugin": {
+      "description": "🔌 Plugin system changes",
+      "title": "Plugins"
+    },
+    "zen": {
+      "description": "🧘 Zen philosophy or workflow improvements",
+      "title": "Zen Improvements"
+    }
+  },
+  "scopes": [
+    "core",
+    "cli",
+    "ui",
+    "mobile",
+    "plugins",
+    "providers",
+    "context",
+    "setup",
+    "docs",
+    "test",
+    "deps"
+  ],
+  "allowCustomScopes": true,
+  "allowBreakingChanges": ["feat", "fix", "refactor"],
+  "skipQuestions": [],
+  "subjectLimit": 50,
+  "breakingPrefix": "BREAKING CHANGE:",
+  "footerPrefix": "ISSUES CLOSED:",
+  "questions": {
+    "type": {
+      "description": "Select the type of change you're committing",
+      "enum": {
+        "feat": {
+          "description": "✨ feat: A new feature or capability",
+          "title": "Features"
+        },
+        "fix": {
+          "description": "🐛 fix: A bug fix",
+          "title": "Bug Fixes"
+        },
+        "docs": {
+          "description": "📚 docs: Documentation only changes",
+          "title": "Documentation"
+        },
+        "style": {
+          "description": "💎 style: Formatting, missing semicolons, etc (no code change)",
+          "title": "Styles"
+        },
+        "refactor": {
+          "description": "♻️  refactor: Code change that neither fixes nor adds features",
+          "title": "Code Refactoring"
+        },
+        "perf": {
+          "description": "⚡ perf: Performance improvements",
+          "title": "Performance"
+        },
+        "test": {
+          "description": "🧪 test: Adding missing tests or fixing tests",
+          "title": "Tests"
+        },
+        "build": {
+          "description": "🔧 build: Build system or dependency changes",
+          "title": "Build"
+        },
+        "ci": {
+          "description": "🤖 ci: CI configuration changes",
+          "title": "CI"
+        },
+        "chore": {
+          "description": "🧹 chore: Other changes that don't affect code",
+          "title": "Chores"
+        },
+        "mobile": {
+          "description": "📱 mobile: Mobile-specific changes",
+          "title": "Mobile"
+        },
+        "ai": {
+          "description": "🧠 ai: AI/ML related changes",
+          "title": "AI"
+        },
+        "plugin": {
+          "description": "🔌 plugin: Plugin system changes",
+          "title": "Plugins"
+        },
+        "zen": {
+          "description": "🧘 zen: Zen workflow improvements",
+          "title": "Zen"
+        }
+      }
+    }
+  }
+}
