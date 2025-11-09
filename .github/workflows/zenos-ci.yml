@@ -90,6 +90,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: 'pip'
       
       - name: Install security tools
         run: |
@@ -117,7 +118,7 @@ jobs:
       
       - name: Run ShellCheck
         run: |
-          if ls *.sh 1> /dev/null 2>&1 || ls scripts/*.sh 1> /dev/null 2>&1; then
+          if find . -name "*.sh" -type f -print -quit | grep -q .; then
             sudo apt-get update && sudo apt-get install -y shellcheck
             find . -name "*.sh" -type f -exec shellcheck {} \; || echo "::warning::ShellCheck found issues"
           else
