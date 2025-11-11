@@ -1,0 +1,75 @@
+version: "1.0.0"
+last_updated: "2025-11-11"
+lineage:
+  doc.report.daily_standup:
+    current_version: "1.0.0"
+    history:
+      - version: "1.0.0"
+        date: "2025-11-11"
+        author: "human:kaspars"
+        changes: "Initial creation for Template Pokédex bootstrap."
+        motivations:
+          - "Provide canonical daily standup format"
+          - "Establish baseline reporting structure"
+        compatibility:
+          breaking: false
+          notes: "Compatible with all existing automation flows."
+    deprecation:
+      status: "active"
+      successor: null
+      notes: null
+
+  doc.communication.social_post:
+    current_version: "1.0.0"
+    history:
+      - version: "1.0.0"
+        date: "2025-11-11"
+        author: "human:kaspars"
+        changes: "Migrated ai_post_templates.yaml into Template Pokédex."
+        motivations:
+          - "Consolidate social templates under registry"
+          - "Enable evolution tracking and analytics"
+        compatibility:
+          breaking: false
+          notes: "Maintains legacy template keys for backward compatibility."
+    deprecation:
+      status: "active"
+      successor: null
+      notes: null
+
+  automation.n8n.workflow_selector:
+    current_version: "1.0.0"
+    history:
+      - version: "1.0.0"
+        date: "2025-11-11"
+        author: "human:kaspars"
+        changes: "Migrated zenOS_template_selector.json into automations catalog."
+        motivations:
+          - "Centralize workflow templates"
+          - "Expose discovery metadata for automation builders"
+        compatibility:
+          breaking: false
+          notes: "Requires n8n 1.0+ JSON import."
+    deprecation:
+      status: "active"
+      successor: null
+      notes: null
+
+  code.python.plugin_boilerplate:
+    current_version: "0.1.0"
+    history:
+      - version: "0.1.0"
+        date: "2025-11-11"
+        author: "ai:claude"
+        changes: "Created initial plugin boilerplate for Jinja templates."
+        motivations:
+          - "Accelerate plugin development"
+          - "Provide reference implementation for template inheritance"
+        compatibility:
+          breaking: false
+          notes: "Requires Jinja2 rendering pipeline."
+    deprecation:
+      status: "active"
+      successor: null
+      notes: null
+
