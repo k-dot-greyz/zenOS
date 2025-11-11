@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Social Post Template Variables",
+  "type": "object",
+  "required": ["persona", "topic"],
+  "properties": {
+    "persona": {
+      "type": "string",
+      "description": "Persona key to select the template variation."
+    },
+    "topic": {
+      "type": "string",
+      "description": "Subject or theme of the social post."
+    },
+    "call_to_action": {
+      "type": "string",
+      "description": "Optional CTA appended to the post."
+    },
+    "assets": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Optional list of asset URLs to embed."
+    }
+  },
+  "additionalProperties": true
+}
+
