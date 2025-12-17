@@ -57,6 +57,44 @@ These protocols define the operational philosophy and ethical guidelines for Ben
 * Initial focus: Bootstrapping the **Personal Context Core (PCC)** via ingestion of conversation history.
 * Next Major Application: **The K-Fab Pipeline** (a system for turning generative AI concepts into physical furniture via parametric design and digital fabrication).
 
+## Repository Management System
+
+`zenOS` includes a comprehensive repository management ecosystem designed to maintain and organize development projects across multiple platforms and locations.
+
+### Core Capabilities
+
+1. **Local Repository Discovery**: Automatically scan and catalog all git repositories on local systems with intelligent filtering and health assessment.
+
+2. **GitHub Integration**: Seamless cloning, updating, and synchronization of repositories from GitHub with support for multiple accounts and private repositories.
+
+3. **Health Auditing**: Comprehensive repository health scoring with automated recommendations for maintenance, conflict resolution, and optimization.
+
+4. **Unified Management**: Single interface for all repository operations through CLI tools, MCP server integration, and AI assistant workflows.
+
+### Key Tools
+
+- **`find_all_local_repos.py`**: Local filesystem repository scanner
+- **`clone_all_repos.py`**: Enhanced GitHub repository cloner with multi-account support
+- **`zen_repo_manager.py`**: Unified repository management CLI
+- **`repositories-mcp`**: MCP server providing repository tools for AI assistants
+
+### Repository Procedures
+
+The system implements zenOS procedures for repository management:
+
+- `zen.repo.scan`: Repository discovery and cataloging
+- `zen.repo.audit`: Health assessment and issue identification
+- `zen.repo.sync`: Synchronization with remote sources
+- `zen.repo.status`: Real-time status monitoring
+
+### Integration
+
+Repository management integrates seamlessly with:
+- MCP servers for AI-assisted operations
+- Git workflows and automation
+- Cross-platform development environments
+- Personal knowledge management systems
+
 ---
 
 How does that `README.md` draft feel for the genesis of `zenOS`? We can add, subtract, or rephrase anything. This is **your** operating system!

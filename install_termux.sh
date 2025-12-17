@@ -28,7 +28,7 @@ python3 -m textblob.download_corpora
 # Clone zenOS if not already present
 if [ ! -d "zenOS" ]; then
     echo "📥 Cloning zenOS repository..."
-    git clone https://github.com/kasparsgreizis/zenOS.git
+    git clone https://github.com/k-dot-greyz/zenOS.git
 fi
 
 cd zenOS

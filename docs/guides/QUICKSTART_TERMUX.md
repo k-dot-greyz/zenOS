@@ -9,7 +9,7 @@ Forget the proot/Arch complexity. Let's run zenOS directly on Termux - fast, nat
 ## 🎯 One-Line Install (The Dream)
 ```bash
 # Complete airi-zenOS bridge setup
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/ultimate-bridge-setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/ultimate-bridge-setup.sh | bash
 ```
 
 **What this installs:**
@@ -36,7 +36,7 @@ pkg install -y python git termux-api termux-tools openssh
 ### Step 2: Clone & Setup zenOS
 ```bash
 # Clone the repo
-git clone https://github.com/kasparsgreizis/zenOS.git
+git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
 # Install Python dependencies
@@ -337,7 +337,7 @@ alias c='zen "write code for: "'
 ### One-Line Offline Setup
 ```bash
 # Automatic offline setup with model download
-curl -sSL https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/scripts/setup-offline.sh | bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup-offline.sh | bash
 ```
 
 ### What This Does

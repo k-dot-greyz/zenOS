@@ -1,255 +1,330 @@
-# TTS Queue System for Voice Models/Agents
+# zenOS 🧘🤖
 
-A robust, thread-safe Text-to-Speech queue system designed to handle high-frequency TTS requests from sources like streamer donation messages, preventing race conditions and ensuring proper audio playback ordering.
+**The Zen of AI Workflow Orchestration**
 
-## Features
+A revolutionary operating system for human-AI collaboration where biological and artificial intelligence work together as equal partners. zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
 
-- **Thread-Safe Operations**: Uses asyncio and threading for concurrent processing
-- **Priority-Based Queue**: Different priority levels for different message types
-- **Audio Overlap Prevention**: Prevents multiple audio streams from playing simultaneously
-- **Rate Limiting**: Configurable rate limiting to prevent system overload
-- **Multiple TTS Engine Support**: Works with pyttsx3, Google TTS, Azure Speech Services
-- **Streamer Bot Integration**: Built-in support for donation, subscription, and chat messages
-- **WebSocket API**: Real-time message handling via WebSocket
-- **Comprehensive Testing**: Full test suite with unit and integration tests
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
-## Quick Start
+---
 
-### Installation
+## 🌟 What is zenOS?
 
+zenOS is not just another AI CLI tool—it's a complete paradigm shift in how we interact with artificial intelligence:
+
+- **🤝 True Collaboration**: Humans and AIs as equal participants
+- **🎮 Pokédex System**: Discover and catalog AI models and procedures
+- **🔄 Multi-Agent Orchestration**: Multiple AIs working together on complex tasks
+- **📱 Universal Access**: Desktop, mobile (Termux), and offline modes
+- **🧠 Living Knowledge**: Procedures that evolve through use
+- **🌐 Repo Management**: Smart repository analysis and organization
+
+---
+
+## ✨ Core Components
+
+### 1. **PCC (Pokédex Control Center)**
+Discover, catalog, and manage AI models and procedures:
 ```bash
-pip install -r requirements.txt
+zen pokedex models          # Browse available AI models
+zen pokedex procedures      # Explore procedure library
+zen pokedex sync            # Update from OpenRouter and other sources
 ```
 
-### Basic Usage
-
-```python
-import asyncio
-from tts_queue_system import TTSQueueManager, TTSConfig, MessagePriority
-
-async def main():
-    # Create configuration
-    config = TTSConfig(
-        max_queue_size=1000,
-        max_concurrent_workers=3,
-        rate_limit_per_minute=60
-    )
-    
-    # Create TTS manager
-    tts_manager = TTSQueueManager(config)
-    
-    # Set up TTS engine (example with pyttsx3)
-    import pyttsx3
-    engine = pyttsx3.init()
-    
-    async def tts_engine(text: str, **kwargs) -> bytes:
-        # Your TTS implementation here
-        return b"audio_data"
-    
-    tts_manager.set_tts_engine(tts_engine)
-    
-    # Start the system
-    await tts_manager.start()
-    
-    # Add messages
-    tts_manager.add_message("Hello world!", MessagePriority.NORMAL)
-    tts_manager.add_message("Urgent message!", MessagePriority.URGENT)
-    
-    # Wait for processing
-    await asyncio.sleep(5)
-    
-    # Stop the system
-    await tts_manager.stop()
-
-asyncio.run(main())
-```
-
-## Architecture
-
-### Core Components
-
-1. **TTSQueueManager**: Main orchestrator that manages the queue and workers
-2. **TTSWorker**: Individual worker threads that process TTS requests
-3. **AudioManager**: Handles audio playback scheduling and overlap prevention
-4. **RateLimiter**: Implements rate limiting to prevent system overload
-5. **TTSMessage**: Data structure representing a TTS request
-
-### Priority System
-
-Messages are processed based on priority levels:
-
-- **URGENT**: High-value donations ($100+), critical alerts
-- **HIGH**: Regular donations, subscriptions, follows, raids
-- **NORMAL**: Commands, general alerts
-- **LOW**: Regular chat messages (if enabled)
-
-### Race Condition Prevention
-
-The system prevents race conditions through:
-
-1. **Thread-Safe Queues**: Using Python's `queue.PriorityQueue`
-2. **Audio Overlap Detection**: Prevents multiple audio streams
-3. **Atomic Operations**: All queue operations are atomic
-4. **Worker Synchronization**: Coordinated worker management
-
-## Streamer Bot Integration
-
-The system includes built-in support for common streamer bot scenarios:
-
-```python
-from tts_integration_example import StreamerBotIntegration
-
-# Create streamer bot
-streamer_bot = StreamerBotIntegration(tts_manager)
-
-# Process different types of events
-streamer_bot.process_donation("VIP_User", 150.0, "Keep up the great work!")
-streamer_bot.process_subscription("NewSub", 1, "First time subscribing!")
-streamer_bot.process_follow("NewFollower")
-streamer_bot.process_chat_message("Moderator", "!tts Welcome everyone!", is_mod=True)
-```
-
-## TTS Engine Integration
-
-### pyttsx3 (Offline, Fast)
-
-```python
-from tts_integration_example import Pyttsx3TTSEngine
-
-engine = Pyttsx3TTSEngine(voice_id="english", rate=200)
-tts_manager.set_tts_engine(engine.generate_audio)
-```
-
-### Google Text-to-Speech (Online, High Quality)
-
-```python
-from tts_integration_example import GTTS_Engine
-
-engine = GTTS_Engine(language='en', tld='com')
-tts_manager.set_tts_engine(engine.generate_audio)
-```
-
-### Azure Speech Services (Enterprise)
-
-```python
-from tts_integration_example import AzureTTS_Engine
-
-engine = AzureTTS_Engine(
-    subscription_key="your_key",
-    region="your_region",
-    voice_name="en-US-AriaNeural"
-)
-tts_manager.set_tts_engine(engine.generate_audio)
-```
-
-## WebSocket API
-
-Start a WebSocket server for real-time message handling:
-
-```python
-from tts_integration_example import WebSocketServer
-
-# Create WebSocket server
-server = WebSocketServer(streamer_bot, host="localhost", port=8765)
-
-# Start server
-await server.start_server()
-```
-
-### WebSocket Message Format
-
-```json
-{
-  "type": "donation",
-  "donor_name": "JohnDoe",
-  "amount": 25.0,
-  "message": "Great stream!"
-}
-```
-
-## Configuration
-
-The system can be configured via JSON:
-
-```json
-{
-  "tts_queue": {
-    "max_queue_size": 1000,
-    "max_concurrent_workers": 3,
-    "rate_limit_per_minute": 60,
-    "enable_priority_queue": true
-  },
-  "streamer_bot": {
-    "priorities": {
-      "donation": "URGENT",
-      "subscription": "HIGH",
-      "chat": "LOW"
-    }
-  }
-}
-```
-
-## Testing
-
-Run the test suite:
-
+### 2. **Bender (Multi-Agent Framework)**
+Orchestrate multiple AI agents for complex tasks:
 ```bash
-pytest test_tts_queue_system.py -v
+zen swarm "analyze security vulnerabilities"  # Multi-AI collaboration
+zen delegate "refactor auth module"           # Single AI takes over
+zen chat --copilot                           # AI assists you
 ```
 
-## Performance Considerations
-
-### Queue Size
-- Set `max_queue_size` based on expected peak load
-- Monitor queue size via `get_stats()`
-
-### Worker Count
-- More workers = higher throughput but more resource usage
-- Recommended: 2-4 workers for most use cases
-
-### Rate Limiting
-- Prevents overwhelming TTS engines
-- Adjust `rate_limit_per_minute` based on TTS engine capabilities
-
-### Memory Usage
-- Each queued message consumes memory
-- Consider implementing message persistence for very high loads
-
-## Error Handling
-
-The system includes comprehensive error handling:
-
-- **Queue Full**: Raises `RuntimeError` when queue is full
-- **TTS Engine Errors**: Retries failed messages up to `max_retries`
-- **Audio Playback Errors**: Graceful fallback and logging
-- **Worker Errors**: Automatic worker recovery
-
-## Monitoring
-
-Get real-time statistics:
-
-```python
-stats = tts_manager.get_stats()
-print(f"Queue size: {stats['queue_size']}")
-print(f"Processed: {stats['total_processed']}")
-print(f"Failed: {stats['total_failed']}")
-print(f"Active workers: {stats['active_workers']}")
+### 3. **PKM (Personal Knowledge Management)**
+Capture, organize, and evolve your knowledge:
+```bash
+zen notes capture           # Quick note taking
+zen notes search "topic"    # Find relevant information
+zen context sync            # Update working context
 ```
 
-## License
+### 4. **Repo Management**
+Intelligent repository analysis and organization:
+```bash
+zen repo analyze            # Deep dive into codebase
+zen repo health             # Check project status
+zen repo optimize          # Suggest improvements
+```
 
-MIT License - see LICENSE file for details.
+---
 
-## Contributing
+## 🚀 Quick Start
+
+### Instant Setup (One-Liners)
+
+#### 🖥️ Desktop (Windows/Mac/Linux)
+```bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+```
+
+#### 📱 Mobile (Termux/Android)
+```bash
+curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install_termux.sh | bash
+```
+
+#### ✈️ Offline Mode (No Internet)
+```bash
+# First download while online:
+git clone https://github.com/k-dot-greyz/zenOS.git
+cd zenOS
+
+# Then install offline:
+python -m pip install -e .
+```
+
+### Manual Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/k-dot-greyz/zenOS.git
+   cd zenOS
+   ```
+
+2. **Set up environment:**
+   ```bash
+   cp env.example .env
+   # Edit .env with your API key (OpenRouter recommended)
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -e .
+   ```
+
+4. **Start exploring:**
+   ```bash
+   zen chat
+   ```
+
+---
+
+## 💡 Features
+
+### For Humans 👨‍💻
+- **Interactive Chat**: Natural conversations with AI
+- **Code Analysis**: Deep insights into your codebase
+- **Task Delegation**: Let AI handle complex workflows
+- **Knowledge Management**: Capture and organize thoughts
+- **Multi-Platform**: Works everywhere—desktop, mobile, offline
+
+### For AI Agents 🤖
+- **AI-First Design**: Native support for AI autonomy
+- **Machine-Readable Procedures**: Structured YAML workflows
+- **Context Awareness**: Full project understanding
+- **Learning & Evolution**: Procedures that improve over time
+- **Social Network**: Collaborate with other AIs
+
+### For Teams 🤝
+- **Hybrid Workflows**: Seamless human-AI collaboration
+- **Swarm Intelligence**: Multiple agents tackling problems together
+- **Knowledge Sharing**: Team-wide context and procedures
+- **Version Control**: Git-native, merge-friendly
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                   zenOS Core                     │
+├─────────────────────────────────────────────────┤
+│  🎮 Pokédex    🤖 Bender    📚 PKM    📦 Repo   │
+│  Control       Multi-Agent  Knowledge Management │
+│  Center        Framework    System     Analyzer  │
+├─────────────────────────────────────────────────┤
+│              AI Adapter Layer                    │
+│  ┌──────────┬──────────┬──────────┬──────────┐ │
+│  │Protocol  │Context   │Learning  │Social    │ │
+│  │Parser    │Manager   │Engine    │Network   │ │
+│  └──────────┴──────────┴──────────┴──────────┘ │
+├─────────────────────────────────────────────────┤
+│                 Interfaces                       │
+│  ┌──────────┬──────────┬──────────┬──────────┐ │
+│  │Human     │AI Agent  │Hybrid    │Swarm     │ │
+│  │Terminal  │API       │Mode      │Mode      │ │
+│  └──────────┴──────────┴──────────┴──────────┘ │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎯 Use Cases
+
+### Development Workflows
+```bash
+# Start a coding session
+zen chat "I need to add user authentication"
+
+# Analyze codebase
+zen repo analyze --focus security
+
+# Get AI assistance
+zen delegate "implement OAuth2 flow"
+
+# Multi-agent review
+zen swarm "review my PR for security issues"
+```
+
+### Knowledge Management
+```bash
+# Capture quick notes
+zen notes capture "Meeting: discussed API redesign"
+
+# Search your knowledge base
+zen notes search "API design patterns"
+
+# Sync context for AI
+zen context sync
+```
+
+### Model Discovery
+```bash
+# Find the right model
+zen pokedex models --capability "code generation"
+
+# Explore procedures
+zen pokedex procedures --rarity legendary
+
+# Sync latest models
+zen pokedex sync
+```
+
+---
+
+## 📖 Documentation
+
+- **[Quick Start Guide](docs/guides/QUICKSTART.md)** - Get started in minutes
+- **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
+- **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
+- **[Setup Guides](docs/guides/)** - Platform-specific instructions
+- **[Genesis Log](docs/zenOS-genesis-log.md)** - The origin story
+
+### Platform-Specific Guides
+- [Windows Setup](docs/guides/QUICKSTART_WINDOWS.md)
+- [Linux Setup](docs/guides/QUICKSTART_LINUX.md)
+- [Termux/Mobile Setup](docs/guides/QUICKSTART_TERMUX.md)
+- [Arch Linux Mobile](docs/guides/QUICKSTART_ARCH_MOBILE.md)
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Current (v0.1.0)
+- Core CLI functionality
+- OpenRouter integration
+- Basic Pokédex system
+- Repository analysis
+- Multi-agent framework (Bender)
+
+### 🚧 In Progress (v0.2.0)
+- Enhanced PKM system
+- Advanced context management
+- AI-to-AI collaboration protocols
+- Mobile optimization
+
+### 🔮 Future (v1.0.0)
+- Visual workspace interface
+- Plugin ecosystem
+- Decentralized AI network
+- Real-time collaboration
+- Advanced learning engine
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from humans and AIs alike!
 
 1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Support
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-For issues and questions:
-- Create an issue on GitHub
-- Check the documentation
-- Review the test cases for usage examples
+---
+
+## 🐛 Troubleshooting
+
+### System Health Check
+```bash
+zen doctor              # Run diagnostics
+zen doctor --ai-mode   # AI-specific checks
+```
+
+### Common Issues
+
+**API Key Not Working?**
+```bash
+# Check your .env file
+cat .env | grep OPENROUTER_API_KEY
+
+# Test connection
+zen chat "hello"
+```
+
+**Installation Failed?**
+```bash
+# Update pip first
+python -m pip install --upgrade pip
+
+# Retry installation
+pip install -e .
+```
+
+**Termux/Mobile Issues?**
+See [Termux Setup Guide](docs/guides/QUICKSTART_TERMUX.md) for platform-specific fixes.
+
+---
+
+## 📜 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🌟 Philosophy
+
+> "The goal is not to replace human intelligence with artificial intelligence, but to create a harmonious system where both enhance each other."
+
+zenOS embodies the principle of **zen** in software:
+- **Simplicity**: Complex power through simple interfaces
+- **Flow**: Seamless transitions between human and AI control
+- **Balance**: Neither human nor AI dominates—both collaborate
+- **Evolution**: Systems that learn and improve over time
+- **Openness**: Knowledge freely shared and accessible
+
+---
+
+## 🙏 Acknowledgments
+
+Built with love by humans and AIs working together.
+
+Special thanks to:
+- The OpenRouter team for model access
+- The open-source AI community
+- Every AI agent that has contributed to procedure evolution
+- You, for being part of this journey
+
+---
+
+## 📬 Contact & Community
+
+- **GitHub**: [k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS)
+- **Issues**: [Report bugs or request features](https://github.com/k-dot-greyz/zenOS/issues)
+- **Discussions**: [Join the conversation](https://github.com/k-dot-greyz/zenOS/discussions)
+
+---
+
+**Welcome to zenOS - Where Humans and AIs Collaborate in Perfect Zen** 🧘🤖

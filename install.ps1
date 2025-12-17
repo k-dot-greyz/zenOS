@@ -1,5 +1,5 @@
 # zenOS Universal Installer for Windows - One Command to Rule Them All! 🧘
-# Usage: iwr -useb https://raw.githubusercontent.com/kasparsgreizis/zenOS/main/install.ps1 | iex
+# Usage: iwr -useb https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.ps1 | iex
 
 Write-Host "🧘 zenOS Universal Installer for Windows" -ForegroundColor Cyan
 Write-Host "=======================================" -ForegroundColor Cyan
@@ -60,7 +60,7 @@ function Main {
     # Clone repository if not already present
     if (-not (Test-Path "zenOS")) {
         Write-Host "📥 Cloning zenOS repository..." -ForegroundColor Yellow
-        git clone https://github.com/kasparsgreizis/zenOS.git
+        git clone https://github.com/k-dot-greyz/zenOS.git
     }
     
     Set-Location zenOS
@@ -88,9 +88,9 @@ function Main {
     Write-Host "  python zen/cli.py plugins execute com.example.text-processor text.summarize \"Hello world!\""
     Write-Host ""
     Write-Host "📚 Full guides:" -ForegroundColor Cyan
-    Write-Host "  Mobile: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_MOBILE.md"
-    Write-Host "  Windows: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_WINDOWS.md"
-    Write-Host "  Linux: https://github.com/kasparsgreizis/zenOS/blob/main/QUICKSTART_LINUX.md"
+    Write-Host "  Mobile: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_MOBILE.md"
+    Write-Host "  Windows: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_WINDOWS.md"
+    Write-Host "  Linux: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_LINUX.md"
     Write-Host ""
     Write-Host "Welcome to zenOS! Enjoy the zen!" -ForegroundColor Magenta
 }
