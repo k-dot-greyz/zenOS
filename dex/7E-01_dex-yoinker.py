@@ -15,24 +15,29 @@ tags: ["python", "ops", "metadata", "indexing"]
 
 import os
 import re
+import sys
 import datetime
 from pathlib import Path
 
+# Add project root to path to allow imports from zen package
+ROOT_DIR = Path(".").resolve()
+sys.path.append(str(ROOT_DIR))
+
+try:
+    from zen.utils.dex_constants import YAML_FRONT_RE, PATTERNS
+except ImportError:
+    # Fallback if running outside project context, though we try to set it up above
+    YAML_FRONT_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL | re.MULTILINE)
+    PATTERNS = {
+        "dex_id": re.compile(r"^dex_id:\s*[\"']?(0x[0-9A-Fa-f]{2}:0x[0-9A-Fa-f]{2})[\"']?", re.MULTILINE),
+        "dex_type": re.compile(r"^dex_type:\s*[\"']?(\w+)[\"']?", re.MULTILINE),
+        "status": re.compile(r"^status:\s*[\"']?(\w+)[\"']?", re.MULTILINE),
+        "pe_id": re.compile(r"property_exchange_id:\s*[\"']?([a-zA-Z0-9:\-\.]+)[\"']?", re.MULTILINE)
+    }
+
 # Configuration
-ROOT_DIR = Path(".") 
 DEX_DIR = ROOT_DIR / "dex"
 OUTPUT_FILE = DEX_DIR / "7E-00_dex-index.md"
-
-# Regex for YAML frontmatter
-YAML_FRONT_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL | re.MULTILINE)
-
-# Keys to extract
-KEYS_TO_YOINK = {
-    "dex_id": re.compile(r"^dex_id:\s*[\"']?(0x[0-9A-Fa-f]{2}:0x[0-9A-Fa-f]{2})[\"']?", re.MULTILINE),
-    "dex_type": re.compile(r"^dex_type:\s*[\"']?(\w+)[\"']?", re.MULTILINE),
-    "status": re.compile(r"^status:\s*[\"']?(\w+)[\"']?", re.MULTILINE),
-    "pe_id": re.compile(r"property_exchange_id:\s*[\"']?([a-zA-Z0-9:\-\.]+)[\"']?", re.MULTILINE)
-}
 
 def parse_file(filepath):
     try:
@@ -60,7 +65,7 @@ def parse_file(filepath):
             return None
 
         metadata = {"path": str(filepath), "filename": filepath.name}
-        for key, regex in KEYS_TO_YOINK.items():
+        for key, regex in PATTERNS.items():
             found = regex.search(yaml_block)
             metadata[key] = found.group(1) if found else "N/A"
         
@@ -93,7 +98,8 @@ def generate_markdown_index(entries):
     ]
     
     for entry in entries:
-        if entry["dex_id"] == "N/A": continue
+        if entry["dex_id"] == "N/A":
+            continue
         link = f"[{entry['filename']}]({entry['path']})"
         emoji = "🟢" if entry['status'] == "active" else "⚪"
         row = f"| `{entry['dex_id']}` | `{entry['dex_type']}` | {emoji} | {link} | `{entry['pe_id']}` |"
@@ -105,14 +111,18 @@ def main():
     print("🎹 starting dex yoinker...")
     valid_entries = []
     for root, dirs, files in os.walk(ROOT_DIR):
-        if ".git" in dirs: dirs.remove(".git")
-        if "node_modules" in dirs: dirs.remove("node_modules")
-        if "__pycache__" in dirs: dirs.remove("__pycache__")
+        if ".git" in dirs:
+            dirs.remove(".git")
+        if "node_modules" in dirs:
+            dirs.remove("node_modules")
+        if "__pycache__" in dirs:
+            dirs.remove("__pycache__")
         
         for file in files:
             if file.endswith((".md", ".py", ".yaml")) and Path(root)/file != OUTPUT_FILE:
                 meta = parse_file(Path(root) / file)
-                if meta: valid_entries.append(meta)
+                if meta:
+                    valid_entries.append(meta)
 
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write(generate_markdown_index(valid_entries) + "\n")
@@ -121,4 +131,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
