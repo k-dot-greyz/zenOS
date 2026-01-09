@@ -76,7 +76,7 @@ def test_storage(config):
 
     # Test statistics
     stats = storage.get_statistics()
-    console.print(f"✅ Storage stats: {stats['conversations_count']} conversations")
+    console.print(f"✅ Storage stats: {stats['total_conversations']} conversations")
 
     return storage
 
