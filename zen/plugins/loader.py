@@ -253,13 +253,13 @@ class GitPluginLoader:
             print(f"Error validating plugin: {e}")
             return False
 
-    async def _git_pull(self, plugin_path: Path) -> subprocess.CompletedProcess:
+    async def _git_pull(self, plugin_path: Path, version: str = "main") -> subprocess.CompletedProcess:
         """Pull latest changes from Git repository"""
         return await asyncio.create_subprocess_exec(
             "git",
             "pull",
             "origin",
-            "main",
+            version,
             cwd=plugin_path,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
