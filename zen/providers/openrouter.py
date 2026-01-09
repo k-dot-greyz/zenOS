@@ -199,23 +199,23 @@ class OpenRouterProvider:
                       temperature: float = 0.7,
                       **kwargs) -> AsyncIterator[str]:
         """
-                      Obtain a completion from OpenRouter, yielding streamed chunks or a single full response.
-                      
-                      Parameters:
-                          prompt (str): The user prompt to send to the model.
-                          model (Optional[str]): Model identifier to use; if omitted a model is auto-selected based on the prompt.
-                          system (Optional[str]): Optional system prompt to prepend to the conversation.
-                          stream (bool): If True, yields incremental response chunks; if False, yields a single complete response.
-                          max_tokens (int): Maximum number of tokens to generate for the response.
-                          temperature (float): Sampling temperature controlling randomness.
-                          **kwargs: Additional parameters passed into the completion request payload.
-                      
-                      Returns:
-                          AsyncIterator[str]: Yields response text pieces when streaming, or a single complete response string when not streaming.
-                      
-                      Raises:
-                          Exception: Propagates errors from the OpenRouter request or response handling.
-                      """
+        Obtain a completion from OpenRouter, yielding streamed chunks or a single full response.
+        
+        Parameters:
+            prompt (str): The user prompt to send to the model.
+            model (Optional[str]): Model identifier to use; if omitted a model is auto-selected based on the prompt.
+            system (Optional[str]): Optional system prompt to prepend to the conversation.
+            stream (bool): If True, yields incremental response chunks; if False, yields a single complete response.
+            max_tokens (int): Maximum number of tokens to generate for the response.
+            temperature (float): Sampling temperature controlling randomness.
+            **kwargs: Additional parameters passed into the completion request payload.
+        
+        Returns:
+            AsyncIterator[str]: Yields response text pieces when streaming, or a single complete response string when not streaming.
+        
+        Raises:
+            Exception: Propagates errors from the OpenRouter request or response handling.
+        """
         if not self.session:
             self.session = aiohttp.ClientSession()
         

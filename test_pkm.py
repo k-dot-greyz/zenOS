@@ -16,8 +16,19 @@ from zen.pkm.models import Conversation, Message, MessageRole
 from zen.pkm.processor import ConversationProcessor
 from zen.pkm.scheduler import PKMScheduler
 from rich.console import Console
+from rich.panel import Panel
+import pytest
 
 console = Console()
+
+
+@pytest.fixture
+def config():
+    return PKMConfig.load()
+
+@pytest.fixture
+def storage(config):
+    return PKMStorage(config)
 
 
 def test_config():
@@ -76,11 +87,12 @@ def test_storage(config):
     
     # Test statistics
     stats = storage.get_statistics()
-    console.print(f"✅ Storage stats: {stats['conversations_count']} conversations")
+    console.print(f"✅ Storage stats: {stats['total_conversations']} conversations")
     
     return storage
 
 
+@pytest.mark.asyncio
 async def test_processor(config, storage):
     """Test conversation processing."""
     console.print("\n[cyan]Testing processor...[/cyan]")

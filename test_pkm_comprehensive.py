@@ -5,6 +5,7 @@ Comprehensive test suite for PKM module.
 
 import sys
 import asyncio
+import pytest
 from pathlib import Path
 from datetime import datetime
 
@@ -354,6 +355,7 @@ def test_cli():
         return False
 
 
+@pytest.mark.asyncio
 async def test_async_functionality():
     """Test async functionality."""
     print("\n🧪 Testing async functionality...")
