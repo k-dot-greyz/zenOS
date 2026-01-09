@@ -349,7 +349,7 @@ def test_cli():
             return False
 
         # Test individual commands
-        commands = ["extract", "process", "search", "list", "stats", "export", "schedule"]
+        commands = ["extract", "process", "search", "list_conversations", "stats", "export", "schedule"]
 
         for cmd in commands:
             result = runner.invoke(pkm, [cmd, "--help"])

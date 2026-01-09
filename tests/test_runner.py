@@ -53,9 +53,9 @@ def test_mobile_adapter():
         adapter = MobileAIAdapter()
         print("  ✅ Mobile adapter instantiation")
 
-        # Mock the context for non-mobile environments to avoid test failure
-        import platform
-        if platform.system() != "Linux" or "termux" not in sys.executable:
+        # Check for Termux by looking for TERMUX_VERSION env var or PREFIX path
+        is_termux = os.environ.get("TERMUX_VERSION") or "/com.termux/" in os.environ.get("PREFIX", "")
+        if platform.system() != "Linux" or not is_termux:
              print("  ⚠️  Skipping mobile context check (not on Termux)")
              return True
 

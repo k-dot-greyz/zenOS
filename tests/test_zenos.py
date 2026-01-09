@@ -4,6 +4,7 @@
 
 import asyncio
 import os
+import sys
 
 from zen.agents import builtin_agents
 from zen.core.launcher import Launcher
@@ -67,21 +68,6 @@ def test_plugin_system():
 
     except Exception as e:
         print(f"   ❌ Plugin system error: {e}")
-        if "pytest" in sys.modules:
-            import pytest
-            pytest.fail(f"Plugin system failed: {e}")
-        if "pytest" in sys.modules:
-            import pytest
-            pytest.fail(f"Plugin system failed: {e}")
-        if "pytest" in sys.modules:
-            import pytest
-            pytest.fail(f"Plugin system failed: {e}")
-        if "pytest" in sys.modules:
-            import pytest
-            pytest.fail(f"Plugin system failed: {e}")
-        if "pytest" in sys.modules:
-            import pytest
-            pytest.fail(f"Plugin system failed: {e}")
         if "pytest" in sys.modules:
             import pytest
             pytest.fail(f"Plugin system failed: {e}")
