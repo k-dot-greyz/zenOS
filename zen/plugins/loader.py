@@ -54,7 +54,7 @@ class GitPluginLoader:
                 return None
 
             # Register plugin
-            success = self.registry.register_plugin(manifest, git_url, local_path)
+            success = self.registry.register_plugin(manifest, git_url, local_path, version)
             if success:
                 print(f"🎉 Successfully loaded plugin: {manifest.name} ({manifest.id})")
                 return self.registry.get_plugin(manifest.id)
@@ -75,7 +75,7 @@ class GitPluginLoader:
 
         try:
             # Pull latest changes
-            result = await self._git_pull(entry.local_path)
+            result = await self._git_pull(entry.local_path, entry.version)
             if result.returncode != 0:
                 print(f"Failed to update {plugin_id}: {result.stderr}")
                 return False
@@ -289,7 +289,9 @@ class GitPluginLoader:
                 return None
 
             # Register plugin
-            success = self.registry.register_plugin(manifest, f"local:{local_path}", local_path)
+            success = self.registry.register_plugin(
+                manifest, f"local:{local_path}", local_path, version="local"
+            )
             if success:
                 return self.registry.get_plugin(manifest.id)
 
