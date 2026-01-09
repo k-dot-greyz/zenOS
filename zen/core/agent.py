@@ -1,5 +1,4 @@
-"""Agent base class and registry for zenOS.
-"""
+"""Agent base class and registry for zenOS."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass

@@ -1,13 +1,11 @@
-"""Security framework for zenOS - defense against prompt injection and other attacks.
-"""
+"""Security framework for zenOS - defense against prompt injection and other attacks."""
 
 import re
 from typing import Any, Dict
 
 
 class SecurityFramework:
-    """Security framework for protecting against prompt injection and other attacks.
-    """
+    """Security framework for protecting against prompt injection and other attacks."""
 
     # Common injection patterns
     INJECTION_PATTERNS = [

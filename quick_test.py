@@ -17,15 +17,11 @@ def test_imports():
 
         print("✅ UnifiedSetupManager imported")
 
-
         print("✅ EnvironmentDetector imported")
-
 
         print("✅ GitSetupManager imported")
 
-
         print("✅ MCPSetupManager imported")
-
 
         print("✅ SetupTroubleshooter imported")
 

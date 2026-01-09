@@ -1,5 +1,4 @@
-"""Cron job scheduler for PKM module.
-"""
+"""Cron job scheduler for PKM module."""
 
 import asyncio
 import json
@@ -307,8 +306,7 @@ class PKMScheduler:
         )
 
     async def _extract_conversations_job(self) -> None:
-        """Extract conversations from Google Gemini up to the configured per-run limit and report success or errors to the console.
-        """
+        """Extract conversations from Google Gemini up to the configured per-run limit and report success or errors to the console."""
         console.print("[cyan]🔄 Running conversation extraction job...[/cyan]")
 
         try:

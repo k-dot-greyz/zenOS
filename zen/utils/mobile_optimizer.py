@@ -49,8 +49,7 @@ class MobileConfig:
 
 
 class ResponseCache:
-    """Smart response caching for offline/fast access.
-    """
+    """Smart response caching for offline/fast access."""
 
     def __init__(self, config: MobileConfig):
         """Initialize cache."""
@@ -196,8 +195,7 @@ class ResponseCache:
 
 
 class BatteryManager:
-    """Battery-aware performance management.
-    """
+    """Battery-aware performance management."""
 
     def __init__(self, config: MobileConfig):
         """Initialize battery manager."""
@@ -261,8 +259,7 @@ class BatteryManager:
 
 
 class DataOptimizer:
-    """Optimize data usage for mobile networks.
-    """
+    """Optimize data usage for mobile networks."""
 
     @staticmethod
     def compress_text(text: str) -> str:
@@ -325,8 +322,7 @@ class DataOptimizer:
 
 
 class MobileOptimizer:
-    """Main optimizer coordinating all mobile optimizations.
-    """
+    """Main optimizer coordinating all mobile optimizations."""
 
     def __init__(self, config: Optional[MobileConfig] = None):
         """Initialize mobile optimizer."""

@@ -1,5 +1,4 @@
-"""Storage and retrieval system for PKM module.
-"""
+"""Storage and retrieval system for PKM module."""
 
 import gzip
 import json

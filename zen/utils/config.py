@@ -1,5 +1,4 @@
-"""Configuration management for zenOS.
-"""
+"""Configuration management for zenOS."""
 
 import os
 from dataclasses import dataclass, field

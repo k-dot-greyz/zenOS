@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Quick setup script for PKM module authentication.
-"""
+"""Quick setup script for PKM module authentication."""
 
 import os
 import sys

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""zenOS CLI v2 - Enhanced CLI with Pokédex and Battle Arena
-"""
+"""zenOS CLI v2 - Enhanced CLI with Pokédex and Battle Arena"""
 
 import asyncio
 import os

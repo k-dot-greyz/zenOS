@@ -1,5 +1,4 @@
-"""zenOS Pokédex System - Discover and catalog models, procedures, and achievements
-"""
+"""zenOS Pokédex System - Discover and catalog models, procedures, and achievements"""
 
 from dataclasses import dataclass
 from enum import Enum

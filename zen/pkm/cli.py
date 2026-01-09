@@ -1,5 +1,4 @@
-"""CLI commands for PKM module.
-"""
+"""CLI commands for PKM module."""
 
 import asyncio
 from pathlib import Path

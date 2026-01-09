@@ -1,5 +1,4 @@
-"""Conversation processing and knowledge extraction for PKM module.
-"""
+"""Conversation processing and knowledge extraction for PKM module."""
 
 import re
 from datetime import datetime

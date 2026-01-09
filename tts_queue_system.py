@@ -299,9 +299,9 @@ class TTSWorker:
             return await tts_engine(
                 message.text,
                 voice=message.metadata.get("voice", self.config.default_voice),
-                **message.metadata
+                **message.metadata,
             )
-        
+
         # Fallback simulation if no engine provided
         await asyncio.sleep(0.1)
         return b"dummy_audio_data"

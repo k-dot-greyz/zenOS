@@ -1,5 +1,4 @@
-"""Built-in agents for zenOS.
-"""
+"""Built-in agents for zenOS."""
 
 from ..pkm.agent import PKMAgent
 from .assistant import AssistantAgent

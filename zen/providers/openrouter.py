@@ -1,5 +1,4 @@
-"""OpenRouter Provider - Unified access to all LLMs through OpenRouter.
-"""
+"""OpenRouter Provider - Unified access to all LLMs through OpenRouter."""
 
 import json
 import os

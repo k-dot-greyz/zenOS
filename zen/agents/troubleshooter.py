@@ -1,5 +1,4 @@
-"""Troubleshooter agent for system diagnostics and fixes.
-"""
+"""Troubleshooter agent for system diagnostics and fixes."""
 
 import asyncio
 

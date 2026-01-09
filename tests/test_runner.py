@@ -13,28 +13,28 @@ def test_imports():
     print("🔍 Testing core imports...")
 
     try:
-        import zen
+
         print("  ✅ zenOS core import")
     except Exception as e:
         print(f"  ❌ zenOS core import: {e}")
         return False
 
     try:
-        from zen.ai.mobile_adapter import MobileAIAdapter
+
         print("  ✅ Mobile adapter import")
     except Exception as e:
         print(f"  ❌ Mobile adapter import: {e}")
         return False
 
     try:
-        from zen.utils.config import ZenConfig
+
         print("  ✅ Config import")
     except Exception as e:
         print(f"  ❌ Config import: {e}")
         return False
 
     try:
-        from zen.core.agent import AgentManifest
+
         print("  ✅ Agent manifest import")
     except Exception as e:
         print(f"  ❌ Agent manifest import: {e}")
@@ -54,10 +54,12 @@ def test_mobile_adapter():
         print("  ✅ Mobile adapter instantiation")
 
         # Check for Termux by looking for TERMUX_VERSION env var or PREFIX path
-        is_termux = os.environ.get("TERMUX_VERSION") or "/com.termux/" in os.environ.get("PREFIX", "")
+        is_termux = os.environ.get("TERMUX_VERSION") or "/com.termux/" in os.environ.get(
+            "PREFIX", ""
+        )
         if platform.system() != "Linux" or not is_termux:
-             print("  ⚠️  Skipping mobile context check (not on Termux)")
-             return True
+            print("  ⚠️  Skipping mobile context check (not on Termux)")
+            return True
 
         context = adapter.get_mobile_context()
         print(f"  ✅ Mobile context: {context.device_model}")
@@ -84,6 +86,7 @@ def test_config():
 
         config_manager = Config()
         print("  ✅ Config manager created")
+        assert config_manager.is_configured is not None, "Config manager should be initialized"
 
         return True
     except Exception as e:

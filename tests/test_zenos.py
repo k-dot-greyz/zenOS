@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Test script for zenOS - Let's see if this thing actually works!
-"""
+"""Test script for zenOS - Let's see if this thing actually works!"""
 
 import asyncio
 import os
@@ -20,13 +19,14 @@ async def test_agents():
         # If running in pytest, skip properly
         if "pytest" in sys.modules:
             import pytest
+
             pytest.skip("OPENROUTER_API_KEY not set")
         return
 
     launcher = Launcher(debug=True)
 
     # Test each agent
-    for agent_name, agent in builtin_agents.items():
+    for agent_name, _agent in builtin_agents.items():
         print(f"\n🔧 Testing {agent_name} agent...")
 
         try:
@@ -46,6 +46,7 @@ async def test_agents():
             print(f"   ❌ Error: {e}")
             if "pytest" in sys.modules:
                 import pytest
+
                 pytest.fail(f"Agent {agent_name} failed: {e}")
 
 
@@ -70,6 +71,7 @@ def test_plugin_system():
         print(f"   ❌ Plugin system error: {e}")
         if "pytest" in sys.modules:
             import pytest
+
             pytest.fail(f"Plugin system failed: {e}")
 
 

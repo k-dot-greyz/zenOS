@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Test script for PKM module
-"""
+"""Test script for PKM module"""
 
 import asyncio
 import sys
@@ -99,11 +98,10 @@ async def test_processor(config, storage):
     console.print(f"✅ Conversation processed: {processed_conv is not None}")
 
     if processed_conv:
-        console.print(
-            f"   • Summary: {processed_conv.summary[:50]}..."
-            if processed_conv.summary
-            else "   • Summary: None"
-        )
+        if processed_conv.summary:
+            console.print(f"   • Summary: {processed_conv.summary[:50]}...")
+        else:
+            console.print("   • Summary: None")
         console.print(f"   • Keywords: {processed_conv.keywords}")
         console.print(f"   • Tags: {processed_conv.tags}")
 

@@ -1,5 +1,4 @@
-"""Template engine for zenOS using Jinja2.
-"""
+"""Template engine for zenOS using Jinja2."""
 
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -8,8 +7,7 @@ from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
 
 class TemplateEngine:
-    """Jinja2-based template engine for rendering prompts and content.
-    """
+    """Jinja2-based template engine for rendering prompts and content."""
 
     def __init__(self, template_dir: Optional[Path] = None):
         """Initialize the template engine."""

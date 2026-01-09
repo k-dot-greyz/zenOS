@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""zenOS Inbox System - Process incoming items
-"""
+"""zenOS Inbox System - Process incoming items"""
 
 import json
 from datetime import datetime

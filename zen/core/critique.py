@@ -1,5 +1,4 @@
-"""Auto-critique system for zenOS.
-"""
+"""Auto-critique system for zenOS."""
 
 from typing import Any, Dict, Optional
 
@@ -7,8 +6,7 @@ from zen.providers.openrouter import OpenRouterProvider
 
 
 class AutoCritique:
-    """Automatic critique and improvement system for prompts and responses.
-    """
+    """Automatic critique and improvement system for prompts and responses."""
 
     def __init__(self, provider: Optional[OpenRouterProvider] = None):
         """Initialize the auto-critique system."""

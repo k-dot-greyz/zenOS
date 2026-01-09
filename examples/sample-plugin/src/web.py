@@ -1,5 +1,4 @@
-"""Web interface for the Text Processor Plugin
-"""
+"""Web interface for the Text Processor Plugin"""
 
 from .main import TextProcessorPlugin, create_plugin
 

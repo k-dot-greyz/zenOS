@@ -1,5 +1,4 @@
-"""Google Gemini conversation extractor for PKM module.
-"""
+"""Google Gemini conversation extractor for PKM module."""
 
 import asyncio
 import json

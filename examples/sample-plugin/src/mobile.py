@@ -1,5 +1,4 @@
-"""Mobile-optimized version of the Text Processor Plugin
-"""
+"""Mobile-optimized version of the Text Processor Plugin"""
 
 from .main import TextProcessorPlugin, create_plugin
 
