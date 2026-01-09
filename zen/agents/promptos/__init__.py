@@ -6,11 +6,7 @@ including the auto-critique system, specialized agents, and YAML-based templates
 """
 
 from .prompt_critic import PromptCriticAgent
-from .system_troubleshooter import SystemTroubleshooterAgent
 from .prompt_security_agent import PromptSecurityAgent
+from .system_troubleshooter import SystemTroubleshooterAgent
 
-__all__ = [
-    'PromptCriticAgent',
-    'SystemTroubleshooterAgent', 
-    'PromptSecurityAgent'
-]
+__all__ = ["PromptCriticAgent", "SystemTroubleshooterAgent", "PromptSecurityAgent"]
