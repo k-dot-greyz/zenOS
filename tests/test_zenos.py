@@ -73,6 +73,9 @@ def test_plugin_system():
         if "pytest" in sys.modules:
             import pytest
             pytest.fail(f"Plugin system failed: {e}")
+        if "pytest" in sys.modules:
+            import pytest
+            pytest.fail(f"Plugin system failed: {e}")
 
 
 async def main():
