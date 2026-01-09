@@ -1,67 +1,67 @@
 #!/usr/bin/env python3
-"""
-PKM Module Demo Script
+"""PKM Module Demo Script
 
 This script demonstrates the PKM module capabilities for extracting
 and managing Google Gemini conversations.
 """
 
 import asyncio
-import os
 import sys
 from pathlib import Path
 
 # Add the zenOS package to the path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from zen.pkm.config import PKMConfig
-from zen.pkm.extractor import GeminiExtractor
-from zen.pkm.processor import ConversationProcessor
-from zen.pkm.storage import PKMStorage
-from zen.pkm.scheduler import PKMScheduler
 from rich.console import Console
 from rich.panel import Panel
+
+from zen.pkm.config import PKMConfig
+from zen.pkm.processor import ConversationProcessor
+from zen.pkm.scheduler import PKMScheduler
+from zen.pkm.storage import PKMStorage
 
 console = Console()
 
 
 async def demo_pkm_module():
-    """
-    Run an interactive demo that walks through PKM (Personal Knowledge Management) module features.
-    
+    """Run an interactive demo that walks through PKM (Personal Knowledge Management) module features.
+
     Displays setup and storage initialization, current storage statistics, guidance for extracting Google Gemini conversations (notes when session cookies are missing), processing and search examples, scheduling overview, export options, and available CLI commands and next steps for getting started.
     """
-    
-    console.print(Panel.fit(
-        "[bold cyan]🧘 PKM Module Demo[/bold cyan]\n"
-        "Personal Knowledge Management for Google Gemini Conversations",
-        border_style="cyan"
-    ))
-    
+    console.print(
+        Panel.fit(
+            "[bold cyan]🧘 PKM Module Demo[/bold cyan]\n"
+            "Personal Knowledge Management for Google Gemini Conversations",
+            border_style="cyan",
+        )
+    )
+
     # 1. Setup Configuration
     console.print("\n[cyan]1. Setting up PKM configuration...[/cyan]")
     config = PKMConfig.load()
     console.print(f"✅ Configuration loaded from: {config.pkm_dir}")
-    
+
     # 2. Initialize Storage
     console.print("\n[cyan]2. Initializing storage system...[/cyan]")
     storage = PKMStorage(config)
-    console.print(f"✅ Storage initialized")
+    console.print("✅ Storage initialized")
     console.print(f"   • Conversations: {storage.conversations_dir}")
     console.print(f"   • Knowledge Base: {storage.knowledge_base_dir}")
     console.print(f"   • Exports: {storage.exports_dir}")
-    
+
     # 3. Show Current Statistics
     console.print("\n[cyan]3. Current PKM statistics...[/cyan]")
     stats = storage.get_statistics()
     console.print(f"📊 Conversations: {stats['conversations_count']}")
     console.print(f"📊 Knowledge entries: {stats['knowledge_entries_count']}")
     console.print(f"📊 Storage size: {stats['total_size_mb']} MB")
-    
+
     # 4. Demo Conversation Extraction (Simulated)
     console.print("\n[cyan]4. Demo conversation extraction...[/cyan]")
-    console.print("⚠️  Note: This is a demo. Real extraction requires valid Google Gemini session cookies.")
-    
+    console.print(
+        "⚠️  Note: This is a demo. Real extraction requires valid Google Gemini session cookies."
+    )
+
     if not config.gemini_session_cookie:
         console.print("🔧 To enable real extraction, set environment variables:")
         console.print("   export GEMINI_SESSION_COOKIE='your_session_cookie'")
@@ -69,11 +69,11 @@ async def demo_pkm_module():
         console.print("   Then run: zen pkm extract")
     else:
         console.print("✅ Session cookie found. You can run: zen pkm extract")
-    
+
     # 5. Demo Knowledge Processing
     console.print("\n[cyan]5. Demo knowledge processing...[/cyan]")
     processor = ConversationProcessor(config, storage)
-    
+
     # Check if we have any conversations to process
     conversations = storage.list_conversations(limit=1)
     if conversations:
@@ -81,7 +81,7 @@ async def demo_pkm_module():
         console.print("   Run: zen pkm process")
     else:
         console.print("📭 No conversations found. Extract some first with: zen pkm extract")
-    
+
     # 6. Demo Search Capabilities
     console.print("\n[cyan]6. Demo search capabilities...[/cyan]")
     if conversations:
@@ -90,13 +90,13 @@ async def demo_pkm_module():
         console.print(f"🔍 Search results for 'demo': {len(search_results)} conversations")
     else:
         console.print("🔍 No conversations to search. Extract some first.")
-    
+
     # 7. Demo Scheduling
     console.print("\n[cyan]7. Demo scheduling system...[/cyan]")
     scheduler = PKMScheduler(config)
     console.print("📅 Available scheduled jobs:")
     scheduler.list_jobs()
-    
+
     # 8. Demo Export
     console.print("\n[cyan]8. Demo export capabilities...[/cyan]")
     if conversations:
@@ -105,10 +105,11 @@ async def demo_pkm_module():
         console.print("   • zen pkm export --format markdown")
     else:
         console.print("📤 No data to export. Extract conversations first.")
-    
+
     # 9. Show CLI Commands
     console.print("\n[cyan]9. Available CLI commands...[/cyan]")
-    console.print("""
+    console.print(
+        """
 🧘 PKM Commands:
   zen pkm setup                    # Setup PKM module
   zen pkm extract [--limit N]      # Extract conversations
@@ -120,11 +121,13 @@ async def demo_pkm_module():
   zen pkm schedule list            # List scheduled jobs
   zen pkm schedule run <job>       # Run specific job
   zen pkm config-show              # Show configuration
-""")
-    
+"""
+    )
+
     # 10. Next Steps
     console.print("\n[cyan]10. Next steps...[/cyan]")
-    console.print("""
+    console.print(
+        """
 🚀 To get started with PKM:
 
 1. Setup authentication:
@@ -144,16 +147,16 @@ async def demo_pkm_module():
 
 5. Set up automation:
    zen pkm schedule start
-""")
-    
+"""
+    )
+
     console.print("\n[green]✅ PKM Module Demo completed![/green]")
     console.print("For more information, see: zen/pkm/README.md")
 
 
 def main():
-    """
-    Run the PKM module demo and handle top-level errors.
-    
+    """Run the PKM module demo and handle top-level errors.
+
     Executes the asynchronous demo_pkm_module coroutine. If interrupted by the user, prints a notice; if any other exception occurs, prints the error and exits the process with status code 1.
     """
     try:
