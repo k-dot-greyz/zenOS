@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from rich.console import Console
+from rich.panel import Panel
 
 from zen.pkm.config import PKMConfig
 from zen.pkm.models import Conversation, Message, MessageRole

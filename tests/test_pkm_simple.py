@@ -16,31 +16,31 @@ def test_imports():
     print("Testing PKM module imports...")
 
     try:
-
+        import zen.pkm
         print("OK: Main PKM module imported")
 
-
+        from zen.pkm.config import PKMConfig
         print("OK: PKMConfig imported")
 
-
+        from zen.pkm.models import Conversation, ConversationStatus, KnowledgeEntry, Message, MessageRole
         print("OK: Data models imported")
 
-
+        from zen.pkm.storage import PKMStorage
         print("OK: PKMStorage imported")
 
-
+        from zen.pkm.extractor import GeminiExtractor
         print("OK: GeminiExtractor imported")
 
-
+        from zen.pkm.processor import ConversationProcessor
         print("OK: ConversationProcessor imported")
 
-
+        from zen.pkm.scheduler import PKMScheduler
         print("OK: PKMScheduler imported")
 
-
+        from zen.pkm.agent import PKMAgent
         print("OK: PKMAgent imported")
 
-
+        from zen.pkm.cli import pkm
         print("OK: PKM CLI imported")
 
         return True
