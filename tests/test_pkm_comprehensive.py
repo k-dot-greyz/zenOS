@@ -16,31 +16,31 @@ def test_imports():
     print("🧪 Testing PKM module imports...")
 
     try:
-
+        import zen.pkm
         print("✅ Main PKM module imported")
 
-
+        from zen.pkm.config import PKMConfig
         print("✅ PKMConfig imported")
 
-
+        from zen.pkm.models import Conversation, ConversationStatus, KnowledgeEntry, Message, MessageRole
         print("✅ Data models imported")
 
-
+        from zen.pkm.storage import PKMStorage
         print("✅ PKMStorage imported")
 
-
+        from zen.pkm.extractor import GeminiExtractor
         print("✅ GeminiExtractor imported")
 
-
+        from zen.pkm.processor import ConversationProcessor
         print("✅ ConversationProcessor imported")
 
-
+        from zen.pkm.scheduler import PKMScheduler
         print("✅ PKMScheduler imported")
 
-
+        from zen.pkm.agent import PKMAgent
         print("✅ PKMAgent imported")
 
-
+        from zen.pkm.cli import pkm
         print("✅ PKM CLI imported")
 
         return True
@@ -209,6 +209,7 @@ def test_processor():
         from zen.pkm.config import PKMConfig
         from zen.pkm.models import Conversation, ConversationStatus, Message, MessageRole
         from zen.pkm.processor import ConversationProcessor
+        from zen.pkm.storage import PKMStorage
 
         # Create test config
         config = PKMConfig()
