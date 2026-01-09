@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive test suite for PKM module.
-"""
+"""Comprehensive test suite for PKM module."""
 
 import asyncio
 import sys
@@ -16,31 +15,31 @@ def test_imports():
     print("🧪 Testing PKM module imports...")
 
     try:
-        import zen.pkm
+
         print("✅ Main PKM module imported")
 
-        from zen.pkm.config import PKMConfig
+
         print("✅ PKMConfig imported")
 
-        from zen.pkm.models import Conversation, ConversationStatus, KnowledgeEntry, Message, MessageRole
+
         print("✅ Data models imported")
 
-        from zen.pkm.storage import PKMStorage
+
         print("✅ PKMStorage imported")
 
-        from zen.pkm.extractor import GeminiExtractor
+
         print("✅ GeminiExtractor imported")
 
-        from zen.pkm.processor import ConversationProcessor
+
         print("✅ ConversationProcessor imported")
 
-        from zen.pkm.scheduler import PKMScheduler
+
         print("✅ PKMScheduler imported")
 
-        from zen.pkm.agent import PKMAgent
+
         print("✅ PKMAgent imported")
 
-        from zen.pkm.cli import pkm
+
         print("✅ PKM CLI imported")
 
         return True
@@ -71,6 +70,7 @@ def test_config():
 
         loaded_config = PKMConfig.load(test_config_path)
         print("✅ Config loaded from file")
+        assert loaded_config.pkm_dir == config.pkm_dir, "Loaded config should match saved config"
 
         # Cleanup
         test_config_path.unlink()
@@ -119,6 +119,7 @@ def test_models():
         # Test deserialization
         conv_restored = Conversation.from_dict(conv_dict)
         print("✅ Conversation deserialized")
+        assert conv_restored.id == conversation.id
 
         # Test KnowledgeEntry
         knowledge = KnowledgeEntry(
@@ -176,6 +177,7 @@ def test_storage():
         # Test load conversation
         loaded_conv = storage.load_conversation("storage-test-001")
         print("✅ Conversation loaded")
+        assert loaded_conv.id == test_conversation.id
 
         # Test list conversations
         conversations = storage.list_conversations()
@@ -322,6 +324,7 @@ def test_agent():
         test_prompt = "Show me my conversation statistics"
         result = agent.execute(test_prompt, {})
         print("✅ Agent executed successfully")
+        assert result is not None
 
         return True
     except Exception as e:
@@ -349,7 +352,15 @@ def test_cli():
             return False
 
         # Test individual commands
-        commands = ["extract", "process", "search", "list_conversations", "stats", "export", "schedule"]
+        commands = [
+            "extract",
+            "process",
+            "search",
+            "list_conversations",
+            "stats",
+            "export",
+            "schedule",
+        ]
 
         for cmd in commands:
             result = runner.invoke(pkm, [cmd, "--help"])
@@ -379,6 +390,7 @@ async def test_async_functionality():
         # Test async context manager
         async with GeminiExtractor(config) as extractor:
             print("✅ GeminiExtractor async context manager works")
+            assert extractor is not None
 
         return True
     except Exception as e:

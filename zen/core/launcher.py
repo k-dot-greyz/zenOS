@@ -1,5 +1,4 @@
-"""Launcher for zenOS - orchestrates agent execution with AI providers.
-"""
+"""Launcher for zenOS - orchestrates agent execution with AI providers."""
 
 import asyncio
 from typing import Any, Dict
@@ -15,8 +14,7 @@ console = Console()
 
 
 class Launcher:
-    """Main launcher for executing agents with AI capabilities.
-    """
+    """Main launcher for executing agents with AI capabilities."""
 
     def __init__(self, debug: bool = False):
         """Initialize the launcher."""

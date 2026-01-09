@@ -1,5 +1,4 @@
-"""Display manager for zenOS - Beautiful terminal UI components.
-"""
+"""Display manager for zenOS - Beautiful terminal UI components."""
 
 import random
 from typing import Any, Dict, List
@@ -20,8 +19,7 @@ console = Console()
 
 
 class DisplayManager:
-    """Manages beautiful terminal displays for zenOS.
-    """
+    """Manages beautiful terminal displays for zenOS."""
 
     # Zen quotes for inspiration
     ZEN_QUOTES = [

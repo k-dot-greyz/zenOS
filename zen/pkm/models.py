@@ -1,5 +1,4 @@
-"""Data models for PKM module.
-"""
+"""Data models for PKM module."""
 
 from dataclasses import dataclass, field
 from datetime import datetime

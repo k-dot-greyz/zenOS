@@ -1,5 +1,4 @@
-"""Critic agent for prompt analysis and improvement.
-"""
+"""Critic agent for prompt analysis and improvement."""
 
 import asyncio
 

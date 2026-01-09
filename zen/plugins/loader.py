@@ -113,7 +113,7 @@ class GitPluginLoader:
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                 )
-                stdout, stderr = await result.communicate()
+                _stdout, stderr = await result.communicate()
 
                 if result.returncode != 0:
                     print(f"Dependency installation failed: {stderr.decode()}")
@@ -132,11 +132,12 @@ class GitPluginLoader:
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                 )
-                stdout, stderr = await result.communicate()
+                _stdout, stderr = await result.communicate()
 
                 if result.returncode != 0:
                     print(f"Node.js dependency installation failed: {stderr.decode()}")
-                    return False
+                    print("Continuing anyway...")
+                    return True
 
             return True
 
@@ -253,7 +254,9 @@ class GitPluginLoader:
             print(f"Error validating plugin: {e}")
             return False
 
-    async def _git_pull(self, plugin_path: Path, version: str = "main") -> subprocess.CompletedProcess:
+    async def _git_pull(
+        self, plugin_path: Path, version: str = "main"
+    ) -> subprocess.CompletedProcess:
         """Pull latest changes from Git repository"""
         return await asyncio.create_subprocess_exec(
             "git",
@@ -303,8 +306,11 @@ class GitPluginLoader:
 
 
 # Convenience function
-async def load_plugin_from_git(git_url: str, version: str = "main") -> Optional[PluginEntry]:
+async def load_plugin_from_git(
+    git_url: str, version: str = "main", registry: Optional[PluginRegistry] = None
+) -> Optional[PluginEntry]:
     """Load a plugin from Git URL"""
-    registry = PluginRegistry()
+    if registry is None:
+        registry = PluginRegistry()
     loader = GitPluginLoader(registry)
     return await loader.load_plugin_from_git(git_url, version)

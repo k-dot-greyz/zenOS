@@ -1,5 +1,4 @@
-"""Context management for zenOS - Project, Git, and Personality awareness.
-"""
+"""Context management for zenOS - Project, Git, and Personality awareness."""
 
 import subprocess
 from dataclasses import dataclass

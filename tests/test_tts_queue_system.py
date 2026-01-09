@@ -1,5 +1,4 @@
-"""Unit tests for the TTS Queue System
-"""
+"""Unit tests for the TTS Queue System"""
 
 import asyncio
 import time

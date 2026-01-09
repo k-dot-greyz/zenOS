@@ -1,5 +1,4 @@
-"""Interactive chat mode for zenOS - The zen way to talk to AI.
-"""
+"""Interactive chat mode for zenOS - The zen way to talk to AI."""
 
 import asyncio
 import sys

@@ -1,5 +1,4 @@
-"""Mobile-optimized UI for zenOS - Because you run Arch on your phone, you madlad.
-"""
+"""Mobile-optimized UI for zenOS - Because you run Arch on your phone, you madlad."""
 
 import os
 from datetime import datetime
@@ -167,8 +166,7 @@ class MobileUI:
 
 
 class MobileChat:
-    """Enhanced mobile chat interface with Termux integration.
-    """
+    """Enhanced mobile chat interface with Termux integration."""
 
     def __init__(self):
         """Initialize mobile chat."""
@@ -331,8 +329,7 @@ class MobileChat:
 
 # Enhanced Termux integration
 class TermuxInterface:
-    """Complete Termux API integration for mobile.
-    """
+    """Complete Termux API integration for mobile."""
 
     @staticmethod
     def is_termux() -> bool:

@@ -1,5 +1,4 @@
-"""Configuration for PKM module.
-"""
+"""Configuration for PKM module."""
 
 import os
 from dataclasses import dataclass

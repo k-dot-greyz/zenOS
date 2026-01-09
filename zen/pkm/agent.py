@@ -1,5 +1,4 @@
-"""PKM Agent for zenOS - provides conversation extraction and knowledge management.
-"""
+"""PKM Agent for zenOS - provides conversation extraction and knowledge management."""
 
 import asyncio
 from typing import Any, Dict
