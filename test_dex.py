@@ -92,6 +92,20 @@ content
         self.assertEqual(meta["dex_id"], "0x12:0x34")
         self.assertEqual(meta["dex_type"], "test")
 
+    def test_lowercase_hex_id(self):
+        p = self.dir_path / "lower.md"
+        with open(p, 'w', encoding='utf-8') as f:
+            f.write("""---
+dex_id: "0x7e:0x99"
+dex_type: "test"
+status: "active"
+property_exchange_id: "urn:test"
+---
+""")
+        meta = get_dex_metadata(p)
+        self.assertIsNotNone(meta)
+        self.assertEqual(meta["dex_id"], "0x7e:0x99")
+
     def test_python_docstring(self):
         p = self.dir_path / "test.py"
         with open(p, 'w', encoding='utf-8') as f:
