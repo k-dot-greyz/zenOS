@@ -8,6 +8,7 @@ and linking based on the procedures from mcp-config.
 import json
 import os
 import subprocess
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -65,7 +66,7 @@ class MCPSetupManager:
                 ["npm", "list", "-g", server], capture_output=True, text=True, check=False
             )
             return result.returncode == 0
-        except:
+        except Exception:
             return False
 
     def link_configurations(self) -> bool:
@@ -306,7 +307,7 @@ class MCPSetupManager:
                             return parts[-1].strip()
 
             return "not installed"
-        except:
+        except Exception:
             return "unknown"
 
     def _get_binary_path(self, binary_name: str) -> str:
@@ -320,7 +321,7 @@ class MCPSetupManager:
                 return result.stdout.strip()
             else:
                 return "not found"
-        except:
+        except Exception:
             return "not found"
 
     def create_helper_scripts(self) -> bool:

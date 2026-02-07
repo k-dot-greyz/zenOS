@@ -1,9 +1,16 @@
 # Core dependencies
-asyncio
-threading
-queue
-dataclasses
-enum34; python_version < '3.4'
+python-dotenv
+aiohttp
+requests
+pyyaml
+jinja2
+rich
+prompt_toolkit
+click
+beautifulsoup4
+schedule
+google-generativeai
+psutil
 
 # Optional TTS engines
 pyttsx3>=2.90
