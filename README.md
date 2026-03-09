@@ -2,7 +2,8 @@
 
 **The Zen of AI Workflow Orchestration**
 
-A revolutionary operating system for human-AI collaboration where biological and artificial intelligence work together as equal partners. zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
+A revolutionary operating system for human-AI collaboration where biological and artificial intelligence work together as equal partners. 
+zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -14,7 +15,7 @@ A revolutionary operating system for human-AI collaboration where biological and
 zenOS is not just another AI CLI tool—it's a complete paradigm shift in how we interact with artificial intelligence:
 
 - **🤝 True Collaboration**: Humans and AIs as equal participants
-- **🎮 Pokédex System**: Discover and catalog AI models and procedures
+- **🎮 Dex System**: Discover and catalog AI models and procedures
 - **🔄 Multi-Agent Orchestration**: Multiple AIs working together on complex tasks
 - **📱 Universal Access**: Desktop, mobile (Termux), and offline modes
 - **🧠 Living Knowledge**: Procedures that evolve through use
@@ -296,7 +297,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🌟 Philosophy
 
-> "The goal is not to replace human intelligence with artificial intelligence, but to create a harmonious system where both enhance each other."
+> "The goal is not to replace human intelligence with artificial intelligence,
+> but to create a harmonious system where both enhance each other."
 
 zenOS embodies the principle of **zen** in software:
 - **Simplicity**: Complex power through simple interfaces
@@ -327,4 +329,4 @@ Special thanks to:
 
 ---
 
-**Welcome to zenOS - Where Humans and AIs Collaborate in Perfect Zen** 🧘🤖
+**Welcome to zenOS - Where Humans and AIs Collaborate in Balanced Zen** 🧘🤖
