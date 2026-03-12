@@ -1,8 +1,4 @@
 # Core dependencies
-asyncio
-threading
-queue
-dataclasses
 enum34; python_version < '3.4'
 
 # Optional TTS engines

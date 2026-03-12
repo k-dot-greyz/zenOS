@@ -22,9 +22,9 @@ from .mcp_setup import MCPSetupManager
 from .troubleshooter import SetupTroubleshooter
 
 __all__ = [
-    'UnifiedSetupManager',
-    'EnvironmentDetector', 
-    'GitSetupManager',
-    'MCPSetupManager',
-    'SetupTroubleshooter'
+    "UnifiedSetupManager",
+    "EnvironmentDetector",
+    "GitSetupManager",
+    "MCPSetupManager",
+    "SetupTroubleshooter",
 ]
