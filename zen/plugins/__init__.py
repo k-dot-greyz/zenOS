@@ -10,9 +10,9 @@ from .discovery import PluginDiscovery
 from .executor import PluginExecutor
 
 __all__ = [
-    'PluginRegistry',
-    'GitPluginLoader', 
-    'PluginSandbox',
-    'PluginDiscovery',
-    'PluginExecutor'
+    "PluginRegistry",
+    "GitPluginLoader",
+    "PluginSandbox",
+    "PluginDiscovery",
+    "PluginExecutor",
 ]
