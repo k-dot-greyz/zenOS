@@ -28,7 +28,7 @@ YAML_FRONT_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL | re.MULTILINE
 
 # Keys to extract
 KEYS_TO_YOINK = {
-    "dex_id": re.compile(r"^dex_id:\s*[\"']?(0x[0-9A-F]{2}:0x[0-9A-F]{2})[\"']?", re.MULTILINE),
+    "dex_id": re.compile(r"^dex_id:\s*[\"']?(0x[0-9A-Fa-f]{2}:0x[0-9A-Fa-f]{2})[\"']?", re.MULTILINE),
     "dex_type": re.compile(r"^dex_type:\s*[\"']?(\w+)[\"']?", re.MULTILINE),
     "status": re.compile(r"^status:\s*[\"']?(\w+)[\"']?", re.MULTILINE),
     "pe_id": re.compile(r"property_exchange_id:\s*[\"']?([a-zA-Z0-9:\-\.]+)[\"']?", re.MULTILINE)
@@ -69,8 +69,8 @@ def parse_file(filepath):
             return None
             
         return metadata
-    except Exception as e:
-        # Silently skip files we can't parse
+    except (OSError, UnicodeDecodeError):
+        # Skip files that can't be read or decoded
         return None
 
 def generate_markdown_index(entries):
@@ -115,7 +115,7 @@ def main():
                 if meta: valid_entries.append(meta)
 
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        f.write(generate_markdown_index(valid_entries))
+        f.write(generate_markdown_index(valid_entries) + "\n")
     print(f"✅ yoink complete. found {len(valid_entries)} entries")
     print(f"   index: {OUTPUT_FILE}")
 

@@ -37,7 +37,7 @@ class DexReader:
         if not self.index_path.exists():
             return
         
-        with open(self.index_path, 'r') as f:
+        with open(self.index_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         
         # parse markdown table
@@ -129,7 +129,7 @@ def get_dex_metadata(filepath: Path) -> Optional[Dict]:
         # extract key fields
         metadata = {}
         patterns = {
-            "dex_id": r"^dex_id:\s*[\"']?(0x[0-9A-F]{2}:0x[0-9A-F]{2})[\"']?",
+            "dex_id": r"^dex_id:\s*[\"']?(0x[0-9A-Fa-f]{2}:0x[0-9A-Fa-f]{2})[\"']?",
             "dex_type": r"^dex_type:\s*[\"']?(\w+)[\"']?",
             "status": r"^status:\s*[\"']?(\w+)[\"']?",
             "pe_id": r"property_exchange_id:\s*[\"']?([a-zA-Z0-9:\-\.]+)[\"']?"
@@ -140,6 +140,6 @@ def get_dex_metadata(filepath: Path) -> Optional[Dict]:
             metadata[key] = found.group(1) if found else None
         
         return metadata if metadata.get("dex_id") else None
-    except:
+    except (OSError, UnicodeDecodeError, AttributeError):
         return None
 
