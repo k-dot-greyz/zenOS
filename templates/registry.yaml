@@ -1,0 +1,126 @@
+version: "1.0.0"
+last_updated: "2025-11-11"
+maintainer: "human:kaspars"
+templates:
+  - id: "doc.report.daily_standup"
+    name: "Daily Standup Report"
+    path: "documents/reports/daily_standup.md"
+    type: "markdown"
+    tags: ["report", "daily", "team"]
+    version: "1.0.0"
+    rarity: "common"
+    discovery:
+      discovered_by: "human:kaspars"
+      discovery_date: "2025-11-11"
+      origin: "Template Pokédex bootstrap"
+    usage:
+      usage_count: 0
+      last_used: null
+      average_render_time_ms: null
+    compatibility:
+      variables_schema: "metadata/schemas/documents/reports/daily_standup.json"
+      supports_mobile: true
+      supports_desktop: true
+    evolution:
+      lineage: []
+      deprecated: false
+      successor: null
+
+  - id: "doc.communication.social_post"
+    name: "AI Social Post"
+    path: "documents/communications/social_posts.yaml"
+    type: "yaml"
+    tags: ["communication", "social", "ai-generated"]
+    version: "1.0.0"
+    rarity: "uncommon"
+    discovery:
+      discovered_by: "human:kaspars"
+      discovery_date: "2025-11-11"
+      origin: "Migrated from ai_post_templates.yaml"
+    usage:
+      usage_count: 42
+      last_used: null
+      average_render_time_ms: null
+    compatibility:
+      variables_schema: "metadata/schemas/documents/communications/social_post.json"
+      supports_mobile: true
+      supports_desktop: true
+    evolution:
+      lineage:
+        - "legacy.ai_post_templates"
+      deprecated: false
+      successor: null
+
+  - id: "automation.n8n.workflow_selector"
+    name: "n8n Template Selector"
+    path: "automations/n8n/workflow_selector.json"
+    type: "n8n-workflow"
+    tags: ["automation", "n8n", "workflow"]
+    version: "1.0.0"
+    rarity: "uncommon"
+    discovery:
+      discovered_by: "human:kaspars"
+      discovery_date: "2025-11-11"
+      origin: "Migrated from n8n/zenOS_template_selector.json"
+    usage:
+      usage_count: 7
+      last_used: null
+      average_render_time_ms: null
+    compatibility:
+      variables_schema: null
+      supports_mobile: false
+      supports_desktop: true
+    evolution:
+      lineage:
+        - "legacy.zenOS_template_selector"
+      deprecated: false
+      successor: null
+
+  - id: "code.python.plugin_boilerplate"
+    name: "Python Plugin Boilerplate"
+    path: "code/python/plugin_boilerplate.py.jinja"
+    type: "jinja"
+    tags: ["code", "python", "plugin"]
+    version: "0.1.0"
+    rarity: "rare"
+    discovery:
+      discovered_by: "ai:claude"
+      discovery_date: "2025-11-11"
+      origin: "Template Pokédex bootstrap"
+    usage:
+      usage_count: 0
+      last_used: null
+      average_render_time_ms: null
+    compatibility:
+      variables_schema: "metadata/schemas/code/python/plugin_boilerplate.json"
+      supports_mobile: false
+      supports_desktop: true
+    evolution:
+      lineage: []
+      deprecated: false
+      successor: null
+
+  - id: "metadata.registry.schema"
+    name: "Template Registry Schema"
+    path: "metadata/registry.schema.json"
+    type: "json-schema"
+    tags: ["metadata", "schema"]
+    version: "1.0.0"
+    rarity: "legendary"
+    discovery:
+      discovered_by: "human:kaspars"
+      discovery_date: "2025-11-11"
+      origin: "Template Pokédex bootstrap"
+    usage:
+      usage_count: 0
+      last_used: null
+      average_render_time_ms: null
+    compatibility:
+      variables_schema: null
+      supports_mobile: true
+      supports_desktop: true
+    evolution:
+      lineage: []
+      deprecated: false
+      successor: null
+
