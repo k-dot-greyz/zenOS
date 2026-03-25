@@ -26,7 +26,9 @@ sys.path.append(str(ROOT_DIR))
 try:
     from zen.utils.dex_constants import YAML_FRONT_RE, PATTERNS
 except ImportError:
-    # Fallback if running outside project context, though we try to set it up above
+    # Fallback if running outside project context, though we try to set it up above.
+    # NOTE: These patterns must be kept in sync with zen/utils/dex_constants.py.
+    # This duplication allows the script to run standalone without the package.
     YAML_FRONT_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL | re.MULTILINE)
     PATTERNS = {
         "dex_id": re.compile(r"^dex_id:\s*[\"']?(0x[0-9A-Fa-f]{2}:0x[0-9A-Fa-f]{2})[\"']?", re.MULTILINE),
@@ -40,6 +42,15 @@ DEX_DIR = ROOT_DIR / "dex"
 OUTPUT_FILE = DEX_DIR / "7E-00_dex-index.md"
 
 def parse_file(filepath):
+    """
+    Parse a file for dex metadata (YAML frontmatter or Python docstring).
+    
+    Args:
+        filepath (Path): Path to the file to parse.
+        
+    Returns:
+        dict: Metadata dictionary if dex_id found, else None.
+    """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -79,6 +90,15 @@ def parse_file(filepath):
         return None
 
 def generate_markdown_index(entries):
+    """
+    Generate the Markdown index content from a list of entries.
+    
+    Args:
+        entries (list): List of metadata dictionaries.
+        
+    Returns:
+        str: Generated Markdown content.
+    """
     # Sort High to Low (0x7F -> 0x00)
     entries.sort(key=lambda x: x.get("dex_id", "0x00:00"), reverse=True)
     
@@ -98,8 +118,6 @@ def generate_markdown_index(entries):
     ]
     
     for entry in entries:
-        if entry["dex_id"] == "N/A":
-            continue
         link = f"[{entry['filename']}]({entry['path']})"
         emoji = "🟢" if entry['status'] == "active" else "⚪"
         row = f"| `{entry['dex_id']}` | `{entry['dex_type']}` | {emoji} | {link} | `{entry['pe_id']}` |"
@@ -108,6 +126,9 @@ def generate_markdown_index(entries):
     return "\n".join(md_lines)
 
 def main():
+    """
+    Main entry point: scan directory and generate index.
+    """
     print("🎹 starting dex yoinker...")
     valid_entries = []
     for root, dirs, files in os.walk(ROOT_DIR):

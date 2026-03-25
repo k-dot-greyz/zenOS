@@ -45,9 +45,9 @@ both use the same protocol, different domains:
 
 ## protocol reference
 
-see the full dex protocol spec in dev-master:
-- [dex protocol spec](https://github.com/k-dot-greyz/dev-master/blob/main/dex/7F-7F_dex-protocol-spec.md)
-- [architecture doc](https://github.com/k-dot-greyz/dev-master/blob/main/dex/7E-02_dex-architecture.md)
+see the full dex protocol spec in dev-master (private repository):
+- dex protocol spec (`dex/7F-7F_dex-protocol-spec.md`)
+- architecture doc (`dex/7E-02_dex-architecture.md`)
 
 ## usage
 
