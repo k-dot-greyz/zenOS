@@ -1,0 +1,242 @@
+name: PR Status Check
+
+# Workflow to check PR readiness, conflicts, and mergeability
+# Can be triggered manually or on PR events
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check (leave empty for all open PRs)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check-pr-status:
+    name: Check PR Status & Conflicts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for conflict detection
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Install dependencies
+        run: |
+          pip install PyGithub requests
+      
+      - name: Check PR Status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+        run: |
+          python << 'EOF'
+          import os
+          import sys
+          from github import Github
+          from datetime import datetime
+          
+          token = os.environ.get('GITHUB_TOKEN')
+          pr_number = os.environ.get('PR_NUMBER')
+          repo_name = os.environ.get('GITHUB_REPOSITORY', 'k-dot-greyz/zenOS')
+          
+          if not token:
+              print("❌ GITHUB_TOKEN not found")
+              sys.exit(1)
+          
+          g = Github(token)
+          repo = g.get_repo(repo_name)
+          
+          def check_pr(pr):
+              """Check a single PR's status"""
+              print(f"\n{'='*60}")
+              print(f"PR #{pr.number}: {pr.title}")
+              print(f"{'='*60}")
+              print(f"Author: {pr.user.login}")
+              print(f"Branch: {pr.head.ref} → {pr.base.ref}")
+              print(f"State: {pr.state}")
+              print(f"Created: {pr.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
+              print(f"Updated: {pr.updated_at.strftime('%Y-%m-%d %H:%M:%S')}")
+              
+              # Check mergeability
+              print(f"\n📊 Merge Status:")
+              if pr.mergeable is True:
+                  print("  ✅ Mergeable: YES (no conflicts)")
+              elif pr.mergeable is False:
+                  print("  ❌ Mergeable: NO (has conflicts)")
+              else:
+                  print("  ⏳ Mergeable: CHECKING...")
+              
+              # Check mergeable_state
+              merge_state = pr.mergeable_state
+              state_icons = {
+                  'clean': '✅',
+                  'dirty': '❌',
+                  'unstable': '⚠️',
+                  'blocked': '🚫',
+                  'behind': '⬇️',
+                  'unknown': '❓'
+              }
+              icon = state_icons.get(merge_state, '❓')
+              print(f"  {icon} Merge State: {merge_state.upper()}")
+              
+              # Check CI status
+              print(f"\n🔍 CI Status:")
+              commits = pr.get_commits()
+              if commits.totalCount > 0:
+                  last_commit = commits[commits.totalCount - 1]
+                  statuses = last_commit.get_statuses()
+                  if statuses.totalCount > 0:
+                      for status in statuses:
+                          icon = '✅' if status.state == 'success' else '❌' if status.state == 'failure' else '⚠️'
+                          print(f"  {icon} {status.context}: {status.state}")
+                  else:
+                      print("  ⏳ No CI status checks found")
+              
+              # Check reviews
+              print(f"\n👥 Reviews:")
+              reviews = pr.get_reviews()
+              approvals = sum(1 for r in reviews if r.state == 'APPROVED')
+              changes_requested = sum(1 for r in reviews if r.state == 'CHANGES_REQUESTED')
+              print(f"  ✅ Approvals: {approvals}")
+              print(f"  ❌ Changes Requested: {changes_requested}")
+              print(f"  📝 Total Reviews: {reviews.totalCount}")
+              
+              # Check if draft
+              if pr.draft:
+                  print(f"\n📝 Status: DRAFT (not ready for review)")
+              else:
+                  print(f"\n📝 Status: READY FOR REVIEW")
+              
+              # Check labels
+              labels = [label.name for label in pr.labels]
+              if labels:
+                  print(f"\n🏷️  Labels: {', '.join(labels)}")
+              
+              # Files changed
+              files = pr.get_files()
+              print(f"\n📁 Files Changed: {files.totalCount}")
+              if files.totalCount <= 10:
+                  for file in files:
+                      status_icon = {
+                          'added': '➕',
+                          'modified': '✏️',
+                          'removed': '➖',
+                          'renamed': '🔄'
+                      }.get(file.status, '❓')
+                      print(f"  {status_icon} {file.status}: {file.filename}")
+              
+              # Summary
+              print(f"\n{'='*60}")
+              ready = (
+                  pr.mergeable is True and
+                  merge_state == 'clean' and
+                  not pr.draft and
+                  approvals > 0
+              )
+              
+              if ready:
+                  print("✅ READY TO MERGE")
+              elif pr.mergeable is False:
+                  print("❌ HAS CONFLICTS - Needs resolution")
+              elif pr.draft:
+                  print("📝 DRAFT - Not ready for review")
+              elif merge_state != 'clean':
+                  print(f"⚠️  NOT READY - Merge state: {merge_state}")
+              else:
+                  print("⏳ PENDING - Waiting for reviews/CI")
+              print(f"{'='*60}\n")
+          
+          # Check specific PR or all open PRs
+          if pr_number:
+              try:
+                  pr = repo.get_pull(int(pr_number))
+                  check_pr(pr)
+              except Exception as e:
+                  print(f"❌ Error checking PR #{pr_number}: {e}")
+                  sys.exit(1)
+          else:
+              # Check all open PRs
+              print(f"🔍 Checking all open PRs for {repo_name}...\n")
+              open_prs = repo.get_pulls(state='open', sort='updated', direction='desc')
+              
+              if open_prs.totalCount == 0:
+                  print("✅ No open pull requests")
+              else:
+                  print(f"Found {open_prs.totalCount} open PR(s):\n")
+                  for pr in open_prs:
+                      check_pr(pr)
+                      
+                  # Summary
+                  print(f"\n{'='*60}")
+                  print("SUMMARY")
+                  print(f"{'='*60}")
+                  ready_count = 0
+                  conflict_count = 0
+                  draft_count = 0
+                  
+                  for pr in repo.get_pulls(state='open'):
+                      if pr.draft:
+                          draft_count += 1
+                      elif pr.mergeable is False:
+                          conflict_count += 1
+                      elif pr.mergeable is True and pr.mergeable_state == 'clean':
+                          ready_count += 1
+                  
+                  print(f"✅ Ready to merge: {ready_count}")
+                  print(f"❌ Has conflicts: {conflict_count}")
+                  print(f"📝 Draft PRs: {draft_count}")
+                  print(f"📊 Total open: {open_prs.totalCount}")
+          EOF
+      
+      - name: Comment PR Status (if triggered by PR event)
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python << 'EOF'
+          import os
+          from github import Github
+          
+          token = os.environ.get('GITHUB_TOKEN')
+          repo_name = os.environ.get('GITHUB_REPOSITORY')
+          pr_number = os.environ.get('PR_NUMBER', '${{ github.event.pull_request.number }}')
+          
+          g = Github(token)
+          repo = g.get_repo(repo_name)
+          pr = repo.get_pull(int(pr_number))
+          
+          # Create status comment
+          mergeable_status = "✅ Ready" if pr.mergeable else "❌ Has Conflicts"
+          comment = f"""## 🔍 PR Status Check
+          
+          **Merge Status:** {mergeable_status}
+          **Merge State:** {pr.mergeable_state.upper()}
+          **Draft:** {'Yes' if pr.draft else 'No'}
+          
+          This PR has been automatically checked. See the Actions tab for full details.
+          """
+          
+          # Check if comment already exists
+          comments = pr.get_issue_comments()
+          for comment in comments:
+              if comment.user.login == 'github-actions[bot]' and 'PR Status Check' in comment.body:
+                  comment.edit(comment)
+                  break
+          else:
+              pr.create_issue_comment(comment)
+          EOF
+

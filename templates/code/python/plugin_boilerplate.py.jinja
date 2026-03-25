@@ -1,0 +1,26 @@
+"""
+{{ description }}
+
+Plugin ID: {{ plugin_id }}
+"""
+
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
+
+class {{ class_name }}:
+    """Generated plugin boilerplate for {{ plugin_id }}."""
+
+    PLUGIN_ID = "{{ plugin_id }}"
+
+    def __init__(self) -> None:
+        self.capabilities: List[str] = {{ capabilities | default([]) | tojson }}
+
+    def run(self, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Execute the plugin with an optional payload."""
+        return {
+            "plugin_id": self.PLUGIN_ID,
+            "status": "ok",
+            "payload": payload or {},
+        }
