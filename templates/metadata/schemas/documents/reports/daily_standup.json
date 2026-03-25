@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Daily Standup Report Variables",
+  "type": "object",
+  "required": ["date", "team", "updates"],
+  "properties": {
+    "date": {
+      "type": "string",
+      "description": "ISO formatted date for the standup entry."
+    },
+    "team": {
+      "type": "string",
+      "description": "Name of the team or squad."
+    },
+    "updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["member", "yesterday", "today", "blockers"],
+        "properties": {
+          "member": {"type": "string"},
+          "yesterday": {"type": "string"},
+          "today": {"type": "string"},
+          "blockers": {"type": "string"}
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes or announcements."
+    }
+  },
+  "additionalProperties": false
+}
+
