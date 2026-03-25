@@ -22,6 +22,7 @@ provides runtime access to dex metadata from both:
 import re
 from pathlib import Path
 from typing import Dict, List, Optional
+from zen.utils.dex_constants import YAML_FRONT_RE, PYTHON_DOCSTRING_RE, PATTERNS
 
 
 class DexReader:
@@ -30,10 +31,14 @@ class DexReader:
     def __init__(self, index_path: str = "dex/7E-00_dex-index.md"):
         self.index_path = Path(index_path)
         self.entries = []
+        self._index_by_id: Dict[str, Dict] = {}
         self._load_index()
     
     def _load_index(self):
         """load entries from the dex index"""
+        self.entries = []
+        self._index_by_id = {}
+        
         if not self.index_path.exists():
             return
         
@@ -62,6 +67,7 @@ class DexReader:
                         "pe_id": parts[4].strip("`")
                     }
                     self.entries.append(entry)
+                    self._index_by_id[dex_id] = entry
     
     def _extract_filename(self, markdown_link: str) -> str:
         """extract filename from [text](path) format"""
@@ -75,10 +81,7 @@ class DexReader:
     
     def get(self, dex_id: str) -> Optional[Dict]:
         """get entry by dex_id"""
-        for entry in self.entries:
-            if entry["dex_id"] == dex_id:
-                return entry
-        return None
+        return self._index_by_id.get(dex_id)
     
     def by_bank(self, bank: int) -> List[Dict]:
         """get all entries in a bank (e.g., 0x7E)"""
@@ -104,7 +107,6 @@ class DexReader:
     
     def refresh(self):
         """reload the index"""
-        self.entries = []
         self._load_index()
 
 
@@ -115,11 +117,11 @@ def get_dex_metadata(filepath: Path) -> Optional[Dict]:
             content = f.read()
         
         # try standard frontmatter
-        match = re.match(r"^---\s*\n(.*?)\n---\s*\n", content, re.DOTALL | re.MULTILINE)
+        match = YAML_FRONT_RE.match(content)
         
         # try triple-quoted for python
         if not match and filepath.suffix == '.py':
-            match = re.match(r'^\s*"""(.*?)"""', content, re.DOTALL)
+            match = PYTHON_DOCSTRING_RE.match(content)
         
         if not match:
             return None
@@ -128,18 +130,10 @@ def get_dex_metadata(filepath: Path) -> Optional[Dict]:
         
         # extract key fields
         metadata = {}
-        patterns = {
-            "dex_id": r"^dex_id:\s*[\"']?(0x[0-9A-Fa-f]{2}:0x[0-9A-Fa-f]{2})[\"']?",
-            "dex_type": r"^dex_type:\s*[\"']?(\w+)[\"']?",
-            "status": r"^status:\s*[\"']?(\w+)[\"']?",
-            "pe_id": r"property_exchange_id:\s*[\"']?([a-zA-Z0-9:\-\.]+)[\"']?"
-        }
-        
-        for key, pattern in patterns.items():
-            found = re.search(pattern, yaml_block, re.MULTILINE)
+        for key, pattern in PATTERNS.items():
+            found = pattern.search(yaml_block)
             metadata[key] = found.group(1) if found else None
         
         return metadata if metadata.get("dex_id") else None
     except (OSError, UnicodeDecodeError, AttributeError):
         return None
-
