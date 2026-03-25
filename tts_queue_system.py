@@ -276,14 +276,14 @@ class TTSWorker:
         Returns:
             audio_bytes (bytes): Synthesized audio data for the given message.
         """
-        # This is a placeholder - replace with actual TTS engine call
-        # For example: return await tts_engine(message.text, voice=message.metadata.get('voice', self.config.default_voice))
-        
-        # Simulate TTS processing time
-        await asyncio.sleep(0.1)
-        
-        # Return dummy audio data (in real implementation, this would be actual audio)
-        return b"dummy_audio_data"
+        # Call the actual TTS engine
+        voice = message.metadata.get('voice', self.config.default_voice)
+        if asyncio.iscoroutinefunction(tts_engine):
+            return await tts_engine(message.text, voice=voice)
+        else:
+            # Run blocking function in executor if needed, but here we assume it's fast or handles its own blocking
+            # For better async hygiene, blocking calls should be offloaded, but keeping it simple for now
+            return tts_engine(message.text, voice=voice)
     
     async def _play_audio(self, audio_data: bytes, message: TTSMessage) -> None:
         """
