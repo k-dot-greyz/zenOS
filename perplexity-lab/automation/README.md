@@ -85,7 +85,7 @@ Usage:
 
 ### GitHub Actions
 - On push to `perplexity-lab/conversations/`
-- Validate markdown format
+- Validate Markdown format
 - Auto-tag conversation
 - Create issues if flagged
 - Update conversation index

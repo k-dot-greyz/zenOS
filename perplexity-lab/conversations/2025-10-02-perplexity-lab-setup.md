@@ -17,7 +17,7 @@
 
 ### Current GitHub Context
 - **Username:** k-dot-greyz  
-- **Profile:** https://github.com/k-dot-greyz
+- **Profile:** [https://github.com/k-dot-greyz](https://github.com/k-dot-greyz)
 - **Company:** GlitchWorks
 - **Bio:** AI Architect, Alchemist & Audio Engineer
 - **Location:** Riga, Latvia
@@ -31,7 +31,7 @@
    - Language: Python
    - Stars: 2
    - Open Issues: 3
-   - URL: https://github.com/k-dot-greyz/zenOS
+   - URL: [https://github.com/k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS)
 
 2. **zenOS-dev** (Private) - Personal dev branch
    - Created: September 17, 2025
@@ -45,7 +45,7 @@
 ## Perplexity Lab Project Context
 
 ### Current User Session
-- **Current Page:** Google Gemini (https://gemini.google.com/gem/995bdab843a1/f486a3927b2ef7f0)
+- **Current Page:** Google Gemini ([https://gemini.google.com/gem/995bdab843a1/f486a3927b2ef7f0](https://gemini.google.com/gem/995bdab843a1/f486a3927b2ef7f0))
 - **Request:** "get all context, push to git inbox this conversation for setting up a perplexity lab project"
 
 ### Recent Project Activities (Based on User Memory)

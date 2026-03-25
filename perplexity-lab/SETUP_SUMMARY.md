@@ -9,7 +9,7 @@
 ## 🎉 What Was Built
 
 ### Directory Structure
-```
+```text
 perplexity-lab/
 ├── README.md                           # Main overview & philosophy
 ├── QUICKSTART.md                       # 2-minute getting started

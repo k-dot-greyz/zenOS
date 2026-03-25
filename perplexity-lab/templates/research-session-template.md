@@ -2,7 +2,7 @@
 
 **Date:** [YYYY-MM-DD]  
 **Source:** Perplexity AI  
-**Researcher:** k.greyZ  
+**Researcher:** [RESEARCHER]  
 **Session Type:** [Technical/Business/Design/General]  
 **Tags:** #research #perplexity #[custom-tags]  
 **Status:** [Active/Completed/Archived]  

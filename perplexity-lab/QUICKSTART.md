@@ -46,7 +46,7 @@ cp perplexity-lab/templates/quick-capture-template.md \
 
 ## 📁 Structure at a Glance
 
-```
+```text
 perplexity-lab/
 ├── README.md                    ← Overview and philosophy
 ├── QUICKSTART.md               ← This file
@@ -116,7 +116,7 @@ rg "search term" perplexity-lab/conversations/
 
 ## 📊 Workflow Summary
 
-```
+```text
 1. Research in Perplexity
    ↓
 2. Archive to conversations/

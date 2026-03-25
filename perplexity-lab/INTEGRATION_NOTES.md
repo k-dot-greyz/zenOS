@@ -17,7 +17,7 @@ The Perplexity Lab isn't a standalone project—it's a **Product Engine** compon
 **Location:** `/workspace/inbox/`
 
 **Flow:**
-```
+```text
 Perplexity Research → Lab Conversations → Extract Insights → zenOS Inbox → Implementation
 ```
 
@@ -39,7 +39,7 @@ mv perplexity-lab/conversations/[file].md inbox/processing/
 **Location:** `/workspace/pokedex/`
 
 **Flow:**
-```
+```text
 Research on procedures/models → Extract patterns → Update pokedex YAML files
 ```
 
@@ -59,7 +59,7 @@ Research on procedures/models → Extract patterns → Update pokedex YAML files
 **Location:** `/workspace/docs/`
 
 **Flow:**
-```
+```text
 Technical/planning research → Update relevant docs → Link back to source
 ```
 
@@ -80,7 +80,7 @@ Technical/planning research → Update relevant docs → Link back to source
 **Location:** `/workspace/zen/plugins/` & `/workspace/examples/sample-plugin/`
 
 **Flow:**
-```
+```text
 Research plugin concepts → Prototype in lab → Develop in zen/plugins/ → Package for distribution
 ```
 
@@ -102,7 +102,7 @@ commands:
 **Location:** `/workspace/zen/cli.py` & `/workspace/tools/`
 
 **Flow:**
-```
+```text
 Identify workflow friction → Research better tools → Implement CLI enhancement
 ```
 
@@ -121,7 +121,7 @@ zen lab stats                   # Show lab statistics
 **Location:** `/workspace/n8n/` & `.github/workflows/`
 
 **Flow:**
-```
+```text
 Research automation ideas → Document in lab → Implement in n8n/GitHub Actions
 ```
 
@@ -137,7 +137,7 @@ Research automation ideas → Document in lab → Implement in n8n/GitHub Action
 **Location:** `/workspace/mcp-config/`
 
 **Flow:**
-```
+```text
 Research MCP tools → Configure in mcp-config/ → Use in Perplexity sessions
 ```
 
