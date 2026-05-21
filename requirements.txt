@@ -1,8 +1,5 @@
 # Core dependencies
-asyncio
-threading
-queue
-dataclasses
+# asyncio, threading, queue, dataclasses are built-in Python modules
 enum34; python_version < '3.4'
 
 # Optional TTS engines

@@ -13,6 +13,7 @@ from pathlib import Path
 from functools import lru_cache
 from dataclasses import dataclass, asdict
 
+
 @dataclass
 class MobileConfig:
     """Mobile-optimized configuration."""
@@ -72,7 +73,7 @@ class ResponseCache:
         """Load cache index."""
         if self.index_file.exists():
             try:
-                with open(self.index_file, 'r') as f:
+                with open(self.index_file, "r") as f:
                     return json.load(f)
             except:
                 pass
@@ -80,7 +81,7 @@ class ResponseCache:
 
     def _save_index(self):
         """Save cache index."""
-        with open(self.index_file, 'w') as f:
+        with open(self.index_file, "w") as f:
             json.dump(self.index, f, indent=2)
 
     def _cleanup_old_entries(self):
@@ -90,7 +91,7 @@ class ResponseCache:
 
         expired = []
         for key, meta in self.index.items():
-            if current_time - meta['timestamp'] > ttl_seconds:
+            if current_time - meta["timestamp"] > ttl_seconds:
                 expired.append(key)
 
         for key in expired:
@@ -110,11 +111,7 @@ class ResponseCache:
     def _get_cache_key(self, prompt: str, model: str, **kwargs) -> str:
         """Generate cache key from prompt and settings."""
         # Create deterministic key from inputs
-        key_data = {
-            'prompt': prompt,
-            'model': model,
-            **kwargs
-        }
+        key_data = {"prompt": prompt, "model": model, **kwargs}
         key_str = json.dumps(key_data, sort_keys=True)
         return hashlib.md5(key_str.encode()).hexdigest()
 
@@ -129,12 +126,12 @@ class ResponseCache:
             cache_file = self.cache_dir / f"{key}.json"
             if cache_file.exists():
                 try:
-                    with open(cache_file, 'r') as f:
+                    with open(cache_file, "r") as f:
                         data = json.load(f)
                         # Update access time
-                        self.index[key]['last_accessed'] = time.time()
-                        self.index[key]['hit_count'] = self.index[key].get('hit_count', 0) + 1
-                        return data['response']
+                        self.index[key]["last_accessed"] = time.time()
+                        self.index[key]["hit_count"] = self.index[key].get("hit_count", 0) + 1
+                        return data["response"]
                 except:
                     pass
 
@@ -150,24 +147,24 @@ class ResponseCache:
 
         # Store response
         data = {
-            'prompt': prompt,
-            'model': model,
-            'response': response,
-            'timestamp': time.time(),
-            'kwargs': kwargs
+            "prompt": prompt,
+            "model": model,
+            "response": response,
+            "timestamp": time.time(),
+            "kwargs": kwargs,
         }
 
-        with open(cache_file, 'w') as f:
+        with open(cache_file, "w") as f:
             json.dump(data, f, indent=2)
 
         # Update index
         self.index[key] = {
-            'timestamp': data['timestamp'],
-            'last_accessed': data['timestamp'],
-            'model': model,
-            'prompt_preview': prompt[:50],
-            'hit_count': 0,
-            'size_bytes': cache_file.stat().st_size
+            "timestamp": data["timestamp"],
+            "last_accessed": data["timestamp"],
+            "model": model,
+            "prompt_preview": prompt[:50],
+            "hit_count": 0,
+            "size_bytes": cache_file.stat().st_size,
         }
 
         self._save_index()
@@ -175,33 +172,30 @@ class ResponseCache:
 
     def _check_cache_size(self):
         """Ensure cache doesn't exceed size limit."""
-        total_size = sum(meta.get('size_bytes', 0) for meta in self.index.values())
+        total_size = sum(meta.get("size_bytes", 0) for meta in self.index.values())
         max_size = self.config.max_cache_size_mb * 1024 * 1024
 
         if total_size > max_size:
             # Remove least recently accessed entries
-            sorted_entries = sorted(
-                self.index.items(),
-                key=lambda x: x[1].get('last_accessed', 0)
-            )
+            sorted_entries = sorted(self.index.items(), key=lambda x: x[1].get("last_accessed", 0))
 
             while total_size > max_size and sorted_entries:
                 key, meta = sorted_entries.pop(0)
-                total_size -= meta.get('size_bytes', 0)
+                total_size -= meta.get("size_bytes", 0)
                 self._remove_entry(key)
 
             self._save_index()
 
     def get_stats(self) -> Dict[str, Any]:
         """Get cache statistics."""
-        total_size = sum(meta.get('size_bytes', 0) for meta in self.index.values())
-        total_hits = sum(meta.get('hit_count', 0) for meta in self.index.values())
+        total_size = sum(meta.get("size_bytes", 0) for meta in self.index.values())
+        total_hits = sum(meta.get("hit_count", 0) for meta in self.index.values())
 
         return {
-            'entries': len(self.index),
-            'size_mb': round(total_size / 1024 / 1024, 2),
-            'total_hits': total_hits,
-            'hit_rate': round(total_hits / max(len(self.index), 1), 2)
+            "entries": len(self.index),
+            "size_mb": round(total_size / 1024 / 1024, 2),
+            "total_hits": total_hits,
+            "hit_rate": round(total_hits / max(len(self.index), 1), 2),
         }
 
 
@@ -222,15 +216,13 @@ class BatteryManager:
         if os.environ.get("TERMUX_VERSION"):
             try:
                 import subprocess
+
                 result = subprocess.run(
-                    ["termux-battery-status"],
-                    capture_output=True,
-                    text=True,
-                    timeout=5
+                    ["termux-battery-status"], capture_output=True, text=True, timeout=5
                 )
                 if result.returncode == 0:
                     data = json.loads(result.stdout)
-                    return data.get('percentage', 100)
+                    return data.get("percentage", 100)
             except:
                 pass
 
@@ -238,7 +230,7 @@ class BatteryManager:
         battery_path = Path("/sys/class/power_supply/BAT0/capacity")
         if battery_path.exists():
             try:
-                with open(battery_path, 'r') as f:
+                with open(battery_path, "r") as f:
                     return int(f.read().strip())
             except:
                 pass
@@ -284,8 +276,8 @@ class DataOptimizer:
         import zlib
         import base64
 
-        compressed = zlib.compress(text.encode('utf-8'), level=9)
-        return base64.b64encode(compressed).decode('ascii')
+        compressed = zlib.compress(text.encode("utf-8"), level=9)
+        return base64.b64encode(compressed).decode("ascii")
 
     @staticmethod
     def decompress_text(compressed: str) -> str:
@@ -293,8 +285,8 @@ class DataOptimizer:
         import zlib
         import base64
 
-        data = base64.b64decode(compressed.encode('ascii'))
-        return zlib.decompress(data).decode('utf-8')
+        data = base64.b64decode(compressed.encode("ascii"))
+        return zlib.decompress(data).decode("utf-8")
 
     @staticmethod
     def strip_markdown(text: str) -> str:
@@ -302,23 +294,24 @@ class DataOptimizer:
         import re
 
         # Remove code blocks
-        text = re.sub(r'```[^`]*```', '[code removed]', text, flags=re.DOTALL)
-        text = re.sub(r'`[^`]+`', '[inline code]', text)
+        text = re.sub(r"```[^`]*```", "[code removed]", text, flags=re.DOTALL)
+        text = re.sub(r"`[^`]+`", "[inline code]", text)
 
         # Remove formatting
-        text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)  # Bold
-        text = re.sub(r'\*([^*]+)\*', r'\1', text)      # Italic
-        text = re.sub(r'#+\s+', '', text)               # Headers
-        text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)  # Links
+        text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)  # Bold
+        text = re.sub(r"\*([^*]+)\*", r"\1", text)  # Italic
+        text = re.sub(r"#+\s+", "", text)  # Headers
+        text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)  # Links
 
         # Remove excessive whitespace
-        text = re.sub(r'\n{3,}', '\n\n', text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
 
         return text.strip()
 
     @staticmethod
     def truncate_context(messages: List[Dict], max_tokens: int) -> List[Dict]:
         """Truncate conversation context to save tokens."""
+
         # Simple token estimation (4 chars ≈ 1 token)
         def estimate_tokens(text: str) -> int:
             return len(text) // 4
@@ -328,7 +321,7 @@ class DataOptimizer:
 
         # Keep most recent messages
         for msg in reversed(messages):
-            msg_tokens = estimate_tokens(msg.get('content', ''))
+            msg_tokens = estimate_tokens(msg.get("content", ""))
             if total_tokens + msg_tokens > max_tokens:
                 break
             truncated.insert(0, msg)
@@ -371,11 +364,7 @@ class MobileOptimizer:
         # Check cache first
         cached = self.cache.get(prompt, model, **kwargs)
         if cached:
-            return {
-                'response': cached,
-                'cached': True,
-                'model': model
-            }
+            return {"response": cached, "cached": True, "model": model}
 
         # Optimize model selection based on battery
         optimized_model = self.battery.get_optimal_model(model)
@@ -383,16 +372,14 @@ class MobileOptimizer:
         # Apply mobile optimizations to kwargs
         mobile_kwargs = {
             **kwargs,
-            'max_tokens': min(kwargs.get('max_tokens', self.config.max_tokens), self.config.max_tokens),
-            'temperature': kwargs.get('temperature', self.config.temperature),
-            'timeout': self.config.request_timeout
+            "max_tokens": min(
+                kwargs.get("max_tokens", self.config.max_tokens), self.config.max_tokens
+            ),
+            "temperature": kwargs.get("temperature", self.config.temperature),
+            "timeout": self.config.request_timeout,
         }
 
-        return {
-            'model': optimized_model,
-            'kwargs': mobile_kwargs,
-            'cached': False
-        }
+        return {"model": optimized_model, "kwargs": mobile_kwargs, "cached": False}
 
     def optimize_response(self, response: str, compress: bool = True) -> str:
         """Optimize response for mobile display."""
@@ -420,17 +407,15 @@ class MobileOptimizer:
     def get_stats(self) -> Dict[str, Any]:
         """Get optimizer statistics."""
         return {
-            'cache': self.cache.get_stats(),
-            'battery': {
-                'level': self.battery.check_battery(),
-                'eco_mode': self.battery.eco_mode
-            },
-            'config': asdict(self.config)
+            "cache": self.cache.get_stats(),
+            "battery": {"level": self.battery.check_battery(), "eco_mode": self.battery.eco_mode},
+            "config": asdict(self.config),
         }
 
 
 # Singleton instance
 _optimizer: Optional[MobileOptimizer] = None
+
 
 def get_optimizer() -> MobileOptimizer:
     """Get or create mobile optimizer instance."""
@@ -444,9 +429,9 @@ def get_optimizer() -> MobileOptimizer:
 def is_mobile() -> bool:
     """Check if running on mobile."""
     return (
-        os.environ.get("TERMUX_VERSION") is not None or
-        os.environ.get("COMPACT_MODE") == "1" or
-        os.path.exists("/data/data/com.termux")
+        os.environ.get("TERMUX_VERSION") is not None
+        or os.environ.get("COMPACT_MODE") == "1"
+        or os.path.exists("/data/data/com.termux")
     )
 
 
@@ -462,11 +447,11 @@ def optimize_for_mobile(func):
         optimizer = get_optimizer()
 
         # Apply optimizations
-        if 'model' in kwargs:
-            kwargs['model'] = optimizer.battery.get_optimal_model(kwargs['model'])
+        if "model" in kwargs:
+            kwargs["model"] = optimizer.battery.get_optimal_model(kwargs["model"])
 
-        if 'max_tokens' in kwargs:
-            kwargs['max_tokens'] = min(kwargs['max_tokens'], optimizer.config.max_tokens)
+        if "max_tokens" in kwargs:
+            kwargs["max_tokens"] = min(kwargs["max_tokens"], optimizer.config.max_tokens)
 
         # Execute with sleep if needed
         result = await func(*args, **kwargs)

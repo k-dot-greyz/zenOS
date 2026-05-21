@@ -9,8 +9,4 @@ from .prompt_critic import PromptCriticAgent
 from .system_troubleshooter import SystemTroubleshooterAgent
 from .prompt_security_agent import PromptSecurityAgent
 
-__all__ = [
-    'PromptCriticAgent',
-    'SystemTroubleshooterAgent', 
-    'PromptSecurityAgent'
-]
+__all__ = ["PromptCriticAgent", "SystemTroubleshooterAgent", "PromptSecurityAgent"]
