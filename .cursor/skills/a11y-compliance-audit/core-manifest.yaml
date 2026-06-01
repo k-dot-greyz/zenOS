@@ -1,0 +1,94 @@
+# Core accessibility audit manifest — always merged unless filtered out.
+# Official URLs are normative references for reports; verify links if auditing years later.
+version: 1
+default_conformance:
+  wcag_level: AA
+  wcag_version: "2.2"
+
+specs:
+  - id: wcag-22
+    title: "WCAG 2.2"
+    report_file: wcag-22.md
+    status: normative
+    normative_url: https://www.w3.org/TR/WCAG22/
+    understanding_url: https://www.w3.org/WAI/WCAG22/Understanding/
+    techniques_url: https://www.w3.org/WAI/WCAG22/Techniques/
+  - id: wcag-3
+    title: "WCAG 3.0 (Working Draft)"
+    report_file: wcag-3.md
+    status: draft
+    normative_url: https://www.w3.org/TR/wcag-3.0/
+    understanding_url: https://www.w3.org/WAI/standards-guidelines/wcag/wcag3-intro/
+    notes: >
+      Draft only — report readiness/gaps vs emerging guidelines; do not claim legal
+      conformance against WCAG 3 until W3C Recommendation.
+  - id: wai-aria-12
+    title: "WAI-ARIA 1.2"
+    report_file: wai-aria-12.md
+    status: normative
+    normative_url: https://www.w3.org/TR/wai-aria-1.2/
+    related:
+      - title: "ARIA in HTML"
+        url: https://www.w3.org/TR/html-aria/
+  - id: aria-apg
+    title: "ARIA Authoring Practices Guide (APG)"
+    report_file: aria-apg.md
+    status: informative
+    normative_url: https://www.w3.org/WAI/ARIA/apg/
+    notes: Patterns are best-practice; failures map to WCAG operable/understandable SC.
+  - id: html-a11y
+    title: "HTML accessibility (native semantics first)"
+    report_file: html-a11y.md
+    status: normative
+    normative_url: https://html.spec.whatwg.org/multipage/dom.html#aria-accessibility-annotations
+    related:
+      - title: "HTML — Semantics and accessibility"
+        url: https://www.w3.org/WAI/tutorials/page-structure/
+  - id: en-301-549
+    title: "EN 301 549 V3.2.1 (ICT accessibility)"
+    report_file: en-301-549.md
+    status: normative
+    normative_url: https://www.etsi.org/deliver/etsi_en/301500_301599/301549/01.03.02_60/en_301549v010302p.pdf
+    related:
+      - title: "WAI — WCAG 2.x mapping (EU context)"
+        url: https://www.w3.org/WAI/standards-guidelines/wcag/
+    notes: Map clauses to WCAG 2.2 AA checkpoints in findings table.
+  - id: cognitive-nd
+    title: "Cognitive & neurodivergent-friendly UX"
+    report_file: cognitive-nd.md
+    status: informative
+    normative_url: https://www.w3.org/WAI/cognitive/
+    related:
+      - title: "Making Content Usable for People with Cognitive and Learning Disabilities"
+        url: https://www.w3.org/TR/coga-usable/
+    notes: Tie each heuristic to related WCAG 2.2 SC where possible.
+
+# Cross-spec spot checks (common suspects) — duplicated in SKILL for agent recall
+common_suspects:
+  - id: naming
+    summary: "Every control has an accessible name; no duplicate/conflicting names"
+    maps_to: [wcag-22, wai-aria-12, html-a11y]
+  - id: keyboard
+    summary: "Full keyboard operability; visible focus; no traps"
+    maps_to: [wcag-22, aria-apg]
+  - id: contrast
+    summary: "Text/UI contrast; non-color-only state"
+    maps_to: [wcag-22]
+  - id: structure
+    summary: "Landmarks, headings, lang, title"
+    maps_to: [wcag-22, html-a11y]
+  - id: forms
+    summary: "Labels, errors, autocomplete where applicable"
+    maps_to: [wcag-22, wai-aria-12]
+  - id: motion
+    summary: "prefers-reduced-motion; no seizure triggers"
+    maps_to: [wcag-22, cognitive-nd]
+  - id: custom-widgets
+    summary: "APG keyboard/roles/states for non-native widgets"
+    maps_to: [aria-apg, wai-aria-12]
+  - id: mobile-reflow
+    summary: "320px reflow; touch targets"
+    maps_to: [wcag-22]
+  - id: cognitive-load
+    summary: "Chunking, predictable navigation, plain language options"
+    maps_to: [cognitive-nd, wcag-22]

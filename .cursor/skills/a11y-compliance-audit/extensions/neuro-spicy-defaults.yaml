@@ -1,0 +1,18 @@
+# Default ND + cognitive extensions for neuro-spicy-devkit hosts
+specs:
+  - id: cognitive-nd
+    checkpoints:
+      - id: nd-predictable-nav
+        summary: "Navigation and labels stay consistent; no surprise context resets mid-task"
+        severity: serious
+      - id: nd-chunking
+        summary: "Long forms/docs chunked with headings, summaries, or progressive disclosure"
+        severity: moderate
+      - id: nd-plain-language
+        summary: "Critical instructions avoid jargon without a plain-language alternative"
+        severity: moderate
+  - id: wcag-22
+    checkpoints:
+      - id: nd-focus-persistence
+        summary: "Focus visible and stable; modals return focus to trigger"
+        severity: critical

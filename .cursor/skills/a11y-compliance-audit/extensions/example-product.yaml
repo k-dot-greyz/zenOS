@@ -1,0 +1,15 @@
+# Example extension — karaoke / toolbar product rules (delete or fork for real projects)
+specs:
+  - id: aria-apg
+    checkpoints:
+      - id: toolbar-pattern
+        summary: "Edit toolbar implements APG toolbar pattern (roving tabindex, arrows)"
+        severity: critical
+      - id: aria-pressed-states
+        summary: "Toggle tools use aria-pressed; state changes announced"
+        severity: serious
+  - id: cognitive-nd
+    checkpoints:
+      - id: karaoke-line-focus
+        summary: "Active lyric line visually distinct without color-only cue; motion reducible"
+        severity: serious
