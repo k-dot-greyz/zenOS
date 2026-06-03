@@ -1,144 +1,238 @@
 # Contributing to zenOS 🌌
 
-Thank you for considering contributing to zenOS! This repository is the core platform repository of the zenOS ecosystem. To ensure a clean, maintainable, and highly decoupled architecture, all contributions must strictly adhere to our development standards and protocols.
+Thank you for considering contributing to zenOS! This repository is the **core platform** of the zenOS ecosystem—the standalone product repo at [k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS). It is also linked as a git submodule from the private superproject [`dev-master`](https://github.com/k-dot-greyz/dev-master) at `dex/09-repos/zenOS`.
+
+To keep the platform clean, maintainable, and decoupled, all contributions must follow the standards below.
 
 ---
 
-## 🏁 1. The Prime Directive: Pure Code in Submodules, Guides in Superproject
+## 🏁 1. The Prime Directive: Platform Code Here, Internal Guides in dev-master
 
-When working within the zenOS ecosystem, we maintain a strict boundary between the superproject and its submodules:
-1. **The Superproject (`dev-master`)**: Our private workspace, orchestration framework, and internal documentation repository.
-2. **This Submodule (`zenOS`)**: The core, open-source-ready platform repository.
+We maintain a strict boundary between this repository and the monorepo workspace:
+
+1. **This repository (`zenOS`)**: Core platform code, public-facing docs, tests, CI, and product configuration (for example `docs/`, `pokedex/`, plugin manifests).
+2. **The superproject (`dev-master`)**: Private workspace orchestration, dex routing, submodule bump workflows, and **internal** monorepo guides.
 
 ### ⚠️ The Boundary Violation Rule
-**NEVER commit internal documentation, fork-specific guides, or monorepo-specific configurations into this repository.**
 
-* **Why?** This repository is designed to be a clean, independent product. Misplacing internal files (like fork notes or superproject-specific guides) inside this directory structure pollutes the upstream repository, causes PR rejections, and leaks internal workspace details.
-* **The Standard**: Keep this repository strictly limited to **pure code changes** (and its own public-facing documentation/API references) that directly implement features or bug fixes. All internal guides, fork-specific documentation, and monorepo-specific notes must live in the superproject under `dex/03-docs/guides/`.
+**NEVER commit internal monorepo documentation, fork-specific guides, or dev-master-only configuration into this repository.**
+
+* **Why?** zenOS is designed to stand alone as a product. Misplacing internal files (fork notes, superproject SOPs, dex routing docs) pollutes upstream history, causes PR rejections, and leaks private workspace details.
+* **What belongs here**: Application code under `zen/`, public guides under `docs/`, platform YAML such as `pokedex/` and plugin specs, tests, scripts, and CI under `.github/`.
+* **What belongs in dev-master**: Internal guides under `dex/03-docs/guides/` (for example submodule bump, fork workflow, and monorepo agent protocols).
 
 ---
 
-## 🔄 2. The Fork-and-PR Workflow
+## 🗂️ 2. Repository Layout
 
-When contributing to zenOS, follow this precise workflow to ensure a clean, isolated, and mergeable contribution:
+Know where changes belong before you open a PR:
+
+| Path | Purpose |
+| :--- | :--- |
+| `zen/` | Core Python package (CLI, agents, PKM, plugins, providers, UI) |
+| `docs/` | Public platform documentation and planning |
+| `pokedex/` | Model and procedure catalog YAML |
+| `examples/` | Sample plugins and demos |
+| `scripts/` | Setup, bridge, and platform shell scripts |
+| `n8n/` | n8n workflow integration assets |
+| `inbox/` | Ingestion staging (keep runtime artifacts untracked) |
+| `.github/` | CI workflows, PR template, commit checklist |
+| `test_*.py` | Root-level pytest modules (see CI) |
+
+For AI agent onboarding and platform conventions, start with [`docs/AI_INSTRUCTIONS.md`](docs/AI_INSTRUCTIONS.md). For local environment setup, see [`docs/guides/DEV_ENVIRONMENT_SETUP.md`](docs/guides/DEV_ENVIRONMENT_SETUP.md).
+
+---
+
+## 🔄 3. The Fork-and-PR Workflow
+
+Whether you cloned zenOS directly or via `dev-master`, use this workflow for upstream contributions:
 
 ### Step 1: Configure Remotes
-Ensure your local clone has both the official `upstream` and your personal fork `origin` configured:
+
+Ensure your local clone can reach the canonical repo and your fork (if you use one):
+
 ```bash
-# Check existing remotes
 git remote -v
 
-# If upstream is missing, add it
-git remote add upstream https://github.com/k-dot-greyz/zenOS.git
+# Canonical upstream (required)
+git remote add upstream https://github.com/k-dot-greyz/zenOS.git 2>/dev/null || true
+
+# Personal fork (recommended for external contributors)
+# git remote set-url origin https://github.com/<your-user>/zenOS.git
 ```
 
+Maintainers with direct push access may use `origin` as the canonical repo; fork contributors should push feature branches to their fork and open PRs against `k-dot-greyz/zenOS`.
+
 ### Step 2: Create a Clean Feature Branch
-Always branch off the latest `upstream/main`:
+
+Branch from the latest upstream default branch (`main`):
+
 ```bash
 git fetch upstream
 git checkout -b feat/your-feature-name upstream/main
 ```
 
-### Step 3: Implement Pure Code Changes
-Make your changes to the application code. Ensure:
-* No temporary files, local logs, or environment files are tracked.
-* No internal markdown files or monorepo-specific guides are created here.
-* Code matches the existing style and conventions.
+Use branch prefixes such as `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, or `chore/`.
 
-### Step 4: Run Pre-Commit Audit Checks
-Before staging or committing, run the audit checklist (see Section 4).
+### Step 3: Implement Focused Changes
 
-### Step 5: Commit and Push to Your Fork
-Commit with a clear, conventional commit message and push to your fork (`origin`):
+Make scoped changes that match existing conventions:
+
+* No tracked secrets, local `.env` files, or temporary logs.
+* No dev-master-only markdown or monorepo routing docs.
+* Public documentation updates belong in `docs/` when they describe zenOS itself.
+* Match existing Python style (`black` line length 100) and module layout under `zen/`.
+
+### Step 4: Run Local Quality Gates
+
+Before committing, run the checks CI expects (see [`.github/workflows/zenos-ci.yml`](.github/workflows/zenos-ci.yml)):
+
+```bash
+python -m pip install -e ".[dev]"
+cp env.example .env  # configure keys locally; never commit .env
+
+# Formatting & lint (CI uses black/isort/flake8; pyproject also defines ruff/mypy)
+black --check .
+isort --check-only .
+
+# Tests (root-level test_*.py modules)
+pytest --cov=. --cov-report=term-missing -v
+```
+
+Optional but recommended during development:
+
+```bash
+ruff check .
+mypy zen/ --ignore-missing-imports --no-strict-optional
+```
+
+### Step 5: Pre-Commit Audit
+
+Run the checklist in [Section 6](#-6-pre-commit-audit-checklist) and review [`.github/COMMIT_WORKFLOW_CHECKLIST.md`](.github/COMMIT_WORKFLOW_CHECKLIST.md).
+
+### Step 6: Commit and Push
+
+Use [conventional commits](#-7-commit-message-style):
+
 ```bash
 git commit -m "feat(pkm): implement dynamic schema validation for incoming packets"
 git push -u origin HEAD
 ```
 
-### Step 6: Create the Pull Request
-Create the PR against the upstream repository using the `gh` CLI or the GitHub UI:
+### Step 7: Open a Pull Request
+
+Target `main` on the upstream repository. Use the PR template and `gh` when possible:
+
 ```bash
-gh pr create --repo k-dot-greyz/zenOS --title "feat(pkm): implement dynamic schema validation" --body "..."
+gh pr create --repo k-dot-greyz/zenOS \
+  --base main \
+  --title "feat(pkm): implement dynamic schema validation" \
+  --body-file .github/PULL_REQUEST_TEMPLATE.md
 ```
 
 ---
 
-## 🏛️ 3. GlitchWorks Agnostic Architecture Protocol (/architecture-base)
+## 🏛️ 4. GlitchWorks Agnostic Architecture Protocol (/architecture-base)
 
-All development within zenOS must strictly adhere to the **GlitchWorks Agnostic Architecture Protocol**. This ensures that all modules remain completely decoupled, self-contained, and highly maintainable.
+All development within zenOS must adhere to the **GlitchWorks Agnostic Architecture Protocol**. This keeps modules decoupled, testable, and portable across desktop, mobile (Termux), and offline modes.
 
-### 3.1. Zero Hardcoding (Dynamic State Configuration)
-* **Rule**: No magic strings, static network ports, or fixed directory paths shall exist within the domain logic.
-* **Application**: zenOS must never contain hardcoded hostnames, ports, or superproject-specific paths. All configurations (such as API endpoints, database paths, and server ports) must be dynamically configured via environment variables, configuration files, or dependency injection at startup.
+### 4.1. Zero Hardcoding (Dynamic State Configuration)
 
-### 3.2. Polymorphism by Default (Interface-Driven Contracts)
+* **Rule**: No magic strings, static network ports, or fixed directory paths in domain logic.
+* **Application**: Never hardcode hostnames, ports, or dev-master paths. Configure API endpoints, storage paths, and service ports via environment variables, config files, or dependency injection at startup (`env.example` documents common variables).
+
+### 4.2. Polymorphism by Default (Interface-Driven Contracts)
+
 * **Rule**: Depend on abstractions, not concretions.
-* **Application**: Core logic must interact with external dependencies through abstract interfaces or standard APIs. You must be able to swap out a real service (e.g., a database or LLM provider) for a dummy/mock service at initialization without altering a single line of the internal domain logic.
+* **Application**: Core logic should interact with LLM providers, storage, and telemetry through injectable interfaces so implementations can be swapped (for example OpenRouter vs offline providers under `zen/providers/`).
 
-### 3.3. Open Piping (Strict Inter-Process Communication)
-* **Rule**: Modules must communicate via strictly typed, isolated message events rather than direct state mutation.
-* **Application**: Establish strict, serializable contracts for inter-module communication. Utilize message passing or standard event routers rather than direct state mutation or global variable sharing.
+### 4.3. Open Piping (Strict Inter-Process Communication)
 
-### 3.4. Boundary Validation (The "Hostile Edge")
-* **Rule**: Never trust incoming payloads. The core logic must be protected by a rigorous validation layer.
-* **Application**: Validate all incoming payloads at the boundary (e.g., using schema validation, JSON parsing try-catch blocks, or strict type checks) before processing them in the domain logic.
+* **Rule**: Modules communicate via strictly typed, isolated message events rather than direct state mutation.
+* **Application**: Use serializable contracts for agent orchestration, plugin events, and CLI I/O. Avoid hidden global singletons for cross-module state.
 
-### 3.5. State Hydration & Dehydration
-* **Rule**: Systems must be capable of pausing, exporting their truth, and resuming from a snapshot.
-* **Application**: Systems that maintain state must support serializing their state to standard formats (JSON, SQLite dumps, etc.) and cleanly restoring from them, allowing seamless teardown and reconstruction.
+### 4.4. Boundary Validation (The "Hostile Edge")
 
-### 3.6. Graceful Degradation (Predictable Failure)
-* **Rule**: When a pipe breaks or a dependency fails, the system must fail safely and transparently.
-* **Application**: Avoid unhandled exceptions. If an external API or service goes offline, the system must catch the timeout/error, log the failure, and return a safe fallback state rather than crashing the host process.
+* **Rule**: Never trust incoming payloads.
+* **Application**: Validate external input at boundaries—CLI arguments, plugin manifests, inbox ingestion, and provider responses—before domain logic runs (Pydantic models and schema checks are preferred).
 
-### 3.7. Agnostic Telemetry & Observability
-* **Rule**: Domain logic must emit its telemetry without knowing where the logs are going.
-* **Application**: Inject a generic logging or telemetry provider into constructors/initializers. The core logic emits structured event data, leaving the host environment to decide if this goes to `stdout`, a local file, or a remote ingestion webhook.
+### 4.5. State Hydration & Dehydration
+
+* **Rule**: Systems must export and restore their truth from snapshots.
+* **Application**: Stateful subsystems (PKM storage, context managers, plugin registry) should support serialize/restore flows using standard formats (JSON, SQLite, YAML).
+
+### 4.6. Graceful Degradation (Predictable Failure)
+
+* **Rule**: When a dependency fails, the system must fail safely and transparently.
+* **Application**: Missing API keys, offline providers, or unavailable MCP services must surface actionable errors and safe fallbacks—not unhandled crashes in the host process.
+
+### 4.7. Agnostic Telemetry & Observability
+
+* **Rule**: Domain logic emits telemetry without knowing the sink.
+* **Application**: Inject loggers or structured event emitters. Host environments decide whether output goes to `stdout`, files, or remote ingestion.
 
 ---
 
-## 📋 4. Pre-Commit Submodule Audit Checklist
+## 🤝 5. Contributing from dev-master (Submodule Checkout)
 
-Before committing changes, run this quick checklist to verify boundary hygiene:
+If you work inside the monorepo at `dex/09-repos/zenOS`:
 
-1. **Check for Misplaced Files**:
-   * Run `git status` inside the repository.
-   * Are there any `.md`, `.txt`, `.json`, or `.yaml` files that describe internal workflows, fork notes, or monorepo standards?
-   * *Action*: Move them to the superproject's `dex/03-docs/guides/` and delete them from this repository's staging area.
-2. **Verify Diff Scope**:
+1. Make **zenOS-only** changes inside this submodule directory.
+2. Follow the fork-and-PR workflow above against `k-dot-greyz/zenOS`.
+3. Move any internal monorepo notes to `dev-master/dex/03-docs/guides/`—never commit them here.
+4. After the upstream PR merges, bump the submodule pointer in dev-master using the superproject's submodule bump workflow.
+
+---
+
+## 📋 6. Pre-Commit Audit Checklist
+
+Before committing, verify boundary hygiene and diff scope:
+
+1. **Check for misplaced monorepo docs**
+   * Run `git status`.
+   * Are you adding `.md`, `.txt`, `.json`, or `.yaml` files that describe **dev-master internals**, fork notes, or dex routing—not zenOS product behavior?
+   * *Action*: Move those files to `dev-master/dex/03-docs/guides/` and remove them from this repo's staging area.
+   * *Note*: Legitimate platform docs (`docs/`), Pokédex catalogs (`pokedex/`), and plugin manifests (`examples/`, `zen/pkm/`) **do** belong here.
+
+2. **Verify diff scope**
    * Run `git diff --name-status upstream/main`.
-   * Are there any unexpected files modified?
-   * Are there any changes to files that are unrelated to the feature or bug fix?
-   * *Action*: Revert unrelated changes using `git restore <file>`.
-3. **Check for "Diff Noise"**:
-   * Run `git diff` and inspect the changes.
-   * Did you introduce any formatting-only changes, trailing whitespace, or commented-out debug code?
-   * *Action*: Clean up formatting and debug code before committing.
+   * Revert unrelated files with `git restore <file>`.
+
+3. **Check for diff noise**
+   * Inspect `git diff` for formatting-only churn, debug prints, or commented-out code.
+   * *Action*: Clean up before committing.
+
+4. **Confirm secrets stay untracked**
+   * Ensure `.env`, credentials, and local inbox payloads are not staged.
 
 ---
 
-## 📝 5. Commit Message Style
+## 📝 7. Commit Message Style
 
-We use conventional commits for a clear, readable project history:
+We use [Conventional Commits](https://www.conventionalcommits.org/) for readable history:
+
 ```
 <type>(<scope>): <short summary>
 ```
 
-### Common Types:
-* `feat`: A new feature
-* `fix`: A bug fix
-* `docs`: Documentation changes
-* `style`: Code style/formatting (no functional changes)
-* `refactor`: Code refactoring (no new features or bug fixes)
-* `perf`: Performance improvements
-* `test`: Adding or updating tests
-* `chore`: Maintenance tasks or dependency updates
+### Common types
 
-### Example:
+* `feat`: New feature
+* `fix`: Bug fix
+* `docs`: Documentation only
+* `style`: Formatting (no logic change)
+* `refactor`: Code restructuring
+* `perf`: Performance improvement
+* `test`: Tests only
+* `chore`: Maintenance or dependency updates
+* `ci`: CI/workflow changes
+
+### Example
+
 ```bash
 docs(contributing): add baseline contributing workflow and agnostic architecture guidelines
 ```
 
 ---
 
-*Remember: Every contribution, no matter how small, makes zenOS better. Thank you for building with us!* 🧘⚡
+*Every contribution makes zenOS better. Thank you for building with us!* 🧘⚡
