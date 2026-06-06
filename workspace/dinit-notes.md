@@ -1,12 +1,13 @@
-# /dinit session notes — 2026-06-06 (session 2)
+# /dinit session notes — 2026-06-06 (session 2–3)
 
 ## Setup
 
 - Read `CONTRIBUTING.md` (on PR #37 branch `greyzxc/issue-planning-and-setup-f971`; not yet on `main`).
 - **Submodule hydration** (§5 dev-master checkout):
-  - `neuro-spicy-devkit` — public, reachable at `k-dot-greyz/neuro-spicy-devkit`.
+  - `neuro-spicy-devkit` — public, reachable at `k-dot-greyz/neuro-spicy-devkit` (clone verified).
   - `mcp-config`, `zenOS-dev` — private (404 without credentials); documented in `repos/registry.yaml` with `visibility: private`.
   - No `.gitmodules` on `main`; hydration is registry-documented, not git-submodule cloned in standalone zenOS.
+  - Placeholder dirs (`neuro-spicy-devkit/`, `mcp-config/`, `zenOS-dev/`) exist at repo root for dev-master layout; empty in standalone clone.
 - Architecture §4.5 "State Hydration" = serialize/restore snapshots, not git submodules.
 
 ## PR #37 status (prior session)
@@ -34,17 +35,25 @@
 4. Registry YAML is data, not code — agents/scripts can load without importing zenOS.
 5. **Deferred** (separate PRs to avoid spam): #22 README sections, #23 AI_INSTRUCTIONS navigation, #24 TEMPLATE_POKEDEX_STATUS, #25 DEV_ENVIRONMENT_SETUP — all depend on this guide existing first.
 
-## Verification
+## Verification (session 3 — 2026-06-06)
 
-- [x] `DOCUMENTATION_GUIDE.md` includes all issue deliverable sections
+- [x] `DOCUMENTATION_GUIDE.md` includes all issue deliverable sections (10/10 checked)
 - [x] Scaffold paths referenced in guide exist
 - [x] `repos/registry.yaml` parses as valid YAML
 - [x] No dev-master-internal SOPs committed
-- [ ] PR labels: `documentation`
-- [ ] Issue labels: `documentation`
+- [x] PR labels: `documentation` (PR #38)
+- [x] Issue labels: `documentation` (#27, #21)
+- [x] `neuro-spicy-devkit` remote reachable (public clone OK)
+- [ ] **Merge dependency**: `CONTRIBUTING.md` links resolve after PR #37 merges
+- [ ] **Merge dependency**: `COMMIT_WORKFLOW_CHECKLIST.md` doc-maintenance section after PR #37
 
-## PR draft
+## PR
 
-- Title: `docs(guides): add DOCUMENTATION_GUIDE and knowledge-management scaffolds`
+- **#38** — `docs(guides): add DOCUMENTATION_GUIDE and knowledge-management scaffolds`
 - Branch: `greyzxc/issue-planning-and-setup-54a2`
 - Closes: #27, #21
+- Status: verification complete; ready for human review
+
+## Next issue (deferred — separate PR)
+
+**#22** — README documentation & repo ecosystem sections (depends on this guide landing first)
