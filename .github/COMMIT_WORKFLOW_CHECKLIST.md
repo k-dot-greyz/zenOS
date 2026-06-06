@@ -32,6 +32,18 @@
 - [ ] README updated if necessary
 - [ ] CHANGELOG updated if applicable
 
+#### Documentation maintenance
+When your change affects platform behavior, public APIs, or repository relationships, also verify:
+
+- [ ] **Feature docs** — Updated guides under `docs/` (and `README.md` when user-facing setup or overview changes) if behavior, CLI flags, or setup steps changed
+- [ ] **Architecture decisions** — Added or updated an ADR entry in `DECISION_LOG.md` when introducing, reversing, or materially changing an architectural decision
+- [ ] **Conversation archive** — Archived valuable design conversations or session notes to `docs/archive/` when they contain durable rationale not captured in active docs
+- [ ] **Repository switchboard** — Updated `repos/registry.yaml` when repository relationships, remotes, or ecosystem switchboard entries changed
+
+> **Boundary reminder** ([CONTRIBUTING.md](../CONTRIBUTING.md)): platform documentation belongs in this repo (`docs/`, `pokedex/`). Internal dev-master monorepo guides stay in the superproject — never commit dex routing or fork-only SOPs here.
+>
+> **Rollout note**: `DECISION_LOG.md`, `docs/archive/`, and `repos/registry.yaml` are introduced by the documentation knowledge-management epic (issues #21–#27). If a path is not present yet, record the decision or relationship change in the relevant tracking issue until that file lands.
+
 ### Security & Dependencies
 - [ ] No security vulnerabilities introduced
 - [ ] No sensitive data (keys, passwords, tokens) in code
