@@ -1,0 +1,65 @@
+# zenOS Ecosystem Repository Switchboard
+#
+# Machine-readable map of related repositories. Update when remotes,
+# roles, or relationships change. See docs/guides/DOCUMENTATION_GUIDE.md.
+
+version: "1.0"
+last_updated: "2026-06-06"
+maintainer: k-dot-greyz
+
+repositories:
+  - id: zenos
+    name: zenOS
+    url: https://github.com/k-dot-greyz/zenOS
+    visibility: public
+    role: core-platform
+    relationship: canonical
+    description: Core zenOS platform — CLI, agents, PKM, plugins, public docs
+    paths_in_superproject: null
+
+  - id: dev-master
+    name: dev-master
+    url: https://github.com/k-dot-greyz/dev-master
+    visibility: private
+    role: superproject
+    relationship: workspace-orchestrator
+    description: Private monorepo workspace — dex routing, submodule bumps, internal guides
+    paths_in_superproject:
+      zenos_submodule: dex/09-repos/zenOS
+
+  - id: neuro-spicy-devkit
+    name: neuro-spicy-devkit
+    url: https://github.com/k-dot-greyz/neuro-spicy-devkit
+    visibility: public
+    role: tooling
+    relationship: ecosystem
+    description: ND-friendly dev tooling and templates for the greyZ ecosystem
+
+  - id: mcp-config
+    name: mcp-config
+    url: https://github.com/k-dot-greyz/mcp-config
+    visibility: private
+    role: tooling
+    relationship: ecosystem
+    description: MCP server configuration and setup procedures (private; clone with credentials)
+    notes: Referenced by zen/setup/mcp_setup.py; local path expected at mcp-config/ when hydrated
+
+  - id: zenos-dev
+    name: zenOS-dev
+    url: https://github.com/k-dot-greyz/zenOS-dev
+    visibility: private
+    role: personal-fork
+    relationship: downstream
+    description: Personal development branch for experimental zenOS work
+
+roles:
+  core-platform: Canonical product repository; PRs target main here
+  superproject: Monorepo that links zenOS as a submodule
+  tooling: Supporting configuration, templates, or automation
+  personal-fork: Individual experimental checkout; not a merge target for platform PRs
+
+relationships:
+  canonical: Source of truth for platform code and public docs
+  workspace-orchestrator: Consumes zenOS as submodule; hosts internal guides
+  ecosystem: Related repo used alongside zenOS; may be optional or private
+  downstream: Fork or dev copy; changes flow upstream via PR to zenos
