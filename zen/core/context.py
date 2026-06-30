@@ -294,7 +294,7 @@ class ContextManager:
         console.print(f"[dim]{profile.role}[/dim]")
         if profile.quotes:
             import random
-            console.print(f"[italic]"{random.choice(profile.quotes)}"[/italic]")
+            console.print(f"[italic]\"{random.choice(profile.quotes)}\"[/italic]")
     
     def get_personality_prompt(self) -> str:
         """Get the system prompt for current personality."""
