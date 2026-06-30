@@ -7,7 +7,7 @@ personal knowledge from various sources, starting with Google Gemini conversatio
 
 from .agent import PKMAgent
 from .extractor import GeminiExtractor
-from .storage import PKMStorage
 from .scheduler import PKMScheduler
+from .storage import PKMStorage
 
 __all__ = ["PKMAgent", "GeminiExtractor", "PKMStorage", "PKMScheduler"]

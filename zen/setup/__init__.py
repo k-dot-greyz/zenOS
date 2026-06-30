@@ -15,16 +15,16 @@ Features:
 - One-command setup for any environment
 """
 
-from .unified_setup import UnifiedSetupManager
 from .environment_detector import EnvironmentDetector
 from .git_setup import GitSetupManager
 from .mcp_setup import MCPSetupManager
 from .troubleshooter import SetupTroubleshooter
+from .unified_setup import UnifiedSetupManager
 
 __all__ = [
-    'UnifiedSetupManager',
-    'EnvironmentDetector', 
-    'GitSetupManager',
-    'MCPSetupManager',
-    'SetupTroubleshooter'
+    "UnifiedSetupManager",
+    "EnvironmentDetector",
+    "GitSetupManager",
+    "MCPSetupManager",
+    "SetupTroubleshooter",
 ]

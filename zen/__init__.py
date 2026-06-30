@@ -9,7 +9,7 @@ __version__ = "0.1.0"
 __author__ = "Kaspars Greizis"
 
 from zen.core.agent import Agent
-from zen.core.launcher import Launcher
 from zen.core.critique import AutoCritique
+from zen.core.launcher import Launcher
 
 __all__ = ["Agent", "Launcher", "AutoCritique"]
