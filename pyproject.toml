@@ -86,3 +86,6 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "--cov=zen --cov-report=term-missing"
+[tool.isort]
+profile = "black"
+line_length = 100
