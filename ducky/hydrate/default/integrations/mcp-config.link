@@ -1,0 +1,5 @@
+# MCP config sibling repo pointer
+# Clone https://github.com/k-dot-greyz/mcp-config next to zenOS and symlink or set MCP_CONFIG_ROOT.
+
+sibling_path: ../mcp-config
+env_var: MCP_CONFIG_ROOT
