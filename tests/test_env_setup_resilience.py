@@ -25,6 +25,8 @@ VENV = ROOT / ".venv"
 SETUP_PY = ROOT / "setup.py"
 SETUP_BAK = ROOT / "_setup.py.bak"
 ENV_JSON = ROOT / ".cursor" / "environment.json"
+ENV_FILE = ROOT / ".env"
+ENV_EXAMPLE = ROOT / "env.example"
 
 
 def _pip(*args, check=True):
@@ -357,6 +359,43 @@ class TestEnvironmentJsonContract:
             "Install script should check for .venv/bin/python, not just -d .venv"
         )
 
+    def test_install_script_uses_set_e(self):
+        """Must use set -e to fail fast on errors."""
+        script = json.loads(ENV_JSON.read_text())["install"]
+        assert script.strip().startswith("set -e"), (
+            "Install script should start with set -e"
+        )
+
+    def test_install_script_gates_apt_on_dpkg(self):
+        """Must skip apt-get if python3.12-venv is already installed."""
+        script = json.loads(ENV_JSON.read_text())["install"]
+        assert "dpkg" in script, (
+            "Install script should check dpkg before running apt-get"
+        )
+
+    def test_install_script_recovers_orphan_bak_early(self):
+        """Must restore _setup.py.bak before the editable install block."""
+        script = json.loads(ENV_JSON.read_text())["install"]
+        lines = script.split("\n")
+        recovery_idx = None
+        editable_idx = None
+        for i, line in enumerate(lines):
+            if "_setup.py.bak" in line and "setup.py" in line and recovery_idx is None:
+                recovery_idx = i
+            if "--no-build-isolation" in line:
+                editable_idx = i
+        assert recovery_idx is not None, "No orphan recovery line found"
+        assert editable_idx is not None, "No editable install line found"
+        assert recovery_idx < editable_idx, (
+            "Orphan recovery must happen before editable install"
+        )
+
+    def test_install_script_hydrates_env(self):
+        """Must copy env.example to .env if missing."""
+        script = json.loads(ENV_JSON.read_text())["install"]
+        assert "env.example" in script
+        assert ".env" in script
+
     def test_install_script_has_setup_py_workaround(self):
         script = json.loads(ENV_JSON.read_text())["install"]
         assert "_setup.py.bak" in script
@@ -387,3 +426,71 @@ class TestEnvironmentJsonContract:
             assert cmd not in script, (
                 f"Service startup command '{cmd}' found in install script"
             )
+
+
+# ---------------------------------------------------------------------------
+# Scenario 7: .env hydration from env.example
+# ---------------------------------------------------------------------------
+class TestEnvHydration:
+    """The install script should copy env.example to .env if .env
+    is missing, giving new environments sensible defaults."""
+
+    def test_env_created_from_example(self, healthy_venv):
+        """If .env is missing, install should create it from env.example."""
+        backup = None
+        try:
+            if ENV_FILE.exists():
+                backup = ENV_FILE.read_text()
+                ENV_FILE.unlink()
+
+            assert not ENV_FILE.exists()
+            assert ENV_EXAMPLE.exists(), "env.example must exist"
+
+            r = _run_install_script()
+            assert r.returncode == 0, f"Install failed:\n{r.stderr}"
+
+            assert ENV_FILE.exists(), ".env was not created from env.example"
+            assert ENV_FILE.read_text() == ENV_EXAMPLE.read_text()
+        finally:
+            if backup is not None:
+                ENV_FILE.write_text(backup)
+            elif ENV_FILE.exists():
+                ENV_FILE.unlink()
+
+    def test_existing_env_not_overwritten(self, healthy_venv):
+        """If .env already exists, install must NOT overwrite it."""
+        custom_content = "# custom config\nMY_VAR=keep_this\n"
+        backup = None
+        try:
+            if ENV_FILE.exists():
+                backup = ENV_FILE.read_text()
+            ENV_FILE.write_text(custom_content)
+
+            r = _run_install_script()
+            assert r.returncode == 0, f"Install failed:\n{r.stderr}"
+
+            assert ENV_FILE.read_text() == custom_content, (
+                "Install script overwrote existing .env"
+            )
+        finally:
+            if backup is not None:
+                ENV_FILE.write_text(backup)
+            elif ENV_FILE.exists():
+                ENV_FILE.unlink()
+
+
+# ---------------------------------------------------------------------------
+# Scenario 8: warm-start performance — dpkg gate skips apt
+# ---------------------------------------------------------------------------
+class TestWarmStartPerformance:
+    """On a warm environment where python3.12-venv is already installed,
+    the dpkg gate should skip apt-get entirely."""
+
+    def test_dpkg_gate_skips_apt(self, healthy_venv):
+        """When python3.12-venv is installed, apt-get should NOT run."""
+        r = _run_install_script()
+        assert r.returncode == 0
+
+        assert "Setting up python3.12-venv" not in r.stdout, (
+            "apt-get re-installed python3.12-venv on warm start"
+        )
