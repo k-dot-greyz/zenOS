@@ -30,5 +30,5 @@ def test_dex_catalog_find_and_tier():
     # Selection guide or best_for may yield results; at least tier filter works.
     tiers = catalog.get_models_by_tier(Tier.COMMON)
     assert isinstance(tiers, list)
-    # Ensure no rarity attribute API remains
+    assert hasattr(catalog, "get_models_by_tier")
     assert not hasattr(catalog, "get_models_by_rarity")

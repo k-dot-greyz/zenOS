@@ -523,11 +523,11 @@ WS     /api/v1/ai/stream            # Real-time communication
 
 ---
 
-## Part 8: The Pokédex Concept 🎮
+## Part 8: The Dex Concept 🎮
 
 ### Discovery & Collection System
 
-#### Model Pokédex (`pokedex/models.yaml`)
+#### Model Dex (`dex/models.yaml`)
 ```yaml
 models:
   - id: "claude-3-opus"
@@ -550,7 +550,7 @@ models:
     discovery_date: "2024-01-15"
 ```
 
-#### Procedure Pokédex (`pokedex/procedures.yaml`)
+#### Procedure Dex (`dex/procedures.yaml`)
 ```yaml
 procedures:
   - id: "zen.swarm.analyze"

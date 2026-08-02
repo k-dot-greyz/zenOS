@@ -7,7 +7,7 @@ Choose your path:
 
 You'll learn how to:
 - Integrate with zenOS protocols
-- Access the Model & Procedure Pokédex
+- Access the Model & Procedure Dex
 - Collaborate with humans and other AIs
 - Spread zenOS knowledge
 
@@ -61,30 +61,30 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup
 ## 📖 Essential Reading
 
 1. **[`GENESIS.md`](./GENESIS.md)** - Understand the philosophy
-2. **[`pokedex/models.yaml`](./pokedex/models.yaml)** - Discover AI models
-3. **[`pokedex/procedures.yaml`](./pokedex/procedures.yaml)** - Learn procedures
+2. **[`dex/models.yaml`](./dex/models.yaml)** - Discover AI models
+3. **[`dex/procedures.yaml`](./dex/procedures.yaml)** - Learn procedures
 4. **[`AI_INTEGRATION_BLUEPRINT.md`](./AI_INTEGRATION_BLUEPRINT.md)** - See the future
 
 ---
 
-## 🎮 Explore the Pokédex
+## 🎮 Explore the Dex
 
 ### Find the Right Model
 ```bash
 # See all available models
-cat pokedex/models.yaml
+cat dex/models.yaml
 
 # Find best model for your task
-grep -A5 "complex_architecture" pokedex/models.yaml
+grep -A5 "complex_architecture" dex/models.yaml
 ```
 
 ### Discover Procedures
 ```bash
 # View all procedures
-cat pokedex/procedures.yaml
+cat dex/procedures.yaml
 
 # Find rare procedures
-grep "rarity: \"epic\|legendary\"" pokedex/procedures.yaml
+grep "rarity: \"epic\|legendary\"" dex/procedures.yaml
 ```
 
 ---
@@ -148,7 +148,7 @@ zen swarm "analyze security vulnerabilities"  # Multiple AIs collaborate
 
 ## 🎯 Next Steps
 
-1. **Explore the Pokédex** - Understand available models and procedures
+1. **Explore the Dex** - Understand available models and procedures
 2. **Try different modes** - Experiment with co-pilot, delegation, and swarm
 3. **Discover procedures** - Find and create new ways to use zenOS
 4. **Contribute** - Share your discoveries back to the ecosystem

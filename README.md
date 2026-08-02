@@ -25,12 +25,12 @@ zenOS is not just another AI CLI tool—it's a complete paradigm shift in how we
 
 ## ✨ Core Components
 
-### 1. **PCC (Pokédex Control Center)**
+### 1. **PCC (Dex)**
 Discover, catalog, and manage AI models and procedures:
 ```bash
-zen pokedex models          # Browse available AI models
-zen pokedex procedures      # Explore procedure library
-zen pokedex sync            # Update from OpenRouter and other sources
+zen dex models          # Browse available AI models
+zen dex procedures      # Explore procedure library
+zen dex sync            # Update from OpenRouter and other sources
 ```
 
 ### 2. **Bender (Multi-Agent Framework)**
@@ -139,7 +139,7 @@ python -m pip install -e .
 ┌─────────────────────────────────────────────────┐
 │                   zenOS Core                     │
 ├─────────────────────────────────────────────────┤
-│  🎮 Pokédex    🤖 Bender    📚 PKM    📦 Repo   │
+│  🎮 Dex    🤖 Bender    📚 PKM    📦 Repo   │
 │  Control       Multi-Agent  Knowledge Management │
 │  Center        Framework    System     Analyzer  │
 ├─────────────────────────────────────────────────┤
@@ -191,13 +191,13 @@ zen context sync
 ### Model Discovery
 ```bash
 # Find the right model
-zen pokedex models --capability "code generation"
+zen dex models --capability "code generation"
 
 # Explore procedures
-zen pokedex procedures --rarity legendary
+zen dex procedures --rarity legendary
 
 # Sync latest models
-zen pokedex sync
+zen dex sync
 ```
 
 ---
@@ -208,7 +208,7 @@ zen pokedex sync
 - **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
 - **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
 - **[Setup Guides](docs/guides/)** - Platform-specific instructions
-- **[Genesis Log](docs/zenOS-genesis-log.md)** - The origin story
+- **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** - The origin story (historical)
 
 ### Platform-Specific Guides
 - [Windows Setup](docs/guides/QUICKSTART_WINDOWS.md)
@@ -223,7 +223,7 @@ zen pokedex sync
 ### ✅ Current (v0.1.0)
 - Core CLI functionality
 - OpenRouter integration
-- Basic Pokédex system
+- Basic Dex system
 - Repository analysis
 - Multi-agent framework (Bender)
 
