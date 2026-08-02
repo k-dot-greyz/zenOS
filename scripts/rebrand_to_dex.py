@@ -93,7 +93,7 @@ REPLACEMENTS: Sequence[Tuple[str, str]] = (
     ("`pokedex/", "`dex/"),
     ("'pokedex/", "'dex/"),
     ('"pokedex/', '"dex/'),
-    ("Path(\"pokedex\")", 'Path("dex")'),
+    ('Path("pokedex")', 'Path("dex")'),
     ("Path('pokedex')", "Path('dex')"),
     ("pokedex/models.yaml", "dex/models.yaml"),
     ("pokedex/procedures.yaml", "dex/procedures.yaml"),
@@ -201,7 +201,9 @@ def ensure_dex_package(root: Path, apply: bool, log: List[str]) -> None:
     old_mod = root / "zen" / "pokedex.py"
     catalog = dex_pkg / "catalog.py"
     if old_mod.exists():
-        log.append(f"{'APPLY' if apply else 'PLAN'}: move {old_mod.relative_to(root)} -> {catalog.relative_to(root)}")
+        log.append(
+            f"{'APPLY' if apply else 'PLAN'}: move {old_mod.relative_to(root)} -> {catalog.relative_to(root)}"
+        )
         if apply:
             if catalog.exists():
                 catalog.unlink()
@@ -278,7 +280,9 @@ def archive_legacy_docs(root: Path, apply: bool, log: List[str]) -> None:
         if not src.exists():
             continue
         dest = archive / src.name
-        log.append(f"{'APPLY' if apply else 'PLAN'}: archive {src.relative_to(root)} -> {dest.relative_to(root)}")
+        log.append(
+            f"{'APPLY' if apply else 'PLAN'}: archive {src.relative_to(root)} -> {dest.relative_to(root)}"
+        )
         if apply:
             if dest.exists():
                 dest.unlink()

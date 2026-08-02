@@ -25,7 +25,7 @@ zenOS is not just another AI CLI tool—it's a complete paradigm shift in how we
 
 ## ✨ Core Components
 
-### 1. **PCC (Dex)**
+### 1. **Dex**
 Discover, catalog, and manage AI models and procedures:
 ```bash
 zen dex models          # Browse available AI models

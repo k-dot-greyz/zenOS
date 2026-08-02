@@ -84,7 +84,7 @@ grep -A5 "complex_architecture" dex/models.yaml
 cat dex/procedures.yaml
 
 # Find rare procedures
-grep "rarity: \"epic\|legendary\"" dex/procedures.yaml
+grep "tier: \"epic\|legendary\"" dex/procedures.yaml
 ```
 
 ---
