@@ -7,14 +7,15 @@ you need to run for a complete development setup.
 """
 
 import os
-import sys
 import platform
 import subprocess
+import sys
 from pathlib import Path
+
 
 def detect_environment():
     """Detect the current environment and return setup commands"""
-    
+
     # Detect OS
     os_name = platform.system().lower()
     if os_name == "windows":
@@ -26,10 +27,11 @@ def detect_environment():
     else:
         return get_generic_commands()
 
+
 def get_windows_commands():
     """
     Provide a command set for setting up the development environment on Windows.
-    
+
     Returns:
         commands (dict): Dictionary with the following keys:
             platform (str): Human-readable platform name ("Windows").
@@ -43,21 +45,22 @@ def get_windows_commands():
         "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "winget install Git.Git",
-            "winget install Python.Python.3.11", 
-            "winget install OpenJS.NodeJS"
+            "winget install Python.Python.3.11",
+            "winget install OpenJS.NodeJS",
         ],
         "setup": [
             "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
-            "python setup.py --unattended"
+            "python setup.py --unattended",
         ],
-        "validation": "python setup.py --validate-only"
+        "validation": "python setup.py --validate-only",
     }
+
 
 def get_linux_commands():
     """
     Provide a dictionary of recommended setup and validation commands tailored for Linux development environments.
-    
+
     Returns:
         dict: A mapping with the following keys:
             - platform (str): The platform name ("Linux").
@@ -73,20 +76,21 @@ def get_linux_commands():
             "sudo apt update && sudo apt install git python3 python3-pip nodejs",
             "# Or for other distros:",
             "# sudo dnf install git python3 python3-pip nodejs  # Fedora",
-            "# sudo pacman -S git python python-pip nodejs     # Arch"
+            "# sudo pacman -S git python python-pip nodejs     # Arch",
         ],
         "setup": [
             "git clone https://github.com/k-dot-greyz/zenOS.git",
-            "cd zenOS", 
-            "python3 setup.py --unattended"
+            "cd zenOS",
+            "python3 setup.py --unattended",
         ],
-        "validation": "python3 setup.py --validate-only"
+        "validation": "python3 setup.py --validate-only",
     }
+
 
 def get_macos_commands():
     """
     Provide macOS-specific commands and metadata for setting up the development environment.
-    
+
     Returns:
         dict: A dictionary with the following keys:
             platform (str): Human-readable platform name ("macOS").
@@ -101,20 +105,21 @@ def get_macos_commands():
         "prerequisites": [
             "brew install git python node",
             "# If you don't have Homebrew:",
-            "# /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+            '# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
         ],
         "setup": [
             "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
-            "python3 setup.py --unattended"
+            "python3 setup.py --unattended",
         ],
-        "validation": "python3 setup.py --validate-only"
+        "validation": "python3 setup.py --validate-only",
     }
+
 
 def get_generic_commands():
     """
     Provide a canonical set of setup commands for unknown or unsupported platforms.
-    
+
     Returns:
         commands (dict): A mapping with the following keys:
             - platform (str): Human-readable platform name ("Unknown").
@@ -128,24 +133,26 @@ def get_generic_commands():
         "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
         "prerequisites": [
             "Install Git, Python 3.7+, and Node.js (optional)",
-            "See docs/guides/DEV_ENVIRONMENT_SETUP.md for details"
+            "See docs/guides/DEV_ENVIRONMENT_SETUP.md for details",
         ],
         "setup": [
             "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
-            "python setup.py --unattended"
+            "python setup.py --unattended",
         ],
-        "validation": "python setup.py --validate-only"
+        "validation": "python setup.py --validate-only",
     }
+
 
 def check_termux():
     """Check if running in Termux"""
     return os.environ.get("TERMUX_VERSION") is not None
 
+
 def get_termux_commands():
     """
     Provide Termux (Android) tailored setup commands for cloning and configuring the repository.
-    
+
     Returns:
         dict: A mapping with the following keys:
             - platform: Platform name ("Termux (Android)").
@@ -157,53 +164,52 @@ def get_termux_commands():
     return {
         "platform": "Termux (Android)",
         "one_liner": "pkg update && pkg upgrade && pkg install git python nodejs && git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
-        "prerequisites": [
-            "pkg update && pkg upgrade",
-            "pkg install git python nodejs"
-        ],
+        "prerequisites": ["pkg update && pkg upgrade", "pkg install git python nodejs"],
         "setup": [
             "git clone https://github.com/k-dot-greyz/zenOS.git",
             "cd zenOS",
-            "python setup.py --unattended"
+            "python setup.py --unattended",
         ],
-        "validation": "python setup.py --validate-only"
+        "validation": "python setup.py --validate-only",
     }
+
 
 def print_commands(commands):
     """Print the setup commands in a nice format"""
     print(f"\n🚀 Setup Commands for {commands['platform']}")
     print("=" * 50)
-    
+
     print(f"\n📋 One-Command Setup:")
     print(f"   {commands['one_liner']}")
-    
+
     print(f"\n🔧 Prerequisites (if not installed):")
-    for cmd in commands['prerequisites']:
+    for cmd in commands["prerequisites"]:
         print(f"   {cmd}")
-    
+
     print(f"\n⚙️  Manual Setup Steps:")
-    for i, cmd in enumerate(commands['setup'], 1):
+    for i, cmd in enumerate(commands["setup"], 1):
         print(f"   {i}. {cmd}")
-    
+
     print(f"\n✅ Validation:")
     print(f"   {commands['validation']}")
-    
+
     print(f"\n📚 Full Guide: docs/guides/DEV_ENVIRONMENT_SETUP.md")
     print(f"📋 Cheat Sheet: DEV_SETUP_CHEAT_SHEET.md")
+
 
 def main():
     """Main function"""
     print("🧘 zenOS Development Environment Setup")
     print("=" * 40)
-    
+
     # Check if we're in Termux
     if check_termux():
         commands = get_termux_commands()
     else:
         commands = detect_environment()
-    
+
     print_commands(commands)
-    
+
     # Check if zenOS is already available
     if Path("setup.py").exists():
         print(f"\n🎉 zenOS detected in current directory!")
@@ -211,6 +217,7 @@ def main():
         print(f"   Or:  python setup.py --unattended")
     else:
         print(f"\n💡 Tip: Run the one-command setup above to get started!")
+
 
 if __name__ == "__main__":
     main()
