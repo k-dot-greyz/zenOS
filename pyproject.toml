@@ -36,6 +36,7 @@ dependencies = [
     "prompt-toolkit>=3.0",
     "beautifulsoup4>=4.12.0",
     "schedule>=1.2.0",
+    "httpx>=0.24.0",
 ]
 
 [project.optional-dependencies]
@@ -64,7 +65,9 @@ Repository = "https://github.com/k-dot-greyz/zenOS"
 Issues = "https://github.com/k-dot-greyz/zenOS/issues"
 
 [tool.setuptools]
-packages = ["zen"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["zen*"]
 
 [tool.black]
 line-length = 100

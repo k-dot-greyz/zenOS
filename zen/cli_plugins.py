@@ -133,7 +133,7 @@ def info(plugin_id: str):
 [bold]Capabilities:[/bold] {', '.join(entry.manifest.capabilities)}
 [bold]Status:[/bold] {'🟢 Active' if entry.is_active else '🔴 Inactive'}
 [bold]Usage Count:[/bold] {entry.usage_count}
-[bold]Rarity:[/bold] {entry.rarity}
+[bold]Tier:[/bold] {entry.tier}
 [bold]Overall Score:[/bold] {entry.overall_score:.1f}
 [bold]Git URL:[/bold] {entry.git_url}
 [bold]Local Path:[/bold] {entry.local_path}
@@ -366,7 +366,7 @@ def stats():
 {chr(10).join(f"  • {cap}: {count}" for cap, count in stats['capabilities'].items())}
 
 [bold]Rarities:[/bold]
-{chr(10).join(f"  • {rarity}: {count}" for rarity, count in stats['rarities'].items())}
+{chr(10).join(f"  • {tier}: {count}" for tier, count in stats.get('tiers', stats.get('rarities', {})).items())}
 """,
         title="📊 Plugin Collection Statistics",
         border_style="green"

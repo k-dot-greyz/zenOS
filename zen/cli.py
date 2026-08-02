@@ -333,5 +333,13 @@ cli.add_command(receive)
 from zen.pkm.cli import pkm
 cli.add_command(pkm)
 
+# Dex catalog / bench / sync (from cli_v2 surface)
+from zen.cli_v2 import dex, bench, sync, arena
+cli.add_command(dex)
+cli.add_command(bench)
+cli.add_command(sync)
+cli.add_command(arena)
+
+
 if __name__ == "__main__":
     cli()

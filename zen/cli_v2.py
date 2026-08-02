@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-zenOS CLI v2 - Enhanced CLI with Pokédex and Battle Arena
+zenOS CLI v2 - Enhanced CLI with Dex and Model Bench
 """
 
 import os
@@ -18,7 +18,7 @@ AI_MODE = os.environ.get('ZEN_AI_MODE', 'false').lower() == 'true'
 @click.group(invoke_without_command=True)
 @click.option('--ai-mode', is_flag=True, help='Enable AI-optimized output')
 @click.option('--offline', is_flag=True, help='Use offline models only')
-@click.option('--model', help='Specify model to use (see pokedex/models.yaml)')
+@click.option('--model', help='Specify model to use (see dex/models.yaml)')
 @click.option('--eco', is_flag=True, help='Battery-saving mode for mobile')
 @click.pass_context
 def cli(ctx, ai_mode, offline, model, eco):
@@ -38,7 +38,7 @@ def cli(ctx, ai_mode, offline, model, eco):
     if ctx.invoked_subcommand is None:
         if AI_MODE or ai_mode:
             print("zenOS AI Mode Active. Ready for instructions.")
-            print("Available commands: chat, analyze, battle, sync, pokedex")
+            print("Available commands: chat, analyze, battle, sync, dex")
         else:
             show_interactive_menu()
 
@@ -48,16 +48,16 @@ def show_interactive_menu():
 ╔══════════════════════════════════════╗
 ║         zenOS v2.0 🧘⚔️              ║
 ║   Where Humans and AIs Collaborate   ║
-║        Now with Battle Arena!        ║
+║        Now with Model Bench!        ║
 ╚══════════════════════════════════════╝
 
 Quick Commands:
   zen chat              - Start conversation
   zen analyze <file>    - Analyze code
   zen doctor           - Check system health
-  zen pokedex          - Explore models & procedures
+  zen dex          - Explore models & procedures
   
-Battle Arena:
+Model Bench:
   zen battle <m1> <m2>  - Battle two models
   zen sync             - Update model stats from API
   zen arena            - View arena rankings
@@ -73,11 +73,11 @@ For help: zen help
 @click.argument('model1')
 @click.argument('model2')
 @click.option('--tournament', '-t', multiple=True, help='Add more models for tournament')
-def battle(model1, model2, tournament):
+def bench(model1, model2, tournament):
     """⚔️ Battle AI models in the arena!"""
-    from zen.pokedex.battle_arena import BattleArena
+    from zen.dex.bench import ModelBench
     
-    arena = BattleArena()
+    arena = ModelBench()
     
     if tournament:
         # Tournament mode
@@ -108,10 +108,10 @@ def battle(model1, model2, tournament):
 @cli.command()
 @click.option('--force', '-f', is_flag=True, help='Force sync even if cache is valid')
 def sync(force):
-    """🔄 Sync Pokédex with OpenRouter API"""
-    from zen.pokedex.openrouter_sync import OpenRouterSync
+    """🔄 Sync Dex with OpenRouter API"""
+    from zen.dex.openrouter_sync import OpenRouterSync
     
-    print("🔄 Syncing Pokédex with OpenRouter API...")
+    print("🔄 Syncing Dex with OpenRouter API...")
     print("This will fetch latest model stats and pricing...")
     
     syncer = OpenRouterSync()
@@ -121,16 +121,16 @@ def sync(force):
             syncer.cache_file.unlink()
     
     # Run async sync
-    asyncio.run(syncer.sync_pokedex())
+    asyncio.run(syncer.sync_dex())
     
     print("\n✨ Sync complete!")
-    print("📊 Check pokedex/models.yaml for updated stats")
-    print("🏆 Check pokedex/arena_rankings.yaml for power rankings")
+    print("📊 Check dex/models.yaml for updated stats")
+    print("🏆 Check dex/bench_rankings.yaml for power rankings")
 
 @cli.command()
 def arena():
-    """🏆 View Battle Arena rankings"""
-    arena_file = Path("pokedex/arena_rankings.yaml")
+    """🏆 View Model Bench rankings"""
+    arena_file = Path("dex/bench_rankings.yaml")
     
     if not arena_file.exists():
         print("⚠️ No arena rankings found. Run 'zen sync' first!")
@@ -139,22 +139,22 @@ def arena():
     with open(arena_file) as f:
         data = yaml.safe_load(f)
     
-    print("\n🏆 BATTLE ARENA POWER RANKINGS 🏆\n")
+    print("\n🏆 MODEL BENCH POWER RANKINGS 🏆\n")
     print("Top 10 Fighters by Total Power:")
     print("=" * 50)
     
     for entry in data['power_rankings'][:10]:
         rank_emoji = {1: "🥇", 2: "🥈", 3: "🥉"}.get(entry['rank'], "🎖️")
-        rarity_emoji = {
+        tier_emoji = {
             'legendary': '🔴',
             'epic': '🟡',
             'rare': '🟣',
             'uncommon': '🔵',
             'common': '⚪'
-        }.get(entry['rarity'], '⚫')
+        }.get(entry['tier'], '⚫')
         
-        print(f"{rank_emoji} #{entry['rank']}: {entry['name']} {rarity_emoji}")
-        print(f"   Total Power: {entry['total_power']} | HP: {entry['combat_stats']['hp']} | ATK: {entry['combat_stats']['attack']}")
+        print(f"{rank_emoji} #{entry['rank']}: {entry['name']} {tier_emoji}")
+        print(f"   Total Power: {entry['total_power']} | HP: {entry['bench_stats']['hp']} | ATK: {entry['bench_stats']['attack']}")
     
     print("\n⚔️ Weight Classes:")
     print(f"Heavyweight: {len(data['weight_classes']['heavyweight'])} fighters")
@@ -164,14 +164,14 @@ def arena():
 @cli.command()
 @click.argument('category', default='models')
 @click.option('--task', help='Find best model for specific task')
-@click.option('--rarity', help='Filter by rarity')
-def pokedex(category, task, rarity):
-    """📖 Explore the Model & Procedure Pokédex"""
+@click.option('--tier', help='Filter by tier')
+def dex(category, task, tier):
+    """📖 Explore the Model & Procedure Dex"""
     
     if category == 'models':
-        models_file = Path('pokedex/models.yaml')
+        models_file = Path('dex/models.yaml')
         if not models_file.exists():
-            print("❌ Models Pokédex not found. Run 'zen sync' to create it!")
+            print("❌ Models Dex not found. Run 'zen sync' to create it!")
             return
         
         with open(models_file) as f:
@@ -194,24 +194,24 @@ def pokedex(category, task, rarity):
                 for t in guide.keys():
                     print(f"  - {t}")
         
-        elif rarity:
-            # Filter by rarity
-            print(f"\n🎮 {rarity.upper()} Models:\n")
+        elif tier:
+            # Filter by tier
+            print(f"\n🎮 {tier.upper()} Models:\n")
             count = 0
             for model in data.get('models', []):
-                if model.get('rarity') == rarity:
+                if model.get("tier") == tier:
                     count += 1
                     print(f"• {model['name']} ({model['id']})")
-                    if 'combat_stats' in model:
-                        total_power = sum(model['combat_stats'].values())
+                    if 'bench_stats' in model:
+                        total_power = sum(model['bench_stats'].values())
                         print(f"  Power: {total_power} | Cost: ${model['cost_per_1k']['input']:.4f}/1k")
             
             if count == 0:
-                print(f"No {rarity} models found")
+                print(f"No {tier} models found")
         
         else:
             # Show summary
-            print("\n📊 Pokédex Statistics:\n")
+            print("\n📊 Dex Statistics:\n")
             
             if 'total_models' in data:
                 print(f"Total Models: {data['total_models']}")
@@ -222,27 +222,27 @@ def pokedex(category, task, rarity):
                 print(f"Updated: {data['sync_stats']['updated_models']}")
             
             # Count by rarity
-            rarity_counts = {}
+            tier_counts = {}
             for model in data.get('models', []):
-                r = model.get('rarity', 'unknown')
-                rarity_counts[r] = rarity_counts.get(r, 0) + 1
+                r = model.get("tier", 'unknown')
+                tier_counts[r] = tier_counts.get(r, 0) + 1
             
-            print("\n🎲 Rarity Distribution:")
+            print("\n🎲 Tier Distribution:")
             for r, emoji in [('legendary', '🔴'), ('epic', '🟡'), ('rare', '🟣'), 
                             ('uncommon', '🔵'), ('common', '⚪')]:
-                if r in rarity_counts:
-                    print(f"  {emoji} {r.capitalize()}: {rarity_counts[r]}")
+                if r in tier_counts:
+                    print(f"  {emoji} {r.capitalize()}: {tier_counts[r]}")
             
             print("\n💡 Tips:")
-            print("  • Use 'zen pokedex models --task <task>' to find best models")
-            print("  • Use 'zen pokedex models --rarity legendary' to see top tier")
+            print("  • Use 'zen dex models --task <task>' to find best models")
+            print("  • Use 'zen dex models --tier legendary' to see top tier")
             print("  • Use 'zen battle <model1> <model2>' to test in combat")
             print("  • Use 'zen sync' to update with latest models")
     
     elif category == 'procedures':
-        procedures_file = Path('pokedex/procedures.yaml')
+        procedures_file = Path('dex/procedures.yaml')
         if not procedures_file.exists():
-            print("❌ Procedures Pokédex not found")
+            print("❌ Procedures Dex not found")
             return
         
         with open(procedures_file) as f:
@@ -250,15 +250,15 @@ def pokedex(category, task, rarity):
         
         print("\n📜 Discovered Procedures:\n")
         for proc in data.get('procedures', []):
-            rarity_emoji = {
+            tier_emoji = {
                 'common': '⚪',
                 'uncommon': '🔵',
                 'rare': '🟣',
                 'epic': '🟡',
                 'legendary': '🔴'
-            }.get(proc['rarity'], '⚫')
+            }.get(proc['tier'], '⚫')
             
-            print(f"{rarity_emoji} {proc['name']} ({proc['id']})")
+            print(f"{tier_emoji} {proc['name']} ({proc['id']})")
             print(f"   Type: {proc['type']} | Complexity: {proc['stats']['complexity']}")
             if proc.get('usage_count', 0) > 0:
                 print(f"   Used: {proc['usage_count']} times")
@@ -285,23 +285,23 @@ def doctor(ai_mode):
     else:
         checks.append(("⚠️", "OpenRouter API key not configured"))
     
-    # Check Pokédex
-    if Path('pokedex/models.yaml').exists():
-        with open('pokedex/models.yaml') as f:
+    # Check Dex
+    if Path('dex/models.yaml').exists():
+        with open('dex/models.yaml') as f:
             data = yaml.safe_load(f)
             model_count = len(data.get('models', []))
-        checks.append(("✅", f"Model Pokédex loaded ({model_count} models)"))
+        checks.append(("✅", f"Model Dex loaded ({model_count} models)"))
     else:
-        checks.append(("⚠️", "Model Pokédex not found (run 'zen sync')"))
+        checks.append(("⚠️", "Model Dex not found (run 'zen sync')"))
     
-    if Path('pokedex/procedures.yaml').exists():
-        checks.append(("✅", "Procedure Pokédex available"))
+    if Path('dex/procedures.yaml').exists():
+        checks.append(("✅", "Procedure Dex available"))
     else:
-        checks.append(("⚠️", "Procedure Pokédex missing"))
+        checks.append(("⚠️", "Procedure Dex missing"))
     
     # Check Arena
-    if Path('pokedex/arena_rankings.yaml').exists():
-        checks.append(("✅", "Battle Arena rankings available"))
+    if Path('dex/bench_rankings.yaml').exists():
+        checks.append(("✅", "Model Bench rankings available"))
     else:
         checks.append(("ℹ️", "No arena rankings (run 'zen sync' to generate)"))
     
@@ -331,7 +331,7 @@ def doctor(ai_mode):
     print("\n💡 Quick Tips:")
     print("  • Run 'zen sync' to update model stats from OpenRouter")
     print("  • Try 'zen battle gpt-4-turbo claude-3-opus' for an epic fight")
-    print("  • Use 'zen pokedex models --rarity legendary' to see top models")
+    print("  • Use 'zen dex models --tier legendary' to see top models")
 
 @cli.command()
 def help():
@@ -340,18 +340,18 @@ def help():
 zenOS v2.0 Help System
 ======================
 
-🎮 Battle Arena Commands:
+🎮 Model Bench Commands:
   zen battle <model1> <model2>      - 1v1 model battle
   zen battle <m1> <m2> -t <m3> <m4> - Tournament mode
   zen sync                          - Update models from OpenRouter API
   zen sync --force                  - Force update (ignore cache)
   zen arena                         - View power rankings
 
-📖 Pokédex Commands:
-  zen pokedex                       - Show Pokédex stats
-  zen pokedex models --task <task>  - Find best model for task
-  zen pokedex models --rarity <r>   - Filter by rarity
-  zen pokedex procedures            - List discovered procedures
+📖 Dex Commands:
+  zen dex                       - Show Dex stats
+  zen dex models --task <task>  - Find best model for task
+  zen dex models --tier <r>   - Filter by tier
+  zen dex procedures            - List discovered procedures
 
 🤖 AI Integration:
   zen --ai-mode                     - Enable AI-optimized output
@@ -380,7 +380,7 @@ zenOS v2.0 Help System
 ⚔️ Battle Mechanics:
   - Models fight using their stats (HP, Attack, Defense, Speed)
   - Special abilities based on model features
-  - Rarity affects power multipliers
+  - Tier affects power multipliers
   - Tournament mode for multiple fighters
 
 For more: https://github.com/k-dot-greyz/zenOS
