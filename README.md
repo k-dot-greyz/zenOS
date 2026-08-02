@@ -194,7 +194,7 @@ zen context sync
 zen dex models --capability "code generation"
 
 # Explore procedures
-zen dex procedures --rarity legendary
+zen dex procedures --tier legendary
 
 # Sync latest models
 zen dex sync
