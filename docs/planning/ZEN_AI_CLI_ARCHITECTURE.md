@@ -1,5 +1,8 @@
 # 🧘 zenOS: AI CLI Tool Architecture
 
+> **Historical / aspirational.** For the living command contract see
+> [`docs/guides/CLI.md`](../guides/CLI.md). Many verbs below are roadmap, not shipping.
+
 ## Vision: The AI Assistant That Lives in Your Terminal
 
 zenOS is a Docker-powered AI CLI tool that combines the best of claude-cli, GitHub Copilot CLI, and agent-based systems into one beautiful, zen-like experience.
