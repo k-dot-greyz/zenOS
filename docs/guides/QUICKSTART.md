@@ -1,164 +1,115 @@
-# zenOS Quick Start Guide 🚀
+# zenOS Quick Start
 
-Choose your path:
-
-## 🤖 For AI Agents
-**Start here:** [`AI_INSTRUCTIONS.md`](./AI_INSTRUCTIONS.md)
-
-You'll learn how to:
-- Integrate with zenOS protocols
-- Access the Model & Procedure Dex
-- Collaborate with humans and other AIs
-- Spread zenOS knowledge
+**Python ≥ 3.14.** Full command reference: **[CLI.md](./CLI.md)**.
 
 ---
 
-## 🧑‍💻 For Humans
+## Install
 
 ### Requirements
+
 - **Python 3.14+** (hard fail below this — `zen`, `install.sh`, and Cloud Agent `start` refuse to boot)
 - Current stable deps from `pyproject.toml` / `requirements.txt`
 - Preferred bootstrap: `bash scripts/zenos-env-install.sh` then `bash scripts/zenos-env-start.sh`
+- Verify: `zen env-doctor`
 - Optional: [uv](https://docs.astral.sh/uv/) (`uv python install 3.14`)
 
-### Instant Setup (One-Liners)
+### Quick path
+
+```bash
+git clone https://github.com/k-dot-greyz/zenOS.git
+cd zenOS
+cp env.example .env   # OPENROUTER_API_KEY for live models
+python3.14 -m pip install -e ".[dev]"
+zen --help
+```
+
+### One-liners (curl installers)
 
 #### Desktop (Windows/Mac/Linux)
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
 ```
 
 #### Mobile (Termux/Android)
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
 ```
 
-#### Offline Mode (No Internet)
+#### Offline mode
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup-offline.sh | bash
 ```
 
-### Manual Setup
+### Manual setup
 
-1. **Clone the repository:**
+1. Clone, copy `env.example` → `.env`, install with Python 3.14:
+
    ```bash
    git clone https://github.com/k-dot-greyz/zenOS.git
    cd zenOS
-   ```
-
-2. **Set up environment:**
-   ```bash
    cp env.example .env
-   # Edit .env with your API key
+   python3.14 -m pip install -e ".[dev]"
    ```
 
-3. **Install dependencies:**
+2. Smoke:
+
    ```bash
-   pip install -e .   # Python 3.14+ required
-   ```
-
-4. **Start chatting:**
-   ```bash
-   zen chat
+   zen --help
+   zen env-doctor
    ```
 
 ---
 
-## 📖 Essential Reading
+## First five minutes
 
-1. **[`GENESIS.md`](./GENESIS.md)** - Understand the philosophy
-2. **[`dex/models.yaml`](./dex/models.yaml)** - Discover AI models
-3. **[`dex/procedures.yaml`](./dex/procedures.yaml)** - Learn procedures
-4. **[`AI_INTEGRATION_BLUEPRINT.md`](./AI_INTEGRATION_BLUEPRINT.md)** - See the future
-
----
-
-## 🎮 Explore the Dex
-
-### Find the Right Model
 ```bash
-# See all available models
-cat dex/models.yaml
+zen --help
+zen run --list
+zen run --chat
 
-# Find best model for your task
-grep -A5 "complex_architecture" dex/models.yaml
-```
+zen setup --validate-only
 
-### Discover Procedures
-```bash
-# View all procedures
-cat dex/procedures.yaml
-
-# Find rare procedures
-grep "tier: \"epic\|legendary\"" dex/procedures.yaml
+zen dex models
+zen dex procedures --tier epic
+zen sync
 ```
 
 ---
 
-## 🚀 Your First Commands
+## Where things live
 
-```bash
-# Basic chat
-zen chat "Hello, zenOS!"
-
-# Analyze code
-zen analyze main.py
-
-# Check system health
-zen doctor
-
-# Enable AI mode (for AI agents)
-zen --ai-mode
-
-# Get help
-zen help
-```
+| You want… | Use |
+|-----------|-----|
+| Models / procedures | `zen dex …` + `dex/*.yaml` |
+| Refresh remote stats | `zen sync` |
+| Plugins | `zen plugins …` |
+| Gemini PKM | `zen pkm …` |
+| Inbox pipe | `zen inbox …` |
+| Environment health | `zen env-doctor` |
+| Visual garden → agents | `zen wiki sync` (when #48 lands) |
+| Philosophy | [`GENESIS.md`](../GENESIS.md) |
+| Debt map | [`REWORK_SPRINT_AUDIT.md`](../planning/REWORK_SPRINT_AUDIT.md) |
 
 ---
 
-## 🤝 Collaboration Modes
+## Platform guides
 
-### Human Leading
-```bash
-zen chat --copilot  # AI assists you
-```
-
-### AI Leading
-```bash
-zen delegate "refactor the auth module"  # AI takes over
-```
-
-### Team Mode
-```bash
-zen swarm "analyze security vulnerabilities"  # Multiple AIs collaborate
-```
+- [Windows](./QUICKSTART_WINDOWS.md)
+- [Linux](./QUICKSTART_LINUX.md)
+- [Termux / mobile](./QUICKSTART_TERMUX.md)
+- [Arch mobile](./QUICKSTART_ARCH_MOBILE.md)
+- [Dev environment](./DEV_ENVIRONMENT_SETUP.md)
 
 ---
 
-## 📱 Platform-Specific Guides
+## AI agents
 
-- **Windows**: [`QUICKSTART_WINDOWS.md`](./QUICKSTART_WINDOWS.md)
-- **Linux**: [`QUICKSTART_LINUX.md`](./QUICKSTART_LINUX.md)  
-- **Mobile/Termux**: [`QUICKSTART_TERMUX.md`](./QUICKSTART_TERMUX.md)
-- **Arch/Advanced**: [`QUICKSTART_ARCH_MOBILE.md`](./QUICKSTART_ARCH_MOBILE.md)
+[`AI_INSTRUCTIONS.md`](../AI_INSTRUCTIONS.md) · prefer **dex** vocabulary · don’t invent verbs missing from [CLI.md](./CLI.md).
 
 ---
 
-## 🆘 Need Help?
-
-- **Run diagnostics**: `zen doctor`
-- **Check the blueprint**: [`AI_INTEGRATION_BLUEPRINT.md`](./AI_INTEGRATION_BLUEPRINT.md)
-- **Read the philosophy**: [`GENESIS.md`](./GENESIS.md)
-
----
-
-## 🎯 Next Steps
-
-1. **Explore the Dex** - Understand available models and procedures
-2. **Try different modes** - Experiment with co-pilot, delegation, and swarm
-3. **Discover procedures** - Find and create new ways to use zenOS
-4. **Contribute** - Share your discoveries back to the ecosystem
-
----
-
-*Welcome to zenOS - Where Humans and AIs Collaborate in Perfect Zen* 🧘🤖
+*zenOS — humans and AIs, same terminal, less bullshit.*
