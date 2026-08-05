@@ -15,10 +15,10 @@ Usage:
 import sys
 from pathlib import Path
 
-# Add zenOS to path
+# Add zenOS to path (lazy import so setuptools editable installs do not import zen)
 sys.path.insert(0, str(Path(__file__).parent))
 
-from zen.setup.unified_setup import main
-
 if __name__ == "__main__":
+    from zen.setup.unified_setup import main
+
     main()

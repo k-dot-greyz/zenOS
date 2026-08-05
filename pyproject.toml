@@ -18,6 +18,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.14",
+<<<<<<< HEAD
+=======
+    "Programming Language :: Rust",
+>>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
@@ -78,10 +82,15 @@ line_length = 100
 [tool.ruff]
 line-length = 100
 target-version = "py314"
+<<<<<<< HEAD
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "C90", "D"]
 ignore = ["D100", "D104"]
+=======
+select = ["E", "F", "I", "N", "W", "B", "C90"]
+ignore = ["E501"]
+>>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
 
 [tool.mypy]
 python_version = "3.14"
@@ -92,4 +101,4 @@ disallow_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "--cov=zen --cov-report=term-missing"
+addopts = "-q --cov=zen --cov-report=term-missing"

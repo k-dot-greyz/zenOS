@@ -7,6 +7,10 @@ zenOS transforms your terminal into a living, breathing workspace where humans a
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
+<<<<<<< HEAD
+=======
+[![Rust](https://img.shields.io/badge/rust-first--class-orange.svg)](https://www.rust-lang.org/)
+>>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
 
 ---
 
