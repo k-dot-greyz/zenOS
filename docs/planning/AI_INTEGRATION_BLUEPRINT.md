@@ -533,13 +533,13 @@ models:
   - id: "claude-3-opus"
     name: "Claude the Wise"
     type: "conversational"
-    rarity: "legendary"
+    tier: "legendary"
     stats:
       intelligence: 95
       creativity: 90
       speed: 70
       memory: 85
-    abilities:
+    feats:
       - "Deep Context"
       - "Code Master"
       - "Philosophical Insight"
@@ -556,7 +556,7 @@ procedures:
   - id: "zen.swarm.analyze"
     name: "Swarm Analysis"
     type: "collaborative"
-    rarity: "epic"
+    tier: "epic"
     stats:
       complexity: 80
       efficiency: 95

@@ -28,7 +28,7 @@ class ModelEntry:
     type: str
     tier: Tier
     stats: Dict[str, int]
-    capabilities: List[str]
+    feats: List[str]
     best_for: List[str]
     context_window: int
     cost_per_1k: Dict[str, float]
@@ -95,7 +95,7 @@ class DexCatalog:
                         type=model_data["type"],
                         tier=Tier(model_data["tier"]),
                         stats=model_data["stats"],
-                        capabilities=model_data.get("capabilities", []),
+                        feats=model_data.get("feats", model_data.get("capabilities", [])),
                         best_for=model_data.get("best_for", []),
                         context_window=model_data.get("context_window", 0),
                         cost_per_1k=model_data.get("cost_per_1k", {}),
