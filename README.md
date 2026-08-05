@@ -101,7 +101,7 @@ git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
 # Then install offline (Python 3.14+ required):
-python3.14 -m pip install -e .
+python3.14 -m pip install -e ".[dev]"
 ```
 
 ### Manual Setup
