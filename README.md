@@ -6,7 +6,8 @@ A revolutionary operating system for human-AI collaboration where biological and
 zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
+[![Rust](https://img.shields.io/badge/rust-first--class-orange.svg)](https://www.rust-lang.org/)
 
 ---
 
