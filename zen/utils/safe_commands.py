@@ -17,11 +17,19 @@ class SafeCommandExecutor:
     """Safe command execution following promptOS best practices"""
 
     def __init__(self, default_timeout: int = 30):
+        """
+        Initialize the command executor with a default execution timeout and ensure Git has a configured editor.
+        
+        Parameters:
+        	default_timeout (int): Maximum execution time in seconds for commands that do not specify a timeout.
+        """
         self.default_timeout = default_timeout
         self._ensure_git_safety()
 
     def _ensure_git_safety(self):
-        """Ensure Git is configured safely to prevent hanging"""
+        """
+        Ensure Git has a configured editor to prevent interactive commands from hanging.
+        """
         try:
             # Check if git editor is set
             result = self.run_command(["git", "config", "--global", "core.editor"], timeout=5)
@@ -40,7 +48,19 @@ class SafeCommandExecutor:
         capture_output: bool = True,
         check: bool = False,
     ) -> Dict:
-        """Safely run a command with timeout and proper error handling"""
+        """
+        Execute a command with a timeout and return its execution result.
+        
+        Parameters:
+            cmd (Union[List[str], str]): Command and arguments, provided as a list or whitespace-separated string.
+            cwd (Optional[Union[str, Path]]): Working directory for the command.
+            timeout (Optional[int]): Maximum execution time in seconds; uses the default timeout when omitted.
+            capture_output (bool): Whether to capture standard output and error.
+            check (bool): Whether command failures should be treated as subprocess errors.
+        
+        Returns:
+            Dict: Result containing trimmed ``stdout`` and ``stderr``, ``returncode``, and ``success``. Timeout and execution errors use return code ``-1`` and set ``success`` to ``False``.
+        """
 
         if isinstance(cmd, str):
             cmd = cmd.split()
@@ -79,11 +99,24 @@ class SafeCommandExecutor:
             return {"stdout": "", "stderr": str(e), "returncode": -1, "success": False}
 
     def safe_git_add(self, files: str = ".") -> Dict:
-        """Safely add files to git"""
+        """Stage the specified files for the next Git commit.
+        
+        Parameters:
+            files (str): Files or paths to stage. Defaults to the current directory.
+        
+        Returns:
+            Dict: The command execution result."""
         return self.run_command(["git", "add", files], timeout=10)
 
     def safe_git_commit(self, message: str, details: Optional[List[str]] = None) -> Dict:
-        """Safely commit with proper multiline handling (following promptOS gcommit pattern)"""
+        """Create a Git commit with a primary message and optional additional message paragraphs.
+        
+        Parameters:
+            message (str): The primary commit message.
+            details (Optional[List[str]]): Additional commit message paragraphs.
+        
+        Returns:
+            Dict: The command execution result."""
         cmd = ["git", "commit", "-m", message]
 
         if details:
@@ -93,7 +126,16 @@ class SafeCommandExecutor:
         return self.run_command(cmd, timeout=15)
 
     def safe_git_push(self, remote: str = "origin", branch: str = "main") -> Dict:
-        """Safely push to remote"""
+        """
+        Push the specified branch to a Git remote with a bounded execution time.
+        
+        Parameters:
+        	remote (str): Name of the Git remote.
+        	branch (str): Name of the branch to push.
+        
+        Returns:
+        	Dict: Command execution results, including output, return code, and success status.
+        """
         return self.run_command(["git", "push", remote, branch], timeout=30)
 
     def safe_git_status(self) -> Dict:
@@ -101,60 +143,148 @@ class SafeCommandExecutor:
         return self.run_command(["git", "status", "--porcelain"], timeout=5)
 
     def safe_git_pull(self, remote: str = "origin", branch: str = "main") -> Dict:
-        """Safely pull from remote"""
+        """
+        Pull changes from a remote Git branch.
+        
+        Parameters:
+        	remote (str): Name of the Git remote.
+        	branch (str): Name of the branch to pull.
+        
+        Returns:
+        	Dict: The command execution result.
+        """
         return self.run_command(["git", "pull", remote, branch], timeout=30)
 
     def safe_git_checkout(self, branch: str) -> Dict:
-        """Safely checkout branch"""
+        """
+        Safely switch to a Git branch.
+        
+        Parameters:
+        	branch (str): Name of the branch to check out.
+        
+        Returns:
+        	Dict: Command execution result.
+        """
         return self.run_command(["git", "checkout", branch], timeout=10)
 
     def safe_git_branch(self, branch: str) -> Dict:
-        """Safely create and checkout new branch"""
+        """Create and switch to a new Git branch.
+        
+        Parameters:
+        	branch (str): Name of the branch to create.
+        
+        Returns:
+        	Dict: Command execution results."""
         return self.run_command(["git", "checkout", "-b", branch], timeout=10)
 
     def safe_git_merge(self, branch: str) -> Dict:
-        """Safely merge branch"""
+        """
+        Safely merge a branch into the current Git branch.
+        
+        Parameters:
+        	branch (str): Name of the branch to merge.
+        
+        Returns:
+        	Dict: Result containing the command output, return code, and success status.
+        """
         return self.run_command(["git", "merge", branch], timeout=30)
 
     def safe_git_log(self, count: int = 10) -> Dict:
-        """Safely get git log"""
+        """
+        Retrieve a bounded list of recent Git commits.
+        
+        Parameters:
+        	count (int): Maximum number of commits to include.
+        
+        Returns:
+        	Dict: Command execution results containing the commit log or failure details.
+        """
         return self.run_command(["git", "log", "--oneline", f"-{count}"], timeout=10)
 
     def safe_git_diff(self) -> Dict:
-        """Safely get git diff"""
+        """
+        Retrieve the differences between the working tree and the index.
+        
+        Returns:
+            Dict: Command execution results, including the diff output, status, and return code.
+        """
         return self.run_command(["git", "diff"], timeout=10)
 
     def safe_git_diff_staged(self) -> Dict:
-        """Safely get staged git diff"""
+        """Retrieve the staged changes in the current Git repository.
+        
+        Returns:
+            Dict: The command result containing the staged diff and execution status.
+        """
         return self.run_command(["git", "diff", "--staged"], timeout=10)
 
     def safe_git_remote(self) -> Dict:
-        """Safely get git remotes"""
+        """
+        List the configured Git remotes and their URLs.
+        
+        Returns:
+            Dict: The command execution result containing the remotes or failure details.
+        """
         return self.run_command(["git", "remote", "-v"], timeout=5)
 
     def safe_git_branches(self) -> Dict:
-        """Safely get git branches"""
+        """List local and remote Git branches.
+        
+        Returns:
+        	Dict: The command result containing branch information, output, return code, and success status.
+        """
         return self.run_command(["git", "branch", "-a"], timeout=5)
 
     def safe_python_script(self, script_path: str, args: Optional[List[str]] = None) -> Dict:
-        """Safely run Python script"""
+        """
+        Run a Python script with an optional list of command-line arguments.
+        
+        Parameters:
+        	script_path (str): Path to the Python script to execute.
+        	args (Optional[List[str]]): Additional command-line arguments for the script.
+        
+        Returns:
+        	Dict: Command execution results, including output, return code, and success status.
+        """
         cmd = [sys.executable, script_path]
         if args:
             cmd.extend(args)
         return self.run_command(cmd, timeout=60)
 
     def safe_pip_install(self, package: str) -> Dict:
-        """Safely install Python package"""
+        """Safely install a Python package.
+        
+        Parameters:
+            package (str): The package name or installation specification.
+        
+        Returns:
+            Dict: The command execution result.
+        """
         return self.run_command([sys.executable, "-m", "pip", "install", package], timeout=120)
 
     def safe_pip_install_requirements(self, requirements_file: str = "requirements.txt") -> Dict:
-        """Safely install from requirements file"""
+        """Safely install the packages listed in a requirements file.
+        
+        Parameters:
+        	requirements_file (str): Path to the requirements file.
+        
+        Returns:
+        	Dict: The command execution result.
+        """
         return self.run_command(
             [sys.executable, "-m", "pip", "install", "-r", requirements_file], timeout=180
         )
 
     def safe_npm_install(self, package: Optional[str] = None) -> Dict:
-        """Safely install npm package or all dependencies"""
+        """
+        Install an npm package or the project's dependencies.
+        
+        Parameters:
+            package (Optional[str]): Name of the package to install. If omitted, installs all project dependencies.
+        
+        Returns:
+            Dict: Command execution results, including output, return code, and success status.
+        """
         if package:
             cmd = ["npm", "install", package]
         else:
@@ -162,13 +292,29 @@ class SafeCommandExecutor:
         return self.run_command(cmd, timeout=120)
 
     def safe_npm_run(self, script: str) -> Dict:
-        """Safely run npm script"""
+        """Execute an npm script and return its execution result.
+        
+        Parameters:
+            script (str): Name of the npm script to run.
+        
+        Returns:
+            Dict: Command execution results, including output, return code, and success status.
+        """
         return self.run_command(["npm", "run", script], timeout=60)
 
 
 # Convenience functions for quick access
 def run_safe_command(cmd: Union[List[str], str], **kwargs) -> Dict:
-    """Quick access to safe command execution"""
+    """
+    Execute a command with timeout protection and return its execution details.
+    
+    Parameters:
+        cmd (Union[List[str], str]): Command and arguments to execute.
+        **kwargs: Optional execution settings passed to the command executor.
+    
+    Returns:
+        Dict: Execution results, including output, error text, return code, and success status.
+    """
     executor = SafeCommandExecutor()
     return executor.run_command(cmd, **kwargs)
 
@@ -180,7 +326,19 @@ def safe_git_workflow(
     remote: str = "origin",
     branch: str = "main",
 ) -> Dict:
-    """Complete safe git workflow: add, commit, optionally push"""
+    """
+    Complete a Git add, commit, and optional push workflow.
+    
+    Parameters:
+        message (str): Primary commit message.
+        details (Optional[List[str]]): Additional commit message lines.
+        push (bool): Whether to push the commit after it is created.
+        remote (str): Git remote to push to.
+        branch (str): Branch to push to.
+    
+    Returns:
+        Dict: The successful results for each completed stage, or the first failed operation result.
+    """
     executor = SafeCommandExecutor()
 
     # Add all changes

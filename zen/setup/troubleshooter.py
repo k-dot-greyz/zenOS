@@ -55,7 +55,16 @@ class SetupTroubleshooter:
         self.fixes = []
 
     def validate_system(self, env_info) -> Dict:
-        """Validate the system and return issues"""
+        """
+        Validate the system environment and summarize the results.
+        
+        Parameters:
+            env_info: Environment information containing the zenOS root directory.
+        
+        Returns:
+            A dictionary containing failed validations and counts for issues, passed
+            validations, and total validations.
+        """
         validations = [
             self._validate_python_environment(),
             self._validate_git_installation(),
@@ -75,7 +84,12 @@ class SetupTroubleshooter:
         }
 
     def _validate_python_environment(self) -> ValidationResult:
-        """Validate Python environment"""
+        """
+        Validate that the current Python version meets the minimum requirement.
+        
+        Returns:
+            ValidationResult: The validation status and, if applicable, a remediation message.
+        """
         try:
             version = sys.version_info
             if version.major < 3 or (version.major == 3 and version.minor < 7):
@@ -113,7 +127,13 @@ class SetupTroubleshooter:
             )
 
     def _validate_shell_configuration(self) -> ValidationResult:
-        """Validate shell configuration"""
+        """
+        Validate whether the active shell is supported on the current platform.
+        
+        Returns:
+            ValidationResult: The validation status, message, and remediation details when
+                the shell is unsupported.
+        """
         if sys.platform == "win32":
             shell = os.environ.get("COMSPEC", "cmd.exe")
             if "powershell" in shell.lower() or "pwsh" in shell.lower() or "cmd" in shell.lower():
@@ -135,7 +155,15 @@ class SetupTroubleshooter:
                 )
 
     def _validate_directory_structure(self, zenos_root: Path) -> ValidationResult:
-        """Validate zenOS directory structure"""
+        """
+        Validate that the zenOS root contains the required directories.
+        
+        Parameters:
+            zenos_root (Path): Root directory expected to contain `zen`, `docs`, and `inbox`.
+        
+        Returns:
+            ValidationResult: Validation status and details about any missing directories.
+        """
         required_dirs = ["zen", "docs", "inbox"]
         missing_dirs = []
 
@@ -153,7 +181,15 @@ class SetupTroubleshooter:
         return ValidationResult(passed=True, message="Directory structure OK")
 
     def _validate_permissions(self, zenos_root: Path) -> ValidationResult:
-        """Validate file permissions"""
+        """
+        Check whether the zenOS directory permits creating and deleting files.
+        
+        Parameters:
+        	zenos_root (Path): Root directory to test for write permissions.
+        
+        Returns:
+        	ValidationResult: Validation status and, if applicable, permission remediation details.
+        """
         test_file = zenos_root / ".permission_test"
         try:
             test_file.write_text("test")
@@ -168,7 +204,12 @@ class SetupTroubleshooter:
             )
 
     def _validate_internet_connectivity(self) -> ValidationResult:
-        """Validate internet connectivity"""
+        """
+        Check whether GitHub can be reached over the network.
+        
+        Returns:
+            ValidationResult: A passing result when GitHub is reachable; otherwise, a failed result with a network troubleshooting recommendation.
+        """
         try:
             import urllib.request
 
@@ -183,7 +224,15 @@ class SetupTroubleshooter:
             )
 
     def diagnose_issues(self, issues: List[ValidationResult]) -> Dict:
-        """AI-powered diagnosis of issues"""
+        """
+        Analyze validation results and identify applicable setup fixes.
+        
+        Parameters:
+        	issues (List[ValidationResult]): Validation results representing detected setup issues.
+        
+        Returns:
+        	Dict: Diagnosis containing an analysis summary, applicable fixes, and a priority level.
+        """
         diagnosis = {"analysis": "", "fixes": [], "priority": "high" if issues else "low"}
 
         if not issues:
@@ -203,7 +252,15 @@ class SetupTroubleshooter:
         return diagnosis
 
     def _generate_fix_for_issue(self, issue: ValidationResult) -> Optional[Fix]:
-        """Generate a fix for a specific issue"""
+        """
+        Generate a remediation fix for a validation issue.
+        
+        Parameters:
+        	issue (ValidationResult): The validation result whose message identifies the required fix.
+        
+        Returns:
+        	Fix: A remediation fix for recognized Python, Git, permission, or internet issues; `None` when no fix is available.
+        """
         if "Python" in issue.message and "required" in issue.message:
             return Fix(
                 type="python_upgrade",
@@ -267,7 +324,15 @@ class SetupTroubleshooter:
         return None
 
     def apply_fixes(self, fixes: List[Fix]) -> bool:
-        """Apply suggested fixes"""
+        """
+        Apply the provided fixes and report whether any fix was handled successfully.
+        
+        Parameters:
+        	fixes (List[Fix]): Fixes to apply, including automated actions or manual instructions.
+        
+        Returns:
+        	bool: `True` if at least one fix succeeds or is handled, `False` otherwise.
+        """
         success_count = 0
 
         for fix in fixes:
@@ -326,7 +391,12 @@ class SetupTroubleshooter:
         return success_count > 0
 
     def create_helper_tools(self) -> List[Dict]:
-        """Create helper tools to prevent future issues"""
+        """
+        Create setup validation and troubleshooting tools.
+        
+        Returns:
+            List[Dict]: Metadata for each helper file created successfully.
+        """
         tools = []
 
         # Create setup validation script
@@ -356,7 +426,11 @@ class SetupTroubleshooter:
         return tools
 
     def _create_validation_script(self) -> Optional[Path]:
-        """Create a validation script for future use"""
+        """Create an executable setup validation script and return its path.
+        
+        Returns:
+            Path: The path to the created validation script, or `None` if creation fails.
+        """
         try:
             script_path = Path("validate_setup.py")
 
@@ -408,7 +482,11 @@ if __name__ == '__main__':
             return None
 
     def _create_troubleshooting_guide(self) -> Optional[Path]:
-        """Create a troubleshooting guide"""
+        """Create a troubleshooting guide file and return its path.
+        
+        Returns:
+            Optional[Path]: The path to the created guide, or `None` if creation fails.
+        """
         try:
             guide_path = Path("TROUBLESHOOTING.md")
 

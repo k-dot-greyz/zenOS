@@ -155,7 +155,12 @@ class OllamaProvider:
             return False
 
     async def list_models(self) -> List[str]:
-        """List installed models."""
+        """
+        List the models installed on the Ollama server.
+        
+        Returns:
+        	list (List[str]): Model names, or an empty list if the request fails.
+        """
         try:
             import aiohttp
 
@@ -169,7 +174,15 @@ class OllamaProvider:
         return []
 
     async def pull_model(self, model_name: str) -> bool:
-        """Download a model."""
+        """
+        Download an Ollama model.
+        
+        Parameters:
+            model_name (str): Name of the model to download.
+        
+        Returns:
+            bool: True if the model download succeeds, False otherwise.
+        """
         try:
             process = await asyncio.create_subprocess_exec(
                 "ollama",
@@ -186,7 +199,18 @@ class OllamaProvider:
     async def generate(
         self, model: str, prompt: str, stream: bool = False, **kwargs
     ) -> AsyncIterator[str]:
-        """Generate response from local model."""
+        """
+        Generate a response from a local Ollama model.
+        
+        Parameters:
+            model (str): Name of the model to use.
+            prompt (str): Input prompt for generation.
+            stream (bool): Whether to yield response fragments as they arrive.
+            **kwargs: Additional generation options included in the request.
+        
+        Yields:
+            str: Response fragments when streaming, or the complete response otherwise.
+        """
         import aiohttp
 
         payload = {"model": model, "prompt": prompt, "stream": stream, **kwargs}
@@ -220,7 +244,11 @@ class LlamaCppProvider:
         self.models_dir.mkdir(parents=True, exist_ok=True)
 
     def _find_binary(self) -> Optional[Path]:
-        """Find llama.cpp binary."""
+        """Locate an available llama.cpp executable.
+        
+        Returns:
+        	Path or None: The path to the executable if found, otherwise None.
+        """
         # Common locations
         candidates = [
             Path.home() / "llama.cpp" / "main",
@@ -251,7 +279,21 @@ class LlamaCppProvider:
         temperature: float = 0.7,
         **kwargs,
     ) -> str:
-        """Generate using llama.cpp."""
+        """
+        Generate text with a llama.cpp model.
+        
+        Parameters:
+            model_path (str): Path to the model file.
+            prompt (str): Input prompt for generation.
+            max_tokens (int): Maximum number of tokens to generate.
+            temperature (float): Sampling temperature.
+        
+        Returns:
+            str: The generated text.
+        
+        Raises:
+            RuntimeError: If llama.cpp is unavailable or generation fails.
+        """
         if not self.binary_path:
             raise RuntimeError("llama.cpp not found")
 
@@ -314,7 +356,12 @@ class OfflineManager:
             return {**MOBILE_MODELS, **DESKTOP_MODELS}
 
     def _get_device_ram(self) -> int:
-        """Get available RAM in MB."""
+        """
+        Determine the device's available memory in megabytes.
+        
+        Returns:
+        	int: Available RAM in megabytes, or a device-type-based fallback when memory information cannot be read.
+        """
         try:
             if sys.platform == "linux":
                 with open("/proc/meminfo", "r") as f:
@@ -335,7 +382,15 @@ class OfflineManager:
         return 4000 if self.is_mobile else 8000
 
     def select_best_model(self, task: str = "chat") -> Optional[LocalModel]:
-        """Select best model for current device and task."""
+        """
+        Selects the highest-resource model that supports the requested task and fits within the device's available memory limit.
+        
+        Parameters:
+        	task (str): The task the model must support.
+        
+        Returns:
+        	Optional[LocalModel]: The most resource-intensive suitable model, or `None` if no model meets the requirements.
+        """
         available_ram = self._get_device_ram()
 
         # Filter models that fit in RAM and support the task
@@ -357,7 +412,15 @@ class OfflineManager:
         return suitable[0]
 
     async def ensure_model(self, model: LocalModel) -> bool:
-        """Ensure model is downloaded and ready."""
+        """
+        Ensure the specified model is available for generation.
+        
+        Parameters:
+        	model (LocalModel): Model to verify or download.
+        
+        Returns:
+        	bool: `true` if the model is available or successfully downloaded, `false` if it cannot be prepared.
+        """
         # Check Ollama first
         if self.ollama.is_available and model.backend == LocalModelType.OLLAMA:
             installed = await self.ollama.list_models()
@@ -371,7 +434,21 @@ class OfflineManager:
         return False
 
     async def generate(self, prompt: str, model: Optional[str] = None, **kwargs) -> str:
-        """Generate response using best available offline model."""
+        """
+        Generate a response using the best available offline model or a specified model.
+        
+        Parameters:
+            prompt (str): The input prompt.
+            model (Optional[str]): The model name to use. If omitted, a suitable chat model is selected.
+            **kwargs: Additional generation options passed to the selected backend.
+        
+        Returns:
+            str: The generated response.
+        
+        Raises:
+            RuntimeError: If no suitable model or backend is available, or the model cannot be prepared.
+            ValueError: If the specified model is unknown.
+        """
         # Select model if not specified
         if model is None:
             selected = self.select_best_model("chat")
@@ -403,7 +480,13 @@ class OfflineManager:
             raise RuntimeError(f"No backend available for {model}")
 
     def get_status(self) -> Dict[str, Any]:
-        """Get offline system status."""
+        """
+        Report the device resources, backend availability, configured models, and recommended chat model.
+        
+        Returns:
+            Dict[str, Any]: Status information including mobile mode, available RAM, backend
+            availability, model names, and the recommended chat model name.
+        """
         return {
             "is_mobile": self.is_mobile,
             "available_ram_mb": self._get_device_ram(),
@@ -453,7 +536,19 @@ class HybridProvider:
     async def generate(
         self, prompt: str, model: Optional[str] = None, force_offline: bool = False, **kwargs
     ) -> Dict[str, Any]:
-        """Generate using best available method."""
+        """
+        Generate a response using an offline or online provider according to availability and preference.
+        
+        Parameters:
+            prompt (str): The user prompt to process.
+            model (Optional[str]): The model to use, or a suitable default when omitted.
+            force_offline (bool): Whether to require offline generation.
+            **kwargs: Additional generation options passed to the selected provider.
+        
+        Returns:
+            Dict[str, Any]: A result containing the response, model name, execution mode,
+                cache status, and online usage details when available.
+        """
         use_offline = force_offline or self.prefer_offline or not self._check_connectivity()
 
         if use_offline:

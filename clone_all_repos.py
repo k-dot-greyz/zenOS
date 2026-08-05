@@ -207,13 +207,10 @@ def get_configuration(args) -> Dict:
 
 def get_github_token() -> Optional[str]:
     """
-    Retrieve and validate a GitHub personal access token from the GITHUB_TOKEN environment variable.
-
-    If the environment variable is missing, prints guidance on how to create and set a token and returns None.
-    If a token is present, validates it by calling the GitHub API; on success prints the authenticated username and returns the token, otherwise prints an error and returns None.
-
+    Retrieve and validate a GitHub personal access token from the `GITHUB_TOKEN` environment variable.
+    
     Returns:
-        token (str) or None: The validated GitHub token if available and valid, otherwise None.
+        Optional[str]: The validated token, or `None` if it is missing, invalid, or cannot be validated.
     """
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -423,20 +420,18 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
 
 def update_repository(repo_name: str, destination: Path, dry_run: bool = False) -> Tuple[bool, str]:
     """
-    Update an existing local Git repository by pulling its latest changes.
-
+    Update an existing local Git repository with its latest changes.
+    
     Parameters:
-        repo_name (str): Name of the repository directory to update.
+        repo_name (str): Name of the repository directory.
         destination (Path): Parent directory containing the repository.
-        dry_run (bool): If True, do not perform network or filesystem changes; only reports the intended action.
-
+        dry_run (bool): Whether to report the update without performing it.
+    
     Returns:
-        tuple: (success, status) where `success` is `True` for successful or simulated updates and `False` for failures, and `status` is one of:
-            - "updated": repository was successfully pulled
-            - "dry_run": action was simulated (no changes)
-            - "not_git_repo": target directory is not a Git repository
-            - "pull_failed": `git pull` returned a non-zero exit code
-            - "error": an unexpected exception occurred during the update
+        tuple[bool, str]: A success indicator and status: ``"updated"`` for a successful update,
+        ``"dry_run"`` for a simulated update, ``"not_git_repo"`` when Git cannot run in the
+        target directory, ``"pull_failed"`` when pulling fails, or ``"error"`` for an
+        unexpected failure.
     """
     repo_path = destination / repo_name
 
@@ -474,12 +469,12 @@ def update_repository(repo_name: str, destination: Path, dry_run: bool = False) 
 
 def save_results_to_json(config: Dict, all_results: List[Dict], json_file: Path) -> None:
     """
-    Write a JSON file containing a timestamp, a subset of the runtime configuration, and the collected repository results.
-
+    Write repository operation results and selected runtime configuration to a JSON file.
+    
     Parameters:
-        config (Dict): Runtime configuration dictionary. Expected keys used: 'usernames', 'destination', 'dry_run', 'include_private', 'exclude_forks'.
-        all_results (List[Dict]): List of per-repository result records to include under the 'results' key.
-        json_file (Path): Filesystem path where the JSON output will be written.
+        config (Dict): Runtime configuration containing the usernames, destination, execution mode, and repository filters.
+        all_results (List[Dict]): Per-repository operation results to include in the file.
+        json_file (Path): Destination path for the JSON output.
     """
     data = {
         "timestamp": datetime.now().isoformat(),

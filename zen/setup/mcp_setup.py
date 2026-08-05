@@ -18,6 +18,12 @@ class MCPSetupManager:
     """Manages MCP server setup and configuration"""
 
     def __init__(self, zenos_root: Path):
+        """
+        Initialize the MCP setup manager for a zenOS installation.
+        
+        Parameters:
+        	zenos_root (Path): Root directory of the zenOS installation.
+        """
         self.zenos_root = zenos_root
         self.mcp_config_dir = self.zenos_root / "mcp-config"
         self.central_config = self.mcp_config_dir / "configs" / "mcp.json"
@@ -31,7 +37,12 @@ class MCPSetupManager:
         ]
 
     def install_servers(self) -> bool:
-        """Install required MCP servers"""
+        """
+        Install all required MCP servers that are not already available globally.
+        
+        Returns:
+        	bool: `True` if every required server is installed successfully, `False` otherwise.
+        """
         try:
             print("  📦 Installing MCP servers...")
 
@@ -71,7 +82,16 @@ class MCPSetupManager:
             return False
 
     def link_configurations(self) -> bool:
-        """Link MCP configurations to various tools"""
+        """Link the central MCP configuration to supported tools.
+        
+        Creates the central configuration when it is missing and attempts to link it
+        to Cursor, Warp, and Claude Desktop. Individual tool-linking failures do not
+        prevent attempts to configure the remaining tools.
+        
+        Returns:
+        	bool: `True` if the linking process completes, `False` if an unexpected
+        	error occurs or the central configuration cannot be created.
+        """
         try:
             print("  🔗 Linking MCP configurations...")
 
@@ -100,7 +120,11 @@ class MCPSetupManager:
             return False
 
     def _create_basic_config(self) -> bool:
-        """Create basic MCP configuration"""
+        """Create the central MCP configuration with the required server definitions.
+        
+        Returns:
+        	bool: `True` if the configuration is created successfully, `False` otherwise.
+        """
         try:
             # Create config directory
             config_dir = self.central_config.parent
@@ -129,7 +153,15 @@ class MCPSetupManager:
             return False
 
     def _link_cursor_config(self) -> bool:
-        """Link MCP config to Cursor"""
+        """
+        Link the central MCP configuration file to Cursor.
+        
+        Existing non-symbolic-link Cursor configurations are renamed with a timestamped
+        backup suffix before the link is created.
+        
+        Returns:
+        	bool: `True` if the configuration is linked successfully, `False` otherwise.
+        """
         try:
             cursor_config = Path.home() / ".cursor" / "mcp.json"
             cursor_config.parent.mkdir(parents=True, exist_ok=True)
@@ -152,7 +184,11 @@ class MCPSetupManager:
             return False
 
     def _link_warp_config(self) -> bool:
-        """Link MCP config to Warp"""
+        """Add the central MCP configuration path to the detected shell profile for Warp.
+        
+        Returns:
+        	bool: `True` if the configuration link is present or added successfully, `False` otherwise.
+        """
         try:
             # Add environment variable to shell profile
             shell_profile = self._get_shell_profile()
@@ -182,7 +218,11 @@ class MCPSetupManager:
             return False
 
     def _link_claude_config(self) -> bool:
-        """Link MCP config to Claude Desktop"""
+        """Report whether the Claude Desktop configuration exists and provide the path for manual MCP configuration.
+        
+        Returns:
+        	bool: `True` when the configuration is absent or the manual configuration notice is displayed, `False` if an error occurs.
+        """
         try:
             claude_config = (
                 Path.home()
@@ -204,7 +244,7 @@ class MCPSetupManager:
             return False
 
     def _get_shell_profile(self) -> Optional[Path]:
-        """Get the appropriate shell profile file"""
+        """Determine the shell profile path based on the current shell."""
         shell = os.environ.get("SHELL", "")
 
         if "zsh" in shell:
@@ -215,7 +255,12 @@ class MCPSetupManager:
             return Path.home() / ".profile"
 
     def run_health_checks(self) -> bool:
-        """Run MCP health checks"""
+        """
+        Check the availability of required MCP servers and the validity of the central configuration.
+        
+        Returns:
+        	bool: `True` if all required servers are installed and the configuration exists with valid JSON; `False` otherwise.
+        """
         try:
             print("  🏥 Running MCP health checks...")
 
@@ -257,7 +302,12 @@ class MCPSetupManager:
             return False
 
     def update_documentation(self) -> bool:
-        """Update MCP documentation"""
+        """
+        Update the MCP server version and binary path documentation.
+        
+        Returns:
+        	bool: `True` if the documentation is updated successfully, `False` otherwise.
+        """
         try:
             docs_dir = self.mcp_config_dir / "docs"
             docs_dir.mkdir(parents=True, exist_ok=True)
@@ -286,13 +336,26 @@ class MCPSetupManager:
             return False
 
     def _get_current_time(self) -> str:
-        """Get current time string"""
+        """Format the current local time as a date and time string.
+        
+        Returns:
+            str: The current local time in ``YYYY-MM-DD HH:MM:SS`` format.
+        """
         import time
 
         return time.strftime("%Y-%m-%d %H:%M:%S")
 
     def _get_server_version(self, server: str) -> str:
-        """Get version of installed server"""
+        """
+        Determine the installed version of an MCP server package.
+        
+        Parameters:
+        	server (str): The package name to inspect.
+        
+        Returns:
+        	str: The installed version, "not installed" if the package is absent, or
+        		"unknown" if the version lookup fails.
+        """
         try:
             result = subprocess.run(
                 ["npm", "list", "-g", server], capture_output=True, text=True, check=False
@@ -312,7 +375,14 @@ class MCPSetupManager:
             return "unknown"
 
     def _get_binary_path(self, binary_name: str) -> str:
-        """Get path to binary"""
+        """Locate an executable binary by name.
+        
+        Parameters:
+        	binary_name (str): Name of the binary to locate.
+        
+        Returns:
+        	str: The binary path, or ``"not found"`` when it cannot be located.
+        """
         try:
             result = subprocess.run(
                 ["which", binary_name], capture_output=True, text=True, check=False
@@ -326,7 +396,12 @@ class MCPSetupManager:
             return "not found"
 
     def create_helper_scripts(self) -> bool:
-        """Create helper scripts for MCP management"""
+        """
+        Create executable helper scripts for MCP installation, configuration linking, and auditing.
+        
+        Returns:
+        	bool: True if all helper scripts are created successfully, False otherwise.
+        """
         try:
             scripts_dir = self.mcp_config_dir / "scripts"
             scripts_dir.mkdir(parents=True, exist_ok=True)
@@ -356,7 +431,12 @@ class MCPSetupManager:
             return False
 
     def _get_bootstrap_script_content(self) -> str:
-        """Get bootstrap script content"""
+        """
+        Generate the shell script used to verify Node.js and npm and install the required MCP servers globally.
+        
+        Returns:
+        	str: Bootstrap shell script content.
+        """
         return """#!/bin/bash
 # MCP Bootstrap Script for zenOS
 # Automated setup of MCP servers and configuration
@@ -392,7 +472,12 @@ echo "🎉 MCP bootstrap complete!"
 """
 
     def _get_link_script_content(self) -> str:
-        """Get link script content"""
+        """
+        Generate the shell script used to link the central MCP configuration with Cursor and Warp.
+        
+        Returns:
+            str: Shell script content for creating the Cursor configuration link and configuring Warp.
+        """
         return """#!/bin/bash
 # MCP Configuration Linker for zenOS
 # Creates symlinks to the central MCP configuration
@@ -433,7 +518,13 @@ echo "🎉 MCP configuration linking complete!"
 """
 
     def _get_audit_script_content(self) -> str:
-        """Get audit script content"""
+        """
+        Generate the shell script content for auditing MCP configuration and system state.
+        
+        Returns:
+            str: A Bash script that records Node.js and npm versions, global MCP-related
+                packages, MCP configuration files, and available MCP server binaries.
+        """
         return """#!/bin/bash
 # MCP Configuration Audit Script for zenOS
 # Captures current system state for MCP servers and configuration

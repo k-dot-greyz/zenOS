@@ -24,6 +24,7 @@ class SystemTroubleshooterAgent(Agent):
 
     def __init__(self, config: Optional[Dict] = None):
         # Create agent manifest
+        """Initialize the system troubleshooter agent with optional configuration."""
         manifest = AgentManifest(
             name="system_troubleshooter",
             description="Diagnoses and fixes development environment issues",
@@ -54,11 +55,28 @@ class SystemTroubleshooterAgent(Agent):
         }
 
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
-        """Execute system troubleshooting"""
+        """Run system troubleshooting for the provided prompt and variables.
+        
+        Parameters:
+            prompt (str): The troubleshooting request.
+            variables (Dict[str, Any]): Contextual values used during troubleshooting.
+        
+        Returns:
+            Any: The troubleshooting report.
+        """
         return self.diagnose_and_fix(prompt, variables)
 
     def diagnose_and_fix(self, query: str, context: Optional[Dict] = None) -> str:
-        """Diagnose system issues and provide fixes"""
+        """
+        Diagnose the local system and produce a troubleshooting report with recommended and safely applied fixes.
+        
+        Parameters:
+            query (str): Description of the system issue to investigate.
+            context (Optional[Dict]): Additional troubleshooting context.
+        
+        Returns:
+            str: Markdown-formatted troubleshooting report.
+        """
 
         # Step 1: Run system diagnostics
         diagnostic_result = self._run_system_diagnostic(query)
@@ -80,7 +98,15 @@ class SystemTroubleshooterAgent(Agent):
         return report
 
     def _run_system_diagnostic(self, query: str) -> Dict:
-        """Run comprehensive system diagnostics"""
+        """
+        Collect diagnostic information about the operating system, environment, Git status, shell, permissions, and dependencies.
+        
+        Parameters:
+        	query (str): Diagnostic request context.
+        
+        Returns:
+        	Dict: A mapping containing the collected system diagnostic information.
+        """
         diagnostic_info = {
             "os": os.name,
             "platform": sys.platform,
@@ -95,7 +121,14 @@ class SystemTroubleshooterAgent(Agent):
         return diagnostic_info
 
     def _check_git_status(self) -> Dict:
-        """Check git configuration and status"""
+        """
+        Check Git availability, configuration, and repository status.
+        
+        Returns:
+            Dict: Git availability, version, configured username and email, and whether
+                the current directory is inside a repository. Returns an error message
+                and ``available`` set to ``False`` if inspection fails.
+        """
         try:
             # Check if git is available
             git_version = self.safe_executor.run_command(["git", "--version"], timeout=5)
@@ -122,7 +155,11 @@ class SystemTroubleshooterAgent(Agent):
             return {"error": str(e), "available": False}
 
     def _check_shell_info(self) -> Dict:
-        """Check shell configuration"""
+        """Collect the active shell, executable search path, and home directory from the environment.
+        
+        Returns:
+            Dict: Shell configuration values keyed by ``shell``, ``path``, and ``home``.
+        """
         shell = os.environ.get("SHELL", os.environ.get("COMSPEC", "unknown"))
         return {
             "shell": shell,
@@ -131,7 +168,12 @@ class SystemTroubleshooterAgent(Agent):
         }
 
     def _check_permissions(self) -> Dict:
-        """Check file permissions and access"""
+        """
+        Check read, write, and execute access for the current directory.
+        
+        Returns:
+        	dict: Access status for the current directory, or an error message if inspection fails.
+        """
         try:
             current_dir = Path.cwd()
             return {
@@ -143,7 +185,12 @@ class SystemTroubleshooterAgent(Agent):
             return {"error": str(e)}
 
     def _check_dependencies(self) -> Dict:
-        """Check for common dependencies"""
+        """
+        Check the availability of common Python and Node.js dependencies.
+        
+        Returns:
+            Dict[str, bool]: A mapping of dependency names to availability status.
+        """
         dependencies = {}
 
         # Check Python packages
@@ -172,7 +219,16 @@ class SystemTroubleshooterAgent(Agent):
         return dependencies
 
     def _analyze_diagnostic_results(self, diagnostic_result: Dict, query: str) -> Dict:
-        """Analyze diagnostic results to identify issues"""
+        """
+        Analyze diagnostic results and identify system issues with recommended remediation steps.
+        
+        Parameters:
+            diagnostic_result (Dict): Diagnostic data collected from the system.
+            query (str): User query associated with the diagnostic request.
+        
+        Returns:
+            Dict: A report containing identified issues, recommendations, and an overall severity.
+        """
         issues = []
         recommendations = []
 
@@ -208,7 +264,16 @@ class SystemTroubleshooterAgent(Agent):
         }
 
     def _generate_fixes(self, analysis: Dict, query: str) -> List[Dict]:
-        """Generate specific fixes for identified issues"""
+        """
+        Generate proposed fixes for the issues identified in a diagnostic analysis.
+        
+        Parameters:
+            analysis (Dict): Diagnostic analysis containing an "issues" list.
+            query (str): Original troubleshooting query.
+        
+        Returns:
+            List[Dict]: Fix records containing issue details, commands, and safety status.
+        """
         fixes = []
 
         for i, issue in enumerate(analysis.get("issues", [])):
@@ -237,7 +302,15 @@ class SystemTroubleshooterAgent(Agent):
         return fixes
 
     def _apply_safe_fixes(self, fixes: List[Dict]) -> List[Dict]:
-        """Apply safe fixes automatically"""
+        """
+        Apply fixes marked as safe and record the outcome of each command.
+        
+        Parameters:
+            fixes (List[Dict]): Fix definitions containing an identifier, safety flag, and commands.
+        
+        Returns:
+            List[Dict]: Results for each executed command, including its fix identifier, command, success status, and any error message.
+        """
         applied = []
 
         for fix in fixes:
@@ -268,7 +341,18 @@ class SystemTroubleshooterAgent(Agent):
     def _generate_troubleshooting_report(
         self, diagnostic_result: Dict, analysis: Dict, fixes: List[Dict], applied_fixes: List[Dict]
     ) -> str:
-        """Generate comprehensive troubleshooting report"""
+        """
+        Builds a Markdown report summarizing diagnostic findings, recommended fixes, applied fixes, and system information.
+        
+        Parameters:
+            diagnostic_result (Dict): Collected system information.
+            analysis (Dict): Identified issues and their analysis.
+            fixes (List[Dict]): Recommended fixes and their commands.
+            applied_fixes (List[Dict]): Fixes that were attempted and their outcomes.
+        
+        Returns:
+            str: A formatted troubleshooting report.
+        """
 
         report = f"""
 # System Troubleshooting Report
@@ -305,21 +389,28 @@ class SystemTroubleshooterAgent(Agent):
 
     # Tool methods
     def _run_git_troubleshoot(self, query: str) -> str:
-        """Run git troubleshooting"""
+        """Return information about the current Git installation and repository status."""
         return self._check_git_status()
 
     def _run_shell_config_fix(self, query: str) -> str:
-        """Fix shell configuration issues"""
+        """Report that shell configuration fixes are not implemented."""
         return "Shell configuration fix not implemented yet"
 
     def _run_permission_fixer(self, query: str) -> str:
-        """Fix permission issues"""
+        """Report that permission issue remediation is not implemented."""
         return "Permission fixer not implemented yet"
 
     def _run_dependency_checker(self, query: str) -> str:
-        """Check dependencies"""
+        """Reports the availability of supported project dependencies.
+        
+        Parameters:
+        	query (str): The troubleshooting query associated with the dependency check.
+        
+        Returns:
+        	str: A string representation of dependency availability results.
+        """
         return str(self._check_dependencies())
 
     def _run_environment_validator(self, query: str) -> str:
-        """Validate environment"""
+        """Report that environment validation is not implemented."""
         return "Environment validation not implemented yet"

@@ -34,9 +34,19 @@ def plugins():
 @click.option("--force", is_flag=True, help="Force reinstall if plugin exists")
 @click.option("--local", is_flag=True, help="Install from local directory")
 def install(source: str, version: str, force: bool, local: bool):
-    """Install a plugin from a Git repository or local directory"""
+    """Install a plugin from a Git repository or local directory.
+    
+    Parameters:
+    	source (str): Git repository URL or local plugin directory path.
+    	version (str): Git version, branch, tag, or commit to install.
+    	force (bool): Whether to reinstall an existing Git-installed plugin without confirmation.
+    	local (bool): Whether to interpret `source` as a local directory path.
+    """
 
     async def _install():
+        """
+        Install a plugin from a local directory or Git repository and report the installation result.
+        """
         with Progress(
             SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
@@ -117,7 +127,12 @@ def list():
 @plugins.command()
 @click.argument("plugin_id")
 def info(plugin_id: str):
-    """Show detailed information about a plugin"""
+    """
+    Display detailed metadata and available procedures for a registered plugin.
+    
+    Parameters:
+        plugin_id (str): Identifier of the plugin to inspect.
+    """
     registry = PluginRegistry()
     entry = registry.get_plugin(plugin_id)
 
@@ -155,7 +170,12 @@ def info(plugin_id: str):
 @plugins.command()
 @click.argument("plugin_id")
 def remove(plugin_id: str):
-    """Remove a plugin"""
+    """
+    Remove a registered plugin after requesting confirmation.
+    
+    Parameters:
+        plugin_id (str): Identifier of the plugin to remove.
+    """
     registry = PluginRegistry()
     entry = registry.get_plugin(plugin_id)
 
@@ -175,9 +195,17 @@ def remove(plugin_id: str):
 @plugins.command()
 @click.argument("plugin_id")
 def test(plugin_id: str):
-    """Test a plugin with sample data"""
+    """
+    Run a sample test for the specified plugin and display the result.
+    
+    Parameters:
+        plugin_id (str): Identifier of the plugin to test.
+    """
 
     async def _test():
+        """
+        Run a test for the selected plugin and report the result.
+        """
         with Progress(
             SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
@@ -213,9 +241,21 @@ def test(plugin_id: str):
 @click.option("--user-id", default="cli_user", help="User ID for execution context")
 @click.option("--session-id", default="cli_session", help="Session ID for execution context")
 def execute(plugin_id: str, procedure_id: str, input_data: str, user_id: str, session_id: str):
-    """Execute a specific procedure from a plugin"""
+    """
+    Execute a plugin procedure with the supplied input and execution context.
+    
+    Parameters:
+        plugin_id (str): Identifier of the plugin to execute.
+        procedure_id (str): Identifier of the procedure to run.
+        input_data (str): Procedure input as JSON or plain text.
+        user_id (str): Identifier of the user initiating execution.
+        session_id (str): Identifier of the execution session.
+    """
 
     async def _execute():
+        """
+        Execute the selected plugin procedure and display its result or an error message.
+        """
         with Progress(
             SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
@@ -264,9 +304,19 @@ def execute(plugin_id: str, procedure_id: str, input_data: str, user_id: str, se
 @click.option("--category", help="Filter by category")
 @click.option("--limit", default=10, help="Maximum number of results")
 def search(query: str, category: Optional[str], limit: int):
-    """Search for plugins on GitHub"""
+    """
+    Search GitHub for plugins matching the specified query and optional category.
+    
+    Parameters:
+    	query (str): Search terms used to find plugins.
+    	category (Optional[str]): Category used to filter results.
+    	limit (int): Maximum number of results to display.
+    """
 
     async def _search():
+        """
+        Search for plugins and display matching repositories with their metadata.
+        """
         with Progress(
             SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
@@ -314,9 +364,15 @@ def search(query: str, category: Optional[str], limit: int):
 @plugins.command()
 @click.option("--limit", default=10, help="Maximum number of results")
 def trending(limit: int):
-    """Discover trending plugins"""
+    """
+    Display trending plugins, including repository, description, star count, and update date.
+    
+    Parameters:
+        limit (int): Maximum number of trending plugins to display.
+    """
 
     async def _trending():
+        """Display trending plugins discovered from GitHub."""
         with Progress(
             SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
@@ -363,7 +419,7 @@ def trending(limit: int):
 
 @plugins.command()
 def stats():
-    """Show plugin collection statistics"""
+    """Display statistics for the registered plugin collection."""
     registry = PluginRegistry()
     stats = registry.get_collection_stats()
 

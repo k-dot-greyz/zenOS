@@ -45,6 +45,11 @@ class PluginExecutor:
     """Execute plugins safely - The VST Plugin Engine!"""
 
     def __init__(self, registry: PluginRegistry):
+        """Initialize a plugin executor with the specified plugin registry.
+        
+        Parameters:
+            registry (PluginRegistry): Registry containing the plugins available for execution.
+        """
         self.registry = registry
         self.sandbox = PluginSandbox()
         self.active_plugins: Dict[str, Any] = {}
@@ -52,7 +57,18 @@ class PluginExecutor:
     async def execute_plugin(
         self, plugin_id: str, procedure_id: str, input_data: Any, context: ExecutionContext
     ) -> ExecutionResult:
-        """Execute a specific procedure from a plugin"""
+        """
+        Execute a procedure from an active plugin with the supplied input and execution context.
+        
+        Parameters:
+            plugin_id (str): Identifier of the plugin to execute.
+            procedure_id (str): Identifier of the procedure to run.
+            input_data (Any): Input passed to the procedure.
+            context (ExecutionContext): Execution context for the procedure.
+        
+        Returns:
+            ExecutionResult: The procedure outcome, including success status, returned data, or an error message.
+        """
         try:
             # Get plugin entry
             entry = self.registry.get_plugin(plugin_id)
@@ -105,7 +121,17 @@ class PluginExecutor:
     async def execute_plugin_chain(
         self, plugin_chain: List[Dict[str, Any]], input_data: Any, context: ExecutionContext
     ) -> ExecutionResult:
-        """Execute a chain of plugins (like a VST effect chain)"""
+        """
+        Execute a sequence of plugin procedures, passing each result to the next step.
+        
+        Parameters:
+            plugin_chain (List[Dict[str, Any]]): Plugin and procedure configurations to execute in order.
+            input_data (Any): Initial data supplied to the first procedure.
+            context (ExecutionContext): Context shared across all procedure executions.
+        
+        Returns:
+            ExecutionResult: The final output and per-step metadata on success, or an error identifying the failed chain step.
+        """
         try:
             current_data = input_data
             results = []
@@ -151,7 +177,15 @@ class PluginExecutor:
             )
 
     async def _load_plugin_instance(self, entry: PluginEntry) -> Optional[Any]:
-        """Load a plugin instance dynamically"""
+        """
+        Load and initialize the plugin instance declared by an entry.
+        
+        Parameters:
+            entry (PluginEntry): Plugin metadata and local path used to locate and initialize the plugin.
+        
+        Returns:
+            Optional[Any]: The initialized plugin instance, or `None` if loading or initialization fails.
+        """
         try:
             # Determine entry point based on context
             entry_point = entry.manifest.entry_points.get("main")
@@ -206,7 +240,18 @@ class PluginExecutor:
         input_data: Any,
         context: ExecutionContext,
     ) -> ExecutionResult:
-        """Execute a specific procedure on a plugin instance"""
+        """
+        Execute a plugin procedure with the supplied input and execution context.
+        
+        Parameters:
+            plugin_instance (Any): Plugin object that provides the procedure implementation.
+            procedure (Dict[str, Any]): Procedure definition, including its identifier.
+            input_data (Any): Data passed to the procedure.
+            context (ExecutionContext): Execution context for the procedure.
+        
+        Returns:
+            ExecutionResult: The procedure outcome, including returned data or an error message.
+        """
         try:
             # Create execution context for the plugin
             plugin_context = {
@@ -264,21 +309,43 @@ class PluginExecutor:
             )
 
     async def get_plugin_capabilities(self, plugin_id: str) -> List[str]:
-        """Get capabilities of a specific plugin"""
+        """Return the capabilities declared by a plugin.
+        
+        Parameters:
+        	plugin_id (str): Identifier of the plugin.
+        
+        Returns:
+        	List[str]: The plugin's declared capabilities, or an empty list if the plugin is unavailable.
+        """
         entry = self.registry.get_plugin(plugin_id)
         if entry:
             return entry.manifest.capabilities
         return []
 
     async def get_available_procedures(self, plugin_id: str) -> List[Dict[str, Any]]:
-        """Get available procedures for a plugin"""
+        """Get the procedures declared by a plugin.
+        
+        Parameters:
+            plugin_id (str): Identifier of the plugin.
+        
+        Returns:
+            List[Dict[str, Any]]: The plugin's declared procedures, or an empty list if the plugin is unavailable.
+        """
         entry = self.registry.get_plugin(plugin_id)
         if entry:
             return entry.manifest.procedures
         return []
 
     async def test_plugin(self, plugin_id: str) -> ExecutionResult:
-        """Test a plugin with sample data"""
+        """
+        Test a plugin by executing its first declared procedure with sample input.
+        
+        Parameters:
+            plugin_id (str): Identifier of the plugin to test.
+        
+        Returns:
+            ExecutionResult: The procedure execution result, or a failed result if the plugin is unavailable or has no procedures.
+        """
         try:
             entry = self.registry.get_plugin(plugin_id)
             if not entry:
@@ -312,7 +379,15 @@ class PluginExecutor:
             return ExecutionResult(success=False, data=None, error=f"Plugin test error: {str(e)}")
 
     async def cleanup_plugin(self, plugin_id: str) -> bool:
-        """Cleanup a plugin instance"""
+        """
+        Clean up an active plugin instance and remove it from the executor cache.
+        
+        Parameters:
+        	plugin_id (str): Identifier of the plugin to clean up.
+        
+        Returns:
+        	bool: `True` if cleanup succeeds, `False` if an error occurs.
+        """
         try:
             if plugin_id in self.active_plugins:
                 plugin_instance = self.active_plugins[plugin_id]
@@ -330,7 +405,12 @@ class PluginExecutor:
             return False
 
     async def cleanup_all_plugins(self) -> bool:
-        """Cleanup all active plugins"""
+        """
+        Clean up all active plugin instances.
+        
+        Returns:
+            bool: `True` if cleanup succeeds, `False` if an error occurs.
+        """
         try:
             for plugin_id in list(self.active_plugins.keys()):
                 await self.cleanup_plugin(plugin_id)
@@ -346,7 +426,18 @@ class PluginExecutor:
 async def execute_plugin(
     plugin_id: str, procedure_id: str, input_data: Any, context: ExecutionContext
 ) -> ExecutionResult:
-    """Execute a plugin procedure"""
+    """
+    Execute a procedure from a plugin using a new executor.
+    
+    Parameters:
+        plugin_id (str): Identifier of the plugin to execute.
+        procedure_id (str): Identifier of the procedure to execute.
+        input_data (Any): Data supplied to the procedure.
+        context (ExecutionContext): Context for the plugin execution.
+    
+    Returns:
+        ExecutionResult: The result of the plugin procedure execution.
+    """
     registry = PluginRegistry()
     executor = PluginExecutor(registry)
     return await executor.execute_plugin(plugin_id, procedure_id, input_data, context)

@@ -28,9 +28,7 @@ class PKMAgent(Agent):
 
     def __init__(self):
         """
-        Initialize the PKM agent and its core components.
-
-        Creates an AgentManifest describing the agent and its prompt template, passes it to the base Agent initializer, loads PKM configuration, and constructs the storage, conversation processor, and scheduler instances used by the agent.
+        Initialize the personal knowledge-management agent and its supporting components.
         """
         manifest = AgentManifest(
             name="pkm",
@@ -140,16 +138,13 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
     async def _handle_extract(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
-        Extract conversations into local storage and return a human-readable extraction report.
-
-        Reads an optional numeric limit from command["args"] to cap the number of conversations to extract, then runs the extraction using GeminiExtractor. On success returns a formatted summary with counts (extracted, processed, total messages), duration, storage location, and next-step guidance. On an extraction failure returns a formatted list of errors and warnings. On unexpected exceptions returns a concise error message containing the exception.
-
+        Extract conversations into local storage and produce a human-readable extraction report.
+        
         Parameters:
-            command (Dict[str, Any]): Parsed command dictionary; expected to contain an optional "args" entry representing a numeric limit for extraction.
-            variables (Dict[str, Any]): Additional runtime variables (may be unused by this handler).
-
+            command (Dict[str, Any]): Parsed command containing an optional numeric `args` limit for the number of conversations to extract.
+        
         Returns:
-            str: A human-readable report describing the extraction outcome (success summary, failure details, or error message).
+            str: A report describing the extraction results, failure details, or unexpected error.
         """
         args = command["args"]
         max_conversations = None
@@ -201,14 +196,14 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
     async def _handle_list(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
-        List recent conversations and present a summary.
-
+        List recent conversations and display a summary table.
+        
         Parameters:
-            command (Dict[str, Any]): Parsed command with an "args" entry optionally containing a numeric limit for results.
-            variables (Dict[str, Any]): Execution variables and context (unused by this handler but passed through by the agent).
-
+            command (Dict[str, Any]): Parsed command containing an optional numeric result limit in `"args"`.
+            variables (Dict[str, Any]): Execution context passed through by the agent.
+        
         Returns:
-            str: A user-facing summary message. The handler also prints a formatted table of recent conversations to the console and returns a short summary with next-step guidance.
+            str: A message indicating whether conversations were found and suggesting related commands.
         """
         args = command["args"]
         limit = 10
@@ -295,11 +290,13 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
     async def _handle_process(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
-        Process unprocessed conversations to extract knowledge, save updated conversations, and count created knowledge entries.
-
-        The returned string is a user-facing, formatted summary that includes the number of conversations processed, the number of knowledge entries created, the knowledge base storage location, and brief next-step guidance.
+        Process unprocessed conversations and extract knowledge entries.
+        
         Returns:
-            summary (str): Formatted summary of processing results and next steps.
+            str: A formatted summary of the processing results and next steps.
+        
+        Raises:
+            RuntimeError: If a processed conversation cannot be saved.
         """
         console.print("[cyan]🔄 Processing conversations for knowledge extraction...[/cyan]")
 
@@ -392,14 +389,13 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
     async def _handle_export(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
-        Export conversations and the knowledge base to a chosen format and return a human-readable status message.
-
+        Export conversations and the knowledge base in the requested format.
+        
         Parameters:
-            command (Dict[str, Any]): Parsed command object; expected to contain an "args" string indicating the export format ("json", "markdown", or "md"). If empty or missing, defaults to "json".
-            variables (Dict[str, Any]): Additional runtime variables (not required for export).
-
+            command (Dict[str, Any]): Parsed command containing an optional ``args`` value of ``json``, ``markdown``, or ``md``. Defaults to JSON when empty.
+            
         Returns:
-            str: A formatted message describing the result. On success, includes paths to the exported conversations and knowledge base and the export directory. If the format is unsupported, returns an error message indicating valid formats. If an exception occurs during export, returns a failure message containing the exception text.
+            str: A status message containing exported file paths on success, or an error message for unsupported formats or export failures.
         """
         args = command["args"].lower().strip()
         format_type = "json"
@@ -478,10 +474,10 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
     async def _handle_help(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
-        Return the help text describing available PKM agent commands, scheduling controls, configuration, examples, workflow, and a demo disclaimer.
-
+        Provide Markdown help for PKM agent commands, configuration, examples, workflow, and demo limitations.
+        
         Returns:
-            help_text (str): A Markdown-formatted help message that lists core commands (extract, list, search, process, export, stats), scheduling commands, configuration notes (environment variables and config path), usage examples, a recommended workflow, and a note that the implementation is a demo.
+            str: A Markdown-formatted help message describing supported commands and configuration.
         """
         return """🧘 **PKM Agent Help**
 
@@ -523,14 +519,14 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
     async def _handle_general_query(self, prompt: str, variables: Dict[str, Any]) -> str:
         """
-        Generate expert, practical Personal Knowledge Management (PKM) guidance in response to a free-form user query.
-
+        Generate practical personal knowledge-management guidance for a free-form query.
+        
         Parameters:
-            prompt (str): The user's PKM-related question or request.
-            variables (Dict[str, Any]): Optional runtime variables or context that may influence response generation.
-
+            prompt (str): The user's question or request.
+            variables (Dict[str, Any]): Runtime context for the query.
+        
         Returns:
-            str: A consolidated response containing actionable advice on PKM topics (extraction, organization, search, automation). On failure, an error message recommending `zen pkm help`.
+            str: The generated guidance, or an error message with a help command suggestion if processing fails.
         """
         # Use AI to provide helpful responses about PKM
         try:

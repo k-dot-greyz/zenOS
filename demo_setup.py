@@ -21,7 +21,12 @@ console = Console()
 
 
 def demo_environment_detection():
-    """Demo the environment detection capabilities"""
+    """
+    Demonstrate environment detection and validation.
+    
+    Returns:
+    	bool: `true` if detection and validation complete successfully, `false` otherwise.
+    """
     console.print(Panel.fit("🔍 Environment Detection Demo", style="bold blue"))
 
     try:
@@ -54,7 +59,11 @@ def demo_environment_detection():
 
 
 def demo_git_setup():
-    """Demo the Git setup capabilities"""
+    """Demonstrate Git repository setup and project-type detection in a temporary directory.
+    
+    Returns:
+    	bool: `True` if the demonstration completes successfully, `False` otherwise.
+    """
     console.print(Panel.fit("🔧 Git Setup Demo", style="bold green"))
 
     try:

@@ -151,12 +151,10 @@ class GTTS_Engine:
 
     async def play_audio(self, audio_data: bytes) -> None:
         """
-        Play MP3 audio data through pygame and wait until playback completes.
-
+        Play MP3 audio data and wait until playback is complete.
+        
         Parameters:
-            audio_data (bytes): Raw MP3-formatted audio bytes to be played.
-
-        The function blocks (awaits) until playback finishes.
+            audio_data (bytes): Raw MP3-formatted audio data to play.
         """
         import os
         import tempfile
@@ -233,11 +231,8 @@ class StreamerBotIntegration:
 
     def __init__(self, tts_manager: TTSQueueManager):
         """
-        Initialize the StreamerBotIntegration.
-
-        Stores the given TTSQueueManager, creates a logger for the integration, and establishes a default mapping
-        from streamer event types to MessagePriority values used when queuing messages.
-
+        Initialize the integration with a TTS queue manager and default event priorities.
+        
         Parameters:
             tts_manager (TTSQueueManager): Manager used to enqueue and manage TTS messages.
         """
@@ -258,18 +253,15 @@ class StreamerBotIntegration:
 
     def process_donation(self, donor_name: str, amount: float, message: str = ""):
         """
-        Create and enqueue a donation TTS message with priority and metadata based on the donation amount.
-
+        Create and enqueue a donation announcement with priority based on the donation amount.
+        
         Parameters:
-            donor_name (str): Donor display name to include in the announcement.
-            amount (float): Donation amount; determines priority (>=100 → urgent, >=50 → high, otherwise high).
-            message (str): Optional additional text to include in the announcement.
-
+            donor_name (str): Donor display name included in the announcement.
+            amount (float): Donation amount used to determine priority.
+            message (str): Optional additional text included in the announcement.
+        
         Returns:
             Identifier of the queued TTS message.
-
-        Notes:
-            The queued message includes metadata with keys "type", "donor", "amount", and "message".
         """
         if amount >= 100:
             priority = MessagePriority.URGENT
@@ -345,15 +337,15 @@ class StreamerBotIntegration:
 
     def process_chat_message(self, username: str, message: str, is_mod: bool = False):
         """
-        Queue a chat-originated TTS message when the sender is a moderator or the text contains a TTS command.
-
+        Queue a chat message for speech when it is sent by a moderator or includes a supported TTS command.
+        
         Parameters:
-            username (str): Display name of the chat user who sent the message.
-            message (str): Raw chat message text; command keywords (e.g., `!tts`, `!say`, `!announce`) will trigger queuing.
-            is_mod (bool): True if the sender is a moderator; moderator messages are always eligible.
-
+            username (str): Display name of the chat user.
+            message (str): Chat message text; supported commands are `!tts`, `!say`, and `!announce`.
+            is_mod (bool): Whether the sender is a moderator.
+        
         Returns:
-            str | None: The queued message ID if the message was added to the TTS queue, `None` if the message was ignored.
+            str | None: The queued message ID, or `None` when the message is ignored.
         """
         # Only process mod messages or messages with specific keywords
         keywords = ["!tts", "!say", "!announce"]
@@ -403,16 +395,13 @@ class WebSocketServer:
 
     async def handle_message(self, websocket, path):
         """
-        Handle incoming WebSocket JSON messages and dispatch them to streamer event handlers.
-
-        Accepts JSON objects with a "type" field and forwards events to StreamerBotIntegration, then sends a JSON response over the same WebSocket. Supported message types and required/requested fields:
-        - "donation": requires "donor_name" (str) and "amount" (number); optional "message" (str). Responds {"status":"queued","message_id": <id>}.
-        - "subscription": requires "subscriber_name" (str); optional "months" (int, defaults to 1) and "message" (str). Responds {"status":"queued","message_id": <id>}.
-        - "follow": requires "follower_name" (str). Responds {"status":"queued","message_id": <id>}.
-        - "chat": requires "username" (str) and "message" (str); optional "is_mod" (bool). Responds {"status":"queued","message_id": <id>} if the message was queued, otherwise {"status":"ignored"}.
-        - "stats": no additional fields; responds {"type":"stats","data": <stats>} where <stats> is returned from the TTS manager.
-
-        If "type" is unrecognized, sends {"status":"error","message":"Unknown message type"}. If the payload is not valid JSON, sends {"status":"error","message":"Invalid JSON"}. On other exceptions, logs the error and sends {"status":"error","message": <error message>}.
+        Handle incoming WebSocket messages and dispatch supported streamer events.
+        
+        Each message must contain a JSON object with a ``type`` field. Supported types are
+        ``donation``, ``subscription``, ``follow``, ``chat``, and ``stats``. Queued events
+        return a message ID; chat messages that do not meet the announcement criteria
+        return an ``ignored`` status. Invalid JSON, unknown message types, and processing
+        errors return error responses.
         """
         async for message in websocket:
             try:
@@ -481,7 +470,9 @@ class WebSocketServer:
 
 
 async def main():
-    """Main function demonstrating the complete system"""
+    """
+    Demonstrate configuring and running the TTS queue with simulated streamer events.
+    """
 
     # Configure logging
     logging.basicConfig(level=logging.INFO)

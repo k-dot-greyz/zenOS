@@ -132,6 +132,15 @@ CODE_FIELD_REPLACEMENTS: Sequence[Tuple[str, str]] = (
 
 
 def iter_text_files(root: Path) -> Iterable[Path]:
+    """
+    Recursively yield eligible text files under a repository root.
+    
+    Parameters:
+        root (Path): Root directory to search.
+    
+    Yields:
+        Path: Files with recognized text extensions or standard extensionless text filenames, excluding skipped directories.
+    """
     for path in root.rglob("*"):
         if not path.is_file():
             continue
@@ -152,6 +161,15 @@ def iter_text_files(root: Path) -> Iterable[Path]:
 
 
 def replace_text(content: str) -> Tuple[str, int]:
+    """
+    Apply the configured literal branding and identifier replacements to text content.
+    
+    Parameters:
+    	content (str): The text to transform.
+    
+    Returns:
+    	Tuple[str, int]: The transformed text and the number of replacements performed.
+    """
     count = 0
     for old, new in REPLACEMENTS:
         if old in content:
@@ -162,6 +180,15 @@ def replace_text(content: str) -> Tuple[str, int]:
 
 
 def replace_yaml_fields(content: str) -> Tuple[str, int]:
+    """
+    Rename supported YAML field names in content.
+    
+    Parameters:
+        content (str): YAML text to transform.
+    
+    Returns:
+        Tuple[str, int]: The transformed YAML text and the number of replacements made.
+    """
     count = 0
     lines = content.splitlines(keepends=True)
     out: List[str] = []
@@ -178,6 +205,15 @@ def replace_yaml_fields(content: str) -> Tuple[str, int]:
 
 
 def replace_code_fields(content: str) -> Tuple[str, int]:
+    """
+    Rename code-level field and identifier references related to tiers and capabilities.
+    
+    Parameters:
+    	content (str): Source code to transform.
+    
+    Returns:
+    	Tuple[str, int]: The transformed content and the number of replacements made.
+    """
     count = 0
     for pattern, repl in CODE_FIELD_REPLACEMENTS:
         content, n = re.subn(pattern, repl, content)
@@ -186,11 +222,20 @@ def replace_code_fields(content: str) -> Tuple[str, int]:
 
 
 def write_or_report(path: Path, new_text: str, apply: bool) -> None:
+    """Write transformed text to a file when apply mode is enabled."""
     if apply:
         path.write_text(new_text, encoding="utf-8")
 
 
 def ensure_dex_package(root: Path, apply: bool, log: List[str]) -> None:
+    """
+    Ensure the repository's Dex package structure is present and migrate legacy Pokédex modules and data into it.
+    
+    Parameters:
+        root (Path): Repository root containing the legacy and destination paths.
+        apply (bool): Whether to perform filesystem changes instead of only recording planned operations.
+        log (List[str]): List to which planned or applied operations are appended.
+    """
     dex_pkg = root / "zen" / "dex"
     init = dex_pkg / "__init__.py"
     if apply:
@@ -267,6 +312,14 @@ def ensure_dex_package(root: Path, apply: bool, log: List[str]) -> None:
 
 
 def archive_legacy_docs(root: Path, apply: bool, log: List[str]) -> None:
+    """
+    Archive selected historical documentation and create a README identifying current sources of truth.
+    
+    Parameters:
+        root (Path): Repository root containing the documentation files.
+        apply (bool): Whether to perform the moves and write the archive README.
+        log (List[str]): List receiving planned or completed operation messages.
+    """
     archive = root / "docs" / "archive"
     moves = [
         root / "docs" / "zenOS-genesis-log.md",
@@ -305,6 +358,16 @@ def archive_legacy_docs(root: Path, apply: bool, log: List[str]) -> None:
 
 
 def process_file_contents(root: Path, apply: bool) -> Tuple[int, int, List[str]]:
+    """
+    Apply configured branding and field replacements to eligible repository files.
+    
+    Parameters:
+    	root (Path): Repository root containing files to process.
+    	apply (bool): Whether to write transformed content instead of only reporting planned changes.
+    
+    Returns:
+    	Tuple[int, int, List[str]]: The number of changed files, total replacement count, and operation details.
+    """
     files_changed = 0
     total_repls = 0
     details: List[str] = []
@@ -345,7 +408,14 @@ def process_file_contents(root: Path, apply: bool) -> Tuple[int, int, List[str]]
 
 
 def post_fix_catalog(root: Path, apply: bool, log: List[str]) -> None:
-    """Normalize catalog.py API after dumb replaces (Rarity→Tier already)."""
+    """
+    Normalize the Dex catalog module after repository-wide renaming.
+    
+    Parameters:
+        root (Path): Repository root containing ``zen/dex/catalog.py``.
+        apply (bool): Whether to write the normalized file instead of only reporting the planned change.
+        log (List[str]): List to receive a planned or applied operation message.
+    """
     catalog = root / "zen" / "dex" / "catalog.py"
     if not catalog.exists():
         return
@@ -364,6 +434,15 @@ def post_fix_catalog(root: Path, apply: bool, log: List[str]) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """
+    Run the repository rebrand in dry-run or apply mode.
+    
+    Parameters:
+        argv (Sequence[str] | None): Optional command-line arguments. When omitted, arguments are read from the command line.
+    
+    Returns:
+        int: Exit status code, always 0 after processing completes.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT_DEFAULT)
     parser.add_argument("--apply", action="store_true", help="Write changes (default: dry-run)")

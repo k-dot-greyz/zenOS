@@ -39,7 +39,7 @@ class PluginDiscovery:
         self.session: Optional[aiohttp.ClientSession] = None
 
     async def __aenter__(self):
-        """Async context manager entry"""
+        """Initialize the GitHub API session and return the discovery service."""
         self.session = aiohttp.ClientSession(
             headers={
                 "Authorization": f"token {self.github_token}" if self.github_token else "",
@@ -50,14 +50,24 @@ class PluginDiscovery:
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit"""
+        """Close the GitHub API client session when leaving the asynchronous context."""
         if self.session:
             await self.session.close()
 
     async def search_plugins(
         self, query: str, category: Optional[str] = None, limit: int = 20
     ) -> List[DiscoveredPlugin]:
-        """Search for plugins on GitHub"""
+        """
+        Search GitHub repositories for compatible plugins matching the query and optional category.
+        
+        Parameters:
+        	query (str): Search terms used to find plugin repositories.
+        	category (Optional[str]): Category used to narrow the search.
+        	limit (int): Maximum number of plugins to return.
+        
+        Returns:
+        	List[DiscoveredPlugin]: Discovered plugins ordered by GitHub star count.
+        """
         try:
             if not self.session:
                 raise RuntimeError("Discovery not initialized. Use async context manager.")
@@ -102,11 +112,28 @@ class PluginDiscovery:
             return []
 
     async def discover_by_category(self, category: str, limit: int = 20) -> List[DiscoveredPlugin]:
-        """Discover plugins by category"""
+        """
+        Discover plugins that belong to a specified category.
+        
+        Parameters:
+        	category (str): The plugin category to search for
+        	limit (int): The maximum number of plugins to return
+        
+        Returns:
+        	List[DiscoveredPlugin]: Plugins matching the category
+        """
         return await self.search_plugins("", category, limit)
 
     async def discover_trending(self, limit: int = 20) -> List[DiscoveredPlugin]:
-        """Discover trending plugins"""
+        """
+        Discover plugins from repositories with the most recent updates.
+        
+        Parameters:
+            limit (int): Maximum number of plugins to return.
+        
+        Returns:
+            List[DiscoveredPlugin]: Recently updated compatible plugins, or an empty list if discovery fails.
+        """
         try:
             if not self.session:
                 raise RuntimeError("Discovery not initialized. Use async context manager.")
@@ -145,7 +172,15 @@ class PluginDiscovery:
             return []
 
     async def discover_featured(self, limit: int = 10) -> List[DiscoveredPlugin]:
-        """Discover featured/starred plugins"""
+        """
+        Discover highly starred plugins.
+        
+        Parameters:
+        	limit (int): Maximum number of plugins to return.
+        
+        Returns:
+        	list[DiscoveredPlugin]: Featured plugins sorted by GitHub star count, or an empty list if discovery fails.
+        """
         try:
             if not self.session:
                 raise RuntimeError("Discovery not initialized. Use async context manager.")
@@ -184,7 +219,14 @@ class PluginDiscovery:
             return []
 
     async def _process_repository(self, repo: Dict[str, Any]) -> Optional[DiscoveredPlugin]:
-        """Process a GitHub repository to extract plugin information"""
+        """Create plugin metadata from a GitHub repository and its manifest.
+        
+        Parameters:
+            repo (Dict[str, Any]): GitHub repository metadata, including its full name and repository details.
+        
+        Returns:
+            Optional[DiscoveredPlugin]: A discovered plugin when the repository has a valid manifest; `None` if the manifest is unavailable or processing fails.
+        """
         try:
             # Get plugin manifest
             manifest = await self._get_plugin_manifest(repo["full_name"])
@@ -215,7 +257,14 @@ class PluginDiscovery:
             return None
 
     async def _get_plugin_manifest(self, repo_name: str) -> Optional[Dict[str, Any]]:
-        """Get plugin manifest from repository"""
+        """Retrieve a repository's plugin manifest.
+        
+        Parameters:
+            repo_name (str): GitHub repository name.
+        
+        Returns:
+            Optional[Dict[str, Any]]: The parsed plugin manifest, or `None` if it cannot be retrieved or parsed.
+        """
         try:
             if not self.session:
                 return None
@@ -245,7 +294,15 @@ class PluginDiscovery:
             return None
 
     def _calculate_compatibility_score(self, manifest: Dict[str, Any]) -> float:
-        """Calculate compatibility score for a plugin"""
+        """
+        Calculate a plugin's compatibility score from its manifest metadata.
+        
+        Parameters:
+            manifest (Dict[str, Any]): Plugin manifest data used to assess compatibility.
+        
+        Returns:
+            float: Compatibility score from 0.0 to 1.0.
+        """
         try:
             score = 0.0
 
@@ -282,7 +339,12 @@ class PluginDiscovery:
             return 0.0
 
     async def get_plugin_categories(self) -> List[str]:
-        """Get available plugin categories"""
+        """
+        Collect available plugin categories from discovered plugin manifests.
+        
+        Returns:
+            List[str]: Unique category names sorted alphabetically.
+        """
         try:
             if not self.session:
                 return []
@@ -314,7 +376,11 @@ class PluginDiscovery:
             return []
 
     async def get_plugin_capabilities(self) -> List[str]:
-        """Get available plugin capabilities"""
+        """Collect the unique capabilities declared by discovered plugins.
+        
+        Returns:
+        	List[str]: Sorted capability names, or an empty list when discovery is unavailable or fails.
+        """
         try:
             if not self.session:
                 return []
@@ -351,7 +417,18 @@ class PluginDiscovery:
 async def search_plugins(
     query: str, category: Optional[str] = None, limit: int = 20, github_token: Optional[str] = None
 ) -> List[DiscoveredPlugin]:
-    """Search for plugins on GitHub"""
+    """
+    Search GitHub repositories for plugins matching a query.
+    
+    Parameters:
+    	query (str): Search terms used to find plugin repositories.
+    	category (Optional[str]): Category used to filter the results.
+    	limit (int): Maximum number of plugins to return.
+    	github_token (Optional[str]): GitHub token used for API access.
+    
+    Returns:
+    	List[DiscoveredPlugin]: Plugins matching the query and optional category.
+    """
     async with PluginDiscovery(github_token) as discovery:
         return await discovery.search_plugins(query, category, limit)
 
@@ -359,7 +436,15 @@ async def search_plugins(
 async def discover_trending(
     limit: int = 20, github_token: Optional[str] = None
 ) -> List[DiscoveredPlugin]:
-    """Discover trending plugins"""
+    """Discover plugins from repositories with the most recent updates.
+    
+    Parameters:
+    	limit (int): Maximum number of plugins to return.
+    	github_token (Optional[str]): GitHub token used for API access.
+    
+    Returns:
+    	List[DiscoveredPlugin]: Trending plugins, or an empty list if discovery fails.
+    """
     async with PluginDiscovery(github_token) as discovery:
         return await discovery.discover_trending(limit)
 
@@ -367,6 +452,15 @@ async def discover_trending(
 async def discover_featured(
     limit: int = 10, github_token: Optional[str] = None
 ) -> List[DiscoveredPlugin]:
-    """Discover featured plugins"""
+    """
+    Discover featured plugins from GitHub repositories.
+    
+    Parameters:
+        limit (int): Maximum number of plugins to return.
+        github_token (Optional[str]): Optional GitHub token for authenticated requests.
+    
+    Returns:
+        List[DiscoveredPlugin]: Featured plugins ordered by popularity.
+    """
     async with PluginDiscovery(github_token) as discovery:
         return await discovery.discover_featured(limit)

@@ -99,19 +99,14 @@ class Conversation:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Conversation":
         """
-        Constructs a Conversation object from a dictionary representation.
-
+        Reconstruct a Conversation from its dictionary representation.
+        
         Parameters:
-            data (Dict[str, Any]): Dictionary containing conversation fields. Expected keys include:
-                - "id", "title", "created_at", "updated_at"
-                - "messages": list of message dicts with keys "role", "content", optional "timestamp" (ISO string) and optional "metadata"
-                - optional keys: "url", "status", "metadata", "summary", "keywords", "tags", "topics", "file_path", "file_size"
-
-        Description:
-            Rebuilds Message objects from the "messages" list, parses ISO-formatted timestamps, converts string values to the appropriate enum members for roles and conversation status, and applies sensible defaults for missing optional fields.
-
+            data (Dict[str, Any]): Serialized conversation data, including identifiers,
+                timestamps, and optional messages and metadata.
+        
         Returns:
-            Conversation: A Conversation instance populated from the provided dictionary.
+            Conversation: A conversation populated from the provided data.
         """
         messages = [
             Message(
@@ -171,22 +166,11 @@ class ExtractionResult:
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        Serialize the extraction result into a JSON-serializable dictionary.
-
-        The dictionary contains ISO 8601 formatted timestamps for `start_time` and `end_time`, and a numeric `duration` in seconds computed from those timestamps.
-
+        Serialize the extraction result into a JSON-compatible dictionary.
+        
         Returns:
-            dict: Mapping with the following keys:
-                - `success` (bool): Whether the extraction run succeeded.
-                - `conversations_extracted` (int): Number of conversations extracted.
-                - `conversations_processed` (int): Number of conversations processed.
-                - `conversations_failed` (int): Number of conversations that failed.
-                - `total_messages` (int): Total number of messages processed.
-                - `start_time` (str): ISO 8601 string for the start time.
-                - `end_time` (str): ISO 8601 string for the end time.
-                - `duration` (float): Elapsed time in seconds between end and start.
-                - `errors` (list[str]): Collected error messages.
-                - `warnings` (list[str]): Collected warning messages.
+            Dict[str, Any]: Extraction metrics, ISO 8601 timestamps, elapsed duration
+            in seconds, errors, and warnings.
         """
         return {
             "success": self.success,

@@ -128,7 +128,15 @@ class OpenRouterProvider:
     BASE_URL = "https://openrouter.ai/api/v1"
 
     def __init__(self, api_key: Optional[str] = None):
-        """Initialize the OpenRouter provider."""
+        """
+        Initialize the provider with an API key.
+        
+        Parameters:
+            api_key (Optional[str]): API key to use. If omitted, the OPENROUTER_API_KEY environment variable is used.
+        
+        Raises:
+            ValueError: If no API key is provided or found in the environment.
+        """
         self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         if not self.api_key:
             raise ValueError(
@@ -140,12 +148,19 @@ class OpenRouterProvider:
         self.request_count = 0
 
     async def __aenter__(self):
-        """Async context manager entry."""
+        """
+        Initialize the HTTP session for context-managed use.
+        
+        Returns:
+            OpenRouterProvider: This provider instance.
+        """
         self.session = aiohttp.ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit."""
+        """
+        Close the HTTP session when exiting the asynchronous context manager.
+        """
         if self.session:
             await self.session.close()
 
@@ -153,15 +168,17 @@ class OpenRouterProvider:
         self, prompt: str, tier: Optional[ModelTier] = None, max_cost: Optional[float] = None
     ) -> str:
         """
-        Intelligently select the best model for the task.
-
-        Args:
-            prompt: The user's prompt
-            tier: Preferred model tier
-            max_cost: Maximum cost per request in USD
-
+        Select a model based on the requested tier and prompt characteristics.
+        
+        Parameters:
+            prompt (str): The prompt used to determine the model when no tier is specified.
+            tier (Optional[ModelTier]): Preferred model tier. The least expensive registered
+                model in this tier is selected when available.
+            max_cost (Optional[float]): Accepted for interface compatibility but does not
+                affect model selection.
+        
         Returns:
-            Model identifier string
+            str: The selected model identifier.
         """
         if tier:
             # Use specified tier
@@ -203,22 +220,22 @@ class OpenRouterProvider:
         **kwargs,
     ) -> AsyncIterator[str]:
         """
-        Obtain a completion from OpenRouter, yielding streamed chunks or a single full response.
-
+        Obtain a completion from OpenRouter.
+        
         Parameters:
-            prompt (str): The user prompt to send to the model.
-            model (Optional[str]): Model identifier to use; if omitted a model is auto-selected based on the prompt.
-            system (Optional[str]): Optional system prompt to prepend to the conversation.
-            stream (bool): If True, yields incremental response chunks; if False, yields a single complete response.
-            max_tokens (int): Maximum number of tokens to generate for the response.
-            temperature (float): Sampling temperature controlling randomness.
-            **kwargs: Additional parameters passed into the completion request payload.
-
+            prompt (str): The user prompt to send.
+            model (Optional[str]): Model identifier; selected automatically when omitted.
+            system (Optional[str]): Optional system prompt.
+            stream (bool): Whether to yield incremental chunks instead of one complete response.
+            max_tokens (int): Maximum number of response tokens.
+            temperature (float): Sampling temperature.
+            **kwargs: Additional completion request parameters.
+        
         Returns:
-            AsyncIterator[str]: Yields response text pieces when streaming, or a single complete response string when not streaming.
-
+            str: Response text, yielded incrementally when streaming or as one complete response otherwise.
+        
         Raises:
-            Exception: Propagates errors from the OpenRouter request or response handling.
+            Exception: If the OpenRouter request or response handling fails.
         """
         if not self.session:
             self.session = aiohttp.ClientSession()
@@ -264,7 +281,19 @@ class OpenRouterProvider:
     async def _stream_completion(
         self, data: Dict[str, Any], headers: Dict[str, str]
     ) -> AsyncIterator[str]:
-        """Stream completion from OpenRouter."""
+        """
+        Stream completion content from OpenRouter.
+        
+        Args:
+            data: The chat-completion request payload.
+            headers: HTTP headers for the request.
+        
+        Yields:
+            Content fragments from the streamed completion.
+        
+        Raises:
+            Exception: If OpenRouter returns a non-successful HTTP status.
+        """
         async with self.session.post(
             f"{self.BASE_URL}/chat/completions", headers=headers, json=data
         ) as response:
@@ -289,7 +318,18 @@ class OpenRouterProvider:
                         continue
 
     async def _get_completion(self, data: Dict[str, Any], headers: Dict[str, str]) -> str:
-        """Get non-streaming completion from OpenRouter."""
+        """Retrieve a non-streaming completion from OpenRouter.
+        
+        Parameters:
+        	data (Dict[str, Any]): The request payload.
+        	headers (Dict[str, str]): HTTP headers for the request.
+        
+        Returns:
+        	str: The content of the first completion choice.
+        
+        Raises:
+        	Exception: If the API request fails or returns no completion.
+        """
         data["stream"] = False
 
         async with self.session.post(
@@ -307,15 +347,15 @@ class OpenRouterProvider:
 
     def estimate_cost(self, prompt: str, model: str, max_tokens: int = 2000) -> float:
         """
-        Estimate the cost of a completion.
-
-        Args:
-            prompt: The prompt text
-            model: Model identifier
-            max_tokens: Maximum tokens to generate
-
+        Estimate the completion cost in US dollars.
+        
+        Parameters:
+            prompt (str): Prompt text used to estimate input tokens.
+            model (str): Model identifier from the model registry.
+            max_tokens (int): Maximum number of output tokens.
+        
         Returns:
-            Estimated cost in USD
+            float: Estimated input and output cost in US dollars, or 0.0 for an unregistered model.
         """
         if model not in MODELS:
             return 0.0
@@ -336,7 +376,15 @@ class OpenRouterProvider:
         return MODELS.get(model)
 
     def list_models(self, tier: Optional[ModelTier] = None) -> List[ModelConfig]:
-        """List available models, optionally filtered by tier."""
+        """
+        List the available model configurations, optionally filtered by tier.
+        
+        Parameters:
+            tier (Optional[ModelTier]): Restrict results to models in this tier.
+        
+        Returns:
+            List[ModelConfig]: The matching model configurations.
+        """
         models = list(MODELS.values())
         if tier:
             models = [m for m in models if m.tier == tier]

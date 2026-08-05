@@ -35,11 +35,24 @@ class ModelEntry:
 
     @property
     def overall_score(self) -> float:
-        """Calculate overall model score"""
+        """
+        Calculate the model's overall score from its statistics.
+        
+        Returns:
+            float: The average of the model's statistic values.
+        """
         return sum(self.stats.values()) / len(self.stats)
 
     def is_suitable_for(self, task: str) -> bool:
-        """Check if model is suitable for a task"""
+        """
+        Determine whether the model is suitable for a task.
+        
+        Parameters:
+        	task (str): The task to match against the model's supported tasks.
+        
+        Returns:
+        	bool: `true` if the task matches a supported task, `false` otherwise.
+        """
         return task.lower() in [t.lower() for t in self.best_for]
 
 
@@ -58,7 +71,11 @@ class ProcedureEntry:
 
     @property
     def complexity_rating(self) -> str:
-        """Get human-readable complexity rating"""
+        """Classify the procedure's complexity using its complexity statistic.
+        
+        Returns:
+        	str: "Simple", "Moderate", "Complex", or "Expert".
+        """
         complexity = self.stats.get("complexity", 0)
         if complexity < 30:
             return "Simple"
@@ -74,6 +91,11 @@ class DexCatalog:
     """The zenOS Dex - Central catalog for models and procedures"""
 
     def __init__(self, base_path: Path = Path("dex")):
+        """Initialize the catalog with a data directory and load its catalog entries.
+        
+        Parameters:
+        	base_path (Path): Directory containing the catalog data files.
+        """
         self.base_path = base_path
         self.models: Dict[str, ModelEntry] = {}
         self.procedures: Dict[str, ProcedureEntry] = {}
@@ -81,7 +103,9 @@ class DexCatalog:
         self.load_data()
 
     def load_data(self):
-        """Load Dex data from YAML files"""
+        """
+        Load models, procedures, selection guides, achievements, and combos from YAML files in the catalog directory.
+        """
         # Load models
         models_file = self.base_path / "models.yaml"
         if models_file.exists():
@@ -126,7 +150,15 @@ class DexCatalog:
                 self.combos = data.get("combos", [])
 
     def find_model_for_task(self, task: str) -> List[ModelEntry]:
-        """Find best models for a specific task"""
+        """
+        Find models suited to a specific task.
+        
+        Parameters:
+        	task (str): The task to match against the catalog's task recommendations or model suitability metadata.
+        
+        Returns:
+        	List[ModelEntry]: Recommended and budget models from the selection guide, or matching models sorted by descending overall score.
+        """
         # Check selection guide first
         if "by_task" in self.selection_guide:
             task_guide = self.selection_guide["by_task"].get(task, {})
@@ -149,7 +181,15 @@ class DexCatalog:
         return suitable
 
     def get_models_by_tier(self, rarity: Tier) -> List[ModelEntry]:
-        """Get all models of a specific rarity"""
+        """
+        Get all models assigned to a specific tier.
+        
+        Parameters:
+            rarity (Tier): Tier to match.
+        
+        Returns:
+            List[ModelEntry]: Models assigned to the specified tier.
+        """
         return [m for m in self.models.values() if m.tier == rarity]
 
     def get_procedures_by_type(self, proc_type: str) -> List[ProcedureEntry]:
@@ -157,14 +197,24 @@ class DexCatalog:
         return [p for p in self.procedures.values() if p.type == proc_type]
 
     def get_legendary_items(self) -> Dict[str, List]:
-        """Get all legendary models and procedures"""
+        """Collect all models and procedures with legendary tier.
+        
+        Returns:
+            Dict[str, List]: A dictionary containing legendary models under ``"models"`` and legendary procedures under ``"procedures"``.
+        """
         return {
             "models": self.get_models_by_tier(Tier.LEGENDARY),
             "procedures": [p for p in self.procedures.values() if p.tier == Tier.LEGENDARY],
         }
 
     def calculate_collection_stats(self) -> Dict[str, Any]:
-        """Calculate collection statistics"""
+        """
+        Summarize the contents of the catalog.
+        
+        Returns:
+            Dict[str, Any]: Counts of models, procedures, models by tier, procedures by type,
+            available achievements, and discovered combos.
+        """
         total_models = len(self.models)
         total_procedures = len(self.procedures)
 
@@ -188,13 +238,28 @@ class DexCatalog:
         }
 
     def log_discovery(self, item_type: str, item_id: str, discovered_by: str):
-        """Log a new discovery"""
+        """Display a message announcing a newly discovered catalog item.
+        
+        Parameters:
+            item_type (str): The type of discovered item.
+            item_id (str): The discovered item's identifier.
+            discovered_by (str): The source or user credited with the discovery.
+        """
         # This would update the YAML files with new discoveries
         # For now, just track in memory
         print(f"🎉 New discovery: {item_type} '{item_id}' by {discovered_by}!")
 
     def check_achievements(self, entity_id: str, action: str) -> List[str]:
-        """Check if an action unlocks any achievements"""
+        """
+        Check whether an entity action unlocks any achievements.
+        
+        Parameters:
+            entity_id (str): Identifier of the entity performing the action.
+            action (str): Action to evaluate.
+        
+        Returns:
+            List[str]: Achievement identifiers unlocked by the action; currently always empty.
+        """
         unlocked = []
         # Simple achievement checking logic
         # This would be expanded with actual achievement conditions
@@ -206,7 +271,12 @@ _dex_catalog_instance: Optional[DexCatalog] = None
 
 
 def get_dex_catalog() -> DexCatalog:
-    """Get or create the Dex singleton"""
+    """
+    Get the shared Dex catalog instance, creating it when necessary.
+    
+    Returns:
+        DexCatalog: The shared catalog instance.
+    """
     global _dex_catalog_instance
     if _dex_catalog_instance is None:
         _dex_catalog_instance = DexCatalog()

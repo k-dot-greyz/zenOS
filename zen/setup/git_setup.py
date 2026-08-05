@@ -19,6 +19,11 @@ class GitSetupManager:
     """Manages git repository setup and configuration"""
 
     def __init__(self, zenos_root: Path):
+        """Initialize a Git setup manager for the specified zenOS root directory.
+        
+        Parameters:
+        	zenos_root (Path): The root directory of the zenOS installation.
+        """
         self.zenos_root = zenos_root
         self.gitignore_path = self.zenos_root / ".gitignore"
         self.safe_executor = SafeCommandExecutor()
@@ -31,7 +36,12 @@ class GitSetupManager:
         return result["success"]
 
     def init_repository(self) -> bool:
-        """Initialize a new git repository"""
+        """
+        Initialize a Git repository in the zenOS root directory.
+        
+        Returns:
+            bool: True if initialization succeeds, False otherwise.
+        """
         result = self.safe_executor.run_command(["git", "init"], cwd=self.zenos_root, timeout=10)
         if result["success"]:
             print(f"  ✅ Git repository initialized")
@@ -40,7 +50,12 @@ class GitSetupManager:
         return result["success"]
 
     def setup_gitignore(self) -> bool:
-        """Setup comprehensive .gitignore file"""
+        """
+        Create a comprehensive `.gitignore` file based on the detected project types.
+        
+        Returns:
+        	bool: `True` if the file is created successfully, `False` if an error occurs.
+        """
         try:
             # Detect project types
             project_types = self._detect_project_types()
@@ -59,7 +74,12 @@ class GitSetupManager:
             return False
 
     def _detect_project_types(self) -> List[str]:
-        """Detect project types based on files present"""
+        """
+        Identify project categories from files in the zenOS root directory and the current operating system.
+        
+        Returns:
+            List[str]: Detected project categories, including platform, IDE, and logging categories.
+        """
         project_types = []
 
         # Check for Python
@@ -88,7 +108,15 @@ class GitSetupManager:
         return project_types
 
     def _generate_gitignore_content(self, project_types: List[str]) -> str:
-        """Generate .gitignore content based on project types"""
+        """
+        Generate `.gitignore` content for the detected project types.
+        
+        Parameters:
+        	project_types (List[str]): Project type names whose ignore patterns should be included.
+        
+        Returns:
+        	str: Combined project-specific and zenOS-specific ignore patterns.
+        """
         templates = self._get_gitignore_templates()
 
         content = "# zenOS .gitignore\n"
@@ -111,7 +139,12 @@ class GitSetupManager:
         return content
 
     def _get_gitignore_templates(self) -> Dict[str, str]:
-        """Get .gitignore templates for different project types"""
+        """
+        Provide ignore-pattern templates for supported project types and development environments.
+        
+        Returns:
+            Dict[str, str]: A mapping from template names to their `.gitignore` contents.
+        """
         return {
             "python": """# Python
 __pycache__/
@@ -544,7 +577,12 @@ target/
         }
 
     def setup_aliases(self) -> bool:
-        """Setup git aliases for better workflow"""
+        """
+        Configure global Git aliases for common repository workflows.
+        
+        Returns:
+        	bool: `True` if all aliases are configured successfully, `False` if a Git command fails.
+        """
         try:
             aliases = {
                 "st": "status",
@@ -574,7 +612,11 @@ target/
             return False
 
     def has_user_config(self) -> bool:
-        """Check if git user is configured"""
+        """Determine whether Git has both a global user name and email configured.
+        
+        Returns:
+        	bool: `True` if both values are nonempty, `False` otherwise.
+        """
         try:
             name_result = subprocess.run(
                 ["git", "config", "--global", "user.name"],
@@ -593,7 +635,16 @@ target/
             return False
 
     def configure_user(self, name: str, email: str) -> bool:
-        """Configure git user"""
+        """
+        Configure the global Git user identity.
+        
+        Parameters:
+            name (str): Name to associate with Git commits.
+            email (str): Email address to associate with Git commits.
+        
+        Returns:
+            bool: `True` if both identity values are configured successfully, `False` otherwise.
+        """
         try:
             subprocess.run(["git", "config", "--global", "user.name", name], check=True)
             subprocess.run(["git", "config", "--global", "user.email", email], check=True)
@@ -604,7 +655,12 @@ target/
             return False
 
     def remove_tracked_unwanted_files(self) -> List[str]:
-        """Remove tracked files that should be ignored"""
+        """
+        Remove tracked files matching common generated, temporary, environment, and IDE-specific patterns.
+        
+        Returns:
+            List[str]: Paths removed from Git tracking.
+        """
         removed_files = []
 
         # Common patterns to remove
@@ -656,7 +712,15 @@ target/
     def commit_changes(
         self, message: str = "chore: add .gitignore and cleanup tracked files"
     ) -> bool:
-        """Commit the .gitignore and cleanup changes"""
+        """
+        Stage the repository's .gitignore file and commit the changes.
+        
+        Parameters:
+            message (str): Commit message to use.
+        
+        Returns:
+            bool: True if staging and committing succeed, False if either Git command fails.
+        """
         try:
             # Add .gitignore
             subprocess.run(["git", "add", ".gitignore"], cwd=self.zenos_root, check=True)
@@ -671,7 +735,12 @@ target/
             return False
 
     def verify_setup(self) -> bool:
-        """Verify that the git setup is working correctly"""
+        """
+        Verify that the Git repository setup is functioning correctly.
+        
+        Returns:
+        	bool: `True` if Git status succeeds and any existing `.DS_Store` file is ignored, `False` otherwise.
+        """
         try:
             # Check git status
             result = subprocess.run(

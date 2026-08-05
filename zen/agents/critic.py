@@ -32,7 +32,16 @@ Provide an improved version with explanations for each change.""",
         super().__init__(manifest)
 
     async def execute_async(self, prompt: str, variables: dict) -> str:
-        """Execute the critic agent asynchronously."""
+        """
+        Analyze the rendered prompt and return the critic agent's response.
+        
+        Parameters:
+            prompt (str): The prompt template to analyze.
+            variables (dict): Values used to render the prompt.
+        
+        Returns:
+            str: The generated response, or an error message containing the rendered prompt if the provider call fails.
+        """
         rendered_prompt = self.render_prompt(prompt, variables)
 
         try:
@@ -45,5 +54,14 @@ Provide an improved version with explanations for each change.""",
             return f"Error calling AI provider: {e}\n\nRendered prompt:\n{rendered_prompt}"
 
     def execute(self, prompt: str, variables: dict) -> str:
-        """Execute the critic agent (sync wrapper)."""
+        """
+        Execute the critic agent synchronously.
+        
+        Parameters:
+            prompt (str): The prompt to analyze.
+            variables (dict): Values used to render the prompt.
+        
+        Returns:
+            str: The critic agent's analysis.
+        """
         return asyncio.run(self.execute_async(prompt, variables))

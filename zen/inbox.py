@@ -14,6 +14,11 @@ import click
 
 class InboxManager:
     def __init__(self, base_path: str = "."):
+        """Initialize inbox storage paths relative to the specified base directory.
+        
+        Parameters:
+        	base_path (str): Root directory under which the inbox directories are located.
+        """
         self.base_path = Path(base_path)
         self.inbox_path = self.base_path / "inbox"
         self.incoming_path = self.inbox_path / "incoming"
@@ -21,7 +26,17 @@ class InboxManager:
         self.processed_path = self.inbox_path / "processed"
 
     def add_item(self, item_type: str, content: str, metadata: Dict[str, Any] = None) -> str:
-        """Add a new item to the inbox"""
+        """
+        Add a new item to the inbox.
+        
+        Parameters:
+            item_type (str): Type assigned to the item.
+            content (str): Content of the item.
+            metadata (Dict[str, Any], optional): Additional structured information associated with the item.
+        
+        Returns:
+            str: Identifier assigned to the new item.
+        """
         timestamp = datetime.now().isoformat()
         item_id = f"{item_type}_{timestamp.replace(':', '-')}"
 
@@ -43,7 +58,15 @@ class InboxManager:
         return item_id
 
     def list_items(self, status: str = None) -> list:
-        """List items in the inbox"""
+        """
+        List inbox items across all status directories, optionally filtered by status.
+        
+        Parameters:
+        	status (str): Status used to filter items. When omitted, includes items with any status.
+        
+        Returns:
+        	list: Items sorted from newest to oldest by creation time.
+        """
         items = []
 
         for path in [self.incoming_path, self.processing_path, self.processed_path]:
@@ -62,7 +85,17 @@ class InboxManager:
         return sorted(items, key=lambda x: x["created_at"], reverse=True)
 
     def move_item(self, item_id: str, from_status: str, to_status: str) -> bool:
-        """Move an item between statuses"""
+        """
+        Move an inbox item from one status directory to another.
+        
+        Parameters:
+            item_id (str): Identifier of the item to move.
+            from_status (str): Current status of the item.
+            to_status (str): Destination status for the item.
+        
+        Returns:
+            bool: `True` if the item was moved successfully, `False` if either status is invalid or the item does not exist in the source directory.
+        """
         status_paths = {
             "new": self.incoming_path,
             "processing": self.processing_path,
@@ -97,7 +130,7 @@ class InboxManager:
 @click.group()
 @click.alias("inbox")
 def receive():
-    """zenOS Receive System - Process incoming items"""
+    """Provide the command group for receiving and managing inbox items."""
     pass
 
 
@@ -106,7 +139,14 @@ def receive():
 @click.argument("content")
 @click.option("--metadata", help="JSON metadata for the item")
 def add(item_type: str, content: str, metadata: str = None):
-    """Add a new item to the inbox"""
+    """
+    Add an item to the inbox.
+    
+    Parameters:
+        item_type (str): The type of item to add.
+        content (str): The item's content.
+        metadata (str, optional): Metadata encoded as a JSON object.
+    """
     manager = InboxManager()
 
     metadata_dict = {}
@@ -124,7 +164,12 @@ def add(item_type: str, content: str, metadata: str = None):
 @receive.command()
 @click.option("--status", help="Filter by status (new, processing, processed)")
 def list(status: str = None):
-    """List items in the inbox"""
+    """
+    List inbox items, optionally filtered by status.
+    
+    Parameters:
+        status (str, optional): Status used to filter the displayed items.
+    """
     manager = InboxManager()
     items = manager.list_items(status)
 
@@ -144,7 +189,13 @@ def list(status: str = None):
 @click.argument("item_id")
 @click.argument("to_status")
 def move(item_id: str, to_status: str):
-    """Move an item to a different status"""
+    """
+    Move an inbox item to a different status.
+    
+    Parameters:
+        item_id (str): Identifier of the item to move.
+        to_status (str): Destination status for the item.
+    """
     manager = InboxManager()
 
     # Find current status

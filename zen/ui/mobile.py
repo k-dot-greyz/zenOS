@@ -60,7 +60,7 @@ class MobileUI:
         self.is_landscape = self.width >= 80
 
     def show_welcome(self):
-        """Show compact welcome screen."""
+        """Display a compact welcome screen adapted to the terminal orientation."""
         if self.is_portrait:
             # Ultra compact for portrait
             self.console.print(
@@ -83,7 +83,13 @@ class MobileUI:
             self.console.print("[cyan]Chat Mode[/cyan] | [dim]/help[/dim]")
 
     def show_response(self, text: str, title: Optional[str] = None):
-        """Show response in compact format."""
+        """
+        Display a response in a mobile-optimized panel, using a compact layout in portrait mode.
+        
+        Parameters:
+        	text (str): The response content to display
+        	title (Optional[str]): An optional panel title, truncated when it exceeds 20 characters
+        """
         # Truncate title for mobile
         if title and len(title) > 20:
             title = title[:17] + "..."
@@ -111,12 +117,18 @@ class MobileUI:
         self.console.print(panel)
 
     def show_cost(self, cost: float, total: float):
-        """Show cost in compact format."""
+        """
+        Display the current and cumulative costs when the current cost is significant.
+        
+        Parameters:
+        	cost (float): The current cost.
+        	total (float): The cumulative cost.
+        """
         if cost > 0.001:  # Only show if significant
             self.console.print(f"[dim]${cost:.3f} | Σ${total:.3f}[/dim]", justify="right")
 
     def show_error(self, error: str):
-        """Show error in compact format."""
+        """Display an error message in a compact format, truncating messages longer than 40 characters."""
         self.console.print(
             f"[red]❌ {error[:40]}...[/red]" if len(error) > 40 else f"[red]❌ {error}[/red]"
         )
@@ -136,7 +148,15 @@ class MobileUI:
         self.console.print(Panel(help_text.strip(), title="Help", box=box.MINIMAL))
 
     def format_prompt(self, model: str) -> str:
-        """Format prompt for mobile."""
+        """
+        Format a mobile chat prompt using a compact or descriptive model identifier.
+        
+        Parameters:
+        	model (str): Model identifier, optionally including a provider prefix.
+        
+        Returns:
+        	str: A prompt prefix containing the model's short code in portrait mode or name in landscape mode.
+        """
         if self.is_portrait:
             # Ultra short
             model_short = {
@@ -153,7 +173,14 @@ class MobileUI:
             return f"🧘[{model_name}]› "
 
     def show_message(self, role: str, content: str, timestamp: Optional[datetime] = None):
-        """Show a message in mobile format."""
+        """
+        Display a chat message using a layout suited to the current mobile orientation.
+        
+        Parameters:
+            role (str): The message author's role.
+            content (str): The message text to display.
+            timestamp (Optional[datetime]): The message time shown in portrait mode.
+        """
         if self.is_portrait:
             # Super compact
             role_char = "U" if role == "user" else "A"
@@ -176,7 +203,9 @@ class MobileChat:
     """
 
     def __init__(self):
-        """Initialize mobile chat."""
+        """
+        Initialize the mobile chat interface, Termux integration, command shortcuts, and interactive chat backend.
+        """
         self.ui = MobileUI()
         self.termux = TermuxInterface()
         self.shortcuts = {
@@ -203,7 +232,9 @@ class MobileChat:
         self.backend = InteractiveChat()
 
     def _check_battery(self):
-        """Check battery and enable eco mode if low."""
+        """
+        Enable eco mode when the Termux battery level is below 20 percent.
+        """
         if self.termux.is_termux():
             battery = self.termux.battery_status()
             if battery and battery.get("percentage", 100) < 20:
@@ -211,7 +242,13 @@ class MobileChat:
                 self.ui.console.print("[yellow]⚠️ Low battery - eco mode enabled[/yellow]")
 
     async def start(self):
-        """Start enhanced mobile chat session."""
+        """
+        Start the mobile chat session and manage Termux wake-lock resources.
+        
+        The welcome screen is displayed before the backend session starts. When running
+        in Termux, a wake lock is held for the duration of the session and released
+        afterward, including when the session ends with an error.
+        """
         # Acquire wake lock for long sessions
         if self.termux.is_termux():
             self.termux.wake_lock_acquire()
@@ -234,7 +271,15 @@ class MobileChat:
                 self.termux.wake_lock_release()
 
     def expand_shortcut(self, command: str) -> str:
-        """Expand mobile shortcuts."""
+        """
+        Expand a mobile command shortcut and supported model alias.
+        
+        Parameters:
+            command (str): The command, optionally followed by arguments.
+        
+        Returns:
+            str: The expanded command with its arguments.
+        """
         parts = command.split(maxsplit=1)
         cmd = parts[0]
         args = parts[1] if len(parts) > 1 else ""
@@ -256,7 +301,9 @@ class MobileChat:
         return f"{full_cmd} {args}".strip() if args else full_cmd
 
     def format_for_mobile(self, text: str) -> str:
-        """Format text for mobile display."""
+        """
+        Format text to fit the mobile display width while preserving line breaks.
+        """
         # Break long lines
         max_width = self.ui.width - 4  # Account for padding
         lines = []
@@ -286,7 +333,12 @@ class MobileChat:
         return "\n".join(lines)
 
     async def handle_voice_input(self) -> Optional[str]:
-        """Get voice input from user."""
+        """
+        Capture voice input through the Termux API.
+        
+        Returns:
+        	str: The recognized voice input, or `None` when the Termux API is unavailable or no input is received.
+        """
         if not self.termux.is_api_available():
             self.ui.show_error("Termux API not available")
             return None
@@ -304,7 +356,12 @@ class MobileChat:
         return text
 
     async def handle_clipboard_input(self) -> Optional[str]:
-        """Get clipboard content as input."""
+        """
+        Retrieve text from the system clipboard.
+        
+        Returns:
+            Optional[str]: The clipboard text, or `None` when the clipboard is empty.
+        """
         text = self.termux.clipboard_get()
 
         if text:
@@ -324,7 +381,12 @@ class MobileChat:
             self.ui.show_error("Share not available")
 
     def notify_complete(self, query: str, response: str):
-        """Send notification when query completes."""
+        """
+        Notify the user when a query completes.
+        
+        Parameters:
+        	response (str): Completed response text used in the notification preview.
+        """
         if self.termux.is_api_available():
             preview = response[:100] + "..." if len(response) > 100 else response
             self.termux.notify(
@@ -342,19 +404,34 @@ class TermuxInterface:
 
     @staticmethod
     def is_termux() -> bool:
-        """Check if running in Termux."""
+        """
+        Determine whether the current environment is Termux.
+        
+        Returns:
+        	bool: `True` if Termux is detected, `False` otherwise.
+        """
         return os.environ.get("TERMUX_VERSION") is not None or os.path.exists(
             "/data/data/com.termux"
         )
 
     @staticmethod
     def is_api_available() -> bool:
-        """Check if Termux:API is installed."""
+        """
+        Determine whether the Termux speech-to-text API command is available.
+        
+        Returns:
+        	bool: `True` if the Termux speech-to-text command exists, `False` otherwise.
+        """
         return os.path.exists("/data/data/com.termux/files/usr/bin/termux-speech-to-text")
 
     @staticmethod
     def voice_input() -> Optional[str]:
-        """Get voice input via Termux API."""
+        """
+        Retrieve voice input from the Termux speech-to-text service.
+        
+        Returns:
+            str: Transcribed speech, or `None` if the service is unavailable or the request fails.
+        """
         if not TermuxInterface.is_api_available():
             return None
 
@@ -417,7 +494,11 @@ class TermuxInterface:
 
     @staticmethod
     def notify(title: str, content: str, actions: Optional[List[str]] = None):
-        """Send notification."""
+        """Send a notification through the Termux API.
+        
+        Parameters:
+            actions (Optional[List[str]]): Optional actions to attach to the notification.
+        """
         if not TermuxInterface.is_api_available():
             return
 
@@ -438,7 +519,12 @@ class TermuxInterface:
 
     @staticmethod
     def vibrate(duration_ms: int = 200):
-        """Vibrate the device."""
+        """
+        Vibrate the device for the specified duration.
+        
+        Parameters:
+        	duration_ms (int): Vibration duration in milliseconds.
+        """
         if not TermuxInterface.is_api_available():
             return
 
@@ -451,7 +537,12 @@ class TermuxInterface:
 
     @staticmethod
     def battery_status() -> Optional[Dict[str, Any]]:
-        """Get battery status."""
+        """
+        Retrieve the current Termux battery status.
+        
+        Returns:
+            Optional[Dict[str, Any]]: Battery status data when available; otherwise, `None`.
+        """
         if not TermuxInterface.is_api_available():
             return None
 
@@ -518,7 +609,12 @@ VoiceInterface = TermuxInterface
 
 # Auto-detect and setup
 def get_ui():
-    """Get appropriate UI for environment."""
+    """Select the user interface appropriate for the current environment.
+    
+    Returns:
+        MobileUI: The mobile interface in mobile mode.
+        DisplayManager: The standard interface otherwise.
+    """
     if IS_MOBILE:
         return MobileUI()
     else:
@@ -528,7 +624,12 @@ def get_ui():
 
 
 def get_chat():
-    """Get appropriate chat interface."""
+    """
+    Select the chat interface appropriate for the current environment.
+    
+    Returns:
+        MobileChat or InteractiveChat: The mobile or standard interactive chat interface.
+    """
     if IS_MOBILE:
         return MobileChat()
     else:

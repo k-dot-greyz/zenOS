@@ -14,7 +14,12 @@ from pathlib import Path
 
 
 def detect_environment():
-    """Detect the current environment and return setup commands"""
+    """
+    Select setup commands for the current operating system.
+    
+    Returns:
+    	dict: Platform-specific setup commands.
+    """
 
     # Detect OS
     os_name = platform.system().lower()
@@ -145,7 +150,12 @@ def get_generic_commands():
 
 
 def check_termux():
-    """Check if running in Termux"""
+    """
+    Determine whether the script is running in Termux.
+    
+    Returns:
+        bool: `true` if the `TERMUX_VERSION` environment variable is set, `false` otherwise.
+    """
     return os.environ.get("TERMUX_VERSION") is not None
 
 
@@ -175,7 +185,12 @@ def get_termux_commands():
 
 
 def print_commands(commands):
-    """Print the setup commands in a nice format"""
+    """
+    Print platform-specific setup commands and related documentation references.
+    
+    Parameters:
+        commands (dict): Setup command data containing the platform name, one-command setup command, prerequisite commands, manual setup steps, and validation command.
+    """
     print(f"\n🚀 Setup Commands for {commands['platform']}")
     print("=" * 50)
 
@@ -198,7 +213,9 @@ def print_commands(commands):
 
 
 def main():
-    """Main function"""
+    """
+    Display platform-specific zenOS development setup instructions and available validation options.
+    """
     print("🧘 zenOS Development Environment Setup")
     print("=" * 40)
 

@@ -63,18 +63,15 @@ class ZenRepoManager:
 
     def command_scan(self, args) -> int:
         """
-        Scan the filesystem for local Git repositories and optionally print details or save results to JSON.
-
+        Scan the filesystem for local Git repositories and optionally display or save the results.
+        
         Parameters:
-            args (argparse.Namespace): Parsed command-line arguments. Recognized attributes:
-                - path (List[str] | str, optional): Paths to scan; if omitted, default scan paths are used.
-                - max_depth (int, optional): Maximum directory depth to search (default 10).
-                - exclude (List[str], optional): Glob patterns to exclude from scanning.
-                - details (bool, optional): If true, print per-repository detailed information.
-                - json (str, optional): File path to write scan results in JSON format.
-
+            args (argparse.Namespace): Parsed command-line arguments, including scan paths,
+                maximum depth, exclusion patterns, detail display, and an optional JSON output
+                path.
+        
         Returns:
-            int: Exit code — `0` on success, `1` if no valid scan paths were provided.
+            int: `0` when scanning completes, or `1` when no valid scan paths are available.
         """
         print_colored("🔍 Scanning for local repositories...", self.colors.BOLD)
 
@@ -322,18 +319,13 @@ class ZenRepoManager:
 
     def _perform_audit(self, repositories: List[Dict]) -> Dict:
         """
-        Builds a comprehensive audit for the given repositories.
-
+        Build an audit report for the specified repositories.
+        
         Parameters:
-            repositories (List[Dict]): A list of repository status dictionaries (one per repository) to evaluate.
-
+        	repositories (List[Dict]): Repository status dictionaries to evaluate.
+        
         Returns:
-            Dict: An audit object containing:
-                - timestamp: ISO-8601 timestamp when the audit was created.
-                - summary: Aggregated status summary for all repositories.
-                - issues: Flattened list of detected issues across repositories.
-                - recommendations: Flattened list of recommendations across repositories.
-                - repositories: Per-repository audit entries with issues, recommendations, and health score.
+        	Dict: An audit containing a timestamp, aggregated status summary, flattened issues and recommendations, and per-repository audit results.
         """
         audit = {
             "timestamp": datetime.now().isoformat(),
@@ -363,25 +355,15 @@ class ZenRepoManager:
 
     def _audit_single_repo(self, repo: Dict) -> Dict:
         """
-        Evaluate a repository for health issues and generate recommendations and a numeric health score.
-
+        Evaluate a repository's health and produce identified issues, recommendations, and a score.
+        
         Parameters:
-            repo (Dict): Repository metadata with expected keys:
-                - name: repository name
-                - path: filesystem path
-                - status: status string (e.g., "valid", "error")
-                - remote_url: remote repository URL or falsy if none
-                - uncommitted_changes: truthy if there are uncommitted changes
-                - ahead_behind: string describing ahead/behind state (may include "behind")
-                - last_commit: string containing an ISO-8601 datetime (used to compute age)
-
+            repo (Dict): Repository metadata, including its name, path, status, remote URL,
+                change state, ahead/behind state, and last commit timestamp.
+        
         Returns:
-            Dict: Audit summary containing:
-                - repo_name (str): repository name
-                - path (str): repository path
-                - issues (List[str]): detected problems
-                - recommendations (List[str]): actionable suggestions
-                - health_score (int): overall health between 0 and 100 (higher is better)
+            Dict: Audit summary containing the repository name and path, detected issues,
+                recommendations, and a health score from 0 to 100.
         """
         issues = []
         recommendations = []

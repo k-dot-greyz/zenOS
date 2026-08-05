@@ -56,7 +56,7 @@ class ResponseCache:
     """
 
     def __init__(self, config: MobileConfig):
-        """Initialize cache."""
+        """Initialize the response cache using the configured directory and remove expired entries."""
         self.config = config
         self.cache_dir = Path(os.path.expanduser(config.cache_dir))
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -69,7 +69,12 @@ class ResponseCache:
         self._cleanup_old_entries()
 
     def _load_index(self) -> Dict[str, Any]:
-        """Load cache index."""
+        """
+        Load the cache index from disk.
+        
+        Returns:
+            Dict[str, Any]: The stored cache index, or an empty dictionary when the index is unavailable or unreadable.
+        """
         if self.index_file.exists():
             try:
                 with open(self.index_file, "r") as f:
@@ -108,14 +113,32 @@ class ResponseCache:
             del self.index[key]
 
     def _get_cache_key(self, prompt: str, model: str, **kwargs) -> str:
-        """Generate cache key from prompt and settings."""
+        """Generate a deterministic cache key from a prompt, model, and request settings.
+        
+        Parameters:
+        	prompt (str): The request prompt.
+        	model (str): The model used for the request.
+        	**kwargs: Additional request settings included in the key.
+        
+        Returns:
+        	str: The hexadecimal MD5 digest identifying the request configuration.
+        """
         # Create deterministic key from inputs
         key_data = {"prompt": prompt, "model": model, **kwargs}
         key_str = json.dumps(key_data, sort_keys=True)
         return hashlib.md5(key_str.encode()).hexdigest()
 
     def get(self, prompt: str, model: str, **kwargs) -> Optional[str]:
-        """Get cached response if available."""
+        """Retrieve a cached response for the specified prompt, model, and options.
+        
+        Parameters:
+            prompt (str): The request text used to identify the cached response.
+            model (str): The model associated with the request.
+            **kwargs: Additional request options used to identify the cached response.
+        
+        Returns:
+            Optional[str]: The cached response, or `None` if no readable cached response is available.
+        """
         if not self.config.enable_cache:
             return None
 
@@ -137,7 +160,14 @@ class ResponseCache:
         return None
 
     def set(self, prompt: str, model: str, response: str, **kwargs):
-        """Cache a response."""
+        """Store a response and its request metadata in the response cache when caching is enabled.
+        
+        Parameters:
+            prompt (str): The request prompt.
+            model (str): The model used to generate the response.
+            response (str): The generated response.
+            **kwargs: Additional request parameters used to identify the cached response.
+        """
         if not self.config.enable_cache:
             return
 
@@ -186,7 +216,13 @@ class ResponseCache:
             self._save_index()
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics."""
+        """
+        Return statistics for the cached responses.
+        
+        Returns:
+            Dict[str, Any]: Cache entry count, total size in megabytes, total hit count,
+                and average hits per entry.
+        """
         total_size = sum(meta.get("size_bytes", 0) for meta in self.index.values())
         total_hits = sum(meta.get("hit_count", 0) for meta in self.index.values())
 
@@ -210,7 +246,12 @@ class BatteryManager:
         self._last_check = 0
 
     def check_battery(self) -> Optional[int]:
-        """Get current battery percentage."""
+        """
+        Determine the current battery charge percentage.
+        
+        Returns:
+            Optional[int]: The battery percentage, or `None` if it cannot be determined.
+        """
         # Check if we're on Termux
         if os.environ.get("TERMUX_VERSION"):
             try:
@@ -237,7 +278,12 @@ class BatteryManager:
         return None
 
     def should_use_eco_mode(self) -> bool:
-        """Check if eco mode should be enabled."""
+        """
+        Determine whether power-saving mode should be enabled based on the current battery level.
+        
+        Returns:
+        	bool: `True` if eco mode is enabled, `False` otherwise.
+        """
         # Rate limit checks (every 60 seconds)
         current_time = time.time()
         if current_time - self._last_check < 60:
@@ -252,13 +298,26 @@ class BatteryManager:
         return self.eco_mode
 
     def get_optimal_model(self, requested_model: str) -> str:
-        """Get optimal model based on battery status."""
+        """
+        Select the model appropriate for the current battery conditions.
+        
+        Parameters:
+        	requested_model (str): Model to use when eco mode is inactive.
+        
+        Returns:
+        	str: The configured eco model when eco mode is active; otherwise, the requested model.
+        """
         if self.should_use_eco_mode():
             return self.config.eco_model
         return requested_model
 
     def get_sleep_duration(self) -> float:
-        """Get sleep duration between requests."""
+        """
+        Determine the delay between requests based on the current power-saving mode.
+        
+        Returns:
+        	float: The configured delay, doubled when eco mode is active.
+        """
         if self.should_use_eco_mode():
             return self.config.sleep_between_requests * 2  # Double sleep in eco mode
         return self.config.sleep_between_requests
@@ -280,7 +339,15 @@ class DataOptimizer:
 
     @staticmethod
     def decompress_text(compressed: str) -> str:
-        """Decompress text."""
+        """
+        Decompress Base64-encoded, zlib-compressed text.
+        
+        Parameters:
+            compressed (str): The encoded compressed text.
+        
+        Returns:
+            str: The decompressed UTF-8 text.
+        """
         import base64
         import zlib
 
@@ -289,7 +356,15 @@ class DataOptimizer:
 
     @staticmethod
     def strip_markdown(text: str) -> str:
-        """Remove markdown formatting to save space."""
+        """
+        Remove common Markdown formatting and excess blank lines from text.
+        
+        Parameters:
+            text (str): Text containing Markdown formatting.
+        
+        Returns:
+            str: Text with formatting removed and surrounding whitespace trimmed.
+        """
         import re
 
         # Remove code blocks
@@ -309,10 +384,20 @@ class DataOptimizer:
 
     @staticmethod
     def truncate_context(messages: List[Dict], max_tokens: int) -> List[Dict]:
-        """Truncate conversation context to save tokens."""
+        """
+        Limit conversation messages to fit within an estimated token budget.
+        
+        Parameters:
+            messages (List[Dict]): Conversation messages ordered from oldest to newest.
+            max_tokens (int): Maximum estimated token count to retain.
+        
+        Returns:
+            List[Dict]: The newest messages that fit within the token budget.
+        """
 
         # Simple token estimation (4 chars ≈ 1 token)
         def estimate_tokens(text: str) -> int:
+            """Estimate the number of tokens in text using four characters per token."""
             return len(text) // 4
 
         total_tokens = 0
@@ -345,7 +430,15 @@ class MobileOptimizer:
         self._apply_env_overrides()
 
     def _apply_env_overrides(self):
-        """Apply environment variable overrides."""
+        """
+        Apply supported environment variable overrides to the mobile configuration.
+        
+        Environment variables:
+            COMPACT_MODE (str): Enables compact mode when set to ``"1"``.
+            ZEN_MAX_TOKENS (str): Sets the maximum token limit.
+            ZEN_DEFAULT_MODEL (str): Sets the default model.
+            ZEN_CACHE_DIR (str): Sets the response cache directory.
+        """
         if os.environ.get("COMPACT_MODE") == "1":
             self.config.compact_mode = True
 
@@ -359,7 +452,17 @@ class MobileOptimizer:
             self.config.cache_dir = os.environ["ZEN_CACHE_DIR"]
 
     def optimize_request(self, prompt: str, model: str, **kwargs) -> Dict[str, Any]:
-        """Optimize a request for mobile."""
+        """
+        Prepare a request using cached results or mobile-appropriate settings.
+        
+        Parameters:
+            prompt (str): The request text used for cache lookup.
+            model (str): The requested model.
+            **kwargs: Additional request options to preserve or optimize.
+        
+        Returns:
+            Dict[str, Any]: A cached response with its cache status, or optimized model and request parameters.
+        """
         # Check cache first
         cached = self.cache.get(prompt, model, **kwargs)
         if cached:
@@ -381,7 +484,16 @@ class MobileOptimizer:
         return {"model": optimized_model, "kwargs": mobile_kwargs, "cached": False}
 
     def optimize_response(self, response: str, compress: bool = True) -> str:
-        """Optimize response for mobile display."""
+        """
+        Optimize response text for mobile use, optionally stripping Markdown and compressing the result.
+        
+        Parameters:
+            response (str): The response text to optimize.
+            compress (bool): Whether compression is allowed.
+        
+        Returns:
+            str: The optimized response text, compressed when enabled by the argument and configuration.
+        """
         if self.config.strip_markdown:
             response = self.data.strip_markdown(response)
 
@@ -396,15 +508,32 @@ class MobileOptimizer:
         return self.battery.should_use_eco_mode()
 
     def get_sleep_duration(self) -> float:
-        """Get sleep duration."""
+        """
+        Determine the delay to apply between requests based on the current battery mode.
+        
+        Returns:
+            float: The configured inter-request delay, increased when eco mode is active.
+        """
         return self.battery.get_sleep_duration()
 
     def cache_response(self, prompt: str, model: str, response: str, **kwargs):
-        """Cache a response."""
+        """Cache a model response for the specified prompt and request options.
+        
+        Parameters:
+            prompt (str): The input prompt associated with the response.
+            model (str): The model that generated the response.
+            response (str): The response content to cache.
+            **kwargs: Additional request options used to identify the cached response.
+        """
         self.cache.set(prompt, model, response, **kwargs)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get optimizer statistics."""
+        """Return cache, battery, and configuration statistics for the optimizer.
+        
+        Returns:
+            Dict[str, Any]: A mapping containing cache statistics, the current battery
+            level and eco-mode status, and the optimizer configuration.
+        """
         return {
             "cache": self.cache.get_stats(),
             "battery": {"level": self.battery.check_battery(), "eco_mode": self.battery.eco_mode},
@@ -417,7 +546,12 @@ _optimizer: Optional[MobileOptimizer] = None
 
 
 def get_optimizer() -> MobileOptimizer:
-    """Get or create mobile optimizer instance."""
+    """
+    Get the shared mobile optimizer instance.
+    
+    Returns:
+        MobileOptimizer: The module-level mobile optimizer instance.
+    """
     global _optimizer
     if _optimizer is None:
         _optimizer = MobileOptimizer()
@@ -426,7 +560,11 @@ def get_optimizer() -> MobileOptimizer:
 
 # Convenience functions
 def is_mobile() -> bool:
-    """Check if running on mobile."""
+    """Determine whether the application is running in a mobile environment.
+    
+    Returns:
+        bool: `True` when Termux, compact mode, or the Termux application path is detected; `False` otherwise.
+    """
     return (
         os.environ.get("TERMUX_VERSION") is not None
         or os.environ.get("COMPACT_MODE") == "1"
@@ -435,11 +573,28 @@ def is_mobile() -> bool:
 
 
 def optimize_for_mobile(func):
-    """Decorator to automatically optimize functions for mobile."""
+    """
+    Decorate an asynchronous function with mobile-specific model, token, and pacing adjustments.
+    
+    Parameters:
+        func: The asynchronous function to optimize.
+    
+    Returns:
+        The wrapped asynchronous function.
+    """
     from functools import wraps
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
+        """
+        Adapt a wrapped asynchronous function for mobile execution.
+        
+        On mobile, adjusts the model and token limit when provided and pauses after
+        execution when battery-saving behavior requires it.
+        
+        Returns:
+            The result produced by the wrapped function.
+        """
         if not is_mobile():
             return await func(*args, **kwargs)
 

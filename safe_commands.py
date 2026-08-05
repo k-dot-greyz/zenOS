@@ -15,7 +15,20 @@ from typing import Dict, List, Optional
 def run_command(
     cmd: List[str], cwd: Optional[str] = None, timeout: int = 30, capture_output: bool = True
 ) -> Dict:
-    """Safely run a command with timeout and proper error handling"""
+    """
+    Execute a command and provide its output and execution status.
+    
+    Parameters:
+    	cmd (List[str]): Command and arguments to execute.
+    	cwd (Optional[str]): Working directory for the command.
+    	timeout (int): Maximum execution time in seconds.
+    	capture_output (bool): Whether to capture standard output and standard error.
+    
+    Returns:
+    	Dict: A result containing stripped ``stdout`` and ``stderr`` strings, the
+    	``returncode``, and a ``success`` flag. Timeout and execution failures use
+    	a return code of ``-1`` and set ``success`` to ``False``.
+    """
     try:
         print(f"Running: {' '.join(cmd)}")
         result = subprocess.run(
@@ -42,12 +55,26 @@ def run_command(
 
 
 def safe_git_add():
-    """Safely add all changes"""
+    """
+    Stage all changes in the current Git repository.
+    
+    Returns:
+        dict: The command execution result.
+    """
     return run_command(["git", "add", "."])
 
 
 def safe_git_commit(message: str, details: List[str] = None):
-    """Safely commit with proper multiline handling"""
+    """
+    Commit staged changes with a message and optional additional message paragraphs.
+    
+    Parameters:
+        message (str): The primary commit message.
+        details (List[str], optional): Additional commit message paragraphs.
+    
+    Returns:
+        dict: The command execution result.
+    """
     cmd = ["git", "commit", "-m", message]
 
     if details:
@@ -58,17 +85,28 @@ def safe_git_commit(message: str, details: List[str] = None):
 
 
 def safe_git_push():
-    """Safely push to remote"""
+    """
+    Push local commits to the configured Git remote.
+    
+    Returns:
+        dict: Command execution results, including output, error, return code,
+            and success status.
+    """
     return run_command(["git", "push"])
 
 
 def safe_git_status():
-    """Safely check git status"""
+    """
+    Check the repository for uncommitted changes.
+    
+    Returns:
+        dict: Command execution results, including output, return code, and success status.
+    """
     return run_command(["git", "status", "--porcelain"])
 
 
 def main():
-    """Main function for testing"""
+    """Display the current Git status and report whether the check succeeded."""
     print("🧠 Safe Command Execution Utility")
     print("Following promptOS best practices")
 

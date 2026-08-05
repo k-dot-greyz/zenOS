@@ -56,22 +56,17 @@ def is_git_repository(path: Path) -> bool:
 
 def get_git_info(repo_path: Path) -> Dict:
     """
-    Gather metadata about a Git repository located at repo_path.
-
+    Gather metadata for a Git repository.
+    
     Parameters:
-        repo_path (Path): Path to the repository root (directory containing the work tree).
-
+        repo_path (Path): Path to the repository root.
+    
     Returns:
-        info (Dict): Dictionary with repository metadata containing the following keys:
-            - path (str): Absolute or relative string path of the repository.
-            - name (str): Repository directory name.
-            - status (str): One of 'valid', 'invalid', 'unknown', or starts with 'error:' followed by an error message when retrieval failed.
-            - remote_url (str | None): URL of the 'origin' remote, or None if not configured.
-            - branch (str | None): Current branch name, or None if unavailable.
-            - last_commit (str | None): Short hash, subject, and date of the latest commit (formatted), or None if unavailable.
-            - ahead_behind (str | None): Ahead/behind shorthand from `git status` (e.g., 'ahead 1, behind 2'), or None if not applicable.
-            - uncommitted_changes (bool): True if there are uncommitted changes in the working tree, False otherwise.
-            - has_staged_changes (bool): True if any changes are staged for commit, False otherwise.
+        Dict: Repository metadata including its path, name, validity status, origin
+        URL, current branch, latest commit, ahead/behind status, and change
+        indicators. The status is ``"valid"``, ``"invalid"``, ``"unknown"``, or an
+        ``"error:"`` message when metadata retrieval fails. Unavailable values are
+        represented by ``None``.
     """
     info = {
         "path": str(repo_path),
@@ -175,16 +170,15 @@ def scan_for_repositories(
     root_paths: List[Path], max_depth: int = 10, exclude_patterns: List[str] = None
 ) -> List[Dict]:
     """
-    Scan the given root paths for Git repositories by locating `.git` directories.
-
+    Search root directories for Git repositories within the depth limit.
+    
     Parameters:
-        root_paths (List[Path]): Root directories to search for repositories.
-        max_depth (int): Maximum directory depth relative to each root at which repositories are considered.
-        exclude_patterns (List[str] | None): Substring patterns; any repository path containing one of these will be skipped.
-            Defaults to ['node_modules', '.git', '__pycache__', '.venv', 'venv', 'env'] when omitted.
-
+        root_paths (List[Path]): Root directories to search.
+        max_depth (int): Maximum repository depth relative to each root.
+        exclude_patterns (List[str] | None): Substrings that cause matching repository paths to be skipped. Defaults to common dependency, cache, virtual-environment, and Git directories.
+    
     Returns:
-        List[Dict]: A list of repository information dictionaries (one per detected repository).
+        List[Dict]: Repository metadata dictionaries for detected repositories.
     """
     if exclude_patterns is None:
         exclude_patterns = ["node_modules", ".git", "__pycache__", ".venv", "venv", "env"]
@@ -411,9 +405,9 @@ def save_to_json(repositories: List[Dict], output_file: Path) -> None:
 
 def main():
     """
-    Parse command-line arguments, scan the specified (or default) filesystem paths for Git repositories, and print or save the aggregated results.
-
-    Parses CLI options (paths, max depth, exclude patterns, JSON output, details, quiet), determines scan paths, runs the repository scan, prints a colorized summary and optional per-repository details, and optionally writes results to a JSON file. Exits with status 1 if no valid scan paths are available.
+    Parse command-line arguments, scan selected filesystem paths for Git repositories, and report the results.
+    
+    The scan uses explicitly provided paths or platform-specific defaults, applies depth and exclusion options, displays repository summaries and optional details, and saves JSON output when requested. Exits with status 1 when no valid scan paths are available.
     """
     parser = argparse.ArgumentParser(
         description="Scan local filesystem for git repositories",

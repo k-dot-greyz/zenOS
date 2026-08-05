@@ -24,7 +24,7 @@ AI_MODE = os.environ.get("ZEN_AI_MODE", "false").lower() == "true"
 @click.option("--eco", is_flag=True, help="Battery-saving mode for mobile")
 @click.pass_context
 def cli(ctx, ai_mode, offline, model, eco):
-    """zenOS - Where Humans and AIs Collaborate"""
+    """Configure zenOS operating modes and display the appropriate prompt when no command is selected."""
 
     # Set global modes
     if ai_mode:
@@ -46,7 +46,9 @@ def cli(ctx, ai_mode, offline, model, eco):
 
 
 def show_interactive_menu():
-    """Show the interactive menu for humans"""
+    """
+    Display the interactive menu of available zenOS commands and collaboration options.
+    """
     print("""
 ╔══════════════════════════════════════╗
 ║         zenOS v2.0 🧘⚔️              ║
@@ -78,7 +80,14 @@ For help: zen help
 @click.argument("model2")
 @click.option("--tournament", "-t", multiple=True, help="Add more models for tournament")
 def bench(model1, model2, tournament):
-    """⚔️ Compare AI models in the Model Bench!"""
+    """
+    Compare AI models in a single battle or tournament and display the results.
+    
+    Parameters:
+        model1 (str): Name of the first model.
+        model2 (str): Name of the second model.
+        tournament (tuple[str, ...]): Additional model names to include in tournament mode.
+    """
     from zen.dex.bench import ModelBench
 
     arena = ModelBench()
@@ -115,7 +124,12 @@ def bench(model1, model2, tournament):
 @cli.command()
 @click.option("--force", "-f", is_flag=True, help="Force sync even if cache is valid")
 def sync(force):
-    """🔄 Sync Dex with OpenRouter API"""
+    """
+    Synchronize model data and rankings with the OpenRouter API.
+    
+    Parameters:
+        force (bool): Whether to clear the existing synchronization cache before syncing.
+    """
     from zen.dex.openrouter_sync import OpenRouterSync
 
     print("🔄 Syncing Dex with OpenRouter API...")
@@ -137,7 +151,7 @@ def sync(force):
 
 @cli.command()
 def arena():
-    """🏆 View Model Bench rankings"""
+    """Display the top Model Bench rankings and fighter counts by weight class."""
     arena_file = Path("dex/bench_rankings.yaml")
 
     if not arena_file.exists():
@@ -177,7 +191,14 @@ def arena():
 @click.option("--task", help="Find best model for specific task")
 @click.option("--tier", help="Filter by tier")
 def dex(category, task, tier):
-    """📖 Explore the Model & Procedure Dex"""
+    """
+    Explore the model or procedure Dex and display information filtered by category and optional criteria.
+    
+    Parameters:
+        category (str): Dex category to display, such as ``"models"`` or ``"procedures"``.
+        task (str): Task category used to show model recommendations.
+        tier (str): Model tier used to filter displayed models.
+    """
 
     if category == "models":
         models_file = Path("dex/models.yaml")
@@ -285,7 +306,11 @@ def dex(category, task, tier):
 @cli.command()
 @click.option("--ai-mode", is_flag=True, help="Check AI integration")
 def doctor(ai_mode):
-    """🏥 Check zenOS system health"""
+    """Check zenOS configuration and data files, then report system readiness.
+    
+    Parameters:
+        ai_mode (bool): Whether AI mode is enabled for this diagnostic run.
+    """
 
     print("\n🏥 zenOS System Diagnostics\n")
 

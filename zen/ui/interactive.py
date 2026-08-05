@@ -46,6 +46,7 @@ class ModelCompleter(Completer):
     """Custom completer for model names."""
 
     def __init__(self):
+        """Initialize the available model names for autocomplete suggestions."""
         self.models = [
             "claude-3-opus",
             "claude-3-sonnet",
@@ -58,6 +59,14 @@ class ModelCompleter(Completer):
         ]
 
     def get_completions(self, document, complete_event):
+        """Provide model-name completions matching the text before the cursor.
+        
+        Parameters:
+            document: The current prompt document used to determine the partial model name.
+        
+        Yields:
+            Completion: A matching model-name completion.
+        """
         word = document.get_word_before_cursor()
         for model in self.models:
             if model.startswith(word):
@@ -78,7 +87,7 @@ class InteractiveChat:
     """
 
     def __init__(self):
-        """Initialize the interactive chat."""
+        """Initialize the interactive chat interface and its session state."""
         self.config = Config()
         self.provider = None
         self.display = DisplayManager()
@@ -124,7 +133,9 @@ class InteractiveChat:
         }
 
     def _setup_keybindings(self):
-        """Setup keyboard shortcuts."""
+        """
+        Register keyboard shortcuts for clearing input, exiting the prompt, and clearing the terminal.
+        """
 
         @self.kb.add("c-c")
         def _(event):
@@ -158,7 +169,11 @@ class InteractiveChat:
         await self.chat_loop()
 
     async def chat_loop(self):
-        """Main chat interaction loop."""
+        """
+        Run the interactive chat loop and process user input until the session ends.
+        
+        Blank input is ignored, slash commands are dispatched to their handlers, and other input is added to the conversation before requesting an AI response. Keyboard interrupts restart the loop, while end-of-file input exits it.
+        """
         while True:
             try:
                 # Get user input with fancy prompt
@@ -192,7 +207,7 @@ class InteractiveChat:
                     console.print(traceback.format_exc())
 
     async def get_user_input(self) -> str:
-        """Get input from user with beautiful prompt."""
+        """Prompt for and return the user's next chat input."""
         # Create fancy prompt with model info
         model_name = self.current_model.split("/")[-1]
         prompt_text = HTML(
@@ -206,6 +221,11 @@ class InteractiveChat:
         future = loop.create_future()
 
         def get_input():
+            """
+            Run the prompt session and complete the associated future with the user's input.
+            
+            EOF and keyboard-interrupt exceptions are propagated through the future.
+            """
             try:
                 result = self.prompt_session.prompt(
                     prompt_text,
@@ -221,7 +241,11 @@ class InteractiveChat:
         return await future
 
     async def get_ai_response(self, prompt: str):
-        """Get response from AI and display it beautifully."""
+        """Generate and display a streamed AI response, then record it in the conversation history.
+        
+        Parameters:
+        	prompt (str): The user's request to send to the AI provider.
+        """
         # Show thinking animation
         with console.status("[cyan]Contemplating your request...[/cyan]", spinner="dots"):
             # Add context if any
@@ -272,7 +296,15 @@ class InteractiveChat:
             console.print(f"[dim]Cost: ${estimated_cost:.4f} | Total: ${self.total_cost:.4f}[/dim]")
 
     def _build_prompt_with_context(self, prompt: str) -> str:
-        """Build prompt with conversation history, file context, and personality."""
+        """
+        Build a prompt that combines personality, project, conversation, file, and request context.
+        
+        Parameters:
+        	prompt (str): The user's current request.
+        
+        Returns:
+        	str: The assembled prompt with relevant context.
+        """
         parts = []
 
         # Add personality and project context
@@ -304,7 +336,12 @@ class InteractiveChat:
         return "\n\n".join(parts)
 
     async def handle_command(self, command: str):
-        """Handle slash commands."""
+        """
+        Handle a slash command and its optional arguments.
+        
+        Parameters:
+            command (str): Slash command entered by the user.
+        """
         parts = command.split(maxsplit=1)
         cmd = parts[0]
         args = parts[1] if len(parts) > 1 else ""
@@ -316,7 +353,12 @@ class InteractiveChat:
             console.print("Type /help for available commands")
 
     async def show_help(self, args: str = ""):
-        """Show help information."""
+        """
+        Display the available chat commands and keyboard shortcuts.
+        
+        Parameters:
+        	args (str): Unused command arguments.
+        """
         help_table = Table(title="🧘 zenOS Chat Commands", show_header=True)
         help_table.add_column("Command", style="cyan")
         help_table.add_column("Description", style="white")
@@ -372,7 +414,10 @@ class InteractiveChat:
         self.display.show_welcome()
 
     async def show_history(self, args: str = ""):
-        """Show conversation history."""
+        """Display up to the ten most recent conversation messages with timestamps.
+        
+        Long message content is truncated to 200 characters.
+        """
         if not self.conversation_history:
             console.print("[yellow]No conversation history yet[/yellow]")
             return
@@ -389,7 +434,12 @@ class InteractiveChat:
             console.print(f"  {content}\n")
 
     async def switch_model(self, model_name: str):
-        """Switch to a different model."""
+        """
+        Switch the active chat model or display the currently selected model.
+        
+        Parameters:
+            model_name (str): Model name or supported alias to activate. An empty value displays the current model.
+        """
         if not model_name:
             console.print(f"[cyan]Current model: {self.current_model}[/cyan]")
             return
@@ -425,7 +475,7 @@ class InteractiveChat:
             )
 
     async def list_models(self, args: str = ""):
-        """List available models."""
+        """Display the available provider models with their tiers, pricing, and context windows."""
         table = Table(title="🤖 Available Models", show_header=True)
         table.add_column("Model", style="cyan")
         table.add_column("Tier", style="yellow")
@@ -441,7 +491,12 @@ class InteractiveChat:
         console.print(table)
 
     async def add_context(self, file_path: str):
-        """Add a file to the context."""
+        """
+        Add an existing path to the conversation context, or display the paths currently loaded.
+        
+        Parameters:
+            file_path (str): Path to add to the context; an empty value lists loaded paths.
+        """
         if not file_path:
             if self.context_files:
                 console.print("[cyan]Current context files:[/cyan]")
@@ -461,7 +516,9 @@ class InteractiveChat:
         console.print(f"[green]✓[/green] Added {path.name} ({size:,} bytes) to context")
 
     async def show_cost(self, args: str = ""):
-        """Show cost breakdown."""
+        """
+        Display the current session cost, message count, and active model.
+        """
         console.print(
             Panel.fit(
                 f"[bold]Session Cost Breakdown[/bold]\n\n"
@@ -474,7 +531,12 @@ class InteractiveChat:
         )
 
     async def save_conversation(self, file_path: str):
-        """Save conversation to a file."""
+        """
+        Save the current chat session as a Markdown file.
+        
+        Parameters:
+        	file_path (str): Destination path; an empty value uses a timestamped filename.
+        """
         if not file_path:
             file_path = f"zenOS_chat_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
 
@@ -530,7 +592,7 @@ class InteractiveChat:
             console.print("Available: professor, architect, oracle, intern, sovereign")
 
     async def list_personalities(self, args: str = ""):
-        """List available personality profiles."""
+        """Display all available personality profiles and identify the active personality."""
         table = Table(title="🎭 Personality Profiles", show_header=True)
         table.add_column("Name", style="cyan")
         table.add_column("Role", style="yellow")
@@ -547,7 +609,10 @@ class InteractiveChat:
         console.print(f"\n[cyan]Current: {current}[/cyan]")
 
     async def show_project_context(self, args: str = ""):
-        """Show project awareness information."""
+        """Display the current project's workspace, zenOS status, version, and structure preview.
+        
+        If project context is unavailable, display a corresponding notice.
+        """
         context = self.context.project_context
 
         if not context:
@@ -567,7 +632,7 @@ class InteractiveChat:
         )
 
     async def show_git_context(self, args: str = ""):
-        """Show git repository information."""
+        """Display the current Git branch, remote, recent commits, and a summary of changes."""
         context = self.context.git_context
 
         if not context:
@@ -589,7 +654,11 @@ class InteractiveChat:
         )
 
     async def show_genesis_wisdom(self, args: str = ""):
-        """Show loaded genesis documents and wisdom."""
+        """
+        Display loaded genesis documents, core principles, and cultural touchstones.
+        
+        If no genesis documents are loaded, display the expected directories instead.
+        """
         if not self.context.genesis_docs:
             console.print("[yellow]No genesis documents found[/yellow]")
             console.print("[dim]Place them in ai-inbox/ or .zenOS/genesis/[/dim]")

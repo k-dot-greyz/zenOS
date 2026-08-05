@@ -190,9 +190,9 @@ def process(config: Optional[str]):
 
     async def run_processing():
         """
-        Process all conversations that lack a 'processed_at' metadata entry, persist processed conversations to storage, and print a summary.
-
-        For each unprocessed conversation this function processes it with the ConversationProcessor, saves the processed conversation to storage, counts knowledge entries associated with that conversation, and prints totals for conversations processed and knowledge entries created.
+        Process and save conversations that have not yet been processed.
+        
+        Reports the number of conversations processed and associated knowledge entries.
         """
         conversations = storage.list_conversations()
         processed_count = 0

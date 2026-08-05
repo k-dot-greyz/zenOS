@@ -30,7 +30,17 @@ class GitPluginLoader:
     async def load_plugin_from_git(
         self, git_url: str, version: str = "main"
     ) -> Optional[PluginEntry]:
-        """Load a plugin from a GitHub repository"""
+        """
+        Load and register a plugin from a Git repository.
+        
+        Parameters:
+            git_url (str): URL of the Git repository containing the plugin.
+            version (str): Branch or version to clone.
+        
+        Returns:
+            Optional[PluginEntry]: The registered plugin entry, or `None` if loading,
+                validation, or registration fails.
+        """
         try:
             # Parse Git URL
             repo_info = self._parse_git_url(git_url)
@@ -71,7 +81,12 @@ class GitPluginLoader:
             return None
 
     async def update_plugin(self, plugin_id: str) -> bool:
-        """Update a plugin to the latest version"""
+        """
+        Update a registered plugin from its Git repository and refresh its registry entry.
+        
+        Returns:
+            bool: `True` if the plugin is updated successfully, `False` otherwise.
+        """
         entry = self.registry.get_plugin(plugin_id)
         if not entry:
             return False
@@ -102,7 +117,15 @@ class GitPluginLoader:
             return False
 
     async def install_dependencies(self, plugin_path: Path) -> bool:
-        """Install plugin dependencies"""
+        """
+        Install the Python and Node.js dependencies declared by a plugin.
+        
+        Parameters:
+            plugin_path (Path): Directory containing the plugin dependency files.
+        
+        Returns:
+            bool: `True` if dependency installation completes or a Python dependency installation fails; `False` if Node.js installation or another operation fails.
+        """
         try:
             # Check for requirements.txt
             requirements_file = plugin_path / "requirements.txt"
@@ -148,7 +171,15 @@ class GitPluginLoader:
             return False
 
     def _parse_git_url(self, git_url: str) -> Optional[Dict[str, str]]:
-        """Parse Git URL to extract repository information"""
+        """
+        Parse a supported GitHub URL into repository metadata.
+        
+        Parameters:
+            git_url (str): HTTPS, SSH, or abbreviated GitHub repository URL.
+        
+        Returns:
+            Optional[Dict[str, str]]: Repository owner, name, and platform, or `None` for unsupported or malformed URLs.
+        """
         try:
             # Handle different Git URL formats
             if git_url.startswith("https://github.com/"):
@@ -182,7 +213,16 @@ class GitPluginLoader:
             return None
 
     async def _clone_repository(self, git_url: str, version: str = "main") -> Optional[Path]:
-        """Clone a Git repository to a temporary directory"""
+        """
+        Clone a Git repository branch into a temporary directory.
+        
+        Parameters:
+            git_url (str): URL of the Git repository to clone.
+            version (str): Branch or version to clone.
+        
+        Returns:
+            Optional[Path]: Local repository path on success, or `None` if cloning fails.
+        """
         try:
             # Create unique directory name
             repo_name = urlparse(git_url).path.split("/")[-1].replace(".git", "")
@@ -215,7 +255,15 @@ class GitPluginLoader:
             return None
 
     async def _load_manifest(self, plugin_path: Path) -> Optional[PluginManifest]:
-        """Load plugin manifest from zenos-plugin.yaml"""
+        """
+        Load a plugin manifest from the plugin directory.
+        
+        Parameters:
+            plugin_path (Path): Directory containing ``zenos-plugin.yaml``.
+        
+        Returns:
+            Optional[PluginManifest]: The parsed plugin manifest, or ``None`` if the manifest is missing or cannot be loaded.
+        """
         try:
             manifest_file = plugin_path / "zenos-plugin.yaml"
             if not manifest_file.exists():
@@ -231,7 +279,16 @@ class GitPluginLoader:
             return None
 
     async def _validate_plugin(self, manifest: PluginManifest, plugin_path: Path) -> bool:
-        """Validate plugin structure and requirements"""
+        """
+        Validate a plugin's declared entry-point files and dependencies.
+        
+        Parameters:
+            manifest (PluginManifest): Plugin metadata containing the declared entry points.
+            plugin_path (Path): Local directory containing the plugin files.
+        
+        Returns:
+            bool: `True` if all declared entry-point files exist, `False` otherwise.
+        """
         try:
             # Check required entry points exist
             for entry_point, file_path in manifest.entry_points.items():
@@ -257,7 +314,15 @@ class GitPluginLoader:
             return False
 
     async def _git_pull(self, plugin_path: Path) -> subprocess.CompletedProcess:
-        """Pull latest changes from Git repository"""
+        """
+        Pull the latest changes from the repository at the specified path.
+        
+        Parameters:
+            plugin_path (Path): Local repository directory.
+        
+        Returns:
+            subprocess.CompletedProcess: The Git subprocess result.
+        """
         return await asyncio.create_subprocess_exec(
             "git",
             "pull",
@@ -269,7 +334,16 @@ class GitPluginLoader:
         )
 
     async def discover_plugins(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
-        """Discover plugins from GitHub using search API"""
+        """
+        Provide plugin discovery results for a search query.
+        
+        Parameters:
+        	query (str): Search terms used to identify plugins.
+        	limit (int): Maximum number of plugins to return.
+        
+        Returns:
+        	List[Dict[str, Any]]: An empty list.
+        """
         try:
             # This would use GitHub API to search for repositories with zenos-plugin.yaml
             # For now, return empty list - this would be implemented with GitHub API
@@ -280,7 +354,15 @@ class GitPluginLoader:
             return []
 
     async def load_plugin_from_local(self, local_path: Path) -> Optional[PluginEntry]:
-        """Load a plugin from a local directory"""
+        """
+        Load and register a plugin from a local directory.
+        
+        Parameters:
+            local_path (Path): Directory containing the plugin manifest and entry points.
+        
+        Returns:
+            Optional[PluginEntry]: The registered plugin entry, or `None` if loading, validation, or registration fails.
+        """
         try:
             # Load manifest
             manifest = await self._load_manifest(local_path)
@@ -305,7 +387,16 @@ class GitPluginLoader:
 
 # Convenience function
 async def load_plugin_from_git(git_url: str, version: str = "main") -> Optional[PluginEntry]:
-    """Load a plugin from Git URL"""
+    """
+    Load and register a plugin from a Git repository.
+    
+    Parameters:
+        git_url (str): URL of the Git repository.
+        version (str): Branch or version to load.
+    
+    Returns:
+        Optional[PluginEntry]: The registered plugin entry, or `None` if loading fails.
+    """
     registry = PluginRegistry()
     loader = GitPluginLoader(registry)
     return await loader.load_plugin_from_git(git_url, version)
