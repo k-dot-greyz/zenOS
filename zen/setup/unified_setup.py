@@ -489,34 +489,20 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
     
     def _setup_visual_wiki(self) -> bool:
-        """Initialize Visual Wiki submodule and agent context directory."""
+        """Ensure agent context dir exists; Visual Wiki lives outside zenOS."""
         try:
-            wiki_path = self.zenos_root / "integrations" / "visual-wiki"
-            gitmodules = self.zenos_root / ".gitmodules"
-            if gitmodules.exists() and not (wiki_path / "package.json").is_file():
-                subprocess.run(
-                    [
-                        "git",
-                        "submodule",
-                        "update",
-                        "--init",
-                        "--recursive",
-                        "integrations/visual-wiki",
-                    ],
-                    cwd=str(self.zenos_root),
-                    capture_output=True,
-                    text=True,
-                )
-
             context_dir = self.context.user_home / ".zenOS" / "context"
             context_dir.mkdir(parents=True, exist_ok=True)
 
-            if (wiki_path / "package.json").is_file():
-                print("  ✅ Visual Wiki submodule present")
+            from zen.wiki.paths import locate_visual_wiki
+
+            found, source = locate_visual_wiki(self.zenos_root)
+            if found and (found / "package.json").is_file():
+                print(f"  ✅ Visual Wiki found ({source})")
                 if self.context.node_available:
                     subprocess.run(
                         ["npm", "install"],
-                        cwd=str(wiki_path),
+                        cwd=str(found),
                         capture_output=True,
                         text=True,
                     )
@@ -524,7 +510,10 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
                 else:
                     print("  ⚠️  Node.js not available — run `zen wiki setup` later")
             else:
-                print("  ⚠️  Visual Wiki submodule missing — run `zen wiki setup`")
+                print(
+                    "  ℹ️  Visual Wiki is a separate repo (dev-master submodule: "
+                    "dex/09-repos/visual-wiki). Run `zen wiki setup` to clone locally."
+                )
             return True
         except Exception as e:
             print(f"  ⚠️  Visual Wiki setup error: {e}")

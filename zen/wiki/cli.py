@@ -22,8 +22,12 @@ from .export import (
     write_agent_context,
 )
 from .paths import (
+    DEFAULT_USER_INSTALL,
     VISUAL_WIKI_REPO,
     VisualWikiPaths,
+    dev_master_root,
+    dev_master_wiki_candidates,
+    locate_visual_wiki,
     visual_wiki_paths,
 )
 from .pipe import default_base_url, fetch_handshake, pipe_url
@@ -35,7 +39,8 @@ def _require_checkout(paths: VisualWikiPaths) -> None:
     if paths.is_checkout:
         return
     console.print(
-        "[red]Visual Wiki is not installed.[/red] Run [cyan]zen wiki setup[/cyan] first."
+        "[red]Visual Wiki is not installed.[/red] Run [cyan]zen wiki setup[/cyan] "
+        "(clone) or point [cyan]ZEN_VISUAL_WIKI_PATH[/cyan] at a dev-master submodule checkout."
     )
     sys.exit(1)
 
@@ -58,21 +63,30 @@ def wiki():
 
 @wiki.command("setup")
 @click.option(
-    "--clone",
+    "--into",
+    "install_dir",
+    type=click.Path(file_okay=False, dir_okay=True),
+    help=f"Clone target (default: {DEFAULT_USER_INSTALL})",
+)
+@click.option(
+    "--skip-clone",
     is_flag=True,
-    help="Clone into ~/.zenOS/visual-wiki instead of using the git submodule",
+    help="Only npm install when a checkout is already resolved",
 )
 @click.option("--skip-npm", is_flag=True, help="Skip npm install")
-def setup(clone: bool, skip_npm: bool):
-    """Initialize Visual Wiki (submodule or clone) and install Node dependencies."""
-    zenos_root = Path.cwd()
-    if (zenos_root / "zen" / "cli.py").is_file():
-        wiki_root = zenos_root / "integrations" / "visual-wiki"
-    else:
-        wiki_root = resolve_visual_wiki_root()
+def setup(install_dir: Optional[str], skip_clone: bool, skip_npm: bool):
+    """
+    Clone the standalone visual-wiki repo and install Node dependencies.
 
-    if clone:
-        wiki_root = Path.home() / ".zenOS" / "visual-wiki"
+    zenOS does not vendor visual-wiki; dev-master tracks it as a submodule at
+    dex/09-repos/visual-wiki when that wiring lands. Set ZEN_VISUAL_WIKI_PATH or
+    DEV_MASTER_ROOT to use an existing checkout instead of cloning.
+    """
+    found, source = locate_visual_wiki()
+    wiki_root: Optional[Path] = found
+
+    if not wiki_root and not skip_clone:
+        wiki_root = Path(install_dir).expanduser() if install_dir else DEFAULT_USER_INSTALL
         wiki_root.parent.mkdir(parents=True, exist_ok=True)
         if not (wiki_root / "package.json").is_file():
             console.print(f"Cloning Visual Wiki to {wiki_root}...")
@@ -84,29 +98,23 @@ def setup(clone: bool, skip_npm: bool):
             if result.returncode != 0:
                 console.print(f"[red]Clone failed:[/red] {result.stderr}")
                 sys.exit(1)
-        os.environ["ZEN_VISUAL_WIKI_PATH"] = str(wiki_root)
+        source = str(wiki_root)
+        console.print(
+            "[dim]Tip: export ZEN_VISUAL_WIKI_PATH="
+            f'"{wiki_root}"[/dim] [dim]to pin this checkout.[/dim]'
+        )
+    elif wiki_root:
+        console.print(f"Using existing checkout ({source}): {wiki_root}")
     else:
-        wiki_root = zenos_root / "integrations" / "visual-wiki"
-        if not (wiki_root / "package.json").is_file():
-            console.print("Initializing git submodule...")
-            result = subprocess.run(
-                [
-                    "git",
-                    "submodule",
-                    "update",
-                    "--init",
-                    "--recursive",
-                    "integrations/visual-wiki",
-                ],
-                cwd=str(zenos_root),
-                capture_output=True,
-                text=True,
-            )
-            if result.returncode != 0:
-                console.print(f"[red]Submodule init failed:[/red] {result.stderr}")
-                sys.exit(1)
+        console.print("[red]No checkout found and --skip-clone was set.[/red]")
+        sys.exit(1)
 
-    paths = visual_wiki_paths(zenos_root)
+    paths = VisualWikiPaths(
+        root=wiki_root,
+        resources_file=wiki_root / "resources.json",
+        package_json=wiki_root / "package.json",
+        source=source or "setup",
+    )
     if not paths.is_checkout:
         console.print("[red]Visual Wiki checkout not found after setup.[/red]")
         sys.exit(1)
@@ -133,17 +141,35 @@ def show_path():
 def status():
     """Show Visual Wiki install and resource summary."""
     paths = visual_wiki_paths()
-    resources = load_resources(paths)
+    resources = load_resources(paths) if paths.is_checkout else []
 
     table = Table(title="Visual Wiki")
     table.add_column("Key", style="cyan")
     table.add_column("Value")
     table.add_row("Root", str(paths.root))
+    table.add_row("Source", paths.source)
     table.add_row("Checkout", "yes" if paths.is_checkout else "no")
     table.add_row("resources.json", "yes" if paths.resources_file.is_file() else "no")
     table.add_row("Resources", str(len(resources)))
     table.add_row("npm", shutil.which("npm") or "not found")
+
+    dm = dev_master_root()
+    table.add_row("dev-master", str(dm) if dm else "not found")
+    for candidate in dev_master_wiki_candidates():
+        try:
+            label = candidate.relative_to(dm) if dm else candidate
+        except ValueError:
+            label = candidate
+        present = "yes" if (candidate / "package.json").is_file() else "no"
+        table.add_row(f"  {label}", present)
+
     console.print(table)
+    if not paths.is_checkout:
+        console.print(
+            "\n[dim]visual-wiki is a separate repo. Clone with[/dim] "
+            "[cyan]zen wiki setup[/cyan][dim], use dev-master's submodule when available, "
+            "or set ZEN_VISUAL_WIKI_PATH.[/dim]"
+        )
 
 
 @wiki.command("dev")
@@ -206,8 +232,10 @@ def prompt_cmd():
 )
 def sync(output_dir: Optional[str]):
     """Sync exports to ~/.zenOS/context for agent context hydration."""
+    paths = visual_wiki_paths()
+    _require_checkout(paths)
     out = Path(output_dir) if output_dir else None
-    written = write_agent_context(output_dir=out)
+    written = write_agent_context(output_dir=out, paths=paths)
     console.print("[green]✓[/green] Agent context updated:")
     for label, path in written.items():
         console.print(f"  {label}: {path}")
