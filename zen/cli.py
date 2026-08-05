@@ -333,5 +333,9 @@ cli.add_command(receive)
 from zen.pkm.cli import pkm
 cli.add_command(pkm)
 
+# Visual Wiki knowledge garden
+from zen.wiki.cli import wiki
+cli.add_command(wiki)
+
 if __name__ == "__main__":
     cli()

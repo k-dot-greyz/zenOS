@@ -278,6 +278,11 @@ class UnifiedSetupManager:
         if not self._setup_workspace():
             print("  ❌ Failed to setup workspace")
             return False
+
+        # Visual Wiki (optional — requires git + node for full UI)
+        print("  🌿 Setting up Visual Wiki integration...")
+        if not self._setup_visual_wiki():
+            print("  ⚠️  Visual Wiki setup skipped or incomplete, continuing...")
         
         self.current_phase = SetupPhase.VERIFICATION
         return True
@@ -483,6 +488,48 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             print(f"  ❌ promptOS integration failed: {e}")
             return False
     
+    def _setup_visual_wiki(self) -> bool:
+        """Initialize Visual Wiki submodule and agent context directory."""
+        try:
+            wiki_path = self.zenos_root / "integrations" / "visual-wiki"
+            gitmodules = self.zenos_root / ".gitmodules"
+            if gitmodules.exists() and not (wiki_path / "package.json").is_file():
+                subprocess.run(
+                    [
+                        "git",
+                        "submodule",
+                        "update",
+                        "--init",
+                        "--recursive",
+                        "integrations/visual-wiki",
+                    ],
+                    cwd=str(self.zenos_root),
+                    capture_output=True,
+                    text=True,
+                )
+
+            context_dir = self.context.user_home / ".zenOS" / "context"
+            context_dir.mkdir(parents=True, exist_ok=True)
+
+            if (wiki_path / "package.json").is_file():
+                print("  ✅ Visual Wiki submodule present")
+                if self.context.node_available:
+                    subprocess.run(
+                        ["npm", "install"],
+                        cwd=str(wiki_path),
+                        capture_output=True,
+                        text=True,
+                    )
+                    print("  ✅ Visual Wiki npm dependencies installed")
+                else:
+                    print("  ⚠️  Node.js not available — run `zen wiki setup` later")
+            else:
+                print("  ⚠️  Visual Wiki submodule missing — run `zen wiki setup`")
+            return True
+        except Exception as e:
+            print(f"  ⚠️  Visual Wiki setup error: {e}")
+            return False
+
     def _setup_workspace(self) -> bool:
         """Setup workspace directories"""
         try:
@@ -497,7 +544,8 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
                 "inbox/processed",
                 "inbox/tools",
                 "inbox/context",
-                "inbox/ideas"
+                "inbox/ideas",
+                "integrations",
             ]
             
             for dir_path in workspace_dirs:
