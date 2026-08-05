@@ -15,6 +15,25 @@ import httpx
 import yaml
 
 
+def _safe_float(value: Any, default: float = 0.0) -> float:
+    """
+    Safely parse a value to float, handling None, empty strings, and invalid types.
+
+    Args:
+        value: The value to parse (may be None, str, int, float, or other)
+        default: The default value to return if parsing fails
+
+    Returns:
+        float: The parsed float value or the default
+    """
+    if value is None or value == "":
+        return default
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
+
 @dataclass
 class ModelAPIStats:
     """Real stats from OpenRouter API"""
@@ -59,7 +78,7 @@ class ModelBenchStats:
         special = len(subjective.get("feats", subjective.get("capabilities", []))) * 10
 
         # Cost stat (inverse - cheaper is better for this stat)
-        prompt_cost = api_stats.pricing.get("prompt", 0.001)
+        prompt_cost = _safe_float(api_stats.pricing.get("prompt"), default=0.001)
         if prompt_cost > 0:
             cost = int(100 - min(prompt_cost * 1000, 95))  # Cheaper = higher stat
         else:
@@ -187,7 +206,7 @@ class OpenRouterSync:
 
     def determine_tier(self, model_id: str, pricing: Dict) -> str:
         """Determine model tier based on feats and cost"""
-        prompt_cost = pricing.get("prompt", 0)
+        prompt_cost = _safe_float(pricing.get("prompt"), default=0.0)
 
         # Legendary: Top tier, expensive models
         if "opus" in model_id.lower() or (
@@ -291,8 +310,8 @@ class OpenRouterSync:
                 "feats": feats,
                 "context_window": api_model.get("context_length", 4096),
                 "cost_per_1k": {
-                    "input": api_model.get("pricing", {}).get("prompt", 0) * 1000,
-                    "output": api_model.get("pricing", {}).get("completion", 0) * 1000,
+                    "input": _safe_float(api_model.get("pricing", {}).get("prompt"), default=0.0) * 1000,
+                    "output": _safe_float(api_model.get("pricing", {}).get("completion"), default=0.0) * 1000,
                 },
                 "api_data": {
                     "top_provider": api_model.get("top_provider"),
