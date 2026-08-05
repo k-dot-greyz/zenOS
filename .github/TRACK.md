@@ -1,13 +1,14 @@
 # Get back on track (zenOS)
 
-Short stack after the draft-CI exorcism. Not a novel — a runway.
+Short stack after the draft-CI exorcism. Full audit: [`docs/planning/REWORK_SPRINT_AUDIT.md`](../docs/planning/REWORK_SPRINT_AUDIT.md).
 
 ## Order of operations
 
 1. **Land CI floor** (this PR) — Python ≥3.14, kill template workflows, fix `requirements.txt` stdlib poison so installs work.
-2. **Rebase / re-run [#47](https://github.com/k-dot-greyz/zenOS/pull/47)** (pokedex→dex) on top of the new gate. The old red CI was install failure, not proof the rebrand is broken.
-3. **Then** merge wiki / agent integration ([#48](https://github.com/k-dot-greyz/zenOS/pull/48)) against a dex-aware `main`.
-4. **Rust lane**: drop `Cargo.toml` (+ crates) when ready; CI already has an idle Rust job that activates on presence.
+2. **Unbreak `zen`** — fix `@click.alias` crash, add `main()`, fix setuptools package discovery (Track 0 in audit).
+3. **Rebase / finish [#47](https://github.com/k-dot-greyz/zenOS/pull/47)** (pokedex→dex) on the new floor.
+4. **Then** merge wiki ([#48](https://github.com/k-dot-greyz/zenOS/pull/48)) against dex-aware `main`.
+5. **Rust lane**: drop `Cargo.toml` (+ crates) when ready; CI already has an idle Rust job.
 
 ## Non-goals (for this cut)
 
