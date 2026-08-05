@@ -16,53 +16,6 @@ on:
 permissions:
   contents: read
 
-<<<<<<< HEAD
-jobs:
-  # Fast linting checks run first
-  lint:
-    name: Lint & Format Check
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python 3.14
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-          cache: 'pip'
-      
-      - name: Install linting tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install black isort flake8 yamllint
-      
-      - name: Check Python formatting with black
-        run: black --check .
-      
-      - name: Check import sorting with isort
-        run: isort --check-only .
-      
-      - name: Lint Python with flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      
-      - name: Lint YAML files
-        run: |
-          yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
-        continue-on-error: true
-
-  # Test Python scripts if present
-  test:
-    name: Python Tests
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4
-      
-=======
 concurrency:
   group: zenos-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -75,21 +28,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
->>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-<<<<<<< HEAD
-          cache: 'pip'
-      
-      - name: Install dependencies
-=======
           allow-prereleases: true
           cache: pip
 
       - name: Install package (editable + dev)
->>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
@@ -111,41 +57,11 @@ jobs:
             exit 1
           fi
 
-<<<<<<< HEAD
-  # Security checks
-  security:
-    name: Security Scan
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python 3.14
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-          cache: 'pip'
-      
-      - name: Install security tools
+      - name: CLI smoke
         run: |
-          python -m pip install --upgrade pip
-          pip install bandit safety
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      
-      - name: Run Bandit security scan
-        run: |
-          bandit -r . -f json -o bandit-report.json || true
-          bandit -r . -ll || true
-        continue-on-error: true
-      
-      - name: Check for known vulnerabilities
-        run: safety check --json || true
-        continue-on-error: true
+          zen --help
+          zen env-doctor --ai-mode
 
-  # Shell script validation
-  shell-check:
-    name: Shell Script Validation
-=======
   rust:
     name: Rust (when present)
     runs-on: ubuntu-24.04
@@ -175,7 +91,6 @@ jobs:
 
   shell:
     name: Shell scripts
->>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -194,57 +109,4 @@ jobs:
             echo "No shell scripts to check"
             exit 0
           fi
-<<<<<<< HEAD
-        continue-on-error: true
-
-  # Documentation check
-  docs:
-    name: Documentation Build
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python 3.14
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-          cache: 'pip'
-      
-      - name: Install mkdocs
-        run: |
-          pip install mkdocs mkdocs-material
-      
-      - name: Build documentation
-        run: |
-          if [ -f mkdocs.yml ]; then
-            mkdocs build --strict
-          else
-            echo "No mkdocs.yml found, skipping"
-          fi
-        continue-on-error: true
-
-  # Summary job - reports overall status
-  ci-success:
-    name: CI Status Check
-    runs-on: ubuntu-24.04
-    needs: [lint, test, security, shell-check, docs]
-    if: always()
-    steps:
-      - name: Check all jobs status
-        run: |
-          echo "Lint: ${{ needs.lint.result }}"
-          echo "Test: ${{ needs.test.result }}"
-          echo "Security: ${{ needs.security.result }}"
-          echo "Shell Check: ${{ needs.shell-check.result }}"
-          echo "Docs: ${{ needs.docs.result }}"
-          
-          if [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ]; then
-            echo "::warning::Some checks failed or were skipped"
-            exit 1
-          fi
-          echo "✅ All critical checks passed!"
-=======
           shellcheck "${scripts[@]}"
->>>>>>> 5c71611 (ci: exorcise draft workflows; Python 3.14 floor; Rust-ready gate)
