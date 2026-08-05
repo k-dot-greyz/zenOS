@@ -138,6 +138,7 @@ class ContextManager:
         self._load_genesis_docs()
         self._load_project_context()
         self._load_git_context()
+        self._load_visual_wiki_context()
     
     def _load_genesis_docs(self):
         """Load genesis documents from ai-inbox or project root."""
@@ -192,6 +193,17 @@ class ContextManager:
         except Exception as e:
             console.print(f"[yellow]Warning: Could not load project context: {e}[/yellow]")
     
+    def _load_visual_wiki_context(self):
+        """Load curated Visual Wiki exports when synced to ~/.zenOS/context."""
+        self.visual_wiki_context: Dict[str, Any] = {}
+        context_file = Path.home() / ".zenOS" / "context" / "visual-wiki.json"
+        if not context_file.is_file():
+            return
+        try:
+            self.visual_wiki_context = json.loads(context_file.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            self.visual_wiki_context = {}
+
     def _load_git_context(self):
         """Load git information."""
         try:
@@ -336,6 +348,7 @@ Key philosophical principles from the genesis documents:
             "genesis": self.genesis_docs,
             "project": self.project_context,
             "git": self.git_context,
+            "visual_wiki": getattr(self, "visual_wiki_context", {}),
             "cultural_references": self.CULTURAL_REFERENCES
         }
     
@@ -366,6 +379,19 @@ Key philosophical principles from the genesis documents:
             parts.append(f"\n--- Genesis Wisdom ---")
             parts.append("The system is guided by the genesis documents: System Manifest, Genesis Log, and Manuscript Draft.")
             parts.append("Core principle: Build sovereign systems, not features.")
+
+        wiki_ctx = getattr(self, "visual_wiki_context", {})
+        if wiki_ctx.get("resources"):
+            parts.append("\n--- Visual Wiki (curated resources) ---")
+            parts.append(
+                f"{wiki_ctx.get('total', len(wiki_ctx['resources']))} resources "
+                "(run `zen wiki sync` to refresh)"
+            )
+            for item in wiki_ctx["resources"][:15]:
+                parts.append(
+                    f"• {item.get('title', '')} — {item.get('description', '')} "
+                    f"[{item.get('link', '')}]"
+                )
         
         return "\n".join(parts)
 

@@ -278,6 +278,11 @@ class UnifiedSetupManager:
         if not self._setup_workspace():
             print("  ❌ Failed to setup workspace")
             return False
+
+        # Visual Wiki (optional — requires git + node for full UI)
+        print("  🌿 Setting up Visual Wiki integration...")
+        if not self._setup_visual_wiki():
+            print("  ⚠️  Visual Wiki setup skipped or incomplete, continuing...")
         
         self.current_phase = SetupPhase.VERIFICATION
         return True
@@ -483,6 +488,37 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             print(f"  ❌ promptOS integration failed: {e}")
             return False
     
+    def _setup_visual_wiki(self) -> bool:
+        """Ensure agent context dir exists; Visual Wiki lives outside zenOS."""
+        try:
+            context_dir = self.context.user_home / ".zenOS" / "context"
+            context_dir.mkdir(parents=True, exist_ok=True)
+
+            from zen.wiki.paths import locate_visual_wiki
+
+            found, source = locate_visual_wiki(self.zenos_root)
+            if found and (found / "package.json").is_file():
+                print(f"  ✅ Visual Wiki found ({source})")
+                if self.context.node_available:
+                    subprocess.run(
+                        ["npm", "install"],
+                        cwd=str(found),
+                        capture_output=True,
+                        text=True,
+                    )
+                    print("  ✅ Visual Wiki npm dependencies installed")
+                else:
+                    print("  ⚠️  Node.js not available — run `zen wiki setup` later")
+            else:
+                print(
+                    "  ℹ️  Visual Wiki is a separate repo (dev-master submodule: "
+                    "dex/09-repos/visual-wiki). Run `zen wiki setup` to clone locally."
+                )
+            return True
+        except Exception as e:
+            print(f"  ⚠️  Visual Wiki setup error: {e}")
+            return False
+
     def _setup_workspace(self) -> bool:
         """Setup workspace directories"""
         try:
@@ -497,7 +533,8 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
                 "inbox/processed",
                 "inbox/tools",
                 "inbox/context",
-                "inbox/ideas"
+                "inbox/ideas",
+                "integrations",
             ]
             
             for dir_path in workspace_dirs:

@@ -49,7 +49,19 @@ zen notes search "topic"    # Find relevant information
 zen context sync            # Update working context
 ```
 
-### 4. **Repo Management**
+### 5. **Visual Wiki (Knowledge Garden)**
+Curate links in the standalone [visual-wiki](https://github.com/k-dot-greyz/visual-wiki) app (submodule lives under **dev-master** at `dex/09-repos/visual-wiki`, not inside zenOS). zenOS connects via CLI + synced agent context:
+
+```bash
+zen wiki setup              # Clone to ~/.zenOS/visual-wiki (or use dev-master checkout)
+zen wiki dev                # http://localhost:3000
+zen wiki sync               # Export to ~/.zenOS/context for agent prompts
+zen wiki pipe <url>         # Ingest via /api/pipe (dev server running)
+```
+
+Set `ZEN_VISUAL_WIKI_PATH` to your checkout, or `DEV_MASTER_ROOT` so zen can find `dex/09-repos/visual-wiki`.
+
+### 6. **Repo Management**
 Intelligent repository analysis and organization:
 ```bash
 zen repo analyze            # Deep dive into codebase
