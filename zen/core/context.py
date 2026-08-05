@@ -140,6 +140,7 @@ class ContextManager:
         self._load_genesis_docs()
         self._load_project_context()
         self._load_git_context()
+        self._load_visual_wiki_context()
 
     def _load_genesis_docs(self):
         """Load genesis documents from ai-inbox or project root."""
@@ -191,6 +192,24 @@ class ContextManager:
                 self.project_context["zenos_version"] = self._get_zenos_version()
         except Exception as e:
             console.print(f"[yellow]Warning: Could not load project context: {e}[/yellow]")
+
+    def _load_visual_wiki_context(self):
+        """Load curated Visual Wiki exports when synced to ~/.zenOS/context."""
+        self.visual_wiki_context: Dict[str, Any] = {}
+        context_file = Path.home() / ".zenOS" / "context" / "visual-wiki.json"
+        if not context_file.is_file():
+            return
+        try:
+            payload = json.loads(context_file.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return
+        if not isinstance(payload, dict):
+            return
+        resources = payload.get("resources", [])
+        if not isinstance(resources, list):
+            resources = []
+        payload["resources"] = [r for r in resources if isinstance(r, dict)]
+        self.visual_wiki_context = payload
 
     def _load_git_context(self):
         """Load git information."""
@@ -336,6 +355,7 @@ Key philosophical principles from the genesis documents:
             "genesis": self.genesis_docs,
             "project": self.project_context,
             "git": self.git_context,
+            "visual_wiki": getattr(self, "visual_wiki_context", {}),
             "cultural_references": self.CULTURAL_REFERENCES,
         }
 
@@ -370,5 +390,21 @@ Key philosophical principles from the genesis documents:
                 "The system is guided by the genesis documents: System Manifest, Genesis Log, and Manuscript Draft."
             )
             parts.append("Core principle: Build sovereign systems, not features.")
+
+        wiki_ctx = getattr(self, "visual_wiki_context", {})
+        resources = wiki_ctx.get("resources") if isinstance(wiki_ctx, dict) else None
+        if isinstance(resources, list) and resources:
+            parts.append("\n--- Visual Wiki (curated resources) ---")
+            parts.append(
+                f"{wiki_ctx.get('total', len(resources))} resources "
+                "(run `zen wiki sync` to refresh)"
+            )
+            for item in resources[:15]:
+                if not isinstance(item, dict):
+                    continue
+                parts.append(
+                    f"• {item.get('title', '')} — {item.get('description', '')} "
+                    f"[{item.get('link', '')}]"
+                )
 
         return "\n".join(parts)

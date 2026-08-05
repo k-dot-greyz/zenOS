@@ -376,6 +376,11 @@ cli.add_command(bench)
 cli.add_command(sync)
 cli.add_command(arena)
 
+# Visual Wiki knowledge garden
+from zen.wiki.cli import wiki
+
+cli.add_command(wiki)
+
 
 def _run_env_doctor(ai_mode: bool, outdated: bool) -> None:
     from zen.setup.env_doctor import format_report, run_env_doctor
@@ -400,7 +405,6 @@ def doctor(ai_mode: bool, outdated: bool) -> None:
 def env_doctor(ai_mode: bool, outdated: bool) -> None:
     """Alias for doctor — environment, Python floor, and dependency status."""
     _run_env_doctor(ai_mode, outdated)
-
 
 if __name__ == "__main__":
     main()

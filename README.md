@@ -49,7 +49,20 @@ zen notes search "topic"    # Find relevant information
 zen context sync            # Update working context
 ```
 
-### 4. **Repo Management**
+### 5. **Visual Wiki (Knowledge Garden)**
+Curate links and docs in a visual card UI, then feed agents via CLI sync ([visual-wiki](https://github.com/k-dot-greyz/visual-wiki) submodule):
+
+```bash
+zen wiki setup              # Init submodule + npm install
+zen wiki dev                # Open the garden at http://localhost:3000
+zen wiki sync               # Export to ~/.zenOS/context for agent prompts
+zen wiki pipe <url>         # Ingest a link via /api/pipe (with dev server running)
+zen wiki export             # JSON export (same shape as the web UI)
+```
+
+Set `ZEN_VISUAL_WIKI_PATH` to point at a standalone clone if you are not using the submodule.
+
+### 6. **Repo Management**
 Intelligent repository analysis and organization:
 ```bash
 zen repo analyze            # Deep dive into codebase
