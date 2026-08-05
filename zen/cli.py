@@ -353,7 +353,7 @@ def setup(unattended, validate_only, phase):
 
 # Add plugin commands to CLI
 cli.add_command(plugins)
-cli.add_command(receive)
+cli.add_command(receive, name="inbox")
 
 # Add PKM commands
 from zen.pkm.cli import pkm
@@ -369,5 +369,10 @@ cli.add_command(sync)
 cli.add_command(arena)
 
 
+def main() -> None:
+    """Console entrypoint for ``zen`` / ``zenos`` scripts."""
+    cli(obj={})
+
+
 if __name__ == "__main__":
-    cli()
+    main()

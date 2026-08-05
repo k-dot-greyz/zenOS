@@ -57,6 +57,9 @@ jobs:
             exit 1
           fi
 
+      - name: CLI smoke
+        run: zen --help
+
   rust:
     name: Rust (when present)
     runs-on: ubuntu-24.04
