@@ -14,7 +14,18 @@ import yaml
 
 
 def load_templates(yaml_path="../ai_post_templates.yaml"):
-    """Load templates from YAML file"""
+    """
+    Load post templates from a YAML file.
+    
+    Parameters:
+        yaml_path (str): Path to the YAML file containing the ``ai_post_templates`` mapping.
+    
+    Returns:
+        dict: The template mapping from the YAML file.
+    
+    Exits:
+        Exits with status 1 if the file is missing or does not contain the expected mapping.
+    """
     try:
         with open(yaml_path, "r") as f:
             return yaml.safe_load(f)["ai_post_templates"]
@@ -28,7 +39,15 @@ def load_templates(yaml_path="../ai_post_templates.yaml"):
 
 
 def copy_to_clipboard_cross_platform(text):
-    """Copy text to clipboard using system-appropriate method"""
+    """
+    Copy text to the system clipboard using the platform's available clipboard utility.
+    
+    Parameters:
+        text (str): Text to copy to the clipboard.
+    
+    Returns:
+        bool: `True` if the text was copied successfully, `False` if the platform is unsupported or the clipboard operation fails.
+    """
     system = platform.system().lower()
 
     try:
@@ -57,7 +76,18 @@ def copy_to_clipboard_cross_platform(text):
 
 
 def present_choices(templates):
-    """Display template choices and get user selection"""
+    """
+    Display available templates and prompt for a selection.
+    
+    Parameters:
+    	templates (dict): Mapping of template keys to template data containing a title and vibe.
+    
+    Returns:
+    	str: Key of the selected template.
+    
+    Exits:
+    	The program exits when the user enters "q".
+    """
     print("\n🎭 zenOS AI Post Template Selector")
     print("=" * 50)
 
@@ -85,7 +115,9 @@ def present_choices(templates):
 
 
 def preview_template(template_data):
-    """Show template preview before copying"""
+    """
+    Display a selected template's title, vibe, and full text.
+    """
     print("\n" + "=" * 60)
     print(f"🎯 {template_data['title']} ({template_data['vibe']})")
     print("=" * 60)
@@ -94,7 +126,7 @@ def preview_template(template_data):
 
 
 def main():
-    """Main execution flow"""
+    """Run the interactive template selection and clipboard-copy workflow."""
     print("🚀 Loading zenOS AI Post Templates...")
 
     # Load templates

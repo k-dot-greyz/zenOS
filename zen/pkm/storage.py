@@ -70,10 +70,13 @@ class PKMStorage:
 
     def load_conversation(self, conversation_id: str) -> Optional[Conversation]:
         """
-        Load a Conversation object with the given ID from storage.
-
+        Load a stored conversation by its identifier.
+        
+        Parameters:
+            conversation_id (str): Identifier of the conversation to load.
+        
         Returns:
-            Conversation: The loaded Conversation if the corresponding JSON file exists and is parsed successfully, `None` if the file does not exist or an error occurs while reading or parsing.
+            Optional[Conversation]: The loaded conversation, or `None` if its file is missing or cannot be read or parsed.
         """
         json_path = self.conversations_dir / f"{conversation_id}.json"
 
@@ -91,12 +94,12 @@ class PKMStorage:
     def list_conversations(self, limit: Optional[int] = None) -> List[Conversation]:
         """
         Retrieve stored conversations sorted by most recently updated.
-
+        
         Parameters:
-                limit (int | None): Maximum number of conversations to return. If omitted or None, all conversations are returned.
-
+                limit (int | None): Optional maximum number of conversations to return. A value of 0 or None returns all conversations.
+        
         Returns:
-                conversations (List[Conversation]): Conversations sorted by `updated_at` in descending order, truncated to `limit` when provided.
+                conversations (List[Conversation]): Conversations sorted by `updated_at` in descending order, optionally truncated to `limit`.
         """
         conversations = []
 
@@ -115,14 +118,14 @@ class PKMStorage:
 
     def search_conversations(self, query: str, limit: Optional[int] = None) -> List[Conversation]:
         """
-        Search conversations for a case-insensitive query across title, message contents, and summary.
-
+        Find conversations containing a case-insensitive substring in their titles, messages, or summaries.
+        
         Parameters:
-                query (str): The substring to match (case-insensitive) against conversation title, any message content, or the conversation summary.
-                limit (Optional[int]): Maximum number of matching conversations to return. If omitted or None, returns all matches.
-
+        	query (str): The substring to search for.
+        	limit (Optional[int]): Maximum number of results to return.
+        
         Returns:
-                matches (List[Conversation]): Conversations that contain the query in title, any message, or summary. Results preserve the order returned by list_conversations and are truncated to `limit` when provided.
+        	List[Conversation]: Matching conversations in listing order.
         """
         results = []
         query_lower = query.lower()
@@ -180,15 +183,13 @@ class PKMStorage:
 
     def save_knowledge_entry(self, entry: KnowledgeEntry) -> bool:
         """
-        Persist a KnowledgeEntry to the configured knowledge base directory as a JSON file.
-
-        Writes the entry to a file named "{entry.id}.json" in the storage knowledge base directory. Overwrites any existing file with the same id.
-
+        Persist a knowledge entry as a JSON file in the configured knowledge base directory.
+        
         Parameters:
-            entry (KnowledgeEntry): The knowledge entry to persist.
-
+            entry (KnowledgeEntry): The knowledge entry to save.
+        
         Returns:
-            bool: `true` if the entry was written successfully, `false` otherwise.
+            bool: `True` if the entry was saved successfully, `False` otherwise.
         """
         try:
             json_path = self.knowledge_base_dir / f"{entry.id}.json"
@@ -224,13 +225,13 @@ class PKMStorage:
 
     def list_knowledge_entries(self, limit: Optional[int] = None) -> List[KnowledgeEntry]:
         """
-        Return stored knowledge entries sorted by `updated_at` in descending order.
-
+        List stored knowledge entries in descending order of their update time.
+        
         Parameters:
-            limit (Optional[int]): Maximum number of entries to return; if omitted or None, return all entries.
-
+            limit (Optional[int]): Maximum number of entries to return. Omitted, `None`, or zero returns all entries.
+        
         Returns:
-            List[KnowledgeEntry]: List of knowledge entries sorted from newest to oldest by `updated_at`.
+            List[KnowledgeEntry]: Valid stored knowledge entries ordered from newest to oldest.
         """
         entries = []
 
@@ -251,14 +252,14 @@ class PKMStorage:
         self, query: str, limit: Optional[int] = None
     ) -> List[KnowledgeEntry]:
         """
-        Search knowledge entries for a case-insensitive match in title, content, or tags.
-
+        Search knowledge entries for case-insensitive matches in their titles, content, or tags.
+        
         Parameters:
-            query (str): Substring to search for within entry title, content, and tags.
-            limit (Optional[int]): Maximum number of results to return; if omitted, all matches are returned.
-
+            query (str): Text to find in each entry's title, content, or tags.
+            limit (Optional[int]): Positive maximum number of results to return.
+        
         Returns:
-            List[KnowledgeEntry]: Matching knowledge entries, up to `limit` if provided.
+            List[KnowledgeEntry]: Matching entries, truncated to the specified positive limit.
         """
         results = []
         query_lower = query.lower()

@@ -43,13 +43,13 @@ class Launcher:
 
     async def critique_prompt_async(self, prompt: str) -> str:
         """
-        Enhance a prompt using the PromptOS critique system.
-
-        Args:
-            prompt: Original prompt
-
+        Improve a prompt when automatic critique is enabled.
+        
+        Parameters:
+            prompt (str): The original prompt to evaluate.
+        
         Returns:
-            Enhanced prompt
+            str: The improved prompt, or the original prompt when critique is disabled, unavailable, or fails.
         """
         if not self.config.config.auto_critique:
             return prompt
@@ -69,19 +69,30 @@ class Launcher:
             return prompt
 
     def critique_prompt(self, prompt: str) -> str:
-        """Synchronous wrapper for critique_prompt_async."""
+        """
+        Improve a prompt using the configured critique system.
+        
+        Parameters:
+            prompt (str): The prompt to critique.
+        
+        Returns:
+            str: The improved prompt, or the original prompt when critique is unavailable or fails.
+        """
         return asyncio.run(self.critique_prompt_async(prompt))
 
     async def execute_async(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """
-        Execute an agent with AI capabilities.
-
-        Args:
-            prompt: User prompt
-            variables: Additional variables
-
+        Execute the currently loaded agent with the provided prompt and variables.
+        
+        Parameters:
+            prompt (str): The prompt to send to the agent.
+            variables (Dict[str, Any]): Additional values supplied to the agent.
+        
         Returns:
-            Agent response
+            Any: The agent's response.
+        
+        Raises:
+            ValueError: If no agent is loaded or the loaded agent has no execution method.
         """
         if not self.current_agent:
             raise ValueError("No agent loaded")

@@ -33,7 +33,7 @@ console = Console()
 @click.group()
 @click.option("--version", is_flag=True, help="Show version")
 def cli(version: bool):
-    """🧘 zenOS - The Zen of AI Workflow Orchestration"""
+    """Display the zenOS version when requested."""
     if version:
         console.print(f"zenOS v{__version__}")
         return
@@ -68,16 +68,21 @@ def run(
     eco: bool,
 ) -> None:
     """
-    🧘 zenOS - The Zen of AI Workflow Orchestration
-
-    Run AI agents with zen-like simplicity.
-
-    Examples:
-        zen chat                      # Start interactive chat mode
-        zen troubleshoot "fix my git issue"
-        zen critic "review this prompt"
-        zen --list
-        zen --create my-agent
+    Run an AI agent, start interactive chat, or manage registered agents.
+    
+    The command can display the version, list available agents, create an agent
+    template, or execute an agent with optional variables and prompt-processing
+    options. Interactive chat supports offline, eco, model, and compact-device
+    settings.
+    
+    Parameters:
+        agent (Optional[str]): Agent name to execute, or ``"chat"`` to start
+            interactive chat.
+        prompt (Optional[str]): Prompt to provide to the agent.
+        vars (Optional[str]): Agent variables as JSON or comma-separated
+            ``key=value`` pairs.
+        upgrade_only (bool): Upgrade the prompt without requiring a prompt
+            execution.
     """
 
     if version:
@@ -220,7 +225,15 @@ def create_agent(name: str) -> None:
 
 
 def parse_variables(vars_str: str) -> Dict[str, Any]:
-    """Parse variables from string input."""
+    """
+    Parse variables from JSON or comma-separated key-value input.
+    
+    Parameters:
+    	vars_str (str): A JSON object or comma-separated sequence of key=value pairs.
+    
+    Returns:
+    	Dict[str, Any]: The parsed variables, or an empty dictionary when no valid pairs are found.
+    """
     # Try JSON first
     try:
         return json.loads(vars_str)
@@ -245,7 +258,17 @@ def run_agent(
     upgrade_only: bool,
     debug: bool,
 ) -> None:
-    """Run an agent with the given prompt."""
+    """
+    Load and execute an agent with the provided prompt and variables.
+    
+    Parameters:
+        agent (str): Name or identifier of the agent to run.
+        prompt (str): Prompt to provide to the agent.
+        variables (Dict[str, Any]): Variables available during execution.
+        no_critique (bool): Whether to skip prompt enhancement.
+        upgrade_only (bool): Whether to display the enhanced prompt without executing the agent.
+        debug (bool): Whether to display detailed failure information.
+    """
     console.print(
         Panel.fit(
             f"[bold cyan]🧘 Running Agent:[/bold cyan] {agent}",
@@ -325,7 +348,14 @@ def run_agent(
     help="Start from specific phase",
 )
 def setup(unattended, validate_only, phase):
-    """Setup zenOS development environment"""
+    """
+    Set up or validate the zenOS development environment.
+    
+    Parameters:
+        unattended (bool): Run setup without interactive prompts.
+        validate_only (bool): Run validation without performing setup.
+        phase (str | None): Run a specific setup phase instead of the complete setup.
+    """
     from zen.setup.unified_setup import UnifiedSetupManager
 
     manager = UnifiedSetupManager(unattended=unattended)

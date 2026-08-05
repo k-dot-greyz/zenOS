@@ -12,6 +12,9 @@ class AssistantAgent(Agent):
     """General-purpose AI assistant."""
 
     def __init__(self):
+        """
+        Initialize a general-purpose assistant with its identity, capabilities, and response guidelines.
+        """
         manifest = AgentManifest(
             name="assistant",
             description="General-purpose AI assistant",
@@ -32,7 +35,16 @@ Be conversational and engaging while maintaining professionalism.""",
         super().__init__(manifest)
 
     async def execute_async(self, prompt: str, variables: dict) -> str:
-        """Execute the assistant agent asynchronously."""
+        """
+        Generate an assistant response from a prompt and its variables.
+        
+        Parameters:
+            prompt (str): Prompt template to render.
+            variables (dict): Values used to render the prompt.
+        
+        Returns:
+            str: The generated response, or an error message containing the rendered prompt if generation fails.
+        """
         rendered_prompt = self.render_prompt(prompt, variables)
 
         try:
@@ -45,5 +57,14 @@ Be conversational and engaging while maintaining professionalism.""",
             return f"Error calling AI provider: {e}\n\nRendered prompt:\n{rendered_prompt}"
 
     def execute(self, prompt: str, variables: dict) -> str:
-        """Execute the assistant agent (sync wrapper)."""
+        """
+        Execute the assistant agent synchronously.
+        
+        Parameters:
+            prompt (str): Prompt template to render.
+            variables (dict): Values used to render the prompt.
+        
+        Returns:
+            str: The assistant's response or an error message.
+        """
         return asyncio.run(self.execute_async(prompt, variables))

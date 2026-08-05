@@ -48,13 +48,13 @@ OUTPUT_FILE = DEX_DIR / "7E-00_dex-index.md"
 
 def parse_file(filepath):
     """
-    Parse a file for dex metadata (YAML frontmatter or Python docstring).
-
-    Args:
-        filepath (Path): Path to the file to parse.
-
+    Extract DEX metadata from a file's YAML frontmatter or leading Python docstring.
+    
+    Parameters:
+        filepath (Path): Path to the file to inspect.
+    
     Returns:
-        dict: Metadata dictionary if dex_id found, else None.
+        dict: Metadata including the relative path, filename, and extracted DEX fields, or None when no DEX ID is found or the file cannot be read.
     """
     try:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -97,13 +97,14 @@ def parse_file(filepath):
 
 def generate_markdown_index(entries):
     """
-    Generate the Markdown index content from a list of entries.
-
-    Args:
-        entries (list): List of metadata dictionaries.
-
+    Generate a Markdown index from DEX metadata entries.
+    
+    Parameters:
+        entries (list): Metadata dictionaries containing DEX identifiers, types,
+            statuses, filenames, paths, and property-exchange IDs.
+    
     Returns:
-        str: Generated Markdown content.
+        str: Markdown content for the generated DEX index.
     """
     # Sort High to Low (0x7F -> 0x00)
     entries.sort(key=lambda x: x.get("dex_id", "0x00:00"), reverse=True)
@@ -134,7 +135,7 @@ def generate_markdown_index(entries):
 
 def main():
     """
-    Main entry point: scan directory and generate index.
+    Scan the project for DEX metadata and write the generated Markdown index.
     """
     print("🎹 starting dex yoinker...")
     valid_entries = []

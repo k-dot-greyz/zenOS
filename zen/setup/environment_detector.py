@@ -37,11 +37,20 @@ class EnvironmentDetector:
     """Detects and analyzes the current environment"""
 
     def __init__(self):
+        """Initialize the detector with the current platform and system name."""
         self.platform_info = platform.platform()
         self.system = platform.system().lower()
 
     def detect_environment(self, zenos_root: Path) -> EnvironmentInfo:
-        """Detect and analyze the current environment"""
+        """
+        Detect and analyze the current operating environment.
+        
+        Parameters:
+            zenos_root (Path): Root directory used to construct the setup log path.
+        
+        Returns:
+            EnvironmentInfo: Detected platform, shell, tool availability, environment flags, and relevant paths.
+        """
 
         # Detect platform
         platform_name = self._detect_platform()
@@ -88,7 +97,7 @@ class EnvironmentDetector:
         )
 
     def _detect_platform(self) -> str:
-        """Detect the specific platform"""
+        """Identify the operating-system platform, including Termux on Linux."""
         if self.system == "windows":
             return "windows"
         elif self.system == "darwin":
@@ -103,7 +112,12 @@ class EnvironmentDetector:
             return "unknown"
 
     def _detect_shell(self) -> str:
-        """Detect the current shell"""
+        """
+        Detects the current shell.
+        
+        Returns:
+        	str: The shell name, or ``"bash"`` when detection is unavailable.
+        """
         # Check environment variables
         shell = os.environ.get("SHELL", "")
         if shell:
@@ -152,7 +166,12 @@ class EnvironmentDetector:
             return False
 
     def _detect_termux(self) -> bool:
-        """Detect if running in Termux"""
+        """
+        Determine whether the current environment is Termux or a Termux-like Android environment.
+        
+        Returns:
+        	bool: `True` if Termux indicators are detected, `False` otherwise.
+        """
         # Check for Termux-specific environment variables
         termux_vars = ["TERMUX_VERSION", "PREFIX"]
         if any(os.environ.get(var) for var in termux_vars):
@@ -173,7 +192,15 @@ class EnvironmentDetector:
         return False
 
     def get_platform_specific_commands(self, env_info: EnvironmentInfo) -> Dict[str, List[str]]:
-        """Get platform-specific commands for setup"""
+        """Build setup commands for the detected operating system.
+        
+        Parameters:
+            env_info (EnvironmentInfo): Detected platform and environment details.
+        
+        Returns:
+            Dict[str, List[str]]: Command lists grouped by Python dependencies, Node.js
+                dependencies, shell aliases, Git configuration, and MCP servers.
+        """
         commands = {
             "install_python_deps": [],
             "install_node_deps": [],
@@ -233,7 +260,15 @@ class EnvironmentDetector:
         return commands
 
     def get_environment_warnings(self, env_info: EnvironmentInfo) -> List[str]:
-        """Get environment-specific warnings and recommendations"""
+        """
+        Identify environment conditions that may limit setup functionality.
+        
+        Parameters:
+            env_info (EnvironmentInfo): Detected platform, shell, dependency, and Python version information.
+        
+        Returns:
+            List[str]: Warning messages for detected platform limitations, unavailable tools, outdated Python versions, or Windows shell compatibility concerns.
+        """
         warnings = []
 
         if env_info.is_termux:
@@ -260,7 +295,15 @@ class EnvironmentDetector:
         return warnings
 
     def get_optimization_suggestions(self, env_info: EnvironmentInfo) -> List[str]:
-        """Get environment-specific optimization suggestions"""
+        """
+        Provide platform-specific suggestions for improving the zenOS environment.
+        
+        Parameters:
+            env_info (EnvironmentInfo): Detected platform and environment information.
+        
+        Returns:
+            List[str]: Recommendations applicable to the detected environment.
+        """
         suggestions = []
 
         if env_info.is_termux:

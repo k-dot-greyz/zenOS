@@ -55,7 +55,12 @@ class Config:
     """
 
     def __init__(self, config_path: Optional[Path] = None):
-        """Initialize configuration."""
+        """
+        Initialize configuration from environment variables and available configuration files.
+        
+        Parameters:
+            config_path (Optional[Path]): Optional explicit configuration file to load after the default sources.
+        """
         self.config = ZenConfig()
 
         # Load environment variables
@@ -106,7 +111,7 @@ class Config:
             self._load_from_file(local_config)
 
     def _load_from_file(self, path: Path):
-        """Load configuration from a YAML file."""
+        """Load recognized configuration values from a YAML file, ignoring loading errors."""
         try:
             with open(path, "r") as f:
                 data = yaml.safe_load(f)
@@ -136,7 +141,11 @@ class Config:
             (self.config.modules_dir / subdir).mkdir(exist_ok=True)
 
     def save(self, path: Optional[Path] = None):
-        """Save configuration to file."""
+        """Save selected configuration settings to a YAML file.
+        
+        Parameters:
+            path (Optional[Path]): Destination file path. Defaults to ``config.yaml`` in the configured directory.
+        """
         if path is None:
             path = self.config.config_dir / "config.yaml"
 
@@ -157,11 +166,26 @@ class Config:
             yaml.dump(config_dict, f, default_flow_style=False)
 
     def get(self, key: str, default: Any = None) -> Any:
-        """Get a configuration value."""
+        """
+        Retrieve a configuration value by attribute name.
+        
+        Parameters:
+            key (str): Name of the configuration attribute.
+            default (Any): Value to return when the attribute does not exist.
+        
+        Returns:
+            Any: The configured value, or `default` when the attribute is unavailable.
+        """
         return getattr(self.config, key, default)
 
     def set(self, key: str, value: Any):
-        """Set a configuration value."""
+        """
+        Update an existing configuration setting.
+        
+        Parameters:
+            key (str): Name of the configuration field to update.
+            value (Any): New value for the field. Unknown fields are ignored.
+        """
         if hasattr(self.config, key):
             setattr(self.config, key, value)
 

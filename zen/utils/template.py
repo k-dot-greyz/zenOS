@@ -14,7 +14,12 @@ class TemplateEngine:
     """
 
     def __init__(self, template_dir: Optional[Path] = None):
-        """Initialize the template engine."""
+        """
+        Initialize the template engine with an optional template directory.
+        
+        Parameters:
+            template_dir (Optional[Path]): Directory containing template files. Uses the project's default templates directory when omitted.
+        """
         if template_dir is None:
             template_dir = Path(__file__).parent.parent / "templates"
 
@@ -46,14 +51,17 @@ class TemplateEngine:
 
     def render_file(self, template_name: str, variables: Dict[str, Any]) -> str:
         """
-        Render a template file with variables.
-
+        Render a configured template file with the supplied variables.
+        
         Args:
-            template_name: Name of the template file
-            variables: Variables to inject
-
+            template_name: Name of the template file.
+            variables: Values available to the template.
+        
         Returns:
-            Rendered string
+            The rendered template content.
+        
+        Raises:
+            ValueError: If no template directory is configured.
         """
         if not self.env.loader:
             raise ValueError("No template directory configured")
@@ -62,10 +70,19 @@ class TemplateEngine:
         return template.render(**variables)
 
     def _markdown_filter(self, text: str) -> str:
-        """Convert text to markdown format."""
+        """Wrap text in a fenced Markdown code block labeled `markdown`."""
         # Simple markdown formatting
         return f"```markdown\n{text}\n```"
 
     def _code_filter(self, text: str, language: str = "python") -> str:
-        """Format text as code block."""
+        """
+        Format text as a fenced code block.
+        
+        Parameters:
+            text (str): The code content to format.
+            language (str): The language label for the code block.
+        
+        Returns:
+            str: The formatted fenced code block.
+        """
         return f"```{language}\n{text}\n```"

@@ -53,7 +53,7 @@ class DisplayManager:
         self.console = console
 
     def show_welcome(self):
-        """Show beautiful welcome screen."""
+        """Display the welcome screen with the application logo, a Zen quote, and usage instructions."""
         # Create layout
         layout = Layout()
 
@@ -95,7 +95,15 @@ class DisplayManager:
         self.console.print()
 
     def show_thinking(self, message: str = "Contemplating your request..."):
-        """Show a thinking animation."""
+        """
+        Create a spinner-based progress display for an in-progress operation.
+        
+        Parameters:
+        	message (str): Text shown alongside the spinner.
+        
+        Returns:
+        	tuple: The progress display and its task identifier.
+        """
         with Progress(
             SpinnerColumn(spinner_name="dots"),
             TextColumn("[cyan]{task.description}"),
@@ -105,7 +113,14 @@ class DisplayManager:
             return progress, task
 
     def show_response(self, response: str, title: str = "🧘 zenOS", format: str = "markdown"):
-        """Display a response with beautiful formatting."""
+        """
+        Display a response in a titled Rich panel.
+        
+        Parameters:
+            response (str): The response content to display.
+            title (str): The panel title.
+            format (str): The content format: ``"markdown"``, ``"code"``, or plain text.
+        """
         if format == "markdown":
             content = Markdown(response)
         elif format == "code":
@@ -151,7 +166,13 @@ class DisplayManager:
         self.console.print(panel)
 
     def show_cost_breakdown(self, costs: List[Dict[str, Any]]):
-        """Show a beautiful cost breakdown table."""
+        """
+        Display a table of session costs and their accumulated total.
+        
+        Parameters:
+            costs (List[Dict[str, Any]]): Cost records containing `timestamp`, `model`,
+                and `cost` fields; token counts default to zero when omitted.
+        """
         table = Table(
             title="💰 Session Cost Breakdown",
             show_header=True,
@@ -180,7 +201,9 @@ class DisplayManager:
         self.console.print(table)
 
     def show_model_comparison(self):
-        """Show a comparison of available models."""
+        """
+        Display a comparison table of available language models, including speed, quality, cost, and recommended use.
+        """
         table = Table(
             title="🤖 Model Comparison",
             show_header=True,
@@ -208,7 +231,14 @@ class DisplayManager:
         self.console.print(table)
 
     def show_stats(self, stats: Dict[str, Any]):
-        """Show session statistics."""
+        """
+        Display session statistics for messages, tokens, cost, and duration.
+        
+        Parameters:
+            stats (Dict[str, Any]): Statistics values, including total messages, total
+                tokens, total cost, and duration in seconds. Missing values default to
+                zero.
+        """
         # Create stats panels
         panels = []
 
@@ -241,7 +271,14 @@ class DisplayManager:
         self.console.print(Columns(panels, equal=True, expand=True))
 
     def create_progress_bar(self, total: int, description: str = "Processing"):
-        """Create a progress bar for long operations."""
+        """Create a progress display for long-running operations.
+        
+        Parameters:
+            total (int): Total number of work units.
+        
+        Returns:
+            Progress: A configured Rich progress display.
+        """
         return Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),

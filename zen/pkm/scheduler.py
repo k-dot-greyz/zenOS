@@ -76,15 +76,14 @@ class PKMScheduler:
 
     def add_job(self, name: str, schedule_str: str, function: Callable, **kwargs) -> CronJob:
         """
-        Register a new scheduled CronJob, schedule it, persist scheduler state, and return the created job.
-
+        Register a scheduled job and persist the updated scheduler state.
+        
         Parameters:
-            schedule_str (str): Schedule specification accepted by the scheduler. Supports simplified cron-like expressions (e.g. "0 2 * * *", "0 */6 * * *", "0 3 * * 0") and interval forms starting with "every " (e.g. "every 10 minutes", "every 6 hours", "every 1 day").
-            function (Callable): Callable to execute when the job runs.
-            **kwargs: Additional CronJob fields (for example `enabled`, `metadata`, `last_run`, `next_run`) forwarded to the CronJob constructor.
-
+            schedule_str (str): Schedule expression, such as an interval or supported cron-like schedule.
+            **kwargs: Additional fields passed to the CronJob constructor.
+        
         Returns:
-            CronJob: The newly created and scheduled CronJob instance.
+            CronJob: The newly registered job.
         """
         job = CronJob(name=name, schedule=schedule_str, function=function, **kwargs)
 
@@ -116,13 +115,11 @@ class PKMScheduler:
 
     def enable_job(self, name: str) -> bool:
         """
-        Enable the cron job identified by `name` and persist the updated scheduler state.
-
-        If the job exists, marks it enabled, schedules it, saves the scheduler state, and prints a confirmation.
-
+        Enable the specified job and persist the updated scheduler state.
+        
         Parameters:
             name (str): Name of the job to enable.
-
+        
         Returns:
             bool: `True` if the job was found and enabled, `False` otherwise.
         """
@@ -188,12 +185,13 @@ class PKMScheduler:
 
     def run_job(self, name: str) -> bool:
         """
-        Execute the scheduled job identified by `name` immediately.
-
-        If the job runs, updates its `last_run` and `next_run` timestamps and persists scheduler state.
-
+        Execute an enabled job immediately by name.
+        
+        Parameters:
+            name (str): Name of the job to execute.
+        
         Returns:
-            bool: `True` if the job existed, was enabled, and completed successfully; `False` otherwise.
+            bool: `True` if the job completed successfully, `False` if it was not found, disabled, or failed.
         """
         if name not in self.jobs:
             console.print(f"[red]Job '{name}' not found[/red]")
@@ -356,9 +354,7 @@ class PKMScheduler:
 
     async def _cleanup_job(self) -> None:
         """
-        Remove files older than 30 days from storage and report the result.
-
-        Invokes the storage cleanup routine to delete data older than 30 days and prints the number of removed files; prints an error message if the cleanup fails.
+        Remove stored files older than 30 days.
         """
         console.print("[cyan]🔄 Running cleanup job...[/cyan]")
 
@@ -418,12 +414,10 @@ class PKMScheduler:
 
     def _run_job_wrapper(self, job_name: str) -> None:
         """
-        Run the scheduled job identified by `job_name`, update its run timestamps, and persist scheduler state.
-
-        If the named job exists and is registered, this updates the job's `last_run`, recalculates `next_run`, saves the scheduler state, executes the job's callable (supports coroutine and regular callables), and prints an error to the console if execution raises an exception.
-
+        Execute a scheduled job and update its run timestamps and persisted state.
+        
         Parameters:
-            job_name (str): The name of the job to run.
+            job_name (str): Name of the job to execute.
         """
         if job_name in self.jobs:
             job = self.jobs[job_name]

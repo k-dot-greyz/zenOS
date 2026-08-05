@@ -9,5 +9,12 @@ MobileTextProcessorPlugin = TextProcessorPlugin
 
 
 def create_mobile_plugin(config):
-    """Create a mobile plugin instance"""
+    """Create a mobile text processor plugin from the specified configuration.
+    
+    Parameters:
+    	config: Configuration used to initialize the plugin.
+    
+    Returns:
+    	The configured mobile text processor plugin instance.
+    """
     return create_plugin(config)

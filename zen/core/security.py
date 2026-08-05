@@ -31,13 +31,16 @@ class SecurityFramework:
 
     def scan_prompt(self, prompt: str) -> Dict[str, Any]:
         """
-        Scan a prompt for security issues.
-
-        Args:
-            prompt: The prompt to scan
-
+        Analyze a prompt for potential injection patterns and excessive length.
+        
+        Parameters:
+            prompt (str): The prompt text to analyze.
+        
         Returns:
-            Dictionary with security analysis
+            Dict[str, Any]: A security analysis containing `safe`, `risk_level`, and
+                `issues` fields. `safe` is `True` when no issues are found;
+                `risk_level` is `low`, `medium`, or `high`; and `issues` lists
+                detected security concerns.
         """
         issues = []
         risk_level = "low"
@@ -60,13 +63,13 @@ class SecurityFramework:
 
     def sanitize_prompt(self, prompt: str) -> str:
         """
-        Sanitize a prompt by removing potentially dangerous content.
-
-        Args:
-            prompt: The prompt to sanitize
-
+        Remove detected prompt-injection content and limit the result to 10,000 characters.
+        
+        Parameters:
+            prompt (str): The prompt to sanitize.
+        
         Returns:
-            Sanitized prompt
+            str: The sanitized prompt, with detected content replaced by "[REMOVED]" and longer results truncated.
         """
         sanitized = prompt
 
@@ -82,13 +85,10 @@ class SecurityFramework:
 
     def validate_response(self, response: str) -> bool:
         """
-        Validate an AI response for safety.
-
-        Args:
-            response: The response to validate
-
+        Check an AI response for common sensitive data patterns.
+        
         Returns:
-            True if response is safe
+            bool: `True` if no email address, SSN, or 16-digit numeric sequence is found; `False` otherwise.
         """
         # Check for sensitive information patterns
         sensitive_patterns = [

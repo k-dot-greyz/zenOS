@@ -29,7 +29,15 @@ class AgentManifest:
 
     @classmethod
     def from_yaml(cls, yaml_path: Path) -> "AgentManifest":
-        """Load agent manifest from YAML file."""
+        """
+        Create an agent manifest from a YAML file.
+        
+        Parameters:
+            yaml_path (Path): Path to the YAML file containing the manifest definition.
+        
+        Returns:
+            AgentManifest: Manifest populated from the YAML data, with defaults for omitted fields.
+        """
         with open(yaml_path, "r") as f:
             data = yaml.safe_load(f)
 
@@ -55,11 +63,29 @@ class Agent(ABC):
 
     @abstractmethod
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
-        """Execute the agent with the given prompt and variables."""
+        """
+        Execute the agent using the rendered prompt and runtime variables.
+        
+        Parameters:
+            prompt (str): The rendered prompt to execute.
+            variables (Dict[str, Any]): Runtime variables available to the agent.
+        
+        Returns:
+            Any: The result produced by the concrete agent implementation.
+        """
         pass
 
     def render_prompt(self, prompt: str, variables: Dict[str, Any]) -> str:
-        """Render the final prompt using templates and modules."""
+        """
+        Render the final prompt from the manifest configuration and runtime variables.
+        
+        Parameters:
+            prompt (str): The user's prompt to include in the rendered result.
+            variables (Dict[str, Any]): Runtime values available to templates and modules.
+        
+        Returns:
+            str: The fully rendered prompt.
+        """
         # Merge variables
         all_vars = {
             **(self.manifest.variables or {}),
@@ -102,7 +128,18 @@ class Agent(ABC):
             return "\n\n".join(parts)
 
     def load_module(self, module_type: str, module_name: str) -> str:
-        """Load a module from the modules directory."""
+        """Load a Markdown module from the configured or built-in modules directory.
+        
+        Parameters:
+            module_type (str): The module category directory.
+            module_name (str): The module filename without the `.md` extension.
+        
+        Returns:
+            str: The contents of the requested module.
+        
+        Raises:
+            FileNotFoundError: If the module is unavailable in both locations.
+        """
         module_path = self.config.modules_dir / module_type / f"{module_name}.md"
         if module_path.exists():
             return module_path.read_text()
@@ -129,6 +166,12 @@ class PythonAgent(Agent):
     """Agent defined by Python code."""
 
     def __init__(self, manifest: AgentManifest, execute_func):
+        """Initialize a Python agent with its manifest and execution function.
+        
+        Parameters:
+        	manifest (AgentManifest): Agent metadata and configuration.
+        	execute_func: Function used to execute the rendered prompt.
+        """
         super().__init__(manifest)
         self.execute_func = execute_func
 
@@ -142,12 +185,13 @@ class AgentRegistry:
     """Registry for managing agents."""
 
     def __init__(self):
+        """Initialize the agent registry and load available agents."""
         self.config = Config()
         self._agents: Dict[str, Agent] = {}
         self._load_agents()
 
     def _load_agents(self) -> None:
-        """Load all available agents."""
+        """Load agents from the configured YAML directory and built-in sources."""
         # Load YAML agents from agents directory
         agents_dir = self.config.agents_dir
         if agents_dir.exists():
@@ -162,7 +206,7 @@ class AgentRegistry:
         self._load_builtin_agents()
 
     def _load_builtin_agents(self) -> None:
-        """Load built-in agents."""
+        """Register built-in and PromptOS agents in the registry."""
         # These will be Python-based agents
         from zen.agents import builtin_agents
 
@@ -173,7 +217,10 @@ class AgentRegistry:
         self._load_promptos_agents()
 
     def _load_promptos_agents(self) -> None:
-        """Load PromptOS agents."""
+        """Load and register the built-in PromptOS agents.
+        
+        If the PromptOS agent implementations cannot be imported, emit a warning and leave the registry unchanged.
+        """
         try:
             from zen.agents.promptos import (
                 PromptCriticAgent,
@@ -237,7 +284,18 @@ class AgentRegistry:
         return agents
 
     def create_agent(self, name: str) -> Path:
-        """Create a new agent from template."""
+        """
+        Create a YAML template for a named agent.
+        
+        Parameters:
+            name (str): Name of the agent and resulting YAML file.
+        
+        Returns:
+            Path: Path to the newly created agent file.
+        
+        Raises:
+            ValueError: If an agent with the specified name already exists.
+        """
         agent_path = self.config.agents_dir / f"{name}.yaml"
 
         if agent_path.exists():

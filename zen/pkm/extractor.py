@@ -162,14 +162,14 @@ class GeminiExtractor:
 
     async def _get_conversation_list(self, max_conversations: Optional[int] = None) -> List[str]:
         """
-        Retrieve a list of Gemini conversation URLs, optionally limited to a maximum count.
-
+        Provide demonstration Gemini conversation URLs after confirming access to the Gemini homepage.
+        
         Parameters:
-            max_conversations (Optional[int]): Maximum number of conversation URLs to return. If None, no limit is applied.
-
+            max_conversations (Optional[int]): Maximum number of URLs to return when a positive limit is provided.
+        
         Returns:
-            List[str]: A list of conversation page URLs. Returns an empty list on HTTP errors or other failures.
-
+            List[str]: Gemini conversation URLs, or an empty list if the homepage request fails or another retrieval error occurs.
+        
         Raises:
             RuntimeError: If the HTTP session has not been initialized.
         """
@@ -273,10 +273,11 @@ class GeminiExtractor:
 
     def _extract_conversation_id(self, url: str) -> str:
         """
-        Derive a conversation identifier from the conversation URL.
-
+        Derive a conversation identifier from a conversation URL.
+        
         Returns:
-            str: The last path segment of the URL as the identifier, or a fallback of the form `conv_<timestamp>` when no usable path segment is found.
+            str: The final URL path segment, or a timestamp-based identifier in the form
+                `conv_<timestamp>` when the path has no additional segment.
         """
         # Extract ID from URL path
         path_parts = urlparse(url).path.split("/")
@@ -313,15 +314,13 @@ class GeminiExtractor:
 
     def _extract_messages(self, soup: BeautifulSoup) -> List[Message]:
         """
-        Parse a conversation page and return the extracted messages in chronological order.
-
-        This attempts to locate structured message elements (common container tags and class patterns) and extract their textual content.
-        Message role is inferred from container classes (containers with "assistant" or "bot" are marked as assistant; others are marked as user).
-        If no structured messages are found, a heuristic fallback splits the page text into lines and converts up to 10 non-trivial lines into user messages.
-        Timestamps on returned messages are set at extraction time.
-
+        Extract messages from a conversation page.
+        
+        Parameters:
+            soup (BeautifulSoup): Parsed conversation page content.
+        
         Returns:
-            list[Message]: A list of extracted messages; may be empty if no usable content is found.
+            List[Message]: Extracted messages in page order, or an empty list when no usable content is found.
         """
         messages = []
 
@@ -366,15 +365,11 @@ class GeminiExtractor:
 
     async def _save_conversation(self, conversation: Conversation):
         """
-        Persist a Conversation to disk in the configured storage format and update its metadata.
-
+        Persist a conversation in the configured JSON, Markdown, or combined format.
+        
         Parameters:
-            conversation (Conversation): The conversation to persist; its `id` is used to name output files.
-
-        Details:
-            - Writes a JSON file if configuration is `"json"` or `"both"`.
-            - Writes a Markdown file if configuration is `"markdown"` or `"both"`.
-            - Updates `conversation.file_path` to the path of the last-written file and sets `conversation.file_size` to that file's size in bytes.
+            conversation (Conversation): The conversation to save, named using its identifier.
+        
         """
         # Save as JSON
         if self.config.storage_format in ["json", "both"]:

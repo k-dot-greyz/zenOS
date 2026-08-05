@@ -30,13 +30,23 @@ class DexReader:
     """reader for dex protocol metadata"""
 
     def __init__(self, index_path: str = "dex/7E-00_dex-index.md"):
+        """Initialize a DEX reader and load entries from the specified Markdown index.
+        
+        Parameters:
+        	index_path (str): Path to the Markdown index containing DEX entries.
+        """
         self.index_path = Path(index_path)
         self.entries = []
         self._index_by_id: Dict[str, Dict] = {}
         self._load_index()
 
     def _load_index(self):
-        """load entries from the dex index"""
+        """
+        Load DEX entries from the configured Markdown index into the reader's collections.
+        
+        The current entries are cleared before loading. If the index file does not exist,
+        the collections remain empty.
+        """
         self.entries = []
         self._index_by_id = {}
 
@@ -71,30 +81,74 @@ class DexReader:
                     self._index_by_id[dex_id] = entry
 
     def _extract_filename(self, markdown_link: str) -> str:
-        """extract filename from [text](path) format"""
+        """
+        Extract the filename from Markdown link text.
+        
+        Parameters:
+            markdown_link (str): Markdown text in the form `[filename](path)`.
+        
+        Returns:
+            str: The link text, or the original input when no link text is present.
+        """
         match = re.search(r"\[(.*?)\]", markdown_link)
         return match.group(1) if match else markdown_link
 
     def _extract_path(self, markdown_link: str) -> str:
-        """extract path from [text](path) format"""
+        """
+        Extracts the target path from a Markdown link.
+        
+        Parameters:
+            markdown_link (str): Markdown link text in the form `[text](path)`.
+        
+        Returns:
+            str: The extracted path, or an empty string when no path is present.
+        """
         match = re.search(r"\((.*?)\)", markdown_link)
         return match.group(1) if match else ""
 
     def get(self, dex_id: str) -> Optional[Dict]:
-        """get entry by dex_id"""
+        """
+        Retrieve the DEX entry with the specified identifier.
+        
+        Returns:
+            Optional[Dict]: The matching DEX entry, or `None` if no entry exists.
+        """
         return self._index_by_id.get(dex_id)
 
     def by_bank(self, bank: int) -> List[Dict]:
-        """get all entries in a bank (e.g., 0x7E)"""
+        """Return all DEX entries whose IDs belong to the specified hexadecimal bank.
+        
+        Parameters:
+        	bank (int): The numeric bank identifier.
+        
+        Returns:
+        	List[Dict]: Entries with IDs matching the bank prefix.
+        """
         bank_hex = f"0x{bank:02X}"
         return [e for e in self.entries if e["dex_id"].startswith(bank_hex)]
 
     def by_type(self, dex_type: str) -> List[Dict]:
-        """get all entries of a specific type"""
+        """
+        Retrieve all DEX entries with the specified type.
+        
+        Parameters:
+        	dex_type (str): DEX type to match exactly.
+        
+        Returns:
+        	List[Dict]: Entries whose type matches `dex_type`.
+        """
         return [e for e in self.entries if e["type"] == dex_type]
 
     def search(self, query: str) -> List[Dict]:
-        """search entries by filename or pe_id"""
+        """
+        Search entries by filename or property-exchange ID.
+        
+        Parameters:
+        	query (str): The case-insensitive text to find.
+        
+        Returns:
+        	List[Dict]: Entries whose filename or property-exchange ID contains the query.
+        """
         query_lower = query.lower()
         return [
             e
@@ -103,16 +157,29 @@ class DexReader:
         ]
 
     def list_all(self) -> List[Dict]:
-        """return all entries"""
+        """
+        List all loaded DEX entries.
+        
+        Returns:
+            List[Dict]: The loaded DEX entries.
+        """
         return self.entries
 
     def refresh(self):
-        """reload the index"""
+        """Reload the DEX index from disk."""
         self._load_index()
 
 
 def get_dex_metadata(filepath: Path) -> Optional[Dict]:
-    """extract dex metadata from a file's frontmatter"""
+    """
+    Extract DEX metadata from a file's YAML frontmatter or Python docstring.
+    
+    Parameters:
+        filepath (Path): Path to the file containing the metadata.
+    
+    Returns:
+        Optional[Dict]: A mapping of extracted metadata fields, or `None` when the file is unreadable or does not contain a DEX ID.
+    """
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()

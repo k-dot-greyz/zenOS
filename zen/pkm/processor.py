@@ -71,12 +71,15 @@ class ConversationProcessor:
 
     async def _generate_summary(self, conversation: Conversation) -> str:
         """
-        Builds a concise extractive summary of the given conversation.
-
-        Constructs summary parts from user and assistant messages: lists up to five prominent topics extracted from user messages, notes the total message count, and includes up to two assistant sentences containing signals such as "important", "key", "note", "remember", "consider", "suggest", or "recommend". Returns "Empty conversation" when there are no messages and "No summary available" when no summaryable parts are found.
-
+        Create a concise extractive summary of a conversation.
+        
+        The summary may include topics from user messages, the total message count,
+        and key insights from assistant messages. Empty conversations return
+        "Empty conversation"; conversations without summary components return
+        "No summary available".
+        
         Returns:
-            summary (str): A human-readable summary describing topics, message count, and key assistant insights, or the literal strings "Empty conversation" or "No summary available" when applicable.
+            str: A human-readable conversation summary.
         """
         # Simple extractive summarization
         # In a real implementation, you'd use an AI model for this
@@ -191,15 +194,13 @@ class ConversationProcessor:
 
     async def _extract_keywords(self, conversation: Conversation) -> List[str]:
         """
-        Extracts the most frequent keywords from all messages in a conversation.
-
-        Aggregates message text, normalizes to lowercase, filters out common stop words and short tokens (<= 3 characters), and selects the top 10 words by frequency.
-
+        Extract the most frequent keywords from all messages in a conversation.
+        
         Parameters:
             conversation (Conversation): Conversation whose messages will be analyzed.
-
+        
         Returns:
-            List[str]: Top keywords (lowercase) ordered by descending frequency, up to 10 items.
+            List[str]: Up to 10 lowercase keywords ordered by descending frequency.
         """
         all_text = []
 

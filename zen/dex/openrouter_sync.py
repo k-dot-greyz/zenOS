@@ -41,7 +41,16 @@ class ModelBenchStats:
 
     @classmethod
     def calculate(cls, api_stats: ModelAPIStats, subjective: Dict) -> "ModelBenchStats":
-        """Calculate combat stats from API and subjective data"""
+        """
+        Calculate combat-style benchmark statistics from API metadata and subjective ratings.
+        
+        Parameters:
+        	api_stats (ModelAPIStats): Model metadata, pricing, and context length used for the calculations.
+        	subjective (Dict): Subjective ratings and feature data used to derive combat statistics.
+        
+        Returns:
+        	ModelBenchStats: Calculated health, attack, defense, speed, special, and cost statistics.
+        """
         # HP based on context (more context = more HP)
         context_ratio = min(api_stats.context_length / 200000, 1.0)  # Max at 200k
         hp = int(50 + (context_ratio * 50))
@@ -116,7 +125,11 @@ class OpenRouterSync:
                 return []
 
     def _is_cache_valid(self) -> bool:
-        """Check if cache is still valid"""
+        """Determine whether the cached model data is within its configured validity period.
+        
+        Returns:
+        	bool: `True` if the cache file exists and is current, `False` otherwise.
+        """
         if not self.cache_file.exists():
             return False
 
@@ -124,18 +137,36 @@ class OpenRouterSync:
         return datetime.now() - cache_time < self.cache_duration
 
     def _load_cache(self) -> List[Dict]:
-        """Load cached API data"""
+        """
+        Load model data from the cache file.
+        
+        Returns:
+            List[Dict]: The cached API model data.
+        """
         with open(self.cache_file) as f:
             return json.load(f)
 
     def _save_cache(self, data: List[Dict]):
-        """Save API data to cache"""
+        """Save API model data to the local cache file.
+        
+        Parameters:
+        	data (List[Dict]): Model data to serialize to the cache.
+        """
         self.dex_path.mkdir(exist_ok=True)
         with open(self.cache_file, "w") as f:
             json.dump(data, f, indent=2)
 
     def calculate_subjective_stats(self, model_id: str, api_data: Dict) -> Dict:
-        """Calculate subjective stats based on model characteristics"""
+        """
+        Assign subjective ratings from the model family, context length, and naming indicators.
+        
+        Parameters:
+            model_id (str): Model identifier used to determine family and speed ratings.
+            api_data (Dict): API metadata containing the model's context length.
+        
+        Returns:
+            Dict: Subjective ratings for intelligence, creativity, speed, memory, and reliability.
+        """
         stats = {
             "intelligence": 70,  # Base stat
             "creativity": 70,
@@ -186,7 +217,16 @@ class OpenRouterSync:
         return stats
 
     def determine_tier(self, model_id: str, pricing: Dict) -> str:
-        """Determine model tier based on feats and cost"""
+        """
+        Assign a rarity tier based on the model identifier and prompt pricing.
+        
+        Parameters:
+        	model_id (str): OpenRouter model identifier used to recognize high-end model families.
+        	pricing (Dict): Pricing metadata containing the prompt cost.
+        
+        Returns:
+        	str: The model tier: ``"legendary"``, ``"epic"``, ``"rare"``, ``"uncommon"``, or ``"common"``.
+        """
         prompt_cost = pricing.get("prompt", 0)
 
         # Legendary: Top tier, expensive models
@@ -211,7 +251,16 @@ class OpenRouterSync:
         return "common"
 
     def determine_feats(self, model_id: str, api_data: Dict) -> List[str]:
-        """Determine model feats based on characteristics"""
+        """
+        Determine the capabilities associated with a model based on its metadata and identifier.
+        
+        Parameters:
+            model_id (str): Model identifier used to identify model-specific capabilities.
+            api_data (Dict): Model metadata containing architecture and context length information.
+        
+        Returns:
+            List[str]: Capability labels inferred from the model's metadata and identifier.
+        """
         feats = []
 
         # Check for vision/multimodal
@@ -239,7 +288,11 @@ class OpenRouterSync:
         return feats
 
     async def sync_dex(self):
-        """Sync Dex with latest API data"""
+        """
+        Synchronize the local Dex with the latest OpenRouter model metadata, statistics, and rankings.
+        
+        Fetches model data, updates existing entries while preserving selected manual fields, adds newly discovered models, records synchronization statistics, and writes the resulting Dex and bench rankings.
+        """
         print("🔄 Syncing Dex with OpenRouter API...")
 
         # Fetch latest models
@@ -356,7 +409,12 @@ class OpenRouterSync:
         await self.generate_bench_rankings(updated_models)
 
     async def generate_bench_rankings(self, models: List[Dict]):
-        """Generate model bench power rankings"""
+        """
+        Generate and save model bench power rankings.
+        
+        Parameters:
+            models (List[Dict]): Models containing identifiers, names, tiers, and bench statistics.
+        """
         print("⚔️ Generating Model Bench Rankings...")
 
         # Sort by total combat power
@@ -404,7 +462,7 @@ class OpenRouterSync:
 
 # CLI interface
 async def main():
-    """Run the sync from command line"""
+    """Run the OpenRouter model synchronization."""
     syncer = OpenRouterSync()
     await syncer.sync_dex()
 

@@ -129,7 +129,12 @@ class ContextManager:
     }
 
     def __init__(self, workspace: Optional[Path] = None):
-        """Initialize context manager."""
+        """
+        Initialize context management for the specified workspace.
+        
+        Parameters:
+            workspace (Optional[Path]): Workspace to inspect. Defaults to the current directory.
+        """
         self.workspace = workspace or Path.cwd()
         self.current_personality = AgentPersonality.SOVEREIGN
         self.genesis_docs = {}
@@ -142,7 +147,11 @@ class ContextManager:
         self._load_git_context()
 
     def _load_genesis_docs(self):
-        """Load genesis documents from ai-inbox or project root."""
+        """Load available genesis documents from configured workspace and home-directory locations.
+        
+        YAML content is stored as parsed data when possible; otherwise, the raw file
+        content is stored.
+        """
         search_paths = [
             self.workspace / "ai-inbox",
             self.workspace / "genesis",
@@ -173,7 +182,11 @@ class ContextManager:
                             )
 
     def _load_project_context(self):
-        """Load project structure and key files."""
+        """
+        Load the project's directory structure, selected configuration files, and zenOS metadata.
+        
+        Available key files are recorded with their contents limited to the first 1,000 characters. Errors are reported without interrupting context initialization.
+        """
         try:
             # Get project structure
             self.project_context["structure"] = self._get_tree()
@@ -193,7 +206,9 @@ class ContextManager:
             console.print(f"[yellow]Warning: Could not load project context: {e}[/yellow]")
 
     def _load_git_context(self):
-        """Load git information."""
+        """
+        Collect Git repository metadata for the workspace when available.
+        """
         try:
             # Check if we're in a git repo
             result = subprocess.run(
@@ -241,10 +256,26 @@ class ContextManager:
             console.print(f"[dim]No git context available[/dim]")
 
     def _get_tree(self, max_depth: int = 3) -> str:
-        """Get project tree structure."""
+        """
+        Build a bounded textual directory tree for the workspace.
+        
+        Parameters:
+            max_depth (int): Maximum directory depth to traverse.
+        
+        Returns:
+            str: A newline-separated directory tree, limited to 50 lines and excluding hidden entries and selected dependency or cache directories.
+        """
         tree_lines = []
 
         def walk_dir(path: Path, prefix: str = "", depth: int = 0):
+            """
+            Append a bounded textual representation of a directory and its eligible descendants.
+            
+            Parameters:
+                path (Path): Directory to traverse.
+                prefix (str): Prefix used to format the current tree level.
+                depth (int): Current traversal depth.
+            """
             if depth >= max_depth:
                 return
 
@@ -271,7 +302,12 @@ class ContextManager:
         return "\n".join(tree_lines[:50])  # Limit total lines
 
     def _get_zenos_version(self) -> str:
-        """Get zenOS version if available."""
+        """
+        Retrieve the zenOS version defined in the workspace package.
+        
+        Returns:
+            str: The configured zenOS version, or ``"unknown"`` when it cannot be determined.
+        """
         try:
             init_file = self.workspace / "zen" / "__init__.py"
             if init_file.exists():
@@ -295,7 +331,12 @@ class ContextManager:
             console.print(f'[italic]"{random.choice(profile.quotes)}"[/italic]')
 
     def get_personality_prompt(self) -> str:
-        """Get the system prompt for current personality."""
+        """
+        Build a system prompt describing the active personality, guiding principles, and relevant cultural context.
+        
+        Returns:
+        	str: The generated system prompt.
+        """
         profile = self.PERSONALITIES[self.current_personality]
 
         prompt = f"""You are {profile.name}, with the role of {profile.role}.
@@ -327,7 +368,12 @@ Key philosophical principles from the genesis documents:
         return prompt
 
     def get_full_context(self) -> Dict[str, Any]:
-        """Get all available context."""
+        """
+        Collect all available personality, genesis, project, Git, and cultural-reference context.
+        
+        Returns:
+        	dict: A dictionary containing the active personality and its profile, loaded genesis documents, project details, Git metadata, and cultural references.
+        """
         return {
             "personality": {
                 "current": self.current_personality.value,
@@ -340,7 +386,12 @@ Key philosophical principles from the genesis documents:
         }
 
     def format_context_for_prompt(self) -> str:
-        """Format all context as a string for inclusion in prompts."""
+        """
+        Format the available context into a prompt-ready string.
+        
+        Returns:
+        	str: A combined prompt containing personality, project, Git, and genesis context when available.
+        """
         parts = []
 
         # Add personality context

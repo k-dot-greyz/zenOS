@@ -62,6 +62,12 @@ class UnifiedSetupManager:
     """Master setup manager that orchestrates all setup procedures"""
 
     def __init__(self, zenos_root: Optional[Path] = None, unattended: bool = False):
+        """Initialize the setup manager with the zenOS root path and execution mode.
+        
+        Parameters:
+            zenos_root (Optional[Path]): Root directory for the zenOS installation. Defaults to the current working directory.
+            unattended (bool): Whether to run without interactive prompts.
+        """
         self.zenos_root = zenos_root or Path.cwd()
         self.unattended = unattended
         self.context = None
@@ -75,7 +81,12 @@ class UnifiedSetupManager:
         self.troubleshooter = SetupTroubleshooter()
 
     def run_setup(self) -> bool:
-        """Run the complete unified setup process"""
+        """
+        Run all zenOS setup phases and report whether the installation completed successfully.
+        
+        Returns:
+        	bool: `True` when every required setup phase succeeds, `False` when a phase fails or an unexpected error occurs.
+        """
         try:
             self._print_banner()
 
@@ -115,7 +126,9 @@ class UnifiedSetupManager:
             return False
 
     def _print_banner(self):
-        """Print the zenOS setup banner"""
+        """
+        Display the zenOS setup banner.
+        """
         banner = """
     ╔════════════════════════════════════════════════════════════════╗
     ║                     🧘 zenOS Setup                            ║
@@ -133,7 +146,12 @@ class UnifiedSetupManager:
         print(banner)
 
     def _run_detection_phase(self) -> bool:
-        """Phase 1: Environment detection and analysis"""
+        """
+        Detect the operating environment and advance setup to the validation phase.
+        
+        Returns:
+        	bool: `True` after the environment context is detected.
+        """
         print("\n[DETECT] Phase 1: Environment Detection")
         print("-" * 40)
 
@@ -150,7 +168,14 @@ class UnifiedSetupManager:
         return True
 
     def _run_validation_phase(self) -> bool:
-        """Phase 2: System validation with AI troubleshooting"""
+        """
+        Validate the detected environment and advance setup to Git configuration.
+        
+        When issues are found in interactive mode, diagnoses them and applies available fixes. Validation issues do not prevent setup from continuing.
+        
+        Returns:
+        	bool: True after validation and phase advancement.
+        """
         print("\n[OK] Phase 2: System Validation")
         print("-" * 40)
 
@@ -176,7 +201,12 @@ class UnifiedSetupManager:
         return True
 
     def _run_git_setup_phase(self) -> bool:
-        """Phase 3: Git repository setup and configuration"""
+        """
+        Set up the Git repository and configuration for the installation.
+        
+        Returns:
+        	bool: `True` when Git setup completes or Git is unavailable; `False` if repository initialization or `.gitignore` setup fails.
+        """
         print("\n📦 Phase 3: Git Setup")
         print("-" * 40)
 
@@ -216,7 +246,11 @@ class UnifiedSetupManager:
         return True
 
     def _run_mcp_setup_phase(self) -> bool:
-        """Phase 4: MCP server setup and configuration"""
+        """Configure MCP servers and advance setup to the zenOS configuration phase.
+        
+        Returns:
+        	bool: `True` when MCP setup is skipped or completes; `False` if server installation fails.
+        """
         print("\n🔌 Phase 4: MCP Setup")
         print("-" * 40)
 
@@ -245,7 +279,12 @@ class UnifiedSetupManager:
         return True
 
     def _run_zenos_setup_phase(self) -> bool:
-        """Phase 5: zenOS-specific setup"""
+        """
+        Configure zenOS dependencies, configuration, and command-line aliases.
+        
+        Returns:
+        	bool: `True` when dependency installation and configuration succeed, `False` otherwise.
+        """
         print("\n🧘 Phase 5: zenOS Setup")
         print("-" * 40)
 
@@ -270,7 +309,11 @@ class UnifiedSetupManager:
         return True
 
     def _run_integration_phase(self) -> bool:
-        """Phase 6: Integration and linking"""
+        """Configure promptOS integration and create the zenOS workspace.
+        
+        Returns:
+        	bool: `True` when the workspace is created successfully, `False` otherwise.
+        """
         print("\n🔗 Phase 6: Integration")
         print("-" * 40)
 
@@ -289,7 +332,12 @@ class UnifiedSetupManager:
         return True
 
     def _run_verification_phase(self) -> bool:
-        """Phase 7: Final verification and testing"""
+        """
+        Verify the zenOS installation and advance setup to completion when the CLI test succeeds.
+        
+        Returns:
+        	bool: `True` if the zenOS CLI test succeeds, `False` otherwise.
+        """
         print("\n✅ Phase 7: Verification")
         print("-" * 40)
 
@@ -314,7 +362,15 @@ class UnifiedSetupManager:
         return True
 
     def _install_python_dependencies(self) -> bool:
-        """Install Python dependencies"""
+        """
+        Install the Python dependencies required by zenOS.
+        
+        Creates a basic requirements file when one is absent and installs its dependencies
+        using the appropriate user-level options for Termux.
+        
+        Returns:
+        	bool: `True` if dependencies are installed successfully, `False` otherwise.
+        """
         try:
             # Check if requirements.txt exists
             requirements_file = self.zenos_root / "requirements.txt"
@@ -348,7 +404,9 @@ class UnifiedSetupManager:
             return False
 
     def _create_basic_requirements(self):
-        """Create basic requirements.txt if none exists"""
+        """
+        Create a requirements.txt file containing the core zenOS dependencies.
+        """
         requirements = """# zenOS Core Dependencies
 click>=8.0.0
 rich>=13.0.0
@@ -362,7 +420,12 @@ nltk>=3.8.0
             f.write(requirements)
 
     def _setup_zenos_config(self) -> bool:
-        """Setup zenOS configuration"""
+        """
+        Create the zenOS configuration file with environment and feature settings.
+        
+        Returns:
+            bool: `True` if the configuration is created successfully, `False` otherwise.
+        """
         try:
             config_dir = self.zenos_root / "config"
             config_dir.mkdir(exist_ok=True)
@@ -392,7 +455,9 @@ nltk>=3.8.0
             return False
 
     def _setup_cli_aliases(self) -> bool:
-        """Setup CLI aliases for zenOS"""
+        """
+        Configure shell aliases for the zenOS command-line interface.
+        """
         try:
             if self.context.is_windows:
                 return self._setup_powershell_aliases()
@@ -403,7 +468,12 @@ nltk>=3.8.0
             return False
 
     def _setup_powershell_aliases(self) -> bool:
-        """Setup PowerShell aliases"""
+        """
+        Create a PowerShell module exposing zenOS command aliases.
+        
+        Returns:
+        	bool: `True` if the module is created successfully, `False` otherwise.
+        """
         try:
             # Create zenOS PowerShell module
             module_content = f"""
@@ -435,7 +505,11 @@ Export-ModuleMember -Function zen, zen-receive, zen-plugins
             return False
 
     def _setup_unix_aliases(self) -> bool:
-        """Setup Unix aliases (bash/zsh)"""
+        """Configure zenOS command aliases in the detected Bash or Zsh shell profile.
+        
+        Returns:
+            bool: `True` if the aliases are configured successfully, `False` otherwise.
+        """
         try:
             # Determine shell profile
             shell = self.context.shell
@@ -471,7 +545,12 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
 
     def _setup_promptos_integration(self) -> bool:
-        """Setup promptOS integration"""
+        """
+        Configure zenOS integration with a sibling Prompt_OS directory.
+        
+        Returns:
+        	bool: `True` if integration is configured or Prompt_OS is unavailable, `False` if configuration fails.
+        """
         try:
             # Check if promptOS exists
             promptos_path = self.zenos_root.parent / "Prompt_OS"
@@ -500,7 +579,11 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
 
     def _setup_workspace(self) -> bool:
-        """Setup workspace directories"""
+        """Create the zenOS workspace and inbox directory structure.
+        
+        Returns:
+        	bool: `true` if all directories are created successfully, `false` otherwise.
+        """
         try:
             workspace_dirs = [
                 "workspace",
@@ -526,7 +609,12 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
 
     def _test_zenos_cli(self) -> bool:
-        """Test zenOS CLI functionality"""
+        """
+        Test whether the zenOS CLI starts successfully with the help option.
+        
+        Returns:
+            bool: `True` if the CLI exits successfully, `False` otherwise.
+        """
         try:
             # Test basic CLI
             result = subprocess.run(
@@ -541,7 +629,11 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
 
     def _test_git_integration(self) -> bool:
-        """Test git integration"""
+        """Check whether Git integration is available and the zenOS repository is accessible.
+        
+        Returns:
+        	bool: `true` if Git is unavailable or the repository status command succeeds, `false` otherwise.
+        """
         try:
             if not self.context.git_available:
                 return True
@@ -559,7 +651,11 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
 
     def _test_mcp_integration(self) -> bool:
-        """Test MCP integration"""
+        """Test MCP integration availability and health.
+        
+        Returns:
+        	bool: `True` when MCP is unavailable or health checks pass, `False` when health checks fail or raise an exception.
+        """
         try:
             if not self.context.node_available:
                 return True
@@ -571,7 +667,7 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             return False
 
     def _setup_complete(self):
-        """Handle successful setup completion"""
+        """Display the completion report and example commands after a successful setup."""
         print("\n🎉 zenOS Setup Complete!")
         print("=" * 60)
 
@@ -603,7 +699,12 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
         print("\nHappy coding! 🧘✨")
 
     def _handle_setup_failure(self, error: Exception):
-        """Handle setup failure"""
+        """
+        Report a setup failure and display troubleshooting guidance.
+        
+        Parameters:
+        	error (Exception): The error that caused setup to fail.
+        """
         print(f"\n❌ Setup failed: {error}")
         print("Please check the setup log for more details: setup.log")
         print("\n🔧 Troubleshooting:")
@@ -614,7 +715,13 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
 
 
 def main():
-    """Main entry point for the setup script"""
+    """
+    Run the zenOS setup manager from the command line.
+    
+    The command supports complete setup, environment validation, or execution
+    starting from a selected setup phase, and exits with status 0 on success or
+    status 1 on failure.
+    """
     parser = argparse.ArgumentParser(description="zenOS Unified Setup Manager")
     parser.add_argument("--path", type=Path, help="Path to zenOS root directory")
     parser.add_argument("--unattended", action="store_true", help="Run in unattended mode")
