@@ -1,0 +1,4 @@
+{
+  "name": "zenOS Development",
+  "install": "set -e\ndpkg -s python3.12-venv >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq python3.12-venv; }\nif [ ! -x .venv/bin/python ]; then rm -rf .venv; python3 -m venv .venv; fi\n. .venv/bin/activate\nif [ -f _setup.py.bak ] && [ ! -f setup.py ]; then mv _setup.py.bak setup.py; fi\npip install --upgrade pip setuptools wheel -q\npip install pyyaml click rich jinja2 pydantic aiohttp python-dotenv prompt-toolkit beautifulsoup4 schedule aiofiles psutil -q\nif [ -f setup.py ]; then mv setup.py _setup.py.bak; fi\npip install --no-build-isolation -e '.[dev]' -q\nif [ -f _setup.py.bak ]; then mv _setup.py.bak setup.py; fi\npip install flake8 isort bandit -q\nif [ -f env.example ] && [ ! -f .env ]; then cp env.example .env; fi"
+}
