@@ -56,7 +56,7 @@ class ModelBenchStats:
         speed = subjective.get("speed", 80)
 
         # Special based on unique abilities count
-        special = len(subjective.get("capabilities", [])) * 10
+        special = len(subjective.get("feats", subjective.get("capabilities", []))) * 10
 
         # Cost stat (inverse - cheaper is better for this stat)
         prompt_cost = api_stats.pricing.get("prompt", 0.001)
@@ -185,8 +185,8 @@ class OpenRouterSync:
 
         return stats
 
-    def determine_rarity(self, model_id: str, pricing: Dict) -> str:
-        """Determine model rarity based on capabilities and cost"""
+    def determine_tier(self, model_id: str, pricing: Dict) -> str:
+        """Determine model tier based on feats and cost"""
         prompt_cost = pricing.get("prompt", 0)
 
         # Legendary: Top tier, expensive models
@@ -210,33 +210,33 @@ class OpenRouterSync:
         # Common: Free or very cheap
         return "common"
 
-    def determine_abilities(self, model_id: str, api_data: Dict) -> List[str]:
-        """Determine model abilities based on characteristics"""
-        abilities = []
+    def determine_feats(self, model_id: str, api_data: Dict) -> List[str]:
+        """Determine model feats based on characteristics"""
+        feats = []
 
         # Check for vision/multimodal
         if api_data.get("architecture", {}).get("modality") == "multimodal":
-            abilities.append("Vision Understanding")
+            feats.append("Vision Understanding")
 
-        # Check for specific model abilities
+        # Check for specific model feats
         if "gpt-4" in model_id.lower():
-            abilities.extend(["Code Generation", "Complex Reasoning", "Function Calling"])
+            feats.extend(["Code Generation", "Complex Reasoning", "Function Calling"])
         elif "claude" in model_id.lower():
-            abilities.extend(["Deep Analysis", "Nuanced Understanding", "XML Processing"])
+            feats.extend(["Deep Analysis", "Nuanced Understanding", "XML Processing"])
         elif "gemini" in model_id.lower():
-            abilities.extend(["Multimodal Understanding", "Fast Processing"])
+            feats.extend(["Multimodal Understanding", "Fast Processing"])
         elif "llama" in model_id.lower():
-            abilities.extend(["Open Source", "Customizable"])
+            feats.extend(["Open Source", "Customizable"])
         elif "code" in model_id.lower():
-            abilities.extend(["Code Completion", "Bug Detection"])
+            feats.extend(["Code Completion", "Bug Detection"])
 
-        # Context-based abilities
+        # Context-based feats
         if api_data.get("context_length", 0) >= 100000:
-            abilities.append("Massive Context")
+            feats.append("Massive Context")
         elif api_data.get("context_length", 0) >= 32000:
-            abilities.append("Large Context")
+            feats.append("Large Context")
 
-        return abilities
+        return feats
 
     async def sync_dex(self):
         """Sync Dex with latest API data"""
@@ -274,6 +274,7 @@ class OpenRouterSync:
 
             # Calculate stats
             subjective_stats = self.calculate_subjective_stats(model_id, api_model)
+            feats = self.determine_feats(model_id, api_model)
 
             # Build model entry
             model_entry = {
@@ -285,9 +286,9 @@ class OpenRouterSync:
                     if api_model.get("architecture", {}).get("modality") == "multimodal"
                     else "text"
                 ),
-                "rarity": self.determine_rarity(model_id, api_model.get("pricing", {})),
+                "tier": self.determine_tier(model_id, api_model.get("pricing", {})),
                 "stats": subjective_stats,
-                "abilities": self.determine_abilities(model_id, api_model),
+                "feats": feats,
                 "context_window": api_model.get("context_length", 4096),
                 "cost_per_1k": {
                     "input": api_model.get("pricing", {}).get("prompt", 0) * 1000,
@@ -310,7 +311,7 @@ class OpenRouterSync:
                     top_provider=api_model.get("top_provider"),
                     architecture=api_model.get("architecture", {}),
                 ),
-                subjective_stats,
+                {**subjective_stats, "feats": feats},
             )
             model_entry["bench_stats"] = asdict(bench_stats)
 
@@ -379,7 +380,7 @@ class OpenRouterSync:
                 "rank": i,
                 "id": model["id"],
                 "name": model["name"],
-                "rarity": model["tier"],
+                "tier": model["tier"],
                 "total_power": total_power,
                 "bench_stats": model["bench_stats"],
             }

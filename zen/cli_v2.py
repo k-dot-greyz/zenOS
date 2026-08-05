@@ -40,7 +40,7 @@ def cli(ctx, ai_mode, offline, model, eco):
     if ctx.invoked_subcommand is None:
         if AI_MODE or ai_mode:
             print("zenOS AI Mode Active. Ready for instructions.")
-            print("Available commands: chat, analyze, bench, sync, dex")
+            print("Available commands: chat, analyze, bench, arena, sync, dex")
         else:
             show_interactive_menu()
 

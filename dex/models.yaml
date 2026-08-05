@@ -24,7 +24,7 @@ models:
       speed: 85
       memory: 80  # 128k context
       cost: 70    # Higher = more expensive
-    capabilities:
+    feats:
       - "Code Generation"
       - "Complex Reasoning"
       - "Vision Understanding"
@@ -55,7 +55,7 @@ models:
       speed: 95
       memory: 60  # 16k context
       cost: 95    # Very cheap
-    capabilities:
+    feats:
       - "Basic Coding"
       - "Quick Responses"
       - "Simple Tasks"
@@ -85,7 +85,7 @@ models:
       speed: 70
       memory: 90  # 200k context
       cost: 60
-    capabilities:
+    feats:
       - "Deep Analysis"
       - "Nuanced Understanding"
       - "Ethical Reasoning"
@@ -117,7 +117,7 @@ models:
       speed: 80
       memory: 90
       cost: 80
-    capabilities:
+    feats:
       - "Balanced Performance"
       - "Good Reasoning"
       - "Code Understanding"
@@ -141,7 +141,7 @@ models:
       speed: 92
       memory: 90
       cost: 90
-    capabilities:
+    feats:
       - "Fast Responses"
       - "Efficient Processing"
       - "Basic Coding"
@@ -166,7 +166,7 @@ models:
       speed: 82
       memory: 70
       cost: 85
-    capabilities:
+    feats:
       - "Multimodal Understanding"
       - "Code Generation"
       - "Fast Processing"
@@ -191,7 +191,7 @@ models:
       speed: 75
       memory: 65
       cost: 100  # Free if self-hosted
-    capabilities:
+    feats:
       - "Open Source"
       - "Customizable"
       - "Good Coding"
@@ -214,7 +214,7 @@ models:
       speed: 80
       memory: 60
       cost: 100
-    capabilities:
+    feats:
       - "Code Completion"
       - "Bug Detection"
       - "Code Explanation"
@@ -237,7 +237,7 @@ models:
       speed: 88
       memory: 68
       cost: 92
-    capabilities:
+    feats:
       - "Efficient Processing"
       - "Good Reasoning"
       - "Multi-language"
@@ -262,7 +262,7 @@ models:
       speed: 85
       memory: 62
       cost: 95
-    capabilities:
+    feats:
       - "Code Generation"
       - "Fill-in-the-middle"
       - "Multi-language Code"
@@ -284,7 +284,7 @@ models:
       speed: 98
       memory: 40
       cost: 100
-    capabilities:
+    feats:
       - "Ultra-fast"
       - "Mobile-friendly"
       - "Offline Capable"

@@ -80,7 +80,7 @@ def parse_file(filepath):
         else:
             return None
 
-        metadata = {"path": str(filepath), "filename": filepath.name}
+        metadata = {"path": filepath.relative_to(ROOT_DIR).as_posix(), "filename": filepath.name}
         for key, regex in PATTERNS.items():
             found = regex.search(yaml_block)
             metadata[key] = found.group(1) if found else "N/A"
@@ -145,6 +145,9 @@ def main():
             dirs.remove("node_modules")
         if "__pycache__" in dirs:
             dirs.remove("__pycache__")
+        for skip_dir in (".venv", "venv", "dist", "build"):
+            if skip_dir in dirs:
+                dirs.remove(skip_dir)
 
         for file in files:
             if file.endswith((".md", ".py", ".yaml")) and Path(root) / file != OUTPUT_FILE:

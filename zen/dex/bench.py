@@ -19,7 +19,7 @@ class BattleMove(Enum):
     CREATE = "create"  # Uses creativity
     SPEED_BLITZ = "speed_blitz"  # Uses speed
     DEFEND = "defend"  # Uses defense
-    SPECIAL = "special"  # Uses special abilities
+    SPECIAL = "special"  # Uses special feats
     COST_DRAIN = "cost_drain"  # Uses cost efficiency
 
 
@@ -36,7 +36,7 @@ class Fighter:
     speed: int
     special: int
     cost: int
-    capabilities: List[str]
+    feats: List[str]
     tier: str
 
     @property
@@ -94,7 +94,7 @@ class ModelBench:
                 "attack": stats.get("intelligence", 70),
                 "defense": stats.get("reliability", 70),
                 "speed": stats.get("speed", 70),
-                "special": len(model.get("capabilities", [])) * 10,
+                "special": len(model.get("feats", model.get("capabilities", []))) * 10,
                 "cost": 100 - min(model.get("cost_per_1k", {}).get("input", 0.001) * 100, 95),
             }
 
@@ -108,7 +108,7 @@ class ModelBench:
             speed=bench_stats.get("speed", 70),
             special=bench_stats.get("special", 50),
             cost=bench_stats.get("cost", 50),
-            capcapabilities=model.get("capabilities", []),
+            feats=model.get("feats", model.get("capabilities", [])),
             tier=model.get("tier", "common"),
         )
 
@@ -140,13 +140,13 @@ class ModelBench:
 
         elif move == BattleMove.SPECIAL:
             # Special ability attack
-            if attacker.abilities:
-                ability = random.choice(attacker.abilities)
+            if attacker.feats:
+                feat = random.choice(attacker.feats)
                 base_damage = attacker.special * 1.2
-                self.log(f"{attacker.name} uses {ability}!")
+                self.log(f"{attacker.name} uses {feat}!")
             else:
                 base_damage = attacker.attack * 0.8
-                self.log(f"{attacker.name} attempts special but has no abilities!")
+                self.log(f"{attacker.name} attempts special but has no feats!")
 
         elif move == BattleMove.COST_DRAIN:
             # Cost-efficiency based drain attack
@@ -188,8 +188,8 @@ class ModelBench:
             else:
                 return BattleMove.DEFEND
 
-        # If has good special abilities and special stat
-        if fighter.special > fighter.attack and fighter.abilities:
+        # If has good special feats and special stat
+        if fighter.special > fighter.attack and fighter.feats:
             if random.random() < 0.4:  # 40% chance
                 return BattleMove.SPECIAL
 
