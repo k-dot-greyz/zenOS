@@ -1,6 +1,7 @@
 # Get back on track (zenOS)
 
-Short stack after the draft-CI exorcism. Full audit: [`docs/planning/REWORK_SPRINT_AUDIT.md`](../docs/planning/REWORK_SPRINT_AUDIT.md).
+Short stack after the draft-CI exorcism. Full audit: [`docs/planning/REWORK_SPRINT_AUDIT.md`](../docs/planning/REWORK_SPRINT_AUDIT.md).  
+CLI contract: [`docs/guides/CLI.md`](../docs/guides/CLI.md).
 
 ## Order of operations
 
@@ -20,6 +21,7 @@ Short stack after the draft-CI exorcism. Full audit: [`docs/planning/REWORK_SPRI
 
 ```bash
 pip install -e ".[dev]"
+zen --help
 pytest
 # when crates exist:
 cargo check --workspace && cargo test --workspace
