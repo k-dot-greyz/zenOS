@@ -6,7 +6,8 @@ A revolutionary operating system for human-AI collaboration where biological and
 zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
+[![Rust](https://img.shields.io/badge/rust-first--class-orange.svg)](https://www.rust-lang.org/)
 
 ---
 
@@ -25,37 +26,39 @@ zenOS is not just another AI CLI tool—it's a complete paradigm shift in how we
 
 ## ✨ Core Components
 
-### 1. **Dex**
-Discover, catalog, and manage AI models and procedures:
+### 1. **Dex** — model & procedure catalog
 ```bash
-zen dex models          # Browse available AI models
-zen dex procedures      # Explore procedure library
-zen dex sync            # Update from OpenRouter and other sources
+zen dex models
+zen dex procedures --tier legendary
+zen sync                         # top-level refresh (not zen dex sync)
 ```
 
-### 2. **Bender (Multi-Agent Framework)**
-Orchestrate multiple AI agents for complex tasks:
+### 2. **Agents**
 ```bash
-zen swarm "analyze security vulnerabilities"  # Multi-AI collaboration
-zen delegate "refactor auth module"           # Single AI takes over
-zen chat --copilot                           # AI assists you
+zen run --list
+zen run --chat
+zen run troubleshoot "fix my git issue"
 ```
 
-### 3. **PKM (Personal Knowledge Management)**
-Capture, organize, and evolve your knowledge:
+### 3. **PKM** — optional knowledge satellite
 ```bash
-zen notes capture           # Quick note taking
-zen notes search "topic"    # Find relevant information
-zen context sync            # Update working context
+zen pkm setup
+zen pkm extract --limit 20
+zen pkm search "topic"
 ```
 
-### 4. **Repo Management**
-Intelligent repository analysis and organization:
+### 4. **Plugins & inbox**
 ```bash
-zen repo analyze            # Deep dive into codebase
-zen repo health             # Check project status
-zen repo optimize          # Suggest improvements
+zen plugins list
+zen inbox add note "ship it"
 ```
+
+### 5. **Visual Wiki** (external app — CLI in #48)
+```bash
+zen wiki setup && zen wiki sync
+```
+
+Full map: **[docs/guides/CLI.md](docs/guides/CLI.md)**.
 
 ---
 
@@ -80,7 +83,7 @@ git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
 # Then install offline:
-python -m pip install -e .
+python3.14 -m pip install -e ".[dev]"
 ```
 
 ### Manual Setup
@@ -99,12 +102,14 @@ python -m pip install -e .
 
 3. **Install dependencies:**
    ```bash
-   pip install -e .
+   python3.14 -m pip install -e ".[dev]"
    ```
 
 4. **Start exploring:**
    ```bash
-   zen chat
+   zen --help
+   zen run --list
+   zen dex models
    ```
 
 ---
@@ -139,21 +144,13 @@ python -m pip install -e .
 ┌─────────────────────────────────────────────────┐
 │                   zenOS Core                     │
 ├─────────────────────────────────────────────────┤
-│  🎮 Dex    🤖 Bender    📚 PKM    📦 Repo   │
-│  Control       Multi-Agent  Knowledge Management │
-│  Center        Framework    System     Analyzer  │
+│  🎮 Dex     🤖 Agents    📚 PKM    🔌 Plugins  │
+│  catalog    run/chat     optional   Git VST     │
+│             + critique                          │
 ├─────────────────────────────────────────────────┤
-│              AI Adapter Layer                    │
-│  ┌──────────┬──────────┬──────────┬──────────┐ │
-│  │Protocol  │Context   │Learning  │Social    │ │
-│  │Parser    │Manager   │Engine    │Network   │ │
-│  └──────────┴──────────┴──────────┴──────────┘ │
+│  inbox pipe · wiki garden (external) · setup    │
 ├─────────────────────────────────────────────────┤
-│                 Interfaces                       │
-│  ┌──────────┬──────────┬──────────┬──────────┐ │
-│  │Human     │AI Agent  │Hybrid    │Swarm     │ │
-│  │Terminal  │API       │Mode      │Mode      │ │
-│  └──────────┴──────────┴──────────┴──────────┘ │
+│  Python ≥3.14 glue  ·  Rust-bound dex path      │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -161,54 +158,43 @@ python -m pip install -e .
 
 ## 🎯 Use Cases
 
-### Development Workflows
+### Agents & chat
 ```bash
-# Start a coding session
-zen chat "I need to add user authentication"
-
-# Analyze codebase
-zen repo analyze --focus security
-
-# Get AI assistance
-zen delegate "implement OAuth2 flow"
-
-# Multi-agent review
-zen swarm "review my PR for security issues"
+zen run --chat
+zen run critic "tighten this system prompt" --upgrade-only
 ```
 
-### Knowledge Management
+### Catalog
 ```bash
-# Capture quick notes
-zen notes capture "Meeting: discussed API redesign"
-
-# Search your knowledge base
-zen notes search "API design patterns"
-
-# Sync context for AI
-zen context sync
-```
-
-### Model Discovery
-```bash
-# Find the right model
-zen dex models --capability "code generation"
-
-# Explore procedures
+zen dex models --task "code generation"
 zen dex procedures --tier legendary
+zen sync
+zen arena
+```
 
-# Sync latest models
-zen dex sync
+### Knowledge pipes
+```bash
+zen inbox add note "ship dex"
+zen pkm search "API patterns"
+# zen wiki sync   # when visual-wiki CLI lands
+```
+
+### Plugins
+```bash
+zen plugins search summarizer
+zen plugins install ./examples/sample-plugin --local
 ```
 
 ---
 
 ## 📖 Documentation
 
-- **[Quick Start Guide](docs/guides/QUICKSTART.md)** - Get started in minutes
-- **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
-- **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
-- **[Setup Guides](docs/guides/)** - Platform-specific instructions
-- **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** - The origin story (historical)
+- **[CLI Reference](docs/guides/CLI.md)** — canonical command map
+- **[Quick Start](docs/guides/QUICKSTART.md)** — install + first commands
+- **[Rework sprint audit](docs/planning/REWORK_SPRINT_AUDIT.md)** — debt & track order
+- **[AI Instructions](docs/AI_INSTRUCTIONS.md)** — for AI agents
+- **[Setup Guides](docs/guides/)** — platform-specific
+- **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** — historical
 
 ### Platform-Specific Guides
 - [Windows Setup](docs/guides/QUICKSTART_WINDOWS.md)
@@ -220,25 +206,20 @@ zen dex sync
 
 ## 🗺️ Roadmap
 
-### ✅ Current (v0.1.0)
-- Core CLI functionality
-- OpenRouter integration
-- Basic Dex system
-- Repository analysis
-- Multi-agent framework (Bender)
+### ✅ Current
+- Live CLI: `run`, `setup`, `dex`, `sync`, `bench`, `arena`, `plugins`, `pkm`, `inbox`
+- OpenRouter + offline hooks
+- Python ≥ 3.14 CI floor
 
-### 🚧 In Progress (v0.2.0)
-- Enhanced PKM system
-- Advanced context management
-- AI-to-AI collaboration protocols
-- Mobile optimization
+### 🚧 In Progress
+- Wire `doctor` / `help` into root CLI
+- Visual wiki CLI (#48)
+- Real `tests/` + Rust `zen-dex` crate
 
-### 🔮 Future (v1.0.0)
-- Visual workspace interface
-- Plugin ecosystem
-- Decentralized AI network
-- Real-time collaboration
-- Advanced learning engine
+### 🔮 Later
+- Top-level `zen chat` / swarm verbs **only when implemented**
+- Plugin marketplace contracts
+- Termux mobile quarantine
 
 ---
 
@@ -260,28 +241,22 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ### System Health Check
 ```bash
-zen doctor              # Run diagnostics
-zen doctor --ai-mode   # AI-specific checks
+zen setup --validate-only   # available now
+# zen doctor --ai-mode      # in source; wire to root CLI next
 ```
 
 ### Common Issues
 
 **API Key Not Working?**
 ```bash
-# Check your .env file
 cat .env | grep OPENROUTER_API_KEY
-
-# Test connection
-zen chat "hello"
+zen run --chat
 ```
 
 **Installation Failed?**
 ```bash
-# Update pip first
-python -m pip install --upgrade pip
-
-# Retry installation
-pip install -e .
+python3.14 -m pip install --upgrade pip
+python3.14 -m pip install -e ".[dev]"
 ```
 
 **Termux/Mobile Issues?**
