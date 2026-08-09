@@ -131,12 +131,29 @@ class SetupTroubleshooter:
                 )
 
             requirements_file = zenos_root / "requirements.txt"
-            cmd = [sys.executable, "-m", "pip_audit", "--strict", "--progress-spinner=off"]
-            if requirements_file.exists():
-                cmd += ["-r", str(requirements_file)]
+            if not requirements_file.exists():
+                # No requirements.txt to scope against — do NOT fall back to
+                # auditing the live interpreter's full environment, that's
+                # exactly the distro-vendored-package false-positive problem
+                # this check exists to avoid (see docstring above).
+                return ValidationResult(
+                    passed=False,
+                    message="requirements.txt not found — dependency audit skipped",
+                    fix_command="Run pip-audit manually against your actual dependency set",
+                    ai_diagnosis="Can't scope pip-audit without a requirements.txt to point it at",
+                    blocking=False,
+                )
 
             result = subprocess.run(
-                cmd,
+                [
+                    sys.executable,
+                    "-m",
+                    "pip_audit",
+                    "--strict",
+                    "--progress-spinner=off",
+                    "-r",
+                    str(requirements_file),
+                ],
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -359,30 +376,44 @@ class SetupTroubleshooter:
         return None
 
     def apply_fixes(self, fixes: List[Fix]) -> bool:
-        """Apply suggested fixes"""
-        success_count = 0
+        """Apply suggested fixes.
+
+        Returns whether each fix was *handled* — either actually resolved, or
+        (for the manual-only types) had clear guidance printed for it. That's
+        a different question from whether the underlying issue is actually
+        gone: `_run_validation_phase` re-checks `ValidationResult.blocking`
+        independently of this return value, so a banned Python version or a
+        vulnerable dependency still hard-stops setup even though "printed the
+        fix instructions" counts as handled here. Don't conflate the two —
+        that conflation is exactly what let this method claim a Python
+        upgrade "succeeded" for just printing a `brew install` suggestion.
+        """
+        handled_count = 0
 
         for fix in fixes:
             print(f"  🔧 Applying fix: {fix.description}")
 
             try:
                 if fix.type == "python_upgrade":
-                    # Can't automatically upgrade the interpreter running this process.
-                    # Print guidance but do NOT count this as fixed — it isn't, and
-                    # claiming otherwise is exactly the "fake green" this system
-                    # used to produce.
+                    # Can't automatically upgrade the interpreter running this
+                    # process — print guidance. Handled (we did what we could),
+                    # not resolved (the blocking check downstream still gates on
+                    # the real Python version).
                     print(f"    ⚠️  Manual action required: {fix.explanation}")
                     print("    📝 Commands to run:")
                     for cmd in fix.commands:
                         print(f"      {cmd}")
+                    handled_count += 1
 
                 elif fix.type == "dependency_audit":
                     # Don't auto-upgrade packages unattended — surface findings and
-                    # let the developer accept the diff deliberately.
+                    # let the developer accept the diff deliberately. Handled, not
+                    # resolved, same reasoning as python_upgrade above.
                     print(f"    ⚠️  Manual review required: {fix.explanation}")
                     print("    📝 Commands to run:")
                     for cmd in fix.commands:
                         print(f"      {cmd}")
+                    handled_count += 1
 
                 elif fix.type == "git_installation":
                     # Try to install git if possible
@@ -390,14 +421,16 @@ class SetupTroubleshooter:
                         try:
                             subprocess.run(["brew", "install", "git"], check=True)
                             print("    ✅ Git installed via Homebrew")
-                            success_count += 1
+                            handled_count += 1
                         except:
                             print("    ⚠️  Homebrew not available, manual installation required")
+                            handled_count += 1
                     else:
                         print("    ⚠️  Manual installation required")
                         print("    📝 Commands to run:")
                         for cmd in fix.commands:
                             print(f"      {cmd}")
+                        handled_count += 1
 
                 elif fix.type == "permission_fix":
                     # Try to fix permissions
@@ -405,9 +438,10 @@ class SetupTroubleshooter:
                         if sys.platform != "win32":
                             subprocess.run(["chmod", "-R", "755", "."], check=True)
                             print("    ✅ Permissions fixed")
-                            success_count += 1
+                            handled_count += 1
                         else:
                             print("    ⚠️  Windows permission fix not implemented")
+                            handled_count += 1
                     except:
                         print("    ❌ Permission fix failed")
 
@@ -418,14 +452,14 @@ class SetupTroubleshooter:
 
                         urllib.request.urlopen("https://github.com", timeout=5)
                         print("    ✅ Network connectivity restored")
-                        success_count += 1
+                        handled_count += 1
                     except:
                         print("    ❌ Network connectivity still failing")
 
             except Exception as e:
                 print(f"    ❌ Fix failed: {e}")
 
-        return success_count > 0
+        return handled_count > 0
 
     def create_helper_tools(self) -> List[Dict]:
         """Create helper tools to prevent future issues"""

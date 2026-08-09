@@ -27,8 +27,22 @@ _ROOT = Path(__file__).resolve().parent
 
 
 def _user_invoked_setup_script() -> bool:
-    """True when a human runs ``python setup.py ...``, not during a pip/setuptools build hook."""
-    return __name__ == "__main__" and Path(sys.argv[0]).name == "setup.py"
+    """True only for ``python setup.py [wizard flags]``.
+
+    NOT true for a pip/setuptools build-backend invocation — those also run
+    with ``__name__ == "__main__"`` and ``sys.argv[0] == "setup.py"`` (e.g.
+    ``python setup.py egg_info``, ``sdist``, ``bdist_wheel``, or pip's legacy
+    build fallback), so checking those two alone reintroduces the exact
+    failure this shim exists to avoid: importing ``zen`` before its deps are
+    installed. Every wizard flag (``--unattended``, ``--validate-only``,
+    ``--phase <x>``, ``-h``/``--help``) is dash-prefixed; every setuptools/
+    distutils command (``sdist``, ``egg_info``, ``install``, ...) is a bare
+    word. That's the discriminator — no args, or the first arg is a flag.
+    """
+    if __name__ != "__main__" or Path(sys.argv[0]).name != "setup.py":
+        return False
+    args = sys.argv[1:]
+    return not args or args[0].startswith("-")
 
 
 if _user_invoked_setup_script():
