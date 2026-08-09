@@ -36,10 +36,35 @@ rationale: [`.github/CI.md`](.github/CI.md).
 
 ```bash
 zen --help              # canonical CLI surface
-zen setup --validate-only   # environment + dependency sanity check
+zen setup --validate-only   # environment + dependency sanity check (Python floor, pip-audit)
+bash env-doctor.sh --with-submodules   # broader env discovery (OS/shell/tooling/git/creds)
 pytest                  # tests/ — 15 tests as of this writing
 pip-audit -r requirements.txt --strict
 ```
+
+## 🩺 Environment auto-healing protocol
+
+`env-doctor.sh` (vendored from
+[k-dot-greyz/env-doctor](https://github.com/k-dot-greyz/env-doctor) — GPL-3.0,
+see `third_party/README.md`; zenOS's own code stays MIT) is the canonical
+local environment diagnostic. It's broader than `zen setup`'s checks: OS/shell
+discovery, tooling presence, git/submodule drift, `.env` completeness — it
+does **not** know about zenOS's Python-3.14 floor or dependency-vuln
+scanning, those stay `zen setup`'s job. The two are complementary, run both.
+
+If you hit an import error, a missing-command error, or a test-collection
+failure and you're not sure why:
+
+1. Don't guess the machine state.
+2. Run the read-only diagnostic first: `bash env-doctor.sh --json --quiet`
+   (or `make doctor` for the human-readable version).
+3. If it reports failures, `zen setup --validate-only` for the zenOS-specific
+   half (Python floor, `pip-audit`).
+4. Only run mutating init (`make setup` / `bash env-doctor.sh --init --tier 1`)
+   when the user has actually asked for environment changes — same rule as
+   everything else in this repo, don't install things silently.
+5. Re-run the failing command once the diagnosis is clean or understood —
+   don't loop on the same failure without re-checking.
 
 ## When you find drift
 
