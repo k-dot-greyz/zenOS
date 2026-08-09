@@ -16,6 +16,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 
+# zenOS house rule: Python interpreters older than this are unsupported —
+# see .github/CI.md. Setup refuses to proceed below this floor.
+MIN_PYTHON = (3, 14)
+
+
 @dataclass
 class ValidationResult:
     """Result of a validation check"""
@@ -24,6 +29,10 @@ class ValidationResult:
     message: str
     fix_command: Optional[str] = None
     ai_diagnosis: Optional[str] = None
+    # Issues that cannot be safely auto-fixed or waived (banned Python version,
+    # known-vulnerable dependencies). The validation phase hard-stops on these
+    # instead of nodding through with a warning.
+    blocking: bool = False
 
 
 @dataclass
@@ -63,6 +72,7 @@ class SetupTroubleshooter:
             self._validate_directory_structure(env_info.zenos_root),
             self._validate_permissions(env_info.zenos_root),
             self._validate_internet_connectivity(),
+            self._validate_dependency_security(env_info.zenos_root),
         ]
 
         issues = [v for v in validations if not v.passed]
@@ -75,21 +85,90 @@ class SetupTroubleshooter:
         }
 
     def _validate_python_environment(self) -> ValidationResult:
-        """Validate Python environment"""
+        """Validate Python environment against the zenOS floor (house rule: MIN_PYTHON)"""
         try:
             version = sys.version_info
-            if version.major < 3 or (version.major == 3 and version.minor < 7):
+            if (version.major, version.minor) < MIN_PYTHON:
+                floor = ".".join(str(p) for p in MIN_PYTHON)
                 return ValidationResult(
                     passed=False,
-                    message=f"Python {version.major}.{version.minor} detected. Python 3.7+ required",
-                    fix_command="Install Python 3.7 or higher",
-                    ai_diagnosis="Python version too old for zenOS requirements",
+                    message=(
+                        f"Python {version.major}.{version.minor} detected — banned. "
+                        f"zenOS requires Python {floor}+"
+                    ),
+                    fix_command=f"Install Python {floor} or higher",
+                    ai_diagnosis="Python interpreter is below the zenOS-supported floor",
+                    blocking=True,
                 )
             return ValidationResult(
                 passed=True, message=f"Python {version.major}.{version.minor} OK"
             )
         except Exception as e:
-            return ValidationResult(passed=False, message=f"Python validation failed: {e}")
+            return ValidationResult(
+                passed=False, message=f"Python validation failed: {e}", blocking=True
+            )
+
+    def _validate_dependency_security(self, zenos_root: Path) -> ValidationResult:
+        """Sanitize the dependency set: refuse to run with known-vulnerable packages.
+
+        Uses `pip-audit` (PyPA's maintained vulnerability scanner) scoped to
+        zenOS's own `requirements.txt` — not the whole live environment, which
+        in a shared dev container also contains distro-vendored packages
+        (system `pip`, `python-apt`, ...) nobody here can upgrade and that
+        have nothing to do with zenOS. Runs on every setup / `--validate-only`
+        pass, not just in CI, so a stale or compromised zenOS dependency gets
+        caught at dev-session startup.
+        """
+        try:
+            import importlib.util
+
+            if importlib.util.find_spec("pip_audit") is None:
+                return ValidationResult(
+                    passed=False,
+                    message="pip-audit not installed — dependency vulnerability scan skipped",
+                    fix_command="pip install pip-audit  (or: pip install -e '.[dev]')",
+                    ai_diagnosis="Can't sanitize dependencies without pip-audit present",
+                    blocking=False,
+                )
+
+            requirements_file = zenos_root / "requirements.txt"
+            cmd = [sys.executable, "-m", "pip_audit", "--strict", "--progress-spinner=off"]
+            if requirements_file.exists():
+                cmd += ["-r", str(requirements_file)]
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                cwd=str(zenos_root),
+            )
+
+            if result.returncode == 0:
+                return ValidationResult(passed=True, message="Dependency audit clean (pip-audit)")
+
+            findings = (result.stdout or result.stderr or "").strip()
+            return ValidationResult(
+                passed=False,
+                message="Known-vulnerable dependencies detected by pip-audit",
+                fix_command="pip-audit --fix  (review before accepting upgrades)",
+                ai_diagnosis=findings[-1500:] or "pip-audit reported a non-zero exit",
+                blocking=True,
+            )
+        except subprocess.TimeoutExpired:
+            return ValidationResult(
+                passed=False,
+                message="Dependency audit timed out",
+                fix_command="Run `pip-audit` manually and investigate",
+                ai_diagnosis="pip-audit did not complete within 120s",
+                blocking=False,
+            )
+        except Exception as e:
+            return ValidationResult(
+                passed=False,
+                message=f"Dependency audit failed to run: {e}",
+                blocking=False,
+            )
 
     def _validate_git_installation(self) -> ValidationResult:
         """Validate git installation"""
@@ -204,19 +283,33 @@ class SetupTroubleshooter:
 
     def _generate_fix_for_issue(self, issue: ValidationResult) -> Optional[Fix]:
         """Generate a fix for a specific issue"""
-        if "Python" in issue.message and "required" in issue.message:
+        if "Python" in issue.message and ("banned" in issue.message or "required" in issue.message):
+            floor = ".".join(str(p) for p in MIN_PYTHON)
             return Fix(
                 type="python_upgrade",
-                description="Upgrade Python to 3.7+",
+                description=f"Upgrade Python to {floor}+",
                 commands=[
                     "# On macOS with Homebrew:",
-                    "brew install python@3.9",
-                    "# On Ubuntu/Debian:",
-                    "sudo apt update && sudo apt install python3.9",
+                    f"brew install python@{floor}",
+                    "# On Ubuntu/Debian (deadsnakes PPA if not yet in main repos):",
+                    f"sudo apt update && sudo apt install python{floor}",
                     "# On Windows:",
                     "Download from https://python.org/downloads/",
                 ],
-                explanation="zenOS requires Python 3.7 or higher for modern features",
+                explanation=f"zenOS requires Python {floor}+ — older interpreters are unsupported, not just discouraged",
+            )
+
+        elif "vulnerable" in issue.message.lower() or "pip-audit" in issue.message.lower():
+            return Fix(
+                type="dependency_audit",
+                description="Sanitize dependencies (pip-audit)",
+                commands=[
+                    "pip install pip-audit",
+                    "pip-audit",
+                    "# Review findings, then apply upgrades deliberately:",
+                    "pip-audit --fix --dry-run",
+                ],
+                explanation="Known-vulnerable or unscannable dependencies block zenOS setup by design",
             )
 
         elif "Git" in issue.message:
@@ -275,12 +368,22 @@ class SetupTroubleshooter:
 
             try:
                 if fix.type == "python_upgrade":
-                    # Can't automatically upgrade Python, just provide guidance
+                    # Can't automatically upgrade the interpreter running this process.
+                    # Print guidance but do NOT count this as fixed — it isn't, and
+                    # claiming otherwise is exactly the "fake green" this system
+                    # used to produce.
                     print(f"    ⚠️  Manual action required: {fix.explanation}")
                     print("    📝 Commands to run:")
                     for cmd in fix.commands:
                         print(f"      {cmd}")
-                    success_count += 1
+
+                elif fix.type == "dependency_audit":
+                    # Don't auto-upgrade packages unattended — surface findings and
+                    # let the developer accept the diff deliberately.
+                    print(f"    ⚠️  Manual review required: {fix.explanation}")
+                    print("    📝 Commands to run:")
+                    for cmd in fix.commands:
+                        print(f"      {cmd}")
 
                 elif fix.type == "git_installation":
                     # Try to install git if possible

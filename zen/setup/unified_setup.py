@@ -169,6 +169,20 @@ class UnifiedSetupManager:
                         print("  [FAIL] Some fixes failed, continuing with manual intervention...")
                 else:
                     print("  [WARN] No automated fixes available, manual intervention required")
+
+            # House rule (.github/CI.md): banned Python versions and known-vulnerable
+            # dependencies are not warnings — they stop setup, attended or unattended.
+            # Unlike the interactive fixes above (which may shell out to installers),
+            # this check is side-effect-free and always runs.
+            blocking = [i for i in validation_results["issues"] if getattr(i, "blocking", False)]
+            if blocking:
+                print(f"\n  [BLOCKED] {len(blocking)} issue(s) must be resolved before continuing:")
+                for issue in blocking:
+                    print(f"    - {issue.message}")
+                    if issue.fix_command:
+                        print(f"      fix: {issue.fix_command}")
+                self.current_phase = SetupPhase.VALIDATION
+                return False
         else:
             print("  [OK] All validations passed!")
 

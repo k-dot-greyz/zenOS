@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from . import troubleshooter
+
 
 @dataclass
 class EnvironmentInfo:
@@ -251,8 +253,14 @@ class EnvironmentDetector:
         if not env_info.node_available:
             warnings.append("Node.js not available - MCP integration will be disabled")
 
-        if env_info.python_version < "3.7":
-            warnings.append(f"Python {env_info.python_version} detected - Python 3.7+ recommended")
+        # NOTE: python_version is a "major.minor.micro" string — compare it as a
+        # version tuple, not lexicographically ("3.9" < "3.14" is False as strings).
+        py_parts = tuple(int(p) for p in env_info.python_version.split(".")[:2])
+        if py_parts < troubleshooter.MIN_PYTHON:
+            floor = ".".join(str(p) for p in troubleshooter.MIN_PYTHON)
+            warnings.append(
+                f"Python {env_info.python_version} detected - banned, zenOS requires {floor}+"
+            )
 
         if env_info.is_windows and "powershell" not in env_info.shell.lower():
             warnings.append("PowerShell recommended on Windows for best compatibility")
