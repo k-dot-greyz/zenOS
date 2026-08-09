@@ -15,7 +15,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-
 # zenOS house rule: Python interpreters older than this are unsupported —
 # see .github/CI.md. Setup refuses to proceed below this floor.
 MIN_PYTHON = (3, 14)

@@ -72,7 +72,12 @@ include = ["zen*"]
 
 [tool.black]
 line-length = 100
-target-version = ['py314']
+# Deliberately capped below the py314 runtime floor: black --target-version py314
+# auto-adopts PEP 758 (unparenthesized multi-exception `except A, B:`), which is
+# invalid syntax on anything older than 3.14 and not a style choice this repo has
+# actually made. Bump this only as an explicit, reviewed decision — not as a side
+# effect of the requires-python floor moving.
+target-version = ['py312']
 
 [tool.isort]
 profile = "black"
@@ -80,7 +85,8 @@ line_length = 100
 
 [tool.ruff]
 line-length = 100
-target-version = "py314"
+# See the black target-version comment above — same reasoning applies.
+target-version = "py312"
 select = ["E", "F", "I", "N", "W", "B", "C90", "D"]
 ignore = ["D100", "D104"]
 
