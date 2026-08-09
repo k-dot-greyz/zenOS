@@ -5,6 +5,13 @@
 git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py
 ```
 
+## **Something broken? Diagnose first**
+```bash
+make doctor          # env-doctor.sh — OS/shell/tooling/git/creds discovery, read-only
+python setup.py --validate-only   # zenOS-specific: Python 3.14 floor, pip-audit
+```
+See `CLAUDE.md`'s "Environment auto-healing protocol" for the full flow.
+
 ## **Essential Commands**
 ```bash
 # Validation only

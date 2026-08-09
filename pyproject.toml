@@ -11,17 +11,15 @@ authors = [
     {name = "Kaspars Greizis", email = "kaspars@zenos.ai"}
 ]
 license = {text = "MIT"}
-requires-python = ">=3.8"
+# House rule (.github/CI.md): Python < 3.14 is unsupported, not just discouraged.
+# zen/setup/troubleshooter.py::MIN_PYTHON enforces this at dev-session startup too.
+requires-python = ">=3.14"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
@@ -37,6 +35,8 @@ dependencies = [
     "beautifulsoup4>=4.12.0",
     "schedule>=1.2.0",
     "httpx>=0.24.0",
+    "aiofiles>=23.0",
+    "psutil>=5.9",
 ]
 
 [project.optional-dependencies]
@@ -48,6 +48,7 @@ dev = [
     "ruff>=0.1",
     "mypy>=1.0",
     "pre-commit>=3.0",
+    "pip-audit>=2.7",  # dependency vulnerability sanitization — see .github/CI.md
 ]
 mcp = [
     "docker>=6.0",
@@ -71,7 +72,12 @@ include = ["zen*"]
 
 [tool.black]
 line-length = 100
-target-version = ['py38']
+# Deliberately capped below the py314 runtime floor: black --target-version py314
+# auto-adopts PEP 758 (unparenthesized multi-exception `except A, B:`), which is
+# invalid syntax on anything older than 3.14 and not a style choice this repo has
+# actually made. Bump this only as an explicit, reviewed decision — not as a side
+# effect of the requires-python floor moving.
+target-version = ['py312']
 
 [tool.isort]
 profile = "black"
@@ -79,11 +85,13 @@ line_length = 100
 
 [tool.ruff]
 line-length = 100
+# See the black target-version comment above — same reasoning applies.
+target-version = "py312"
 select = ["E", "F", "I", "N", "W", "B", "C90", "D"]
 ignore = ["D100", "D104"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

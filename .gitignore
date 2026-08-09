@@ -25,6 +25,12 @@ wheels/
 *.egg
 MANIFEST
 
+# pytest / coverage.py artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
 # Virtual environments
 venv/
 env/
