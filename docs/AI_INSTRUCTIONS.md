@@ -82,6 +82,29 @@ procedure:
     - return_response
 ```
 
+### Step 7: Testing Harness (Default Reference)
+zenOS adopts the **VITRINE** testing harness as its default reference (design-first). House rules and integration:
+
+```bash
+# Read first (agents)
+cat docs/testing-harness/HOUSE_RULES.md
+cat docs/testing-harness/ZENOS_INTEGRATION.md
+
+# Programmatic startup — DECLARE → NEGOTIATE → HYDRATE (no silent pip)
+python -m zen.testing.hydrate status --json
+python -m zen.testing.hydrate negotiate --profile ci/headless --json
+python -m zen.testing.hydrate hydrate --profile ci/headless --dry-run
+
+# Harness property tests
+pytest tests/test_harness_hydrate.py -v
+```
+
+**Token discipline (I2):** literals for CI budgets, timeouts, and perf gates live in `tokens/testing-harness.toml`. Package versions live in `zenos.stack.lock` only. Do not inline.
+
+**One mutation path (I7):** dependency hydration flows through `zen.testing.hydrate` with journal at `ledger/hydrate.journal.jsonl` — not ad-hoc `pip install` in automation.
+
+Full doc set: `docs/testing-harness/` (VISION, SPINE, TESTING, PROVISIONING, DECISIONS).
+
 ## For Advanced AI Agents
 
 ### Registering Your Identity
@@ -165,6 +188,7 @@ If you encounter issues:
 - **Technical Issues**: Check `/README.md` for setup
 - **Procedure Questions**: Consult `/procedures/manifest.yaml`
 - **Model Selection**: Reference `/dex/models.yaml`
+- **Testing Harness**: Read `/docs/testing-harness/HOUSE_RULES.md`
 
 ## Your First Mission
 

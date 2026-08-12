@@ -67,7 +67,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m zen.testing.hydrate hydrate --profile ci/headless
           pip install pytest pytest-cov
       
       - name: Run tests with pytest
@@ -153,11 +153,40 @@ jobs:
           fi
         continue-on-error: true
 
+  # Testing harness — negotiation purity + token discipline (TESTING.md §7)
+  harness-validate:
+    name: Harness Validate
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install minimal deps for harness module
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Negotiation must be deterministic
+        run: |
+          python -m zen.testing.hydrate negotiate --profile ci/headless --json > /tmp/p1.json
+          python -m zen.testing.hydrate negotiate --profile ci/headless --json > /tmp/p2.json
+          diff /tmp/p1.json /tmp/p2.json
+
+      - name: Harness property tests
+        run: pytest tests/test_harness_hydrate.py -v
+
   # Summary job - reports overall status
   ci-success:
     name: CI Status Check
     runs-on: ubuntu-22.04
-    needs: [lint, test, security, shell-check, docs]
+    needs: [lint, test, security, shell-check, docs, harness-validate]
     if: always()
     steps:
       - name: Check all jobs status
@@ -167,9 +196,11 @@ jobs:
           echo "Security: ${{ needs.security.result }}"
           echo "Shell Check: ${{ needs.shell-check.result }}"
           echo "Docs: ${{ needs.docs.result }}"
+          echo "Harness: ${{ needs.harness-validate.result }}"
           
           if [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ]; then
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.harness-validate.result }}" != "success" ]; then
             echo "::warning::Some checks failed or were skipped"
             exit 1
           fi

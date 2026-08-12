@@ -1,6 +1,11 @@
 # zenOS .gitignore
 # Project types detected: python, windows, ide, logs
 
+# Harness evidence journal (generated at hydrate)
+ledger/*.jsonl
+ledger/hydrate.journal.jsonl
+!ledger/.gitkeep
+
 # PYTHON
 # Python
 __pycache__/

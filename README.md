@@ -202,10 +202,33 @@ zen dex sync
 
 ---
 
+## 🧪 Testing & Harness
+
+zenOS uses the **VITRINE** doc set as its default testing harness reference (`docs/testing-harness/`). Runtime VITRINE is design-only; this repo ships **tokens**, **stack lock**, and **hydrate** for programmatic startup.
+
+```bash
+# House rules + integration map
+cat docs/testing-harness/HOUSE_RULES.md
+
+# DECLARE → NEGOTIATE → HYDRATE (journal at ledger/hydrate.journal.jsonl)
+python -m zen.testing.hydrate negotiate --profile ci/headless --json
+python -m zen.testing.hydrate hydrate --profile ci/headless --dry-run
+
+# Unit tests + harness properties
+pytest tests/ -v
+python test_runner.py   # legacy smoke suite
+```
+
+Literals for budgets and timeouts: `tokens/testing-harness.toml`. Provider bindings: `zenos.stack.lock`.
+
+---
+
 ## 📖 Documentation
 
 - **[Quick Start Guide](docs/guides/QUICKSTART.md)** - Get started in minutes
 - **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
+- **[Testing Harness Reference](docs/testing-harness/README.md)** - VITRINE default harness (design + zenOS bindings)
+- **[Harness House Rules](docs/testing-harness/HOUSE_RULES.md)** - I2 tokens, hydrate handshake, CI gates
 - **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
 - **[Setup Guides](docs/guides/)** - Platform-specific instructions
 - **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** - The origin story (historical)

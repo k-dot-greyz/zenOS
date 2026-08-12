@@ -238,6 +238,32 @@ procedures:
     usage_count: 156
     tools: ["zen_repo_manager.py status", "repositories-mcp get_repository_status"]
 
+  - id: "zen.test.harness"
+    name: "Testing Harness (VITRINE reference)"
+    type: "validation"
+    tier: "uncommon"
+    stats:
+      complexity: 45
+      efficiency: 90
+      reliability: 96
+    requirements:
+      - "tokens/testing-harness.toml"
+      - "zenos.stack.lock"
+      - "policy/testing-harness.toml"
+    description: "DECLARE/NEGOTIATE/HYDRATE startup per docs/testing-harness/PROVISIONING.md"
+    discovered_by: "ai:cursor-agent"
+    discovery_date: "2026-08-12"
+    evolution_path:
+      next: "zen.test.harness.conformance"
+    usage_count: 0
+    docs:
+      - "docs/testing-harness/HOUSE_RULES.md"
+      - "docs/testing-harness/ZENOS_INTEGRATION.md"
+    steps:
+      - "zen.test.harness.status"
+      - "zen.test.harness.negotiate"
+      - "zen.test.harness.hydrate"
+
 # Procedure Combinations (Combos)
 combos:
   - name: "Full Stack Refactor"
