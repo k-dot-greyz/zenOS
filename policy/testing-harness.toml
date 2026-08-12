@@ -1,0 +1,38 @@
+# zenOS testing harness policy — constraints for negotiation (DECLARE phase)
+# Profiles map to requirement sets; bindings resolved in zenos.stack.lock
+
+schema_version = "1"
+
+[license]
+allow = ["MIT", "Apache-2.0", "BSD-3-Clause", "ISC"]
+deny_copyleft = false
+
+[profiles.ci_headless]
+id = "ci/headless"
+requirements = [
+  "execute_test_plan",
+  "resolve_python_deps",
+  "lint_python",
+]
+network_granted = true
+native_toolchain_granted = true
+
+[profiles.linux_dev]
+id = "linux/wayland/chromium/dev"
+requirements = [
+  "isolate_specimen",
+  "render_gpu_world_plane",
+  "serve_static_chrome",
+  "execute_test_plan",
+]
+network_granted = true
+native_toolchain_granted = true
+
+[profiles.static_file]
+id = "static/file"
+requirements = [
+  "serve_static_chrome",
+  "degrade_to_static",
+]
+network_granted = false
+native_toolchain_granted = false
