@@ -1,0 +1,88 @@
+# zenOS testing harness procedures — DECLARE / NEGOTIATE / HYDRATE
+# See docs/testing-harness/PROVISIONING.md and HOUSE_RULES.md
+
+procedure:
+  id: "zen.test.harness.status"
+  name: "Harness Status"
+  type: "diagnostic"
+  tier: "common"
+  description: "Observe harness state without mutation (P-observe)"
+  stats:
+    complexity: 15
+    efficiency: 95
+    reliability: 98
+  requirements:
+    - "tokens/testing-harness.toml"
+    - "zenos.stack.lock"
+  steps:
+    - id: observe
+      command: "python -m zen.testing.hydrate status --json"
+      mutates: false
+  outputs:
+    proposal_fingerprint: string
+    warnings: list
+    conformance: list
+
+---
+
+procedure:
+  id: "zen.test.harness.negotiate"
+  name: "Harness Negotiate"
+  type: "analytical"
+  tier: "uncommon"
+  description: "Pure negotiation — deterministic proposal, no filesystem mutation"
+  stats:
+    complexity: 35
+    efficiency: 90
+    reliability: 97
+  requirements:
+    - "policy/testing-harness.toml"
+    - "zenos.stack.lock"
+  inputs:
+    profile: string
+  steps:
+    - id: declare
+      command: "python -m zen.testing.hydrate declare --profile {profile} --json"
+      mutates: false
+    - id: negotiate
+      command: "python -m zen.testing.hydrate negotiate --profile {profile} --json"
+      mutates: false
+  halt_on:
+    - unresolved_requirement
+    - failed_binding
+    - provisional_without_ack
+
+---
+
+procedure:
+  id: "zen.test.harness.hydrate"
+  name: "Harness Hydrate"
+  type: "transformative"
+  tier: "rare"
+  description: "Journaled dependency hydration — only mutating startup path (I7)"
+  stats:
+    complexity: 55
+    efficiency: 85
+    reliability: 92
+  requirements:
+    - "approved negotiation proposal"
+    - "network if profile grants"
+  inputs:
+    profile: string
+    dry_run: boolean
+  steps:
+    - id: negotiate
+      command: "python -m zen.testing.hydrate negotiate --profile {profile} --json"
+      mutates: false
+    - id: hydrate
+      command: "python -m zen.testing.hydrate hydrate --profile {profile} --json"
+      mutates: true
+      journal: "ledger/hydrate.journal.jsonl"
+  properties:
+    - P-conv
+    - P-noop
+    - P-resume
+    - P-journal
+  evolution_path:
+    from: "zen.test.harness.negotiate"
+    next: "zen.test.harness.conformance"
