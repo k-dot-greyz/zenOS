@@ -43,6 +43,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application code
 COPY --chown=zen:zen zen/ /app/zen/
+COPY --chown=zen:zen dex/ /app/dex/
 COPY --chown=zen:zen agents/ /app/agents/
 COPY --chown=zen:zen modules/ /app/modules/
 COPY --chown=zen:zen configs/ /app/configs/
@@ -53,8 +54,10 @@ USER zen
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
     ZEN_CONFIG_PATH=/config \
-    HOME=/home/zen
+    HOME=/home/zen \
+    ZEN_SERVE=1
 
-# Default command - start in chat mode
-CMD ["python", "-m", "zen.cli", "chat"]
+# Default command — REST API (override with `zen chat` for interactive)
+CMD ["python", "-m", "zen.api", "--host", "0.0.0.0", "--port", "8080"]
