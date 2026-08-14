@@ -19,6 +19,13 @@ class InboxManager:
         self.incoming_path = self.inbox_path / "incoming"
         self.processing_path = self.inbox_path / "processing"
         self.processed_path = self.inbox_path / "processed"
+        for path in (
+            self.inbox_path,
+            self.incoming_path,
+            self.processing_path,
+            self.processed_path,
+        ):
+            path.mkdir(parents=True, exist_ok=True)
 
     def add_item(self, item_type: str, content: str, metadata: Dict[str, Any] = None) -> str:
         """Add a new item to the inbox"""
@@ -95,7 +102,6 @@ class InboxManager:
 
 
 @click.group()
-@click.alias("inbox")
 def receive():
     """zenOS Receive System - Process incoming items"""
     pass
