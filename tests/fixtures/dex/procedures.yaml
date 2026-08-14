@@ -1,0 +1,27 @@
+version: "1.0.0"
+procedures:
+  - id: "zen.chat"
+    name: "Basic Chat"
+    type: "interactive"
+    tier: "common"
+    stats:
+      complexity: 20
+      efficiency: 85
+      reliability: 95
+    requirements:
+      - "LLM access"
+    discovered_by: "human:test"
+    usage_count: 10
+  - id: "zen.analyze"
+    name: "Code Analysis"
+    type: "analytical"
+    tier: "uncommon"
+    stats:
+      complexity: 55
+      efficiency: 82
+    requirements:
+      - "Code parser"
+    discovered_by: "human:test"
+    usage_count: 3
+achievements: []
+combos: []
