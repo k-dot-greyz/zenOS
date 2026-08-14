@@ -17,6 +17,7 @@ from zen.api.errors import PacketError
 from zen.api.routers.health import health_router, meta_router
 from zen.api.routers.session import router as session_router
 from zen.api.state import ApiState
+from zen.services.errors import ServiceError
 
 _UNSET = object()
 
@@ -73,6 +74,13 @@ def create_app(
 
     @app.exception_handler(PacketError)
     async def packet_error_handler(request: Request, exc: PacketError) -> JSONResponse:
+        sid = request.headers.get("x-zen-session")
+        seq = request.app.state.zen.sessions.next_seq(sid)
+        packet = make_error(exc.code, exc.message, details=exc.details, sid=sid, seq=seq)
+        return JSONResponse(status_code=exc.status_code, content=packet.to_wire())
+
+    @app.exception_handler(ServiceError)
+    async def service_error_handler(request: Request, exc: ServiceError) -> JSONResponse:
         sid = request.headers.get("x-zen-session")
         seq = request.app.state.zen.sessions.next_seq(sid)
         packet = make_error(exc.code, exc.message, details=exc.details, sid=sid, seq=seq)
