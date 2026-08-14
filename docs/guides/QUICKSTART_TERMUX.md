@@ -258,9 +258,17 @@ export ZEN_MAX_TOKENS=500  # Shorter responses on mobile
 
 ### Option 1: Use Your Desktop as Backend
 ```bash
-# On desktop, expose zenOS API
+# On desktop, expose zenOS API (token required off loopback)
+export ZEN_API_TOKEN="a-long-random-secret"
 cd ~/zenOS
 python -m zen.core.api --host 0.0.0.0 --port 7777
+# or: zen serve --host 0.0.0.0 --port 7777
+
+# On phone, connect to desktop
+export ZEN_REMOTE_HOST="192.168.1.100:7777"
+export ZEN_API_TOKEN="a-long-random-secret"
+curl -sS -H "Authorization: Bearer $ZEN_API_TOKEN" http://$ZEN_REMOTE_HOST/health
+```
 
 # On phone, connect to desktop
 export ZEN_REMOTE_HOST="192.168.1.100:7777"

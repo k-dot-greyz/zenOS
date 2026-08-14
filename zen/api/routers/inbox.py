@@ -37,6 +37,7 @@ def get_inbox_service(request: Request) -> InboxService:
 
 
 @router.get("/cards/inbox")
+@router.get("/inbox")
 async def list_inbox(
     request: Request,
     status_filter: Optional[str] = Query(default=None, alias="status"),

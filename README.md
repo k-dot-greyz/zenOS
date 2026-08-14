@@ -6,7 +6,7 @@ A revolutionary operating system for human-AI collaboration where biological and
 zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
@@ -106,6 +106,13 @@ python -m pip install -e .
    ```bash
    zen chat
    ```
+
+5. **Or run the REST API:**
+   ```bash
+   zen serve
+   # http://127.0.0.1:8080/health  /docs  /api/v1/meta
+   ```
+   See [`docs/guides/REST_API.md`](docs/guides/REST_API.md).
 
 ---
 

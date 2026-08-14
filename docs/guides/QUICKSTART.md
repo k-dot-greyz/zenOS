@@ -64,6 +64,7 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup
 2. **[`dex/models.yaml`](./dex/models.yaml)** - Discover AI models
 3. **[`dex/procedures.yaml`](./dex/procedures.yaml)** - Learn procedures
 4. **[`AI_INTEGRATION_BLUEPRINT.md`](./AI_INTEGRATION_BLUEPRINT.md)** - See the future
+5. **[`REST_API.md`](./REST_API.md)** - Machine HTTP interface
 
 ---
 
