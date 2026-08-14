@@ -9,6 +9,7 @@ Usage:
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -23,9 +24,7 @@ from rich.table import Table
 from zen import __version__
 from zen.cli_plugins import plugins
 from zen.core.agent import AgentRegistry
-from zen.core.launcher import Launcher
 from zen.inbox import receive
-from zen.utils.config import Config
 
 console = Console()
 
@@ -169,8 +168,9 @@ def run(
 
 def show_agents() -> None:
     """Display all available agents in a beautiful table."""
-    registry = AgentRegistry()
-    agents = registry.list_agents()
+    from zen.services.agents import AgentService
+
+    agents = AgentService().list_agents()
 
     if not agents:
         console.print("[yellow]No agents found.[/yellow]")
@@ -246,6 +246,9 @@ def run_agent(
     debug: bool,
 ) -> None:
     """Run an agent with the given prompt."""
+    from zen.services.agents import AgentService
+    from zen.services.errors import NotFoundError, ServiceError
+
     console.print(
         Panel.fit(
             f"[bold cyan]🧘 Running Agent:[/bold cyan] {agent}",
@@ -253,7 +256,7 @@ def run_agent(
         )
     )
 
-    launcher = Launcher(debug=debug)
+    service = AgentService(debug=debug)
 
     try:
         with Progress(
@@ -261,34 +264,31 @@ def run_agent(
             TextColumn("[progress.description]{task.description}"),
             console=console,
         ) as progress:
-            # Load agent
             task = progress.add_task("Loading agent...", total=None)
-            launcher.load_agent(agent)
+            service.get_agent(agent)
             progress.update(task, completed=True)
 
-            # Auto-critique unless disabled
-            if not no_critique:
-                task = progress.add_task("Enhancing prompt with auto-critique...", total=None)
-                prompt = launcher.critique_prompt(prompt)
-                progress.update(task, completed=True)
-
-                if upgrade_only:
-                    console.print("\n[green]✓[/green] Prompt upgraded successfully!")
-                    console.print(Panel(prompt, title="Enhanced Prompt", border_style="green"))
-                    return
-
-            # Execute agent
             task = progress.add_task("Executing agent...", total=None)
-            result = launcher.execute(prompt, variables)
+            result = service.execute(
+                agent,
+                prompt,
+                variables,
+                no_critique=no_critique,
+                upgrade_only=upgrade_only,
+            )
             progress.update(task, completed=True)
 
-        # Display result
+        if upgrade_only:
+            upgraded = result.get("upgraded_prompt", prompt) if isinstance(result, dict) else result
+            console.print("\n[green]✓[/green] Prompt upgraded successfully!")
+            console.print(Panel(str(upgraded), title="Enhanced Prompt", border_style="green"))
+            return
+
         console.print("\n[green]✓[/green] Agent completed successfully!")
 
         if isinstance(result, str):
             console.print(Panel(result, title="Result", border_style="green"))
         else:
-            # Pretty print JSON/dict results
             syntax = Syntax(
                 json.dumps(result, indent=2),
                 "json",
@@ -297,6 +297,9 @@ def run_agent(
             )
             console.print(Panel(syntax, title="Result", border_style="green"))
 
+    except (NotFoundError, ServiceError) as e:
+        console.print(f"\n[red]✗[/red] Agent failed: {e.message}")
+        sys.exit(1)
     except Exception as e:
         console.print(f"\n[red]✗[/red] Agent failed: {e}")
         if debug:
@@ -351,6 +354,23 @@ def setup(unattended, validate_only, phase):
         sys.exit(1)
 
 
+@cli.command("serve")
+@click.option("--host", default=None, help="Bind host (default 127.0.0.1)")
+@click.option("--port", default=None, type=int, help="Bind port (default 8080)")
+@click.option("--reload", is_flag=True, help="Reload on code changes")
+def serve(host: Optional[str], port: Optional[int], reload: bool) -> None:
+    """Run the zenOS REST API."""
+    from zen.api.serve import run_server
+
+    bind_host = host or os.getenv("ZEN_API_HOST", "127.0.0.1")
+    bind_port = port if port is not None else int(os.getenv("ZEN_API_PORT", "8080"))
+    try:
+        run_server(bind_host, bind_port, reload)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        sys.exit(2)
+
+
 # Add plugin commands to CLI
 cli.add_command(plugins)
 cli.add_command(receive)
@@ -369,5 +389,10 @@ cli.add_command(sync)
 cli.add_command(arena)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Console script entry point for `zen` / `zenos`."""
     cli()
+
+
+if __name__ == "__main__":
+    main()

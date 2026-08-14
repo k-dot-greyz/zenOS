@@ -3,6 +3,7 @@ Agent base class and registry for zenOS.
 """
 
 import json
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +13,8 @@ import yaml
 
 from zen.utils.config import Config
 from zen.utils.template import TemplateEngine
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -156,7 +159,7 @@ class AgentRegistry:
                     manifest = AgentManifest.from_yaml(yaml_file)
                     self._agents[manifest.name] = YAMLAgent(manifest)
                 except Exception as e:
-                    print(f"Failed to load agent {yaml_file}: {e}")
+                    logger.warning("Failed to load agent %s: %s", yaml_file, e)
 
         # Load built-in agents
         self._load_builtin_agents()
@@ -211,8 +214,8 @@ class AgentRegistry:
             self._agents["system_troubleshooter"] = SystemTroubleshooterAgent()
             self._agents["prompt_security"] = PromptSecurityAgent()
 
-        except ImportError as e:
-            print(f"Warning: Could not load PromptOS agents: {e}")
+        except Exception as e:
+            logger.warning("Could not load PromptOS agents: %s", e)
 
     def get_agent(self, name: str) -> Agent:
         """Get an agent by name."""
