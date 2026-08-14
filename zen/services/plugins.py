@@ -65,9 +65,7 @@ class PluginService:
         """Execute a plugin procedure."""
         self.get_plugin(plugin_id)
         ctx = context or ExecutionContext(user_id="api", session_id="local", device_info={})
-        result = await self._get_executor().execute_plugin(
-            plugin_id, procedure_id, input_data, ctx
-        )
+        result = await self._get_executor().execute_plugin(plugin_id, procedure_id, input_data, ctx)
         if not result.success:
             error = result.error or "Plugin execution failed"
             lowered = error.lower()

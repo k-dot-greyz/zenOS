@@ -279,9 +279,7 @@ def run_agent(
             progress.update(task, completed=True)
 
         if upgrade_only:
-            upgraded = (
-                result.get("upgraded_prompt", prompt) if isinstance(result, dict) else result
-            )
+            upgraded = result.get("upgraded_prompt", prompt) if isinstance(result, dict) else result
             console.print("\n[green]✓[/green] Prompt upgraded successfully!")
             console.print(Panel(str(upgraded), title="Enhanced Prompt", border_style="green"))
             return

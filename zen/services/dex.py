@@ -54,7 +54,9 @@ class DexService:
             "usage_count": procedure.usage_count,
         }
 
-    def list_models(self, *, tier: Optional[str] = None, task: Optional[str] = None) -> List[ModelEntry]:
+    def list_models(
+        self, *, tier: Optional[str] = None, task: Optional[str] = None
+    ) -> List[ModelEntry]:
         """List models, optionally filtered by tier or task."""
         if task:
             models = self.catalog.find_model_for_task(task)
