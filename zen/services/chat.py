@@ -24,7 +24,9 @@ class ChatService:
         try:
             from zen.providers.openrouter import OpenRouterProvider
         except Exception as exc:
-            raise UnavailableError("Chat provider is not available", details={"error": str(exc)}) from exc
+            raise UnavailableError(
+                "Chat provider is not available", details={"error": str(exc)}
+            ) from exc
         try:
             async with OpenRouterProvider() as provider:
                 async for chunk in provider.complete(message, model=model, stream=True):

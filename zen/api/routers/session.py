@@ -7,9 +7,7 @@ from fastapi import APIRouter, Depends, Request, status
 from zen.api.auth import require_api_token
 from zen.api.envelope import handshake_schema, make_card
 
-router = APIRouter(
-    prefix="/api/v1", tags=["session"], dependencies=[Depends(require_api_token)]
-)
+router = APIRouter(prefix="/api/v1", tags=["session"], dependencies=[Depends(require_api_token)])
 
 
 @router.post("/session", status_code=status.HTTP_201_CREATED)

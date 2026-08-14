@@ -19,9 +19,7 @@ def is_loopback_host(host: str) -> bool:
 def require_token_for_bind(host: str, token: Optional[str]) -> None:
     """Refuse non-loopback binds unless an API token is configured."""
     if not is_loopback_host(host) and not token:
-        raise ValueError(
-            "ZEN_API_TOKEN is required when binding to a non-loopback address"
-        )
+        raise ValueError("ZEN_API_TOKEN is required when binding to a non-loopback address")
 
 
 async def require_api_token(
