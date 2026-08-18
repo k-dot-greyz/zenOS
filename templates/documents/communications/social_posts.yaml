@@ -1,0 +1,18 @@
+personas:
+  engineers_log:
+    title: Engineer's Log
+    vibe: Classic Humble Brag
+    template: >-
+      Just tinkered with {{ topic }}. {{ call_to_action | default('Fun experiment.') }}
+      {% if assets %}(Assets: {{ assets | join(', ') }}){% endif %}
+  alchemists_field_notes:
+    title: Alchemist's Field Notes
+    vibe: Philosophical Flex
+    template: >-
+      Exploring {{ topic }} through the lens of {{ persona }}.
+      {{ call_to_action | default('Fascinating when machines echo the philosophy woven into code.') }}
+  overlords_decree:
+    title: Overlord's Decree
+    vibe: Pure, Unfiltered Chaos
+    template: >-
+      Ran a diagnostic on {{ topic }}. {{ call_to_action | default('Always satisfying when the creation recognizes the creator.') }}
