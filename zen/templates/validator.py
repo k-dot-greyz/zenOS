@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from jinja2.exceptions import TemplateError
+
 from zen.utils.template import TemplateEngine, TemplateRegistryError
 
 try:
@@ -53,7 +54,9 @@ class TemplateValidator:
             schema_root = self.engine.template_dir / "metadata" / "schemas"
         self.schema_root = schema_root
 
-    def validate(self, template_id: str, sample_variables: Optional[Dict[str, Any]] = None) -> ValidationReport:
+    def validate(
+        self, template_id: str, sample_variables: Optional[Dict[str, Any]] = None
+    ) -> ValidationReport:
         """
         Validate template correctness using registry metadata.
 
@@ -81,7 +84,9 @@ class TemplateValidator:
     # ------------------------------------------------------------------
     # Individual validation passes
     # ------------------------------------------------------------------
-    def _validate_schema(self, entry: Dict[str, Any], variables: Dict[str, Any], report: ValidationReport) -> None:
+    def _validate_schema(
+        self, entry: Dict[str, Any], variables: Dict[str, Any], report: ValidationReport
+    ) -> None:
         """Validate variables using JSON schema if available."""
         schema_path = entry.get("compatibility", {}).get("variables_schema")
         if not schema_path:
@@ -149,7 +154,9 @@ class TemplateValidator:
         if not entry.get("tags"):
             report.add("warning", "Template has no tags; consider adding for better discovery.")
 
-    def _validate_render(self, entry: Dict[str, Any], variables: Dict[str, Any], report: ValidationReport) -> None:
+    def _validate_render(
+        self, entry: Dict[str, Any], variables: Dict[str, Any], report: ValidationReport
+    ) -> None:
         """Attempt to render template with provided variables."""
         try:
             self.engine.render_by_id(entry["id"], variables)

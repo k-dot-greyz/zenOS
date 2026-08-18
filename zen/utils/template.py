@@ -58,9 +58,7 @@ class TemplateEngine:
     def _load_registry(self) -> None:
         """Load and index the template registry file."""
         if not self.registry_path.exists():
-            raise TemplateRegistryError(
-                f"Template registry not found at {self.registry_path}"
-            )
+            raise TemplateRegistryError(f"Template registry not found at {self.registry_path}")
 
         data = yaml.safe_load(self.registry_path.read_text(encoding="utf-8")) or {}
         templates = data.get("templates", [])
