@@ -232,9 +232,9 @@ jobs:
           
           # Check if comment already exists
           comments = pr.get_issue_comments()
-          for comment in comments:
-              if comment.user.login == 'github-actions[bot]' and 'PR Status Check' in comment.body:
-                  comment.edit(comment)
+          for existing in comments:
+              if existing.user.login == 'github-actions[bot]' and 'PR Status Check' in existing.body:
+                  existing.edit(comment)
                   break
           else:
               pr.create_issue_comment(comment)

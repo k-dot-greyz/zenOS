@@ -1,21 +1,21 @@
-import sys
-import json
 import datetime
+import json
+import sys
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 import click
 import yaml
 from rich.console import Console
-from rich.table import Table
-from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.syntax import Syntax
+from rich.table import Table
 
 from zen.cli_plugins import plugins
 from zen.inbox import receive
-from zen.utils.template import TemplateEngine, TemplateRegistryError
 from zen.templates import TemplatePokedex, TemplateValidator
+from zen.utils.template import TemplateEngine, TemplateRegistryError
 
 console = Console()
 
@@ -75,7 +75,10 @@ def save_registry_data(data: Dict[str, Any]) -> None:
 def load_evolution_data() -> Dict[str, Any]:
     if not EVOLUTION_PATH.exists():
         return {"version": "1.0.0", "lineage": {}}
-    return yaml.safe_load(EVOLUTION_PATH.read_text(encoding="utf-8")) or {"version": "1.0.0", "lineage": {}}
+    return yaml.safe_load(EVOLUTION_PATH.read_text(encoding="utf-8")) or {
+        "version": "1.0.0",
+        "lineage": {},
+    }
 
 
 def save_evolution_data(data: Dict[str, Any]) -> None:
@@ -140,13 +143,7 @@ def bump_version(version: str, mode: str) -> str:
 def _generate_template_skeleton(format_name: str, name: str) -> str:
     """Return starter content for a new template based on format."""
     if format_name == "markdown":
-        return (
-            f"# {name}\n\n"
-            "## Summary\n"
-            "- {{ summary }}\n\n"
-            "## Details\n"
-            "{{ details }}\n"
-        )
+        return f"# {name}\n\n" "## Summary\n" "- {{ summary }}\n\n" "## Details\n" "{{ details }}\n"
     if format_name == "jinja":
         return (
             "{# " + name + " template #}\n"
@@ -154,17 +151,13 @@ def _generate_template_skeleton(format_name: str, name: str) -> str:
             "{{ body }}\n"
         )
     if format_name == "yaml":
-        return (
-            "title: {{ title }}\n"
-            "summary: {{ summary }}\n"
-            "items:\n  - {{ item }}\n"
-        )
+        return "title: {{ title }}\n" "summary: {{ summary }}\n" "items:\n  - {{ item }}\n"
     if format_name == "json":
         return (
             "{\n"
-            "  \"title\": \"{{ title }}\",\n"
-            "  \"summary\": \"{{ summary }}\",\n"
-            "  \"items\": [\"{{ item }}\"]\n"
+            '  "title": "{{ title }}",\n'
+            '  "summary": "{{ summary }}",\n'
+            '  "items": ["{{ item }}"]\n'
             "}\n"
         )
     return ""

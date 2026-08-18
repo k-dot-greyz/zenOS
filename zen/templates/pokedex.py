@@ -179,4 +179,3 @@ class TemplatePokedex:
         if usage_count > 5:
             return "uncommon"
         return "common"
-
