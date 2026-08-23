@@ -177,7 +177,11 @@ flowchart TD
 | Artifact | URL |
 |----------|-----|
 | Original PR | https://github.com/k-dot-greyz/zenOS/pull/18 |
-| Follow-up planning PR | *(filled after push)* |
+| Follow-up planning PR | *(see PR after push)* |
+| Phase 0 issue | https://github.com/k-dot-greyz/zenOS/issues/57 |
+| Phase 1 issue | https://github.com/k-dot-greyz/zenOS/issues/60 |
+| Phase 2 issue | https://github.com/k-dot-greyz/zenOS/issues/58 |
+| Phase 3 issue | https://github.com/k-dot-greyz/zenOS/issues/59 |
 | Branding gate | `scripts/check_no_legacy_branding.py` |
 | Rebrand tooling | `scripts/rebrand_to_dex.py` |
 | Registry | `templates/registry.yaml` |

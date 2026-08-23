@@ -16,10 +16,10 @@ Blocks merge of: [PR #18](https://github.com/k-dot-greyz/zenOS/pull/18)
 
 | Issue | Phase | Tasks |
 |-------|-------|-------|
-| *(created on push)* | 0 — Rehydration | T-00, T-01, T-02 |
-| *(created on push)* | 1 — Runtime | T-03 … T-08 |
-| *(created on push)* | 2 — Integration | T-09 … T-12 |
-| *(created on push)* | 3 — CI & tests | T-13 … T-16 |
+| [#57](https://github.com/k-dot-greyz/zenOS/issues/57) | 0 — Rehydration | T-00, T-01, T-02 |
+| [#60](https://github.com/k-dot-greyz/zenOS/issues/60) | 1 — Runtime | T-03 … T-08 |
+| [#58](https://github.com/k-dot-greyz/zenOS/issues/58) | 2 — Integration | T-09 … T-12 |
+| [#59](https://github.com/k-dot-greyz/zenOS/issues/59) | 3 — CI & tests | T-13 … T-16 |
 
 ## PR checklist (before merging #18)
 
