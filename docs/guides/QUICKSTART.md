@@ -15,6 +15,11 @@ You'll learn how to:
 
 ## 🧑‍💻 For Humans
 
+### Requirements
+- **Python 3.14+** (hard fail below this — `zen` will refuse to start)
+- Current stable deps from `pyproject.toml` / `requirements.txt`
+- Optional: [uv](https://docs.astral.sh/uv/) (`uv python install 3.14`)
+
 ### Instant Setup (One-Liners)
 
 #### Desktop (Windows/Mac/Linux)
@@ -48,7 +53,7 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup
 
 3. **Install dependencies:**
    ```bash
-   pip install -e .
+   pip install -e .   # Python 3.14+ required
    ```
 
 4. **Start chatting:**

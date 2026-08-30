@@ -11,7 +11,7 @@ from importlib.metadata import PackageNotFoundError, version as pkg_version
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-MIN_PYTHON = (3, 14)
+from zen.runtime import MIN_PYTHON
 
 CORE_IMPORTS: tuple[tuple[str, str], ...] = (
     ("click", "click"),

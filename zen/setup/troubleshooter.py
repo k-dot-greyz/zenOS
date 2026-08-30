@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-MIN_PYTHON = (3, 14)
+from zen.runtime import MIN_PYTHON
 
 
 @dataclass
@@ -427,10 +427,10 @@ if __name__ == '__main__':
 
 ### Python Version Issues
 **Problem**: Python version too old
-**Solution**: Install Python 3.7 or higher
-- macOS: `brew install python@3.9`
-- Ubuntu/Debian: `sudo apt install python3.9`
-- Windows: Download from https://python.org/downloads/
+**Solution**: Install Python 3.14 or higher
+- macOS: `brew install python@3.14`
+- Ubuntu/Debian: `uv python install 3.14` or Deadsnakes `python3.14`
+- Windows: Download 3.14+ from https://python.org/downloads/
 
 ### Git Not Found
 **Problem**: Git not installed or not in PATH
@@ -484,11 +484,11 @@ echo $HTTP_PROXY $HTTPS_PROXY
 
 If automated setup fails, you can manually set up zenOS:
 
-1. Install Python 3.7+
+1. Install Python 3.14+
 2. Install Git
 3. Clone the repository
-4. Install dependencies: `pip install -r requirements.txt`
-5. Run zenOS: `python zen/cli.py --help`
+4. Install dependencies: `python3.14 -m pip install -e .`
+5. Run zenOS: `zen --help`
 """
 
             with open(guide_path, "w") as f:

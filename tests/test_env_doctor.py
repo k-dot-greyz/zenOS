@@ -49,6 +49,24 @@ def test_cli_registers_doctor_and_env_doctor():
     assert "env-doctor" in cli.commands
 
 
+def test_startup_docs_require_python_3_14():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    quickstart = (ROOT / "docs" / "guides" / "QUICKSTART.md").read_text(encoding="utf-8")
+    env_example = (ROOT / "env.example").read_text(encoding="utf-8")
+    assert "Python 3.14" in readme
+    assert "will not start" in readme
+    assert "Python 3.14+" in quickstart
+    assert "Python 3.14+" in env_example
+
+
+def test_env_start_script_gates_python_3_14():
+    start = (ROOT / "scripts" / "zenos-env-start.sh").read_text(encoding="utf-8")
+    install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
+    assert "3.14" in start
+    assert "require_runtime" in start
+    assert "uv python install 3.14" in install
+
+
 def test_pyproject_requires_python_3_14():
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert 'requires-python = ">=3.14"' in pyproject

@@ -25,6 +25,7 @@ from zen.cli_plugins import plugins
 from zen.core.agent import AgentRegistry
 from zen.core.launcher import Launcher
 from zen.inbox import receive
+from zen.runtime import require_runtime
 from zen.utils.config import Config
 
 console = Console()
@@ -41,6 +42,7 @@ def cli(version: bool):
 
 def main() -> None:
     """Console-script entrypoint (`zen` / `zenos` → zen.cli:main)."""
+    require_runtime()
     cli()
 
 

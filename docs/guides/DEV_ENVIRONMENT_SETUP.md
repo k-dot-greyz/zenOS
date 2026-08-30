@@ -33,7 +33,7 @@ python setup.py --unattended
 ### **Phase 1: Environment Detection**
 - [ ] **OS Detection**: Windows, Linux, macOS, Termux
 - [ ] **Shell Detection**: PowerShell, Bash, Zsh, CMD
-- [ ] **Python Version**: 3.7+ (3.8+ recommended)
+- [ ] **Python Version**: 3.14+ (hard requirement; `zen` will not start below this)
 - [ ] **Git Availability**: Git installed and configured
 - [ ] **Node.js**: For MCP servers (optional but recommended)
 - [ ] **Internet Connectivity**: For package installation
@@ -72,7 +72,7 @@ python setup.py --unattended
 winget install Git.Git
 
 # 2. Install Python (if not installed)
-winget install Python.Python.3.11
+winget install Python.Python.3.14
 
 # 3. Install Node.js (if needed)
 winget install OpenJS.NodeJS
@@ -92,12 +92,12 @@ sudo apt update && sudo apt install git
 # macOS
 brew install git
 
-# 2. Install Python (if not installed)
-# Ubuntu/Debian
-sudo apt install python3 python3-pip
-
+# 2. Install Python 3.14+ (if not installed)
+# Ubuntu/Debian — Deadsnakes or uv (do not use distro python3.12)
+uv python install 3.14
 # macOS
-brew install python
+brew install python@3.14
+# or: uv python install 3.14
 
 # 3. Install Node.js (if needed)
 # Ubuntu/Debian

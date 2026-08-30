@@ -59,6 +59,22 @@ zen repo optimize          # Suggest improvements
 
 ---
 
+## Requirements
+
+zenOS **will not start** on anything below **Python 3.14**. Use the current stables from `pyproject.toml` / `requirements.txt` (Click 8.2+, Rich 14+, Pydantic 2.11+, aiohttp 3.11+, httpx 0.28+, …).
+
+```bash
+# Check the interpreter before install
+python3.14 --version   # must be 3.14.x
+# or
+uv python install 3.14
+
+python3.14 -m pip install -e .
+zen env-doctor         # fails hard if the floor is wrong
+```
+
+---
+
 ## 🚀 Quick Start
 
 ### Instant Setup (One-Liners)
@@ -79,8 +95,8 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install_termu
 git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
-# Then install offline:
-python -m pip install -e .
+# Then install offline (Python 3.14+ required):
+python3.14 -m pip install -e .
 ```
 
 ### Manual Setup
@@ -99,7 +115,8 @@ python -m pip install -e .
 
 3. **Install dependencies:**
    ```bash
-   pip install -e .
+   # Requires Python 3.14+
+   python3.14 -m pip install -e .
    ```
 
 4. **Start exploring:**
