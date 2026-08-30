@@ -4,6 +4,14 @@
 
 This guide covers the **bulletproof setup system** that combines the best procedures from promptOS and mcp-config to create an environment-agnostic development environment that works everywhere.
 
+## Requirements
+
+- **Python 3.14+** — zenOS, `zen`, `install.sh`, and Cloud Agent `start` refuse to boot on older interpreters
+- Current stables from `pyproject.toml` / `requirements.txt`
+- Preferred bootstrap: `bash scripts/zenos-env-install.sh` then `bash scripts/zenos-env-start.sh`
+- Git
+- Optional: Node.js for MCP, `uv python install 3.14`
+
 ## 🚀 **One-Command Setup**
 
 ### **Quick Start (All Platforms)**
@@ -99,8 +107,8 @@ If automated setup fails, you can manually set up zenOS:
 
 ### **1. Prerequisites**
 ```bash
-# Python 3.7+ (required)
-python --version
+# Python 3.14+ (required — startup fails below this)
+python3.14 --version
 
 # Git (recommended)
 git --version
@@ -115,8 +123,8 @@ node --version
 git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
-# Install Python dependencies
-pip install -r requirements.txt
+# Python 3.14+
+python3.14 -m pip install -e .
 
 # Setup git (if not already done)
 git config --global user.name "Your Name"
@@ -148,10 +156,10 @@ python zen/cli.py receive add "test" "Hello world"
 **Python Version Too Old:**
 ```bash
 # macOS
-brew install python@3.9
+brew install python@3.14
 
 # Ubuntu/Debian
-sudo apt install python3.9
+sudo apt install python3.14
 
 # Windows
 # Download from https://python.org/downloads/

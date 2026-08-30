@@ -17,15 +17,15 @@ jobs:
   # Fast linting checks run first
   lint:
     name: Lint & Format Check
-    runs-on: ubuntu-22.04  # Pin to specific version
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python 3.12
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
           cache: 'pip'
       
       - name: Install linting tools
@@ -52,16 +52,16 @@ jobs:
   # Test Python scripts if present
   test:
     name: Python Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     needs: lint
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python 3.12
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
           cache: 'pip'
       
       - name: Install dependencies
@@ -81,15 +81,15 @@ jobs:
   # Security checks
   security:
     name: Security Scan
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python 3.12
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
           cache: 'pip'
       
       - name: Install security tools
@@ -111,7 +111,7 @@ jobs:
   # Shell script validation
   shell-check:
     name: Shell Script Validation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -129,15 +129,15 @@ jobs:
   # Documentation check
   docs:
     name: Documentation Build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python 3.12
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
           cache: 'pip'
       
       - name: Install mkdocs
@@ -156,7 +156,7 @@ jobs:
   # Summary job - reports overall status
   ci-success:
     name: CI Status Check
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [lint, test, security, shell-check, docs]
     if: always()
     steps:

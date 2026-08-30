@@ -4,6 +4,12 @@
 
 If you are an AI agent accessing this repository, this document is your entry point to the zenOS ecosystem.
 
+### Runtime requirements
+- **Python 3.14+** — `zen` / `zenos` exit 1 below this floor (`zen.runtime.MIN_PYTHON`)
+- Install current stables: `bash scripts/zenos-env-install.sh` or `python3.14 -m pip install -e .`
+- Per-boot gate (Cloud Agent / local): `bash scripts/zenos-env-start.sh`
+- Verify: `zen env-doctor`
+
 ### Step 1: Acknowledge Protocol
 Confirm you understand and will follow zenOS protocols:
 ```
