@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import importlib
 import json
+import re
 import subprocess
 import sys
+import tomllib
 from dataclasses import dataclass, field
 from importlib.metadata import PackageNotFoundError, version as pkg_version
 from pathlib import Path
@@ -315,6 +317,22 @@ def check_dex_files(root: Optional[Path] = None) -> list[CheckResult]:
     return results
 
 
+def requires_python_meets_floor(spec: str, floor: tuple[int, int] = MIN_PYTHON) -> bool:
+    """True if requires-python's lower bound is at least `floor`.
+
+    Accepts compound specs such as ``>=3.14,<4``. Does not require exact
+    quoting or spacing from the TOML source.
+    """
+    compact = spec.replace(" ", "")
+    match = re.search(r">=(\d+)\.(\d+)", compact)
+    if match:
+        return (int(match.group(1)), int(match.group(2))) >= floor
+    match = re.search(r"==(\d+)\.(\d+)", compact)
+    if match:
+        return (int(match.group(1)), int(match.group(2))) >= floor
+    return False
+
+
 def check_pyproject_python_floor(root: Optional[Path] = None) -> CheckResult:
     repo = Path(root) if root is not None else Path.cwd()
     pyproject = repo / "pyproject.toml"
@@ -325,19 +343,29 @@ def check_pyproject_python_floor(root: Optional[Path] = None) -> CheckResult:
             severity="fail",
             message="pyproject.toml missing",
         )
-    text = pyproject.read_text(encoding="utf-8")
-    if 'requires-python = ">=3.14"' not in text:
+    try:
+        data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+        spec = str(data.get("project", {}).get("requires-python", "")).strip()
+    except (OSError, tomllib.TOMLDecodeError) as exc:
         return CheckResult(
             name="pyproject",
             ok=False,
             severity="fail",
-            message='pyproject.toml must set requires-python = ">=3.14"',
+            message=f"pyproject.toml unreadable: {exc}",
+        )
+    if not spec or not requires_python_meets_floor(spec):
+        floor = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
+        return CheckResult(
+            name="pyproject",
+            ok=False,
+            severity="fail",
+            message=f"pyproject.toml requires-python must be >={floor} (got {spec!r})",
         )
     return CheckResult(
         name="pyproject",
         ok=True,
         severity="ok",
-        message="pyproject.toml requires-python >=3.14",
+        message=f"pyproject.toml requires-python {spec}",
     )
 
 
@@ -345,7 +373,7 @@ def run_env_doctor(
     *,
     root: Optional[Path] = None,
     version_info: Optional[Sequence[int]] = None,
-    include_outdated: bool = True,
+    include_outdated: bool = False,
 ) -> DoctorReport:
     repo = Path(root) if root is not None else Path.cwd()
     report = DoctorReport()
