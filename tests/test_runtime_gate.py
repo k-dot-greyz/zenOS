@@ -31,6 +31,14 @@ def test_require_runtime_passes_on_this_interpreter():
     require_runtime()
 
 
+def test_require_runtime_docstring_is_import_gate():
+    from zen.runtime import require_runtime as fn
+
+    doc = fn.__doc__ or ""
+    assert "importability gate" in doc.lower()
+    assert "missing/outdated" not in doc.lower()
+
+
 def test_main_invokes_runtime_gate(monkeypatch):
     from zen import cli as zen_cli
 
