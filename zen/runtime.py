@@ -58,7 +58,11 @@ def require_runtime(
     *,
     stream: Optional[TextIO] = None,
 ) -> None:
-    """Exit 1 if Python or required packages are missing/outdated."""
+    """Exit 1 if Python is below 3.14 or a required package cannot be imported.
+
+    This is an importability gate, not a version/outdated-package check.
+    Use `zen doctor --outdated` for pip outdated reports.
+    """
     out = stream or sys.stderr
     require_python(version_info=version_info, stream=out)
     missing: list[str] = []
