@@ -71,7 +71,8 @@ If a step in that flow TypeErrors, missing-commands, or hangs the test runner, t
 Same argv, same cwd fixture, no network.
 
 - Exit code change → test FAIL (behavior regression).
-- Duration > 2× committed baseline (or over the case `max_ms`) → FAIL (perf regression).
+- Duration in CI: fail only if `ms > max_ms` (the case cap). That cap is what keeps mixed GitHub-hosted runners from flaking.
+- Optional 2× p95 vs `tests/cli/baselines/timings.json` applies only when that file was captured on the **same CI runner class** (`github-ubuntu-24.04-python-3.14`) and `ZEN_CLI_BENCH_COMPARE_TIMINGS=1`. If timings are missing or the runner does not match, ignore p95 and use `max_ms`.
 - First run of a new case writes the full schema; later runs append only `{ts, cases[{id, exit, ms}]}` (delta packets, handshake schema already known).
 
 ---
