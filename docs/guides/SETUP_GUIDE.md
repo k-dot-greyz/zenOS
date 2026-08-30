@@ -6,8 +6,9 @@ This guide covers the **bulletproof setup system** that combines the best proced
 
 ## Requirements
 
-- **Python 3.14+** — zenOS and `zen` refuse to start on older interpreters
+- **Python 3.14+** — zenOS, `zen`, `install.sh`, and Cloud Agent `start` refuse to boot on older interpreters
 - Current stables from `pyproject.toml` / `requirements.txt`
+- Preferred bootstrap: `bash scripts/zenos-env-install.sh` then `bash scripts/zenos-env-start.sh`
 - Git
 - Optional: Node.js for MCP, `uv python install 3.14`
 

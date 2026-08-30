@@ -16,8 +16,9 @@ You'll learn how to:
 ## 🧑‍💻 For Humans
 
 ### Requirements
-- **Python 3.14+** (hard fail below this — `zen` will refuse to start)
+- **Python 3.14+** (hard fail below this — `zen`, `install.sh`, and Cloud Agent `start` refuse to boot)
 - Current stable deps from `pyproject.toml` / `requirements.txt`
+- Preferred bootstrap: `bash scripts/zenos-env-install.sh` then `bash scripts/zenos-env-start.sh`
 - Optional: [uv](https://docs.astral.sh/uv/) (`uv python install 3.14`)
 
 ### Instant Setup (One-Liners)
