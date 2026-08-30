@@ -8,6 +8,13 @@ cd "$ROOT"
 
 echo "zenOS install: Python 3.14+ required"
 
+restore_setup() {
+  if [ -f _setup.py.bak ]; then
+    mv _setup.py.bak setup.py
+  fi
+}
+trap restore_setup EXIT
+
 if ! command -v uv >/dev/null 2>&1; then
   curl -LsSf https://astral.sh/uv/install.sh | sh
   export PATH="${HOME}/.local/bin:${PATH}"
@@ -26,9 +33,8 @@ if [ -f setup.py ]; then
   mv setup.py _setup.py.bak
 fi
 uv pip install --python .venv -e ".[dev]"
-if [ -f _setup.py.bak ]; then
-  mv _setup.py.bak setup.py
-fi
+restore_setup
+trap - EXIT
 
 if [ ! -f .env ] && [ -f env.example ]; then
   cp env.example .env

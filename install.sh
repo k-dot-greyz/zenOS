@@ -58,6 +58,12 @@ require_python_314() {
 install_deps() {
     require_python_314
     echo -e "${YELLOW}🐍 Installing zenOS (Python 3.14+, current stables from pyproject.toml)...${NC}"
+    restore_setup() {
+        if [ -f _setup.py.bak ]; then
+            mv _setup.py.bak setup.py
+        fi
+    }
+    trap restore_setup EXIT
     if [ -f setup.py ]; then
         mv setup.py _setup.py.bak
     fi
@@ -66,12 +72,9 @@ install_deps() {
         echo -e "${YELLOW}Retrying with --break-system-packages...${NC}"
         "$PYTHON_BIN" -m pip install --break-system-packages -e ".[dev]"
     fi
-    if [ -f _setup.py.bak ]; then
-        mv _setup.py.bak setup.py
-    fi
+    restore_setup
+    trap - EXIT
 }
-
-# Function to setup environment
 setup_env() {
     echo "🔧 Setting up environment..."
     
@@ -82,8 +85,8 @@ setup_env() {
             ;;
         "windows")
             echo 'Add to your PowerShell profile:'
-            echo '$env:PYTHONPATH = "$PWD"'
-            echo 'Set-Alias -Name zenos -Value "python zen/cli.py"'
+            echo "\$env:PYTHONPATH = \"\$PWD\""
+            echo "Set-Alias -Name zenos -Value \"${PYTHON_BIN} -m zen.cli\""
             ;;
     esac
 }
@@ -91,35 +94,16 @@ setup_env() {
 # Function to test installation
 test_install() {
     echo "🧪 Testing installation..."
-    
-    case $PLATFORM in
-        "termux"|"linux"|"macos")
-            export PYTHONPATH="$PWD:$PYTHONPATH"
-            "$PYTHON_BIN" -m zen.cli --help > /dev/null 2>&1
-            ;;
-        "windows")
-            python zen/cli.py --help > /dev/null 2>&1
-            ;;
-    esac
-    
+    export PYTHONPATH="$PWD:$PYTHONPATH"
+    "$PYTHON_BIN" -m zen.cli --help > /dev/null 2>&1
     echo "✅ Installation test passed!"
 }
 
 # Function to install sample plugin
 install_sample() {
     echo "🔌 Installing sample plugin..."
-    
-    case $PLATFORM in
-        "termux"|"linux"|"macos")
-            export PYTHONPATH="$PWD:$PYTHONPATH"
-            "$PYTHON_BIN" -m zen.cli plugins install ./examples/sample-plugin --local
-            ;;
-        "windows")
-            $env:PYTHONPATH = "$PWD"
-            python zen/cli.py plugins install ./examples/sample-plugin --local
-            ;;
-    esac
-    
+    export PYTHONPATH="$PWD:$PYTHONPATH"
+    "$PYTHON_BIN" -m zen.cli plugins install ./examples/sample-plugin --local
     echo "✅ Sample plugin installed!"
 }
 
