@@ -77,7 +77,7 @@ zen doctor / zen env-doctor
 zen run [--list|--create|--chat|AGENT PROMPT]
 zen dex [models|procedures]
 zen bench / zen sync / zen arena          # already registered; contract-test help only
-zen plugins | pkm | inbox | setup         # help-only in MVP tests
+zen plugins | pkm | receive | inbox | setup   # receive is canonical; inbox is an alias
 ```
 
 `zen run --chat` and `zen chat` call the same function. `zen help` becomes an alias of `--help` (so old docs stop lying).
@@ -122,11 +122,11 @@ Handshake schema (committed): `tests/cli/baselines/usecases.json`
 }
 ```
 
-Committed timings: `tests/cli/baselines/timings.json` (`id → p95_ms` from a quiet 3.14 run).
+Committed timings: `tests/cli/baselines/timings.json` with a `runner` field (`github-ubuntu-24.04-python-3.14`). Capture that file **on GitHub Actions `ubuntu-24.04` + `actions/setup-python` 3.14** (same class as `.github/workflows/zenos-ci.yml`). Do not commit laptop / Cloud Agent timings as the CI baseline.
 
 Local history (gitignored): `var/cli_bench/history.jsonl` — one object per run, **only** `{ts, python, cases: {id: {exit, ms}}}` after the schema is known.
 
-CI: `pytest tests/cli/test_stability_bench.py` fails if exit not in `expect_exit` or `ms > max(max_ms, 2 * baseline_p95)`.
+CI default gate: exit code must be in `expect_exit`, and `ms <= max_ms`. The 2× p95 timing compare is **opt-in** (`ZEN_CLI_BENCH_COMPARE_TIMINGS=1`) and only when `timings.json` `runner` matches the current CI image. If timings are missing or the runner class differs, fall back to `max_ms` only so mixed runners do not flake.
 
 No live model tokens. Dex cases use repo YAML or a tmp fixture copied by the bench.
 

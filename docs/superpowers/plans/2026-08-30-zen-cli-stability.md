@@ -1,6 +1,6 @@
 # zenCLI stability Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For implementers:** Walk this plan task-by-task. Checkbox (`- [ ]`) steps are the source of truth and can be followed manually in any editor. Optional Cursor skills `superpowers:subagent-driven-development` or `superpowers:executing-plans` can dispatch/review those same steps; they are **not** required and are not defined in this repo.
 
 **Goal:** Make the live `zen` Click group match the documented MVP UX in `tasks.md`, cover those use cases with TDD, and record a repeatable CLI stability bench.
 
@@ -87,6 +87,7 @@ REQUIRED_COMMANDS = {
     "env-doctor",
     "help",
     "inbox",
+    "receive",
     "pkm",
     "plugins",
     "run",
@@ -499,8 +500,18 @@ USECASES = ROOT / "tests/cli/baselines/usecases.json"
 TIMINGS = ROOT / "tests/cli/baselines/timings.json"
 
 
-def load_usecases(path: Path = USECASES) -> dict[str, Any]:
+def load_json_file(path: Path, *, what: str) -> dict[str, Any]:
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{what} not found at {path}. "
+            "Run from a zenOS git checkout, or pass an explicit path. "
+            "Installed wheels do not ship these baselines."
+        )
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_usecases(path: Path | None = None) -> dict[str, Any]:
+    return load_json_file(path or USECASES, what="CLI bench usecases.json")
 
 
 def run_cases(cli, cases: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, float | int]]:
@@ -518,6 +529,8 @@ def compare(
     results: Mapping[str, Mapping[str, float | int]],
     timings: Mapping[str, float],
     cases: Sequence[Mapping[str, Any]],
+    *,
+    timings_comparable: bool = False,
 ) -> list[str]:
     failures: list[str] = []
     for case in cases:
@@ -527,14 +540,20 @@ def compare(
         if got["exit"] not in allowed:
             failures.append(f"{cid}: exit {got['exit']} not in {allowed}")
         cap = float(case["max_ms"])
-        baseline = float(timings.get(cid, cap))
-        limit = max(cap, 2.0 * baseline)
+        if timings_comparable and cid in timings:
+            limit = max(cap, 2.0 * float(timings[cid]))
+        else:
+            limit = cap
         if float(got["ms"]) > limit:
             failures.append(f"{cid}: slow {got['ms']:.1f}ms > {limit:.1f}ms")
     return failures
 ```
 
-Seed `timings.json` with generous first values (e.g. 500 for help) after one local `run_cases` print; do not fake sub-millisecond precision.
+`timings_comparable` is True only when `timings.json` exists, its `runner` equals `github-ubuntu-24.04-python-3.14`, and `ZEN_CLI_BENCH_COMPARE_TIMINGS=1`. Otherwise CI uses `max_ms` only.
+
+Seed `timings.json` on ubuntu-24.04 CI after the suite is green; do not commit Cloud Agent laptop numbers as the official p95.
+
+Also add a test that `load_usecases(Path("/tmp/missing.json"))` raises `FileNotFoundError` whose message mentions the path.
 
 Optional: `--write` CLI that appends `var/cli_bench/history.jsonl`. Keep it behind `if __name__ == "__main__"` so pytest does not need it.
 
