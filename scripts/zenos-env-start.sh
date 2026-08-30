@@ -30,33 +30,14 @@ if sys.version_info[:2] < (3, 14):
 
 try:
     from zen.runtime import require_runtime
+except ImportError as exc:
+    print(
+        f"zenOS start: cannot import zen.runtime ({exc}). "
+        "Install with: uv pip install --python .venv -e .",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
 
-    require_runtime()
-except ImportError:
-    missing = []
-    for name in (
-        "click",
-        "rich",
-        "yaml",
-        "jinja2",
-        "pydantic",
-        "aiohttp",
-        "httpx",
-        "dotenv",
-        "prompt_toolkit",
-        "bs4",
-        "schedule",
-    ):
-        try:
-            __import__(name)
-        except Exception:
-            missing.append(name)
-    if missing:
-        print(
-            "zenOS start missing required packages: " + ", ".join(missing),
-            file=sys.stderr,
-        )
-        raise SystemExit(1)
-
+require_runtime()
 print(f"zenOS start: runtime OK ({sys.version.split()[0]})")
 PY
