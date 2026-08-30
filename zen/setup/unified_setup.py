@@ -350,13 +350,13 @@ class UnifiedSetupManager:
     def _create_basic_requirements(self):
         """Create basic requirements.txt if none exists"""
         requirements = """# zenOS Core Dependencies
-click>=8.0.0
-rich>=13.0.0
-pyyaml>=6.0
-requests>=2.28.0
-httpx>=0.24.0
-psutil>=5.9.0
-nltk>=3.8.0
+click>=8.2
+rich>=14.0
+pyyaml>=6.0.2
+requests>=2.32.0
+httpx>=0.28
+psutil>=7.0.0
+nltk>=3.9.0
 """
         with open(self.zenos_root / "requirements.txt", "w") as f:
             f.write(requirements)

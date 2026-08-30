@@ -39,6 +39,11 @@ def cli(version: bool):
         return
 
 
+def main() -> None:
+    """Console-script entrypoint (`zen` / `zenos` → zen.cli:main)."""
+    cli()
+
+
 @cli.command()
 @click.argument("agent", required=False)
 @click.argument("prompt", required=False)
@@ -369,5 +374,28 @@ cli.add_command(sync)
 cli.add_command(arena)
 
 
+def _run_env_doctor(ai_mode: bool) -> None:
+    from zen.setup.env_doctor import format_report, run_env_doctor
+
+    report = run_env_doctor()
+    console.print(format_report(report, ai_mode=ai_mode), highlight=False)
+    if report.has_failures:
+        raise SystemExit(1)
+
+
+@cli.command("doctor")
+@click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
+def doctor(ai_mode: bool) -> None:
+    """Check zenOS system + environment health."""
+    _run_env_doctor(ai_mode)
+
+
+@cli.command("env-doctor")
+@click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
+def env_doctor(ai_mode: bool) -> None:
+    """Alias for doctor — environment, Python floor, and dependency status."""
+    _run_env_doctor(ai_mode)
+
+
 if __name__ == "__main__":
-    cli()
+    main()

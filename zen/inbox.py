@@ -94,8 +94,7 @@ class InboxManager:
         return True
 
 
-@click.group()
-@click.alias("inbox")
+@click.group("inbox")
 def receive():
     """zenOS Receive System - Process incoming items"""
     pass

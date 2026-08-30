@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+MIN_PYTHON = (3, 14)
+
 
 @dataclass
 class ValidationResult:
@@ -78,11 +80,15 @@ class SetupTroubleshooter:
         """Validate Python environment"""
         try:
             version = sys.version_info
-            if version.major < 3 or (version.major == 3 and version.minor < 7):
+            if (version.major, version.minor) < MIN_PYTHON:
+                required = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
                 return ValidationResult(
                     passed=False,
-                    message=f"Python {version.major}.{version.minor} detected. Python 3.7+ required",
-                    fix_command="Install Python 3.7 or higher",
+                    message=(
+                        f"Python {version.major}.{version.minor} detected. "
+                        f"Python {required}+ required"
+                    ),
+                    fix_command=f"Install Python {required} or higher",
                     ai_diagnosis="Python version too old for zenOS requirements",
                 )
             return ValidationResult(
@@ -207,16 +213,19 @@ class SetupTroubleshooter:
         if "Python" in issue.message and "required" in issue.message:
             return Fix(
                 type="python_upgrade",
-                description="Upgrade Python to 3.7+",
+                description="Upgrade Python to 3.14+",
                 commands=[
                     "# On macOS with Homebrew:",
-                    "brew install python@3.9",
-                    "# On Ubuntu/Debian:",
-                    "sudo apt update && sudo apt install python3.9",
+                    "brew install python@3.14",
+                    "# On Ubuntu/Debian (Deadsnakes PPA on 24.04):",
+                    "sudo add-apt-repository ppa:deadsnakes/ppa",
+                    "sudo apt update && sudo apt install python3.14 python3.14-venv python3.14-dev",
+                    "# Or with uv:",
+                    "uv python install 3.14",
                     "# On Windows:",
-                    "Download from https://python.org/downloads/",
+                    "Download 3.14+ from https://python.org/downloads/",
                 ],
-                explanation="zenOS requires Python 3.7 or higher for modern features",
+                explanation="zenOS requires Python 3.14 or higher — older branches are out of support",
             )
 
         elif "Git" in issue.message:
