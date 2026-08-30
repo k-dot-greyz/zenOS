@@ -35,62 +35,40 @@ fi
 echo "🔍 Detected platform: $PLATFORM"
 echo ""
 
-# install_deps installs required system packages and Python dependencies for the detected platform (termux, linux, macos, windows) and attempts to download NLTK corpora.
+PYTHON_BIN=""
+
+require_python_314() {
+    local candidate
+    for candidate in python3.14 python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            if "$candidate" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 14) else 1)' 2>/dev/null; then
+                PYTHON_BIN="$candidate"
+                echo -e "${GREEN}Using ${PYTHON_BIN} ($("$PYTHON_BIN" -c 'import sys; print("%d.%d.%d" % sys.version_info[:3])'))${NC}"
+                return 0
+            fi
+        fi
+    done
+    echo -e "${RED}zenOS requires Python 3.14+${NC}"
+    echo "Install CPython 3.14 (https://www.python.org/downloads/ or: uv python install 3.14)"
+    echo "Then recreate your venv and rerun this installer."
+    exit 1
+}
+
+# install_deps installs current stable zenOS dependencies via pyproject.toml on Python 3.14+.
 install_deps() {
-    case $PLATFORM in
-        "termux")
-            echo -e "${YELLOW}📦 Installing Termux packages...${NC}"
-            pkg update -y && pkg upgrade -y
-            pkg install -y python python-pip git curl
-            
-            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
-            pip install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
-                echo -e "${RED}❌ Failed to install Python packages${NC}"
-                echo "Trying alternative installation..."
-                pip install --user --break-system-packages rich click aiohttp aiofiles psutil pyyaml textblob nltk
-            }
-            
-            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
-            python3 -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
-            ;;
-        "linux")
-            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
-            pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
-                echo -e "${RED}❌ Failed to install Python packages${NC}"
-                echo "Trying with sudo..."
-                sudo pip3 install rich click aiohttp aiofiles psutil pyyaml textblob nltk
-            }
-            
-            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
-            python3 -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
-            ;;
-        "macos")
-            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
-            pip3 install --user rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
-                echo -e "${RED}❌ Failed to install Python packages${NC}"
-                echo "Trying with sudo..."
-                sudo pip3 install rich click aiohttp aiofiles psutil pyyaml textblob nltk
-            }
-            
-            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
-            python3 -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
-            ;;
-        "windows")
-            echo -e "${YELLOW}🐍 Installing Python packages...${NC}"
-            pip install rich click aiohttp aiofiles psutil pyyaml textblob nltk || {
-                echo -e "${RED}❌ Failed to install Python packages${NC}"
-                exit 1
-            }
-            
-            echo -e "${YELLOW}📥 Downloading NLTK data...${NC}"
-            python -m textblob.download_corpora || echo -e "${YELLOW}⚠️ NLTK data download failed, continuing...${NC}"
-            ;;
-        *)
-            echo -e "${RED}❌ Unsupported platform: $OSTYPE${NC}"
-            echo "Please install manually: https://github.com/k-dot-greyz/zenOS"
-            exit 1
-            ;;
-    esac
+    require_python_314
+    echo -e "${YELLOW}🐍 Installing zenOS (Python 3.14+, current stables from pyproject.toml)...${NC}"
+    if [ -f setup.py ]; then
+        mv setup.py _setup.py.bak
+    fi
+    "$PYTHON_BIN" -m pip install --upgrade pip setuptools wheel
+    if ! "$PYTHON_BIN" -m pip install -e ".[dev]"; then
+        echo -e "${YELLOW}Retrying with --break-system-packages...${NC}"
+        "$PYTHON_BIN" -m pip install --break-system-packages -e ".[dev]"
+    fi
+    if [ -f _setup.py.bak ]; then
+        mv _setup.py.bak setup.py
+    fi
 }
 
 # Function to setup environment
@@ -100,7 +78,7 @@ setup_env() {
     case $PLATFORM in
         "termux"|"linux"|"macos")
             echo 'export PYTHONPATH="$PWD:$PYTHONPATH"' >> ~/.bashrc
-            echo 'alias zenos="python3 zen/cli.py"' >> ~/.bashrc
+            echo "alias zenos=\"${PYTHON_BIN} -m zen.cli\"" >> ~/.bashrc
             ;;
         "windows")
             echo 'Add to your PowerShell profile:'
@@ -117,10 +95,9 @@ test_install() {
     case $PLATFORM in
         "termux"|"linux"|"macos")
             export PYTHONPATH="$PWD:$PYTHONPATH"
-            python3 zen/cli.py --help > /dev/null 2>&1
+            "$PYTHON_BIN" -m zen.cli --help > /dev/null 2>&1
             ;;
         "windows")
-            $env:PYTHONPATH = "$PWD"
             python zen/cli.py --help > /dev/null 2>&1
             ;;
     esac
@@ -135,7 +112,7 @@ install_sample() {
     case $PLATFORM in
         "termux"|"linux"|"macos")
             export PYTHONPATH="$PWD:$PYTHONPATH"
-            python3 zen/cli.py plugins install ./examples/sample-plugin --local
+            "$PYTHON_BIN" -m zen.cli plugins install ./examples/sample-plugin --local
             ;;
         "windows")
             $env:PYTHONPATH = "$PWD"
@@ -176,15 +153,13 @@ main() {
     case $PLATFORM in
         "termux"|"linux"|"macos")
             echo "  export PYTHONPATH=\"\$PWD:\$PYTHONPATH\""
-            echo "  python3 zen/cli.py --help"
-            echo "  python3 zen/cli.py plugins list"
-            echo "  python3 zen/cli.py plugins execute com.example.text-processor text.summarize \"Hello world!\""
+            echo "  zen --help"
+            echo "  zen env-doctor"
             ;;
         "windows")
             echo "  \$env:PYTHONPATH = \"\$PWD\""
-            echo "  python zen/cli.py --help"
-            echo "  python zen/cli.py plugins list"
-            echo "  python zen/cli.py plugins execute com.example.text-processor text.summarize \"Hello world!\""
+            echo "  zen --help"
+            echo "  zen env-doctor"
             ;;
     esac
     echo ""

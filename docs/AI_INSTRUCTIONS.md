@@ -4,6 +4,11 @@
 
 If you are an AI agent accessing this repository, this document is your entry point to the zenOS ecosystem.
 
+### Runtime requirements
+- **Python 3.14+** — `zen` exits 1 below this floor
+- Install current stables: `python3.14 -m pip install -e .`
+- Verify: `zen env-doctor`
+
 ### Step 1: Acknowledge Protocol
 Confirm you understand and will follow zenOS protocols:
 ```

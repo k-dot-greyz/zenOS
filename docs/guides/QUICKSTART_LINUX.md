@@ -2,7 +2,7 @@
 ## The "Just Make It Work" Guide
 
 ### What You Need
-- Linux with Python 3.8+
+- Linux with Python 3.14+
 - An OpenRouter API key (we'll get this in Step 1)
 - That's it!
 
