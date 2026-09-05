@@ -1,52 +1,45 @@
-## Pull Request Description
+## What
 
-### Summary
-Briefly describe what this PR does.
+<!-- Concrete changes—not a file list. -->
 
-### Related Issues
+## Why
+
+<!-- Why this change exists and why this approach over alternatives. -->
+
+## Before/After
+
+<!-- Required for CLI/TUI/UI changes: video (preferred) or screenshots. -->
+<!-- Docs-only or CI-only PRs: note "diff is the reviewable artifact" and skip media. -->
+
+## Test Results
+
+<!-- Commands run, for example: pytest, black --check, zen doctor -->
+
+- [ ] `black --check .`
+- [ ] `isort --check-only .`
+- [ ] `pytest --cov=. --cov-report=term-missing -v`
+- [ ] Other: 
+
+## QA steps
+
+<!-- Steps a reviewer can follow to verify the change. -->
+
+1. 
+2. 
+
+## Checklist
+
+- [ ] Self-reviewed the diff (or left a self-review comment)
+- [ ] No secrets, `.env`, or dev-master-only docs in the diff
+- [ ] Tests updated where behavior changed
+- [ ] Public docs updated in `docs/` if user-facing behavior changed
+
+## Related issues
+
 Closes #
 
-### Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-- [ ] Other (please describe)
-
 ---
 
-## Pre-Commit Review Checklist
+## AI disclosure
 
-**Remember to carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.**
-
-### Code Review
-- [ ] Code has been carefully reviewed for accuracy
-- [ ] All highlighted code sections have been properly replaced
-- [ ] No missing lines or incomplete implementations
-- [ ] Indentation is correct and consistent
-- [ ] Code follows project style guidelines
-
-### Testing
-- [ ] Code has been thoroughly tested
-- [ ] All existing tests pass
-- [ ] New tests have been added (if applicable)
-- [ ] Code has been benchmarked for performance
-- [ ] Edge cases have been considered and tested
-
-### Documentation
-- [ ] Code is well-commented
-- [ ] Documentation has been updated (if applicable)
-- [ ] README updated (if applicable)
-
-### Other Considerations
-- [ ] No debugging code or console logs left in
-- [ ] Dependencies are up to date
-- [ ] Security considerations have been addressed
-- [ ] Breaking changes are documented
-
----
-
-## Screenshots/Videos (if applicable)
-
-
-## Additional Notes
+<!-- If AI assisted: name the model and summarize prompts/context. Delete this section if not applicable. -->

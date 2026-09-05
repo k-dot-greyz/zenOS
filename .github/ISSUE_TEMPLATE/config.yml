@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions
+    url: https://github.com/k-dot-greyz/zenOS/discussions
+    about: Ask questions and brainstorm before opening an issue
+  - name: Contributing guide
+    url: https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md
+    about: PR workflow, architecture rules, and quality gates
