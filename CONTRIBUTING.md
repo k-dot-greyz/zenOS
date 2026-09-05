@@ -17,20 +17,20 @@ Explain the reasoning behind your changes, not just the change itself. Describe 
 
 ---
 
-## The prime directive: platform code here, internal guides in dev-master
+## The prime directive: platform code here, internal guides elsewhere
 
-We maintain a strict boundary between this repository and the monorepo workspace:
+We maintain a strict boundary between this repository and any private superproject that vendors it as a submodule:
 
 1. **This repository (`zenOS`)**: Core platform code, public-facing docs, tests, CI, and product configuration (for example `docs/`, `pokedex/`, plugin manifests).
-2. **The superproject (`dev-master`)**: Private workspace orchestration, dex routing, submodule bump workflows, and **internal** monorepo guides.
+2. **Your superproject** (if you use one): Private workspace orchestration, submodule bump workflows, and **internal** monorepo guides.
 
 ### The boundary violation rule
 
-**Never commit internal monorepo documentation, fork-specific guides, or dev-master-only configuration into this repository.**
+**Never commit internal monorepo documentation, fork-specific guides, or superproject-only configuration into this repository.**
 
 - **Why?** zenOS is designed to stand alone as a product. Misplacing internal files pollutes upstream history, causes PR rejections, and leaks private workspace details.
 - **What belongs here**: Application code under `zen/`, public guides under `docs/`, platform YAML such as `pokedex/` and plugin specs, tests, scripts, and CI under `.github/`.
-- **What belongs in dev-master**: Internal guides under `dex/03-docs/guides/` (for example submodule bump, fork workflow, and monorepo agent protocols).
+- **What belongs in your superproject**: Internal guides for submodule bumps, fork workflow, and monorepo agent protocols.
 
 ---
 
@@ -56,7 +56,7 @@ For AI agent onboarding and platform conventions, start with [`docs/AI_INSTRUCTI
 
 ## Fork-and-PR workflow
 
-Whether you cloned zenOS directly or via `dev-master`, use this workflow for upstream contributions:
+Whether you cloned zenOS directly or as a submodule inside a larger workspace, use this workflow for upstream contributions:
 
 ### Step 1: Configure remotes
 
@@ -96,7 +96,7 @@ Use branch prefixes such as `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, or `
 ### Step 4: Implement focused changes
 
 - No tracked secrets, local `.env` files, or temporary logs.
-- No dev-master-only markdown or monorepo routing docs.
+- No superproject-only markdown or monorepo routing docs.
 - Public documentation updates belong in `docs/` when they describe zenOS itself.
 - Match existing Python style (`black` line length 100) and module layout under `zen/`.
 - Prefer small, reviewable PRs. Break work larger than ~100 lines of meaningful change into stacked PRs when possible.
@@ -105,17 +105,19 @@ Use branch prefixes such as `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, or `
 
 Before committing, run the checks CI runs (see [`.github/workflows/zenos-ci.yml`](.github/workflows/zenos-ci.yml)):
 
-    python -m pip install -e ".[dev]"
-    python -m pip install flake8 yamllint
-    cp env.example .env  # configure keys locally; never commit .env
+```bash
+python -m pip install -e ".[dev]"
+python -m pip install flake8 yamllint
+cp env.example .env  # configure keys locally; never commit .env
 
-    black --check .
-    isort --check-only .
-    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    pytest --cov=. --cov-report=term-missing -v
-    # Optional (CI is non-blocking):
-    yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
+black --check .
+isort --check-only .
+flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+pytest --cov=. --cov-report=term-missing -v
+# Optional (CI is non-blocking):
+yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
+```
 
 Optional but recommended during development:
 
@@ -226,7 +228,7 @@ All development within zenOS should adhere to the **GlitchWorks Agnostic Archite
 
 | Principle | Rule |
 | :--- | :--- |
-| Zero hardcoding | Configure endpoints, paths, and ports via env vars or injected config—never hardcode dev-master paths. |
+| Zero hardcoding | Configure endpoints, paths, and ports via env vars or injected config—never hardcode superproject paths. |
 | Polymorphism by default | Depend on abstractions (providers, storage, telemetry sinks), not concretions. |
 | Open piping | Modules communicate via typed, serializable messages—not hidden global state. |
 | Boundary validation | Validate CLI args, plugin manifests, inbox payloads, and provider responses before domain logic. |
@@ -236,14 +238,14 @@ All development within zenOS should adhere to the **GlitchWorks Agnostic Archite
 
 ---
 
-## Contributing from dev-master (submodule checkout)
+## Contributing from a superproject (submodule checkout)
 
-If you work inside the monorepo at `dex/09-repos/zenOS`:
+If zenOS is vendored as a git submodule inside a larger private workspace:
 
-1. Make **zenOS-only** changes inside this submodule directory.
+1. Make **zenOS-only** changes inside this repository directory.
 2. Follow the fork-and-PR workflow above against `k-dot-greyz/zenOS`.
-3. Move any internal monorepo notes to `dev-master/dex/03-docs/guides/`—never commit them here.
-4. After the upstream PR merges, bump the submodule pointer in dev-master using the superproject's submodule bump workflow.
+3. Move any internal monorepo notes to your superproject's internal docs—never commit them here.
+4. After the upstream PR merges, bump the submodule pointer in your superproject using its submodule workflow.
 
 ---
 
@@ -253,8 +255,8 @@ Before committing, verify boundary hygiene and diff scope:
 
 1. **Check for misplaced monorepo docs**
    - Run `git status`.
-   - Are you adding files that describe **dev-master internals**, fork notes, or dex routing—not zenOS product behavior?
-   - *Action*: Move those files to `dev-master/dex/03-docs/guides/` and unstage them here.
+   - Are you adding files that describe **superproject internals**, fork notes, or dex routing—not zenOS product behavior?
+   - *Action*: Move those files to your superproject's internal docs and unstage them here.
    - *Note*: Legitimate platform docs (`docs/`), Pokédex catalogs (`pokedex/`), and plugin manifests **do** belong here.
 
 2. **Verify diff scope**
@@ -321,7 +323,7 @@ A useful bug report includes:
 - Environment (`python --version`, OS, Termux vs desktop, relevant `.env` keys redacted)
 - Notes (suspected cause, things you tried)
 
-Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.yml) when filing on GitHub.
+Use the [bug report template](https://github.com/k-dot-greyz/zenOS/blob/main/.github/ISSUE_TEMPLATE/bug_report.yml) when filing on GitHub.
 
 ---
 
