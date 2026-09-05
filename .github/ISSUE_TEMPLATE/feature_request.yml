@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        See [CONTRIBUTING.md](../../CONTRIBUTING.md#writing-issues) for the What/Why structure we prefer.
+        See [CONTRIBUTING.md](https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md#writing-issues) for the What/Why structure we prefer.
 
   - type: textarea
     id: what
