@@ -1,6 +1,6 @@
 # Contributing to zenOS
 
-Thank you for considering contributing to zenOS. This repository is the **core platform** of the zenOS ecosystem—the standalone product repo at [k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS). It is also linked as a git submodule from the private superproject [`dev-master`](https://github.com/k-dot-greyz/dev-master) at `dex/09-repos/zenOS`.
+Thank you for considering contributing to zenOS. This repository is the **core platform** of the zenOS ecosystem—the standalone product repo at [k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS). It may also be used as a git submodule from an internal superproject.
 
 This guide adapts proven open-source contribution practices (including patterns from [Gumroad's public contributing guide](https://github.com/antiwork/gumroad/blob/main/CONTRIBUTING.md)) to zenOS's Python CLI, plugin ecosystem, and monorepo boundary rules.
 
