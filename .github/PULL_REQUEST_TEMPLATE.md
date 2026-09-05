@@ -31,7 +31,7 @@
 ## Checklist
 
 - [ ] Self-reviewed the diff (or left a self-review comment)
-- [ ] No secrets, `.env`, or dev-master-only docs in the diff
+- [ ] No secrets, `.env`, or superproject-only docs in the diff
 - [ ] Tests updated where behavior changed
 - [ ] Public docs updated in `docs/` if user-facing behavior changed
 
