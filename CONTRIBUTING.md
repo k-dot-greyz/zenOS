@@ -103,16 +103,19 @@ Use branch prefixes such as `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, or `
 
 ### Step 5: Run local quality gates
 
-Before committing, run the checks CI expects (see [`.github/workflows/zenos-ci.yml`](.github/workflows/zenos-ci.yml)):
+Before committing, run the checks CI runs (see [`.github/workflows/zenos-ci.yml`](.github/workflows/zenos-ci.yml)):
 
-```bash
-python -m pip install -e ".[dev]"
-cp env.example .env  # configure keys locally; never commit .env
+    python -m pip install -e ".[dev]"
+    python -m pip install flake8 yamllint
+    cp env.example .env  # configure keys locally; never commit .env
 
-black --check .
-isort --check-only .
-pytest --cov=. --cov-report=term-missing -v
-```
+    black --check .
+    isort --check-only .
+    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    pytest --cov=. --cov-report=term-missing -v
+    # Optional (CI is non-blocking):
+    yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
 
 Optional but recommended during development:
 
