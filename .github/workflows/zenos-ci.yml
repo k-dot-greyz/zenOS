@@ -71,6 +71,8 @@ jobs:
           pip install pytest pytest-cov
       
       - name: Run tests with pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           if [ -d tests ] || ls test_*.py 1> /dev/null 2>&1; then
             pytest --cov=. --cov-report=term-missing -v
