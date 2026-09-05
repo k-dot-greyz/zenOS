@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report a bug. See [CONTRIBUTING.md](../../CONTRIBUTING.md#writing-bug-reports) for what makes a great report.
+        Thanks for taking the time to report a bug. See [CONTRIBUTING.md](https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md#writing-bug-reports) for what makes a great report.
 
   - type: textarea
     id: summary
