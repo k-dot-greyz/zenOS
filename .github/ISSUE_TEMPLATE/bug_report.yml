@@ -1,0 +1,62 @@
+name: Bug report
+description: Report something broken in zenOS
+title: "[bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. See [CONTRIBUTING.md](https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md#writing-bug-reports) for what makes a great report.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences describing the problem.
+      placeholder: zen chat fails when OPENROUTER_API_KEY is missing from .env
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Be specific—include commands, config, and sample input.
+      placeholder: |
+        1. cp env.example .env (leave OPENROUTER_API_KEY empty)
+        2. zen chat "hello"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, install method (pip, Termux, docker), zenOS version or commit.
+      placeholder: |
+        - OS: Ubuntu 22.04 / Termux
+        - Python: 3.12.3
+        - Install: pip install -e .
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Logs, screenshots, suspected cause, things you already tried.
