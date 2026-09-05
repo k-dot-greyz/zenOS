@@ -21,7 +21,7 @@ Explain the reasoning behind your changes, not just the change itself. Describe 
 
 We maintain a strict boundary between this repository and any private superproject that vendors it as a submodule:
 
-1. **This repository (`zenOS`)**: Core platform code, public-facing docs, tests, CI, and product configuration (for example `docs/`, `pokedex/`, plugin manifests).
+1. **This repository (`zenOS`)**: Core platform code, public-facing docs, tests, CI, and product configuration (for example `docs/`, `dex/`, plugin manifests).
 2. **Your superproject** (if you use one): Private workspace orchestration, submodule bump workflows, and **internal** monorepo guides.
 
 ### The boundary violation rule
@@ -29,7 +29,7 @@ We maintain a strict boundary between this repository and any private superproje
 **Never commit internal monorepo documentation, fork-specific guides, or superproject-only configuration into this repository.**
 
 - **Why?** zenOS is designed to stand alone as a product. Misplacing internal files pollutes upstream history, causes PR rejections, and leaks private workspace details.
-- **What belongs here**: Application code under `zen/`, public guides under `docs/`, platform YAML such as `pokedex/` and plugin specs, tests, scripts, and CI under `.github/`.
+- **What belongs here**: Application code under `zen/`, public guides under `docs/`, platform YAML such as `dex/` and plugin specs, tests, scripts, and CI under `.github/`.
 - **What belongs in your superproject**: Internal guides for submodule bumps, fork workflow, and monorepo agent protocols.
 
 ---
@@ -42,7 +42,7 @@ Know where changes belong before you open a PR:
 | :--- | :--- |
 | `zen/` | Core Python package (CLI, agents, PKM, plugins, providers, UI) |
 | `docs/` | Public platform documentation and planning |
-| `pokedex/` | Model and procedure catalog YAML |
+| `dex/` | Model and procedure catalog YAML |
 | `examples/` | Sample plugins and demos |
 | `scripts/` | Setup, bridge, and platform shell scripts |
 | `n8n/` | n8n workflow integration assets |
@@ -257,7 +257,7 @@ Before committing, verify boundary hygiene and diff scope:
    - Run `git status`.
    - Are you adding files that describe **superproject internals**, fork notes, or dex routing—not zenOS product behavior?
    - *Action*: Move those files to your superproject's internal docs and unstage them here.
-   - *Note*: Legitimate platform docs (`docs/`), Pokédex catalogs (`pokedex/`), and plugin manifests **do** belong here.
+   - *Note*: Legitimate platform docs (`docs/`), dex catalogs (`dex/`), and plugin manifests **do** belong here.
 
 2. **Verify diff scope**
    - Run `git diff --name-status upstream/main` (or `origin/main`).
