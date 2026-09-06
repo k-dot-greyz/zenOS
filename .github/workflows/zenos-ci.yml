@@ -31,7 +31,11 @@ jobs:
       - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
-          pip install black isort flake8 yamllint
+          # Pinned: an unpinned isort picked up a new major version (9.0.1)
+          # mid-flight with different import-collapsing heuristics and broke
+          # this job on a file nobody had touched. Bump deliberately, verify
+          # locally with the new version first.
+          pip install black==26.5.1 isort==9.0.1 flake8==7.3.0 yamllint==1.38.0
       
       - name: Check Python formatting with black
         run: black --check .
@@ -64,19 +68,21 @@ jobs:
           python-version: "3.14"
           cache: 'pip'
       
-      - name: Install dependencies
+      - name: Install package (editable + dev extras)
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest pytest-cov
-      
+          pip install -e ".[dev]"
+
       - name: Run tests with pytest
         run: |
           if [ -d tests ] || ls test_*.py 1> /dev/null 2>&1; then
-            pytest --cov=. --cov-report=term-missing -v
+            pytest --cov=zen --cov-report=term-missing -v
           else
             echo "No tests found, skipping"
           fi
+
+      - name: CLI smoke test
+        run: zen --help
 
   # Security checks
   security:
@@ -95,15 +101,21 @@ jobs:
       - name: Install security tools
         run: |
           python -m pip install --upgrade pip
-          pip install bandit safety
+          pip install bandit safety pip-audit
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      
+
+      # House rule (.github/CI.md): old/vulnerable dependencies are a hard gate,
+      # not a `continue-on-error: true` status message nobody reads. Same check
+      # a dev can run locally with `pip-audit -r requirements.txt --strict`.
+      - name: Dependency vulnerability audit (pip-audit — blocking)
+        run: pip-audit -r requirements.txt --strict --progress-spinner=off
+
       - name: Run Bandit security scan
         run: |
           bandit -r . -f json -o bandit-report.json || true
           bandit -r . -ll || true
         continue-on-error: true
-      
+
       - name: Check for known vulnerabilities
         run: safety check --json || true
         continue-on-error: true
@@ -169,7 +181,8 @@ jobs:
           echo "Docs: ${{ needs.docs.result }}"
           
           if [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ]; then
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.security.result }}" != "success" ]; then
             echo "::warning::Some checks failed or were skipped"
             exit 1
           fi

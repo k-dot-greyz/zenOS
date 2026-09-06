@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import json
 import re
 import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass, field
-from importlib.metadata import PackageNotFoundError, version as pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
@@ -249,6 +251,72 @@ def check_outdated_packages(python_executable: Optional[str] = None) -> CheckRes
     )
 
 
+def check_dependency_vulnerabilities(root: Optional[Path] = None) -> CheckResult:
+    """Sanitize the dependency set: fail on known-vulnerable packages.
+
+    Runs `pip-audit` scoped to zenOS's own `requirements.txt` — not the whole
+    live environment, which in a shared dev container also contains
+    distro-vendored packages (system `pip`, `python-apt`, ...) nobody here can
+    upgrade and that have nothing to do with zenOS. Unlike check_outdated_packages
+    (staleness, informational), a hit here is a real CVE and fails the doctor run.
+    """
+    repo = Path(root) if root is not None else Path.cwd()
+    requirements_file = repo / "requirements.txt"
+    if not requirements_file.exists():
+        return CheckResult(
+            name="vuln_audit",
+            ok=True,
+            severity="warn",
+            message="requirements.txt not found — dependency vulnerability scan skipped",
+        )
+    if importlib.util.find_spec("pip_audit") is None:
+        return CheckResult(
+            name="vuln_audit",
+            ok=True,
+            severity="warn",
+            message="pip-audit not installed — dependency vulnerability scan skipped "
+            "(pip install pip-audit, or pip install -e '.[dev]')",
+        )
+    try:
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip_audit",
+                "--strict",
+                "--progress-spinner=off",
+                "-r",
+                str(requirements_file),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+            cwd=str(repo),
+        )
+    except subprocess.TimeoutExpired:
+        return CheckResult(
+            name="vuln_audit",
+            ok=True,
+            severity="warn",
+            message="pip-audit did not complete within 120s",
+        )
+    if proc.returncode == 0:
+        return CheckResult(
+            name="vuln_audit",
+            ok=True,
+            severity="ok",
+            message="Dependency audit clean (pip-audit)",
+        )
+    findings = (proc.stdout or proc.stderr or "").strip()
+    return CheckResult(
+        name="vuln_audit",
+        ok=False,
+        severity="fail",
+        message=f"Known-vulnerable dependencies detected by pip-audit: {findings[-500:] or proc.returncode}",
+    )
+
+
 def check_env_file(root: Optional[Path] = None) -> CheckResult:
     repo = Path(root) if root is not None else Path.cwd()
     if (repo / ".env").exists():
@@ -382,6 +450,7 @@ def run_env_doctor(
     report.checks.append(check_cli_entrypoint())
     report.checks.append(check_cli_doctor_commands())
     report.checks.append(check_setup_py_landmine(root=repo))
+    report.checks.append(check_dependency_vulnerabilities(root=repo))
     report.checks.append(check_env_file(root=repo))
     report.checks.extend(check_dex_files(root=repo))
     report.checks.extend(check_core_imports())

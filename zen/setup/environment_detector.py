@@ -260,9 +260,7 @@ class EnvironmentDetector:
             detected = (0, 0)
         if detected < MIN_PYTHON:
             floor = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
-            warnings.append(
-                f"Python {env_info.python_version} detected - Python {floor}+ required"
-            )
+            warnings.append(f"Python {env_info.python_version} detected - Python {floor}+ required")
 
         if env_info.is_windows and "powershell" not in env_info.shell.lower():
             warnings.append("PowerShell recommended on Windows for best compatibility")
