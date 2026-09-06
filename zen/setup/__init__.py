@@ -15,16 +15,21 @@ Features:
 - One-command setup for any environment
 """
 
-from .unified_setup import UnifiedSetupManager
+from zen.runtime import MIN_PYTHON
+
+from .env_doctor import run_env_doctor
 from .environment_detector import EnvironmentDetector
 from .git_setup import GitSetupManager
 from .mcp_setup import MCPSetupManager
 from .troubleshooter import SetupTroubleshooter
+from .unified_setup import UnifiedSetupManager
 
 __all__ = [
-    'UnifiedSetupManager',
-    'EnvironmentDetector', 
-    'GitSetupManager',
-    'MCPSetupManager',
-    'SetupTroubleshooter'
+    "UnifiedSetupManager",
+    "EnvironmentDetector",
+    "GitSetupManager",
+    "MCPSetupManager",
+    "SetupTroubleshooter",
+    "run_env_doctor",
+    "MIN_PYTHON",
 ]
