@@ -16,8 +16,9 @@ restore_setup() {
 trap restore_setup EXIT
 
 if ! command -v uv >/dev/null 2>&1; then
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  export PATH="${HOME}/.local/bin:${PATH}"
+  echo "zenOS install: uv is required but was not found in PATH." >&2
+  echo "Install uv from https://docs.astral.sh/uv/getting-started/installation/ and re-run this script." >&2
+  exit 1
 fi
 
 uv python install 3.14
