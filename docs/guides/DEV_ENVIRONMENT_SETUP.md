@@ -4,15 +4,29 @@
 
 This guide consolidates all the best practices from `promptOS`, `mcp-config`, and `zenOS` into a single, comprehensive reference for setting up development environments anywhere.
 
+## Startup requirements (hard floor)
+
+zenOS **will not start** below **Python 3.14**. That floor is enforced by `zen` / `zenos` (`zen.runtime.require_runtime`), `install.sh`, Cloud Agent `install`/`start`, and `zen env-doctor`. Current stables come from `pyproject.toml` / `requirements.txt` (Click 8.2+, Rich 14+, Pydantic 2.11+, aiohttp 3.11+, httpx 0.28+, …).
+
+```bash
+# Preferred bootstrap (uv CPython 3.14 venv + current deps)
+bash scripts/zenos-env-install.sh
+bash scripts/zenos-env-start.sh     # per-boot gate; exit 1 if Python or core deps are wrong
+zen env-doctor
+```
+
+On Cursor Cloud, keep distro `/usr/bin/python3` alone (often 3.12). Use `.venv` from `uv python install 3.14`. The dashboard environment `start` command must fail the pod if that floor is missing.
+
 ## 🎯 Quick Reference
 
 ### **One-Command Setup (Any Environment)**
 ```bash
-# Clone and setup zenOS (includes everything)
-git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py
+# Clone and setup zenOS (Python 3.14+ required)
+git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS
+bash scripts/zenos-env-install.sh
 
 # Or if you already have zenOS
-cd zenOS && python setup.py
+cd zenOS && bash scripts/zenos-env-install.sh
 ```
 
 ### **Essential Commands Cheat Sheet**
@@ -33,7 +47,7 @@ python setup.py --unattended
 ### **Phase 1: Environment Detection**
 - [ ] **OS Detection**: Windows, Linux, macOS, Termux
 - [ ] **Shell Detection**: PowerShell, Bash, Zsh, CMD
-- [ ] **Python Version**: 3.7+ (3.8+ recommended)
+- [ ] **Python Version**: 3.14+ (hard requirement; `zen` will not start below this)
 - [ ] **Git Availability**: Git installed and configured
 - [ ] **Node.js**: For MCP servers (optional but recommended)
 - [ ] **Internet Connectivity**: For package installation
@@ -72,7 +86,7 @@ python setup.py --unattended
 winget install Git.Git
 
 # 2. Install Python (if not installed)
-winget install Python.Python.3.11
+winget install Python.Python.3.14
 
 # 3. Install Node.js (if needed)
 winget install OpenJS.NodeJS
@@ -92,12 +106,12 @@ sudo apt update && sudo apt install git
 # macOS
 brew install git
 
-# 2. Install Python (if not installed)
-# Ubuntu/Debian
-sudo apt install python3 python3-pip
-
+# 2. Install Python 3.14+ (if not installed)
+# Ubuntu/Debian — Deadsnakes or uv (do not use distro python3.12)
+uv python install 3.14
 # macOS
-brew install python
+brew install python@3.14
+# or: uv python install 3.14
 
 # 3. Install Node.js (if needed)
 # Ubuntu/Debian

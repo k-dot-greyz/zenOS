@@ -6,7 +6,7 @@ A revolutionary operating system for human-AI collaboration where biological and
 zenOS transforms your terminal into a living, breathing workspace where humans and AI agents collaborate seamlessly.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
@@ -25,12 +25,12 @@ zenOS is not just another AI CLI tool—it's a complete paradigm shift in how we
 
 ## ✨ Core Components
 
-### 1. **PCC (Pokédex Control Center)**
+### 1. **Dex**
 Discover, catalog, and manage AI models and procedures:
 ```bash
-zen pokedex models          # Browse available AI models
-zen pokedex procedures      # Explore procedure library
-zen pokedex sync            # Update from OpenRouter and other sources
+zen dex models          # Browse available AI models
+zen dex procedures      # Explore procedure library
+zen dex sync            # Update from OpenRouter and other sources
 ```
 
 ### 2. **Bender (Multi-Agent Framework)**
@@ -59,6 +59,24 @@ zen repo optimize          # Suggest improvements
 
 ---
 
+## Requirements
+
+zenOS **will not start** on anything below **Python 3.14**. That includes the `zen` CLI, `install.sh`, and Cursor Cloud Agent `start`. Use the current stables from `pyproject.toml` / `requirements.txt` (Click 8.2+, Rich 14+, Pydantic 2.13.5+ (<2.14), aiohttp 3.11+, httpx 0.28+, …).
+
+```bash
+# Check the interpreter before install
+python3.14 --version   # must be 3.14.x
+# or
+uv python install 3.14
+
+bash scripts/zenos-env-install.sh   # preferred: uv 3.14 venv + current deps
+# or: python3.14 -m pip install -e .
+bash scripts/zenos-env-start.sh     # per-boot gate used by Cloud Agent start
+zen env-doctor                      # fails hard if the floor is wrong
+```
+
+---
+
 ## 🚀 Quick Start
 
 ### Instant Setup (One-Liners)
@@ -79,8 +97,8 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install_termu
 git clone https://github.com/k-dot-greyz/zenOS.git
 cd zenOS
 
-# Then install offline:
-python -m pip install -e .
+# Then install offline (Python 3.14+ required):
+python3.14 -m pip install -e .
 ```
 
 ### Manual Setup
@@ -99,7 +117,8 @@ python -m pip install -e .
 
 3. **Install dependencies:**
    ```bash
-   pip install -e .
+   # Requires Python 3.14+
+   python3.14 -m pip install -e .
    ```
 
 4. **Start exploring:**
@@ -139,7 +158,7 @@ python -m pip install -e .
 ┌─────────────────────────────────────────────────┐
 │                   zenOS Core                     │
 ├─────────────────────────────────────────────────┤
-│  🎮 Pokédex    🤖 Bender    📚 PKM    📦 Repo   │
+│  🎮 Dex    🤖 Bender    📚 PKM    📦 Repo   │
 │  Control       Multi-Agent  Knowledge Management │
 │  Center        Framework    System     Analyzer  │
 ├─────────────────────────────────────────────────┤
@@ -191,13 +210,13 @@ zen context sync
 ### Model Discovery
 ```bash
 # Find the right model
-zen pokedex models --capability "code generation"
+zen dex models --capability "code generation"
 
 # Explore procedures
-zen pokedex procedures --rarity legendary
+zen dex procedures --tier legendary
 
 # Sync latest models
-zen pokedex sync
+zen dex sync
 ```
 
 ---
@@ -208,7 +227,7 @@ zen pokedex sync
 - **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
 - **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
 - **[Setup Guides](docs/guides/)** - Platform-specific instructions
-- **[Genesis Log](docs/zenOS-genesis-log.md)** - The origin story
+- **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** - The origin story (historical)
 
 ### Platform-Specific Guides
 - [Windows Setup](docs/guides/QUICKSTART_WINDOWS.md)
@@ -223,7 +242,7 @@ zen pokedex sync
 ### ✅ Current (v0.1.0)
 - Core CLI functionality
 - OpenRouter integration
-- Basic Pokédex system
+- Basic Dex system
 - Repository analysis
 - Multi-agent framework (Bender)
 
