@@ -95,9 +95,11 @@ class InboxManager:
 
 
 @click.group()
-@click.alias("inbox")
 def receive():
-    """zenOS Receive System - Process incoming items"""
+    """zenOS Receive System - Process incoming items.
+
+    Canonical command is `zen receive`. `zen inbox` is registered as an alias.
+    """
     pass
 
 
