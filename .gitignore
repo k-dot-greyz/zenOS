@@ -163,6 +163,9 @@ pids
 coverage/
 *.lcov
 
+# pytest-cov data file (accidentally committed once — see git history)
+.coverage
+
 # nyc test coverage
 .nyc_output
 
