@@ -29,6 +29,11 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent
 
 
+# Keep in sync with the argparse surface in zen.setup.unified_setup.main().
+_WIZARD_BOOL_FLAGS = {"-h", "--help", "--unattended", "--validate-only"}
+_WIZARD_VALUE_FLAGS = {"--path", "--phase"}  # take a value: either `--flag value` or `--flag=value`
+
+
 def _user_invoked_setup_script() -> bool:
     """True only for ``python setup.py [wizard flags]``.
 
@@ -37,15 +42,27 @@ def _user_invoked_setup_script() -> bool:
     ``python setup.py egg_info``, ``sdist``, ``bdist_wheel``, or pip's legacy
     build fallback), so checking those two alone reintroduces the exact
     failure this shim exists to avoid: importing ``zen`` before its deps are
-    installed. Every wizard flag (``--unattended``, ``--validate-only``,
-    ``--phase <x>``, ``-h``/``--help``) is dash-prefixed; every setuptools/
-    distutils command (``sdist``, ``egg_info``, ``install``, ...) is a bare
-    word. That's the discriminator — no args, or the first arg is a flag.
+    installed. A dash-prefixed first arg alone isn't enough either —
+    setuptools/distutils accept their own dash-prefixed global options
+    (``--quiet``, ``--help-commands``, ...), and ``python setup.py --quiet
+    egg_info`` would otherwise be misrouted to the wizard's argparse, which
+    doesn't know ``--quiet`` and errors out instead of running the build.
+    Match only this file's actual wizard flags — including ``--path``/
+    ``--phase``'s value, whether given as a separate arg or ``--flag=value``.
     """
     if __name__ != "__main__" or Path(sys.argv[0]).name != "setup.py":
         return False
-    args = sys.argv[1:]
-    return not args or args[0].startswith("-")
+    args = iter(sys.argv[1:])
+    for arg in args:
+        name = arg.split("=", 1)[0]
+        if name in _WIZARD_BOOL_FLAGS:
+            continue
+        if name in _WIZARD_VALUE_FLAGS:
+            if "=" not in arg and next(args, None) is None:
+                return False  # `--phase` with no value at all — not a valid wizard call
+            continue
+        return False
+    return True
 
 
 if _user_invoked_setup_script():
