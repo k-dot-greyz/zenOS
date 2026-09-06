@@ -216,7 +216,7 @@ def test_env_install_no_longer_needs_setup_py_rename_workaround():
     """
     install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
     assert "_setup.py.bak" not in install
-    assert "trap" not in install
+    assert "restore_setup" not in install  # the removed workaround's trap handler, by name
     assert "uv pip install --python .venv -e" in install
 
 
