@@ -17,6 +17,10 @@ psutil>=7.0
 pytest>=8.3
 pytest-asyncio>=0.25
 
+# Security — dependency vulnerability sanitization (pip-audit -r requirements.txt
+# --strict; see .github/CI.md, wired as a blocking CI step)
+pip-audit>=2.7
+
 # Optional TTS / media (install as needed)
 # pyttsx3>=2.90
 # gtts>=2.3.0

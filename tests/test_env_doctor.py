@@ -124,6 +124,56 @@ def test_env_doctor_skips_outdated_by_default(monkeypatch):
     assert report.checks
 
 
+def test_vuln_audit_is_not_opt_in(monkeypatch):
+    """Unlike outdated-package staleness, a known CVE isn't informational —
+    check_dependency_vulnerabilities always runs, no include_ flag needed."""
+    from zen.setup import env_doctor as ed
+
+    called = {"n": 0}
+
+    def spy(*_a, **_k):
+        called["n"] += 1
+        return ed.CheckResult(name="vuln_audit", ok=True, severity="ok", message="stub")
+
+    monkeypatch.setattr(ed, "check_dependency_vulnerabilities", spy)
+    ed.run_env_doctor(root=ROOT)
+    assert called["n"] == 1
+
+
+def test_vuln_audit_skips_without_requirements_file(tmp_path: Path):
+    from zen.setup.env_doctor import check_dependency_vulnerabilities
+
+    result = check_dependency_vulnerabilities(root=tmp_path)
+    assert result.ok is True
+    assert result.severity == "warn"
+    assert "requirements.txt" in result.message
+
+
+def test_vuln_audit_scopes_to_requirements_not_whole_env(monkeypatch, tmp_path: Path):
+    """Must pass -r <requirements.txt> — never fall back to auditing the live
+    interpreter's full site-packages (distro-vendored packages aren't ours)."""
+    from zen.setup import env_doctor as ed
+
+    (tmp_path / "requirements.txt").write_text("click>=8.0\n", encoding="utf-8")
+    captured: dict = {}
+
+    class FakeCompletedProcess:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return FakeCompletedProcess()
+
+    monkeypatch.setattr(ed.importlib.util, "find_spec", lambda name: object())
+    monkeypatch.setattr(ed.subprocess, "run", fake_run)
+    result = ed.check_dependency_vulnerabilities(root=tmp_path)
+    assert result.ok is True
+    assert "-r" in captured["cmd"]
+    assert str(tmp_path / "requirements.txt") in captured["cmd"]
+
+
 def test_fallback_requirements_match_runtime_imports():
     from zen.setup.unified_setup import FALLBACK_REQUIREMENTS
 
@@ -151,16 +201,23 @@ def test_fallback_requirements_match_runtime_imports():
 def test_install_sh_windows_uses_python_bin_module_entrypoint():
     text = (ROOT / "install.sh").read_text(encoding="utf-8")
     assert "python zen/cli.py --help" not in text
-    assert "$env:PYTHONPATH = \"$PWD\"" not in text.split("install_sample()")[1].split("main()")[0]
+    assert '$env:PYTHONPATH = "$PWD"' not in text.split("install_sample()")[1].split("main()")[0]
     assert '"$PYTHON_BIN" -m zen.cli --help' in text
     assert "Set-Alias -Name zenos -Value" in text
     assert "-m zen.cli" in text
 
 
-def test_env_install_restores_setup_py_on_failure():
+def test_env_install_no_longer_needs_setup_py_rename_workaround():
+    """setup.py is now a PEP 517-safe shim (see check_setup_py_landmine below),
+    so zenos-env-install.sh no longer needs to rename it out of the way before
+    `uv pip install -e .` and restore it via a trap — that workaround existed
+    only because the root cause (setup.py importing zen unconditionally,
+    including during the build-backend hook) wasn't fixed yet.
+    """
     install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
-    assert "trap" in install
-    assert "_setup.py.bak" in install
+    assert "_setup.py.bak" not in install
+    assert "trap" not in install
+    assert "uv pip install --python .venv -e" in install
 
 
 def test_env_start_fails_without_zen_runtime():
@@ -180,7 +237,9 @@ def test_env_doctor_flags_root_setup_py_landmine(tmp_path: Path):
     from zen.setup.env_doctor import check_setup_py_landmine
 
     fake_root = tmp_path
-    (fake_root / "setup.py").write_text("from zen.setup.unified_setup import main\n", encoding="utf-8")
+    (fake_root / "setup.py").write_text(
+        "from zen.setup.unified_setup import main\n", encoding="utf-8"
+    )
     (fake_root / "pyproject.toml").write_text("[project]\nname='zenos'\n", encoding="utf-8")
     result = check_setup_py_landmine(root=fake_root)
     assert result.ok is False

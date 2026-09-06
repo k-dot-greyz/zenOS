@@ -8,13 +8,6 @@ cd "$ROOT"
 
 echo "zenOS install: Python 3.14+ required"
 
-restore_setup() {
-  if [ -f _setup.py.bak ]; then
-    mv _setup.py.bak setup.py
-  fi
-}
-trap restore_setup EXIT
-
 if ! command -v uv >/dev/null 2>&1; then
   echo "zenOS install: uv is required but was not found in PATH." >&2
   echo "Install uv from https://docs.astral.sh/uv/getting-started/installation/ and re-run this script." >&2
@@ -29,13 +22,10 @@ else
   uv venv --python 3.14 --seed --clear .venv
 fi
 
-# Root setup.py is a zenOS installer script, not setuptools.
-if [ -f setup.py ]; then
-  mv setup.py _setup.py.bak
-fi
+# Root setup.py is now a PEP 517-safe shim (setuptools.setup() during the
+# build hook, wizard only for `python setup.py [wizard flags]`) — no longer
+# needs to be renamed out of the way before an editable install.
 uv pip install --python .venv -e ".[dev]"
-restore_setup
-trap - EXIT
 
 if [ ! -f .env ] && [ -f env.example ]; then
   cp env.example .env
