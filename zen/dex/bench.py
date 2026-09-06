@@ -216,6 +216,10 @@ class ModelBench:
         self.log(f"{fighter1.name}: {fighter1.hp}/{fighter1.max_hp} HP")
         self.log(f"{fighter2.name}: {fighter2.hp}/{fighter2.max_hp} HP")
 
+        # Snapshot baseline defense — DEFEND grants a within-turn boost only
+        f1_defense_base = fighter1.defense
+        f2_defense_base = fighter2.defense
+
         # Determine turn order by speed
         if fighter1.speed >= fighter2.speed:
             first, second = fighter1, fighter2
@@ -235,6 +239,10 @@ class ModelBench:
             damage = self.calculate_damage(second, move, first)
             actual_damage = first.take_damage(damage)
             self.log(f"→ {first.name} takes {actual_damage} damage!")
+
+        # Restore baseline defense so DEFEND boost does not compound across turns
+        fighter1.defense = f1_defense_base
+        fighter2.defense = f2_defense_base
 
         # Check for winner
         if not fighter1.is_alive or not fighter2.is_alive:
