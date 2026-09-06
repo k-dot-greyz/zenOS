@@ -61,7 +61,7 @@ zen repo optimize          # Suggest improvements
 
 ## Requirements
 
-zenOS **will not start** on anything below **Python 3.14**. That includes the `zen` CLI, `install.sh`, and Cursor Cloud Agent `start`. Use the current stables from `pyproject.toml` / `requirements.txt` (Click 8.2+, Rich 14+, Pydantic 2.11+, aiohttp 3.11+, httpx 0.28+, …).
+zenOS **will not start** on anything below **Python 3.14**. That includes the `zen` CLI, `install.sh`, and Cursor Cloud Agent `start`. Use the current stables from `pyproject.toml` / `requirements.txt` (Click 8.2+, Rich 14+, Pydantic 2.13.5+ (<2.14), aiohttp 3.11+, httpx 0.28+, …).
 
 ```bash
 # Check the interpreter before install
