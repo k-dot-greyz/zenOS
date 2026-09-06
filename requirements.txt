@@ -1,19 +1,21 @@
-# Runtime / tooling dependencies for zenOS
-click>=8.0
-rich>=13.0
-pyyaml>=6.0
-jinja2>=3.0
-pydantic>=2.0
-aiohttp>=3.8
-httpx>=0.24.0
-python-dotenv>=1.0
-prompt-toolkit>=3.0
-beautifulsoup4>=4.12.0
-schedule>=1.2.0
+# Runtime / tooling dependencies for zenOS (Python 3.14+)
+click>=8.2
+rich>=14.0
+pyyaml>=6.0.2
+jinja2>=3.1.6
+pydantic>=2.13.5,<2.14
+aiohttp>=3.11
+httpx>=0.28
+python-dotenv>=1.1
+prompt-toolkit>=3.0.50
+beautifulsoup4>=4.13
+schedule>=1.2.2
+aiofiles>=24.1
+psutil>=7.0
 
 # Testing
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
+pytest>=8.3
+pytest-asyncio>=0.25
 
 # Optional TTS / media (install as needed)
 # pyttsx3>=2.90

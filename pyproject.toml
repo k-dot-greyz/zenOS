@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=75.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,47 +11,45 @@ authors = [
     {name = "Kaspars Greizis", email = "kaspars@zenos.ai"}
 ]
 license = {text = "MIT"}
-requires-python = ">=3.8"
+requires-python = ">=3.14"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "click>=8.0",
-    "rich>=13.0",
-    "pyyaml>=6.0",
-    "jinja2>=3.0",
-    "pydantic>=2.0",
-    "aiohttp>=3.8",
-    "python-dotenv>=1.0",
-    "prompt-toolkit>=3.0",
-    "beautifulsoup4>=4.12.0",
-    "schedule>=1.2.0",
-    "httpx>=0.24.0",
+    "click>=8.2",
+    "rich>=14.0",
+    "pyyaml>=6.0.2",
+    "jinja2>=3.1.6",
+    "pydantic>=2.13.5,<2.14",
+    "aiohttp>=3.11",
+    "python-dotenv>=1.1",
+    "prompt-toolkit>=3.0.50",
+    "beautifulsoup4>=4.13",
+    "schedule>=1.2.2",
+    "httpx>=0.28",
+    "aiofiles>=24.1",
+    "psutil>=7.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "pytest-asyncio>=0.21",
-    "pytest-cov>=4.0",
-    "black>=23.0",
-    "ruff>=0.1",
-    "mypy>=1.0",
-    "pre-commit>=3.0",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "pytest-cov>=6.0",
+    "black>=25.1",
+    "ruff>=0.11",
+    "mypy>=1.15",
+    "pre-commit>=4.2",
 ]
 mcp = [
-    "docker>=6.0",
-    "requests>=2.28",
+    "docker>=7.1",
+    "requests>=2.32",
 ]
 
 [project.scripts]
@@ -71,7 +69,7 @@ include = ["zen*"]
 
 [tool.black]
 line-length = 100
-target-version = ['py38']
+target-version = ['py314']
 
 [tool.isort]
 profile = "black"
@@ -79,11 +77,14 @@ line_length = 100
 
 [tool.ruff]
 line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "C90", "D"]
 ignore = ["D100", "D104"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

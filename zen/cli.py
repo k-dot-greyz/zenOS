@@ -25,6 +25,7 @@ from zen.cli_plugins import plugins
 from zen.core.agent import AgentRegistry
 from zen.core.launcher import Launcher
 from zen.inbox import receive
+from zen.runtime import require_runtime
 from zen.utils.config import Config
 
 console = Console()
@@ -37,6 +38,12 @@ def cli(version: bool):
     if version:
         console.print(f"zenOS v{__version__}")
         return
+
+
+def main() -> None:
+    """Console-script entrypoint (`zen` / `zenos` → zen.cli:main)."""
+    require_runtime()
+    cli()
 
 
 @cli.command()
@@ -354,6 +361,7 @@ def setup(unattended, validate_only, phase):
 # Add plugin commands to CLI
 cli.add_command(plugins)
 cli.add_command(receive)
+cli.add_command(receive, "inbox")
 
 # Add PKM commands
 from zen.pkm.cli import pkm
@@ -369,5 +377,30 @@ cli.add_command(sync)
 cli.add_command(arena)
 
 
+def _run_env_doctor(ai_mode: bool, outdated: bool) -> None:
+    from zen.setup.env_doctor import format_report, run_env_doctor
+
+    report = run_env_doctor(include_outdated=outdated)
+    console.print(format_report(report, ai_mode=ai_mode), highlight=False)
+    if report.has_failures:
+        raise SystemExit(1)
+
+
+@cli.command("doctor")
+@click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
+@click.option("--outdated", is_flag=True, help="Also query pip for outdated packages")
+def doctor(ai_mode: bool, outdated: bool) -> None:
+    """Check zenOS system + environment health."""
+    _run_env_doctor(ai_mode, outdated)
+
+
+@cli.command("env-doctor")
+@click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
+@click.option("--outdated", is_flag=True, help="Also query pip for outdated packages")
+def env_doctor(ai_mode: bool, outdated: bool) -> None:
+    """Alias for doctor — environment, Python floor, and dependency status."""
+    _run_env_doctor(ai_mode, outdated)
+
+
 if __name__ == "__main__":
-    cli()
+    main()
