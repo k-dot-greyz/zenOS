@@ -1,0 +1,34 @@
+{
+  "schema": "zenos.airlock_review_signature/1",
+  "signedAtUtc": "2026-09-08T15:21:00Z",
+  "reviewer": {
+    "name": "Cursor Grok 4.6",
+    "vendor": "SpaceXAI × Cursor",
+    "role": "architecture-reviewer",
+    "model": "cursor-grok-4.6"
+  },
+  "operator": {
+    "name": "Kaspars Greizis",
+    "alias": "greyZ",
+    "github": "k-dot-greyz"
+  },
+  "passphrase": "zenOS/dex init started, protocol dated 2026-09-08 entry acknowledged, zen - achieved.",
+  "verdict": "submitted-spec-is-not-implementation-law",
+  "protocolId": "0x20.00.11",
+  "files": {
+    "AIRLOCK_INGESTION_SPEC.md": {
+      "sha256": "d6abd101d7ec58c7fd416ff967d36bbfb8e49318e9b553f56625c4e94bf91907",
+      "role": "submitted-artifact"
+    },
+    "REVIEW.md": {
+      "sha256": "a7e0ac4ed63ba7e428ebe628e6c95ae52c4e4346e80615c4346df902af4811d7",
+      "role": "signed-analysis"
+    },
+    "AIRLOCK_INGESTION_PROTOCOL.md": {
+      "sha256": "7c0497774f423c716a0d5fee84c01872c8f23aa65b1d58f9cac5f717f8b759d2",
+      "role": "binding-v1-draft"
+    }
+  },
+  "payloadChainSha256": "4497a3a4f18be627e7b32cbb409f9ba569ea09d513139ed2635ada30c2acaffa",
+  "algorithm": "SHA-256 over UTF-8 file bytes; chain is SHA-256(spec || LF || review)"
+}

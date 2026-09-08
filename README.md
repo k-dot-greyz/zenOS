@@ -226,6 +226,8 @@ zen dex sync
 - **[Quick Start Guide](docs/guides/QUICKSTART.md)** - Get started in minutes
 - **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
 - **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
+- **[Airlock ingest (signed review)](docs/planning/airlock-ingestion/README.md)** - LLM artifact airlock; submitted spec is not law
+- **[Setup Guides](docs/guides/)** - Platform-specific instructions
 - **[Setup Guides](docs/guides/)** - Platform-specific instructions
 - **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** - The origin story (historical)
 
