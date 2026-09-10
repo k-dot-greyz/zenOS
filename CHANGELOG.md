@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Changelog procedure, Conventional Commits, and automated release tooling
 - Initial zenOS framework with core AI orchestration capabilities
 - Multi-provider support (OpenRouter, Ollama, Gemini)
 - Mobile-first design with Termux support

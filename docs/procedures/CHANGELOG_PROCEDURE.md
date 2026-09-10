@@ -19,7 +19,7 @@ In keeping with the Zen philosophy:
 We use **Conventional Commits** with zenOS-specific extensions.
 
 ### Format
-```
+```text
 <type>(<scope>): <subject>
 
 [optional body]
@@ -89,7 +89,7 @@ Fixes #123, #456
 We follow **Semantic Versioning** (SemVer): `MAJOR.MINOR.PATCH`
 
 - **MAJOR** (1.0.0): Breaking changes, major milestones
-- **MINOR** (0.1.0): New features, backwards compatible
+- **MINOR** (0.1.0): New features, backwards-compatible
 - **PATCH** (0.0.1): Bug fixes, minor improvements
 
 ### Version Bumping Rules

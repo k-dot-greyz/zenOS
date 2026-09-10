@@ -106,7 +106,7 @@ This will guide you through creating a properly formatted commit message.
 ## 🏗️ Development Setup
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.14+
 - Node.js 16+ (for tooling)
 - Git
 
