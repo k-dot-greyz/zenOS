@@ -1,0 +1,27 @@
+# Perplexity Lab .gitignore
+
+# Ignore sensitive or work-in-progress conversations
+conversations/draft-*
+conversations/private-*
+conversations/wip-*
+
+# Ignore API keys and credentials
+*.env
+.env.*
+secrets/
+credentials/
+
+# Ignore automation cache/logs
+automation/__pycache__/
+automation/*.log
+automation/.cache/
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Keep structure
+!.gitkeep
