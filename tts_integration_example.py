@@ -1,5 +1,4 @@
-"""
-TTS Queue System Integration Examples
+"""TTS Queue System Integration Examples
 
 This file demonstrates how to integrate the TTS queue system with:
 - Real TTS engines (pyttsx3, gTTS, Azure Speech, etc.)
@@ -54,6 +53,7 @@ class Pyttsx3TTSEngine:
 
         Raises:
             ImportError: If the pyttsx3 library is not available.
+
         """
         if not PYTTSX3_AVAILABLE:
             raise ImportError("pyttsx3 not available. Install with: pip install pyttsx3")
@@ -83,6 +83,7 @@ class Pyttsx3TTSEngine:
 
         Returns:
             bytes: WAV-formatted audio data containing the synthesized speech.
+
         """
         # pyttsx3 doesn't return audio data directly, so we'll use a workaround
         # In a real implementation, you might want to use a different approach
@@ -133,6 +134,7 @@ class GTTS_Engine:
 
         Returns:
             bytes: MP3-encoded audio data representing the synthesized speech.
+
         """
         tts = gTTS(text=text, lang=self.language, tld=self.tld)
 
@@ -157,6 +159,7 @@ class GTTS_Engine:
             audio_data (bytes): Raw MP3-formatted audio bytes to be played.
 
         The function blocks (awaits) until playback finishes.
+
         """
         import os
         import tempfile
@@ -189,6 +192,7 @@ class AzureTTS_Engine:
 
         Raises:
             ImportError: If the Azure Speech SDK is not installed or available.
+
         """
         if not AZURE_AVAILABLE:
             raise ImportError(
@@ -217,6 +221,7 @@ class AzureTTS_Engine:
 
         Raises:
             Exception: If speech synthesis fails; message contains the failure reason.
+
         """
         synthesizer = speechsdk.SpeechSynthesizer(speech_config=self.speech_config)
 
@@ -240,6 +245,7 @@ class StreamerBotIntegration:
 
         Parameters:
             tts_manager (TTSQueueManager): Manager used to enqueue and manage TTS messages.
+
         """
         self.tts_manager = tts_manager
         self.logger = logging.getLogger(__name__ + ".StreamerBot")
@@ -270,6 +276,7 @@ class StreamerBotIntegration:
 
         Notes:
             The queued message includes metadata with keys "type", "donor", "amount", and "message".
+
         """
         if amount >= 100:
             priority = MessagePriority.URGENT
@@ -306,6 +313,7 @@ class StreamerBotIntegration:
 
         Returns:
             message_id: Identifier of the queued TTS message.
+
         """
         if months >= 12:
             text = f"VIP subscriber {subscriber_name} has been subscribed for {months} months! {message}".strip()
@@ -335,6 +343,7 @@ class StreamerBotIntegration:
 
         Returns:
             message_id: The queued message ID returned by the TTS manager.
+
         """
         return self.tts_manager.add_message(
             text=f"New follower {follower_name}! Thanks for following!",
@@ -354,6 +363,7 @@ class StreamerBotIntegration:
 
         Returns:
             str | None: The queued message ID if the message was added to the TTS queue, `None` if the message was ignored.
+
         """
         # Only process mod messages or messages with specific keywords
         keywords = ["!tts", "!say", "!announce"]
@@ -395,6 +405,7 @@ class WebSocketServer:
             streamer_bot (StreamerBotIntegration): Integration that will handle incoming streamer events and enqueue TTS messages.
             host (str): Hostname or IP address to bind the WebSocket server to. Defaults to "localhost".
             port (int): TCP port to listen on. Defaults to 8765.
+
         """
         self.streamer_bot = streamer_bot
         self.host = host

@@ -1,6 +1,4 @@
-"""
-Data models for PKM module.
-"""
+"""Data models for PKM module."""
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -70,6 +68,7 @@ class Conversation:
 
         Returns:
             dict: A dictionary representation of the conversation suitable for JSON serialization.
+
         """
         return {
             "id": self.id,
@@ -112,6 +111,7 @@ class Conversation:
 
         Returns:
             Conversation: A Conversation instance populated from the provided dictionary.
+
         """
         messages = [
             Message(
@@ -166,6 +166,7 @@ class ExtractionResult:
 
         Returns:
             float: The difference between `end_time` and `start_time` expressed in seconds. May be negative if `end_time` is earlier than `start_time`.
+
         """
         return (self.end_time - self.start_time).total_seconds()
 
@@ -187,6 +188,7 @@ class ExtractionResult:
                 - `duration` (float): Elapsed time in seconds between end and start.
                 - `errors` (list[str]): Collected error messages.
                 - `warnings` (list[str]): Collected warning messages.
+
         """
         return {
             "success": self.success,
@@ -227,6 +229,7 @@ class KnowledgeEntry:
 
         Returns:
             dict: Mapping of field names to their serialized values (e.g. `id`, `title`, `content`, `source_conversation_id`, `source_message_index`, `created_at`, `updated_at`, `entry_type`, `confidence`, `tags`, `keywords`, `metadata`).
+
         """
         return {
             "id": self.id,

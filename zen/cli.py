@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-zenOS CLI - The main command-line interface for zenOS.
+"""zenOS CLI - The main command-line interface for zenOS.
 
 Usage:
     zen <agent> "your prompt"
@@ -85,6 +84,7 @@ def run(
         zen critic "review this prompt"
         zen --list
         zen --create my-agent
+
     """
 
     if version:

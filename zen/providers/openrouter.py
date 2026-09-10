@@ -1,6 +1,4 @@
-"""
-OpenRouter Provider - Unified access to all LLMs through OpenRouter.
-"""
+"""OpenRouter Provider - Unified access to all LLMs through OpenRouter."""
 
 import asyncio
 import json
@@ -10,7 +8,7 @@ from enum import Enum
 from typing import Any, AsyncIterator, Dict, List, Optional
 
 import aiohttp
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from rich.console import Console
 
 console = Console()
@@ -162,6 +160,7 @@ class OpenRouterProvider:
 
         Returns:
             Model identifier string
+
         """
         if tier:
             # Use specified tier
@@ -316,6 +315,7 @@ class OpenRouterProvider:
 
         Returns:
             Estimated cost in USD
+
         """
         if model not in MODELS:
             return 0.0

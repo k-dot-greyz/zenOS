@@ -1,6 +1,4 @@
-"""
-CLI interface for the Text Processor Plugin
-"""
+"""CLI interface for the Text Processor Plugin"""
 
 import json
 import sys

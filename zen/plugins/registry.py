@@ -65,6 +65,7 @@ class PluginEntry:
     usage_count: int
     is_active: bool
     performance_metrics: Dict[str, float]
+    version: str = "main"
 
     @property
     def tier(self) -> str:
@@ -118,6 +119,7 @@ class PluginRegistry:
                             usage_count=plugin_data["usage_count"],
                             is_active=plugin_data["is_active"],
                             performance_metrics=plugin_data["performance_metrics"],
+                            version=plugin_data.get("version", "main"),
                         )
                         self.plugins[plugin_id] = entry
                         self._update_indexes(entry)
@@ -138,6 +140,7 @@ class PluginRegistry:
                     "usage_count": entry.usage_count,
                     "is_active": entry.is_active,
                     "performance_metrics": entry.performance_metrics,
+                    "version": entry.version,
                 }
                 for plugin_id, entry in self.plugins.items()
             }
@@ -146,7 +149,9 @@ class PluginRegistry:
         with open(registry_file, "w") as f:
             json.dump(data, f, indent=2)
 
-    def register_plugin(self, manifest: PluginManifest, git_url: str, local_path: Path) -> bool:
+    def register_plugin(
+        self, manifest: PluginManifest, git_url: str, local_path: Path, version: str = "main"
+    ) -> bool:
         """Register a new plugin"""
         try:
             entry = PluginEntry(
@@ -158,6 +163,7 @@ class PluginRegistry:
                 usage_count=0,
                 is_active=True,
                 performance_metrics={},
+                version=version,
             )
 
             self.plugins[manifest.id] = entry

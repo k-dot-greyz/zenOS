@@ -1,5 +1,4 @@
-"""
-Plugin Executor - Execute Git-based plugins safely
+"""Plugin Executor - Execute Git-based plugins safely
 This is the engine that makes your mobile UI actually work!
 """
 

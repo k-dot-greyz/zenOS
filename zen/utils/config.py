@@ -1,6 +1,4 @@
-"""
-Configuration management for zenOS.
-"""
+"""Configuration management for zenOS."""
 
 import json
 import os

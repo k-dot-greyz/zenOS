@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-🌉 zenOS Mobile AI Adapter
+"""🌉 zenOS Mobile AI Adapter
 Bridges zenOS AI capabilities with mobile-specific features for Pixel 9a
 """
 
@@ -46,7 +45,7 @@ class TermuxAPI:
                 ["termux-battery-status"], capture_output=True, text=True, timeout=5
             )
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False
 
     def get_battery_status(self) -> Dict[str, Any]:
@@ -60,7 +59,7 @@ class TermuxAPI:
             )
             if result.returncode == 0:
                 return json.loads(result.stdout)
-        except (subprocess.TimeoutExpired, json.JSONDecodeError):
+        except subprocess.TimeoutExpired, json.JSONDecodeError:
             pass
 
         return {"percentage": 100, "plugged": "UNPLUGGED"}
@@ -75,7 +74,7 @@ class TermuxAPI:
             if result.returncode == 0:
                 location_data = json.loads(result.stdout)
                 return f"{location_data.get('latitude', 0)}, {location_data.get('longitude', 0)}"
-        except (subprocess.TimeoutExpired, json.JSONDecodeError):
+        except subprocess.TimeoutExpired, json.JSONDecodeError:
             pass
 
         return None
@@ -200,7 +199,7 @@ echo "🌉 airi-zenOS bridge active"
             else:
                 return self._fallback_processing(input_text, context)
 
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return self._fallback_processing(input_text, context)
 
     def _fallback_processing(self, input_text: str, context: MobileContext) -> str:
@@ -227,7 +226,7 @@ class OfflineModelManager:
                         model_name = line.split()[0]
                         models.append(model_name)
                 return models
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             pass
 
         return []
@@ -427,7 +426,7 @@ class MobileAIAdapter:
             else:
                 return "❌ Quick processing failed"
 
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return "❌ Quick processing error"
 
 

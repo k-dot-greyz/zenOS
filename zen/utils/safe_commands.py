@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Safe Command Execution Utility - Following promptOS Best Practices
+"""Safe Command Execution Utility - Following promptOS Best Practices
 
 This utility provides safe, timeout-protected command execution
 following the patterns from promptOS git_troubleshooter.py and git_aliases.sh
@@ -55,7 +54,7 @@ class SafeCommandExecutor:
 
             success = result.returncode == 0
             if success:
-                print(f"✅ Command succeeded")
+                print("✅ Command succeeded")
             else:
                 print(f"❌ Command failed with exit code {result.returncode}")
 

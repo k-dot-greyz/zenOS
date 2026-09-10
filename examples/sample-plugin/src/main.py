@@ -1,5 +1,4 @@
-"""
-Sample Text Processor Plugin for zenOS
+"""Sample Text Processor Plugin for zenOS
 This demonstrates how to create a Git-based VST plugin!
 """
 

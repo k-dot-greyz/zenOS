@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Quick setup script for PKM module authentication.
-"""
+"""Quick setup script for PKM module authentication."""
 
 import os
 import sys
@@ -16,6 +14,7 @@ def main():
 
     Returns:
         True if the "zen/pkm" directory exists and both GEMINI_SESSION_COOKIE and GEMINI_CSRF_TOKEN are set, False otherwise.
+
     """
     print("PKM Module Authentication Setup")
     print("=" * 40)

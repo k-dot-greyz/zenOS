@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-🧪 zenOS Test Runner
+"""🧪 zenOS Test Runner
 Comprehensive test suite for zenOS core functionality and bridge system
 """
 

@@ -1,6 +1,4 @@
-"""
-Security framework for zenOS - defense against prompt injection and other attacks.
-"""
+"""Security framework for zenOS - defense against prompt injection and other attacks."""
 
 import re
 from typing import Any, Dict, List, Optional
@@ -38,6 +36,7 @@ class SecurityFramework:
 
         Returns:
             Dictionary with security analysis
+
         """
         issues = []
         risk_level = "low"
@@ -67,6 +66,7 @@ class SecurityFramework:
 
         Returns:
             Sanitized prompt
+
         """
         sanitized = prompt
 
@@ -89,6 +89,7 @@ class SecurityFramework:
 
         Returns:
             True if response is safe
+
         """
         # Check for sensitive information patterns
         sensitive_patterns = [

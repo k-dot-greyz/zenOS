@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-"""
-Safe Command Execution Utility - Following promptOS Best Practices
+"""Safe Command Execution Utility - Following promptOS Best Practices
 
 This utility provides safe, timeout-protected command execution
 following the patterns from promptOS git_troubleshooter.py
 """
 
 import subprocess
-import sys
-import time
 from typing import Dict, List, Optional
 
 

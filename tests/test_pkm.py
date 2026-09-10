@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""
-Test script for PKM module
-"""
+"""Test script for PKM module"""
 
 import asyncio
 import sys
+from datetime import datetime
 from pathlib import Path
 
 # Add the zenOS package to the path
@@ -41,6 +40,7 @@ def test_storage(config):
     storage = PKMStorage(config)
 
     # Create a test conversation
+    now = datetime.now()
     test_conversation = Conversation(
         id="test_conv_001",
         title="Test Conversation",
@@ -48,16 +48,16 @@ def test_storage(config):
             Message(
                 role=MessageRole.USER,
                 content="Hello, can you help me with Python programming?",
-                timestamp=None,
+                timestamp=now,
             ),
             Message(
                 role=MessageRole.ASSISTANT,
                 content="Of course! I'd be happy to help you with Python programming. What specific topic would you like to learn about?",
-                timestamp=None,
+                timestamp=now,
             ),
         ],
-        created_at=None,
-        updated_at=None,
+        created_at=now,
+        updated_at=now,
     )
 
     # Save the conversation
@@ -78,7 +78,9 @@ def test_storage(config):
 
     # Test statistics
     stats = storage.get_statistics()
-    console.print(f"✅ Storage stats: {stats['conversations_count']} conversations")
+    console.print(
+        f"✅ Storage stats: {stats.get('total_conversations', stats.get('conversations_count', 0))} conversations"
+    )
 
     return storage
 

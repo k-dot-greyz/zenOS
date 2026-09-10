@@ -1,6 +1,4 @@
-"""
-Auto-critique system for zenOS.
-"""
+"""Auto-critique system for zenOS."""
 
 from typing import Any, Dict, Optional
 
@@ -25,6 +23,7 @@ class AutoCritique:
 
         Returns:
             Dictionary with critique and improved version
+
         """
         # TODO: Implement full critique logic
         return {
@@ -44,6 +43,7 @@ class AutoCritique:
 
         Returns:
             Dictionary with critique and suggestions
+
         """
         # TODO: Implement response critique
         return {"quality_score": 0.8, "issues": [], "suggestions": []}

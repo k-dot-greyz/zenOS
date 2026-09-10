@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Prompt Security Agent - Security Analysis and Attack Pattern Detection
+"""Prompt Security Agent - Security Analysis and Attack Pattern Detection
 
 This agent analyzes prompts for security vulnerabilities and attack patterns,
 providing protection against 178+ known attack patterns with multi-layer defense.

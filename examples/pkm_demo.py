@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""
-PKM Module Demo Script
+"""PKM Module Demo Script
 
 This script demonstrates the PKM module capabilities for extracting
 and managing Google Gemini conversations.
 """
 
 import asyncio
-import os
 import sys
 from pathlib import Path
 
@@ -49,7 +47,7 @@ async def demo_pkm_module():
     # 2. Initialize Storage
     console.print("\n[cyan]2. Initializing storage system...[/cyan]")
     storage = PKMStorage(config)
-    console.print(f"✅ Storage initialized")
+    console.print("✅ Storage initialized")
     console.print(f"   • Conversations: {storage.conversations_dir}")
     console.print(f"   • Knowledge Base: {storage.knowledge_base_dir}")
     console.print(f"   • Exports: {storage.exports_dir}")

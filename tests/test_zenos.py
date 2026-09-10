@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""
-Test script for zenOS - Let's see if this thing actually works!
-"""
+"""Test script for zenOS - Let's see if this thing actually works!"""
 
 import asyncio
 import os
+import sys
 
 from zen.agents import builtin_agents
 from zen.core.launcher import Launcher
@@ -16,14 +15,18 @@ async def test_agents():
 
     # Check if we have an API key
     if not os.getenv("OPENROUTER_API_KEY"):
-        print("❌ No OPENROUTER_API_KEY found. Set it to test AI agents.")
-        print("   You can get one from: https://openrouter.ai/")
+        print("⚠️  No OPENROUTER_API_KEY found. Skipping agent tests.")
+        # If running in pytest, skip properly
+        if "pytest" in sys.modules:
+            import pytest
+
+            pytest.skip("OPENROUTER_API_KEY not set")
         return
 
     launcher = Launcher(debug=True)
 
     # Test each agent
-    for agent_name, agent in builtin_agents.items():
+    for agent_name, _agent in builtin_agents.items():
         print(f"\n🔧 Testing {agent_name} agent...")
 
         try:
@@ -41,6 +44,10 @@ async def test_agents():
 
         except Exception as e:
             print(f"   ❌ Error: {e}")
+            if "pytest" in sys.modules:
+                import pytest
+
+                pytest.fail(f"Agent {agent_name} failed: {e}")
 
 
 def test_plugin_system():
@@ -62,6 +69,10 @@ def test_plugin_system():
 
     except Exception as e:
         print(f"   ❌ Plugin system error: {e}")
+        if "pytest" in sys.modules:
+            import pytest
+
+            pytest.fail(f"Plugin system failed: {e}")
 
 
 async def main():

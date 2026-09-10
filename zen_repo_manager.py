@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-zenOS Repository Manager - Unified Git Repository Management Tool
+"""zenOS Repository Manager - Unified Git Repository Management Tool
 
 Comprehensive repository management combining local scanning, GitHub operations,
 status monitoring, and maintenance tasks.
@@ -33,11 +32,7 @@ from clone_all_repos import (
     get_github_token,
 )
 from clone_all_repos import parse_arguments as parse_clone_args
-from clone_all_repos import (
-    repo_exists_locally,
-    save_results_to_json,
-    update_repository,
-)
+from clone_all_repos import repo_exists_locally, save_results_to_json, update_repository
 
 # Import our existing modules
 from find_all_local_repos import (
@@ -75,6 +70,7 @@ class ZenRepoManager:
 
         Returns:
             int: Exit code — `0` on success, `1` if no valid scan paths were provided.
+
         """
         print_colored("🔍 Scanning for local repositories...", self.colors.BOLD)
 
@@ -120,6 +116,7 @@ class ZenRepoManager:
 
         Returns:
             int: Exit code — `0` on successful completion or when the user declines to proceed, `1` on fatal errors (for example when a GitHub token is unavailable or the destination directory cannot be ensured).
+
         """
         print_colored("🔄 Syncing repositories...", self.colors.BOLD)
 
@@ -186,6 +183,7 @@ class ZenRepoManager:
 
         Returns:
             int: Exit code `0` on success.
+
         """
         print_colored("📊 Checking repository status...", self.colors.BOLD)
 
@@ -214,6 +212,7 @@ class ZenRepoManager:
 
         Returns:
             int: Exit code (`0` on success).
+
         """
         print_colored("🔍 Performing repository audit...", self.colors.BOLD)
 
@@ -249,6 +248,7 @@ class ZenRepoManager:
                 - ahead_behind (int): Number of repositories reported as ahead/behind their remote.
                 - no_remote (int): Number of repositories missing a remote URL.
                 - errors (int): Number of repositories whose status is 'error' or 'invalid'.
+
         """
         report = {
             "total_repos": len(repositories),
@@ -294,6 +294,7 @@ class ZenRepoManager:
                 - ahead_behind (int): Number of repositories that are ahead of or behind their remote.
                 - no_remote (int): Number of repositories without a configured remote.
                 - errors (int): Number of repositories with errors or invalid state.
+
         """
         print_colored(f"\n{'='*50}", self.colors.BLUE)
         print_colored("📊 REPOSITORY STATUS REPORT", self.colors.BOLD)
@@ -334,6 +335,7 @@ class ZenRepoManager:
                 - issues: Flattened list of detected issues across repositories.
                 - recommendations: Flattened list of recommendations across repositories.
                 - repositories: Per-repository audit entries with issues, recommendations, and health score.
+
         """
         audit = {
             "timestamp": datetime.now().isoformat(),
@@ -382,6 +384,7 @@ class ZenRepoManager:
                 - issues (List[str]): detected problems
                 - recommendations (List[str]): actionable suggestions
                 - health_score (int): overall health between 0 and 100 (higher is better)
+
         """
         issues = []
         recommendations = []
@@ -434,6 +437,7 @@ class ZenRepoManager:
                 - issues (List[str]): collected critical issue messages.
                 - recommendations (List[str]): collected recommendation messages.
                 - repositories (List[Dict]): per-repo audit entries; each entry must include a 'health_score' numeric value.
+
         """
         print_colored(f"\n{'='*60}", self.colors.BLUE)
         print_colored("🔍 REPOSITORY AUDIT REPORT", self.colors.BOLD)
@@ -468,7 +472,7 @@ class ZenRepoManager:
             needs_attention = len([s for s in health_scores if 50 <= s < 80])
             critical = len([s for s in health_scores if s < 50])
 
-            print_colored(f"\n🏥 Health Overview:", self.colors.WHITE)
+            print_colored("\n🏥 Health Overview:", self.colors.WHITE)
             print_colored(f"  📊 Average health score: {avg_health:.1f}", self.colors.CYAN)
             print_colored(f"  🟢 Healthy (80-100): {healthy}", self.colors.GREEN)
             print_colored(f"  🟡 Needs attention (50-79): {needs_attention}", self.colors.YELLOW)
@@ -484,6 +488,7 @@ class ZenRepoManager:
 
         Notes:
             On success prints a confirmation message. On failure prints an error message with the exception details; exceptions are not propagated.
+
         """
         try:
             with open(output_file, "w", encoding="utf-8") as f:
@@ -501,6 +506,7 @@ def main():
 
     Returns:
         int: Exit code where `0` indicates success and `1` indicates an error, missing command, or unknown command.
+
     """
     parser = argparse.ArgumentParser(
         description="zenOS Repository Manager - Unified Git Repository Management",

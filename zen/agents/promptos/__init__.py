@@ -1,5 +1,4 @@
-"""
-PromptOS Integration for zenOS
+"""PromptOS Integration for zenOS
 
 This module integrates the core PromptOS functionality into zenOS,
 including the auto-critique system, specialized agents, and YAML-based templates.
