@@ -76,7 +76,11 @@ jobs:
     
     - name: Build documentation with mkdocs
       run: |
-        mkdocs build
+        if [ -f mkdocs.yml ]; then
+          mkdocs build --strict
+        else
+          echo "No mkdocs.yml found, skipping"
+        fi
     
     - name: Test with pytest and coverage
       run: |
