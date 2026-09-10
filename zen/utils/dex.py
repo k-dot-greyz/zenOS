@@ -136,5 +136,5 @@ def get_dex_metadata(filepath: Path) -> Optional[Dict]:
             metadata[key] = found.group(1) if found else None
 
         return metadata if metadata.get("dex_id") else None
-    except OSError, UnicodeDecodeError, AttributeError:
+    except (OSError, UnicodeDecodeError, AttributeError):
         return None
