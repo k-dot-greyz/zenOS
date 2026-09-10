@@ -417,7 +417,7 @@ class TTSQueueManager:
         """
         Run the worker's asynchronous loop to fetch and process messages until the manager stops.
 
-        Continuously retrieves messages from the manager's queue, enforces rate limiting (re-queues messages with lowered priority when throttled), dispatches messages to the provided TTSWorker for processing, and updates runtime statistics. Sleeps briefly when the queue is empty or on transient errors. Loop terminates when the manager's `is_running` flag is cleared.
+        Continuously retrieves messages from the manager's queue, enforces rate limiting (re-queues messages while preserving priority when throttled), dispatches messages to the provided TTSWorker for processing, and updates runtime statistics. Sleeps briefly when the queue is empty or on transient errors. Loop terminates when the manager's `is_running` flag is cleared.
 
         Parameters:
             worker (TTSWorker): The worker instance that will process dequeued messages.

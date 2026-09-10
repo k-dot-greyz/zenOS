@@ -100,12 +100,10 @@ Connect additional nodes to:
 
 ### Dependencies
 - **`js-yaml`**: Required for parsing YAML templates (NOT included by default in n8n)
-  - **Option 1 (Recommended)**: Configure n8n External Modules:
-    - Set environment variables:
-      - `NODE_FUNCTION_ALLOW_EXTERNAL=js-yaml`
-      - `NODE_FUNCTION_EXTERNAL_MODULES=/home/node/.n8n/node_modules`
-    - Install js-yaml: `npm install js-yaml` in the external modules directory
-    - Restart n8n
+  - **Option 1 (Recommended)**: Allow and install the module for n8n Code nodes:
+    - Set `NODE_FUNCTION_ALLOW_EXTERNAL=js-yaml` on the n8n process (and Task Runners if used)
+    - Install `js-yaml` where n8n can `require` it (e.g. under `~/.n8n` / `/home/node/.n8n`)
+    - Restart n8n so the env var is applied at process start
   - **Option 2**: Parse YAML client-side in the browser (requires workflow modification)
 - Modern browser with Clipboard API support (all modern browsers since 2020)
 - HTTPS for clipboard access (required, not optional)

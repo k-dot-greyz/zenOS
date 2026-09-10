@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>zenOS</title>
+  <style>
+    :root {
+      --ink: #0f1a14;
+      --moss: #1f6f4a;
+      --mist: #e8f2ec;
+      --glow: #9fd6b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, var(--glow), transparent 55%),
+        radial-gradient(900px 500px at 110% 10%, #cfe8da, transparent 50%),
+        linear-gradient(160deg, #f7fbf8 0%, var(--mist) 55%, #dceee4 100%);
+    }
+    main {
+      max-width: 42rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      letter-spacing: -0.03em;
+      margin: 0 0 0.4em;
+    }
+    p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin: 0 0 1.5rem;
+      opacity: 0.85;
+    }
+    a {
+      color: var(--moss);
+      font-weight: 600;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.2em;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>zenOS</h1>
+    <p>The Zen of AI workflow orchestration. This Vercel surface is a static status page — the real product lives in the Python CLI and n8n workflows.</p>
+    <p><a href="https://github.com/k-dot-greyz/zenOS">GitHub repository</a></p>
+  </main>
+</body>
+</html>
