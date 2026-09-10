@@ -28,12 +28,17 @@ jobs:
           python-version: "3.14"
           cache: pip
 
-      - name: Install package
+      # Root setup.py is an installer script, not setuptools — `pip install -e .`
+      # imports zen (needs PyYAML) inside the isolated build env. PYTHONPATH +
+      # requirements.txt is the portable Harness Contract v1 install path.
+      - name: Install runtime + test deps
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -r requirements.txt pytest-cov
 
       - name: env-doctor JSON (CI profile)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           set +e
           python -m zen.cli env-doctor --format json --profile ci > doctor.json
@@ -64,9 +69,13 @@ jobs:
           fi
 
       - name: Contract tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/test_env_doctor_contract.py tests/test_pr_intent.py tests/test_capability_registry.py -m contract -v --no-cov
 
       - name: Registry + pr-intent validation
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           changed="$(git diff --name-only origin/main...HEAD || true)"
           python scripts/validate_harness_contracts.py --changed $changed
