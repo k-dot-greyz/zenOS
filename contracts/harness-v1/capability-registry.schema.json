@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://zenos.ai/contracts/harness-v1/capability-registry.schema.json",
+  "title": "Harness Contract v1 — dex capability registry",
+  "type": "object",
+  "required": ["contract", "entries"],
+  "properties": {
+    "contract": { "const": "1.0" },
+    "entries": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["id", "what", "how", "proof"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "what": {
+            "type": "object",
+            "required": ["owner", "maturity", "risk", "purpose"],
+            "properties": {
+              "owner": { "type": "string", "minLength": 1 },
+              "maturity": { "type": "string", "minLength": 1 },
+              "risk": { "type": "string", "minLength": 1 },
+              "purpose": { "type": "string", "minLength": 1 }
+            }
+          },
+          "how": {
+            "type": "object",
+            "required": ["entrypoint", "env_doctor_profile"],
+            "properties": {
+              "entrypoint": { "type": "string", "minLength": 1 },
+              "env_doctor_profile": { "enum": ["ci", "local"] }
+            }
+          },
+          "proof": {
+            "type": "object",
+            "required": ["test", "artifact"],
+            "properties": {
+              "test": { "type": "string", "minLength": 1 },
+              "artifact": { "type": "string", "minLength": 1 }
+            }
+          },
+          "supersedes": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

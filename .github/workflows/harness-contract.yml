@@ -1,0 +1,72 @@
+name: Harness Contract v1
+
+# ZEN-313 Track 2/3/6: doctor JSON check, contract tests, registry validation.
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  harness-contract:
+    name: Doctor + contracts + registry
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: env-doctor JSON (CI profile)
+        run: |
+          set +e
+          python -m zen.cli env-doctor --format json --profile ci > doctor.json
+          code=$?
+          set -e
+          cat doctor.json
+          python - <<'PY'
+          import json, sys
+          payload = json.load(open("doctor.json", encoding="utf-8"))
+          doctor = payload["doctor"]
+          assert doctor["contract"] == "1.0"
+          assert doctor["profile"] == "ci"
+          assert doctor["exit_code"] in (0, 10, 20)
+          families = {c["family"] for c in doctor["checks"]}
+          required = {"runtime", "package_manager", "lockfile", "secrets_presence", "git_state"}
+          missing = required - families
+          if missing:
+              raise SystemExit(f"missing doctor families: {sorted(missing)}")
+          print("env-doctor JSON contract ok")
+          PY
+          if [ "$code" -eq 20 ]; then
+            echo "env-doctor blocked (process exit 20)"
+            exit 20
+          fi
+          if [ "$code" -ne 0 ]; then
+            echo "unexpected process exit: $code"
+            exit "$code"
+          fi
+
+      - name: Contract tests
+        run: pytest tests/test_env_doctor_contract.py tests/test_pr_intent.py tests/test_capability_registry.py -m contract -v --no-cov
+
+      - name: Registry + pr-intent validation
+        run: |
+          changed="$(git diff --name-only origin/main...HEAD || true)"
+          python scripts/validate_harness_contracts.py --changed $changed

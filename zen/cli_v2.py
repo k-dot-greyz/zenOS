@@ -174,10 +174,53 @@ def arena():
 
 @cli.command()
 @click.argument("category", default="models")
+@click.argument("query", required=False)
 @click.option("--task", help="Find best model for specific task")
 @click.option("--tier", help="Filter by tier")
-def dex(category, task, tier):
-    """📖 Explore the Model & Procedure Dex"""
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["rich", "json"], case_sensitive=False),
+    default="rich",
+    show_default=True,
+)
+def dex(category, query, task, tier, output_format):
+    """📖 Explore the Model & Procedure Dex (and capability registry)."""
+
+    if category == "search":
+        from zen.contracts.registry import (
+            entries_as_dicts,
+            load_registry,
+            search_registry,
+        )
+
+        registry_path = Path("dex/registry.yaml")
+        if not registry_path.exists():
+            here = Path(__file__).resolve().parents[1]
+            registry_path = here / "dex" / "registry.yaml"
+        registry = load_registry(registry_path)
+        hits = search_registry(registry, query or "")
+        if output_format == "json":
+            click.echo(
+                json.dumps(
+                    {
+                        "query": query or "",
+                        "hits": entries_as_dicts(hits),
+                    },
+                    indent=2,
+                )
+            )
+            return
+        if not hits:
+            print(f"No capability registry hits for {query!r}")
+            return
+        print(f"\n🔎 Dex capability search: {query or '*'}\n")
+        for entry in hits:
+            print(f"• {entry.id}")
+            print(f"  what: {entry.what.purpose} (owner={entry.what.owner})")
+            print(f"  how:  {entry.how.entrypoint} [{entry.how.env_doctor_profile}]")
+            print(f"  proof: {entry.proof.test}")
+        return
 
     if category == "models":
         models_file = Path("dex/models.yaml")
@@ -372,6 +415,8 @@ zenOS v2.0 Help System
   zen dex models --task <task>  - Find best model for task
   zen dex models --tier <r>   - Filter by tier
   zen dex procedures            - List discovered procedures
+  zen dex search <query>        - Capability registry (what/how/proof)
+  zen dex search <query> --format json
 
 🤖 AI Integration:
   zen --ai-mode                     - Enable AI-optimized output

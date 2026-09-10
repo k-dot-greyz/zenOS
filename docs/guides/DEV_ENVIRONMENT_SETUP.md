@@ -13,6 +13,7 @@ zenOS **will not start** below **Python 3.14**. That floor is enforced by `zen` 
 bash scripts/zenos-env-install.sh
 bash scripts/zenos-env-start.sh     # per-boot gate; exit 1 if Python or core deps are wrong
 zen env-doctor
+zen env-doctor --format json --profile ci   # machine-readable Harness Contract v1
 ```
 
 On Cursor Cloud, keep distro `/usr/bin/python3` alone (often 3.12). Use `.venv` from `uv python install 3.14`. The dashboard environment `start` command must fail the pod if that floor is missing.
