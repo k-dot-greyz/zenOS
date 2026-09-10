@@ -321,7 +321,7 @@ def process_file_contents(root: Path, apply: bool) -> Tuple[int, int, List[str]]
             continue
         try:
             text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
+        except UnicodeDecodeError, OSError:
             continue
         new_text, c1 = replace_text(text)
         c2 = 0
