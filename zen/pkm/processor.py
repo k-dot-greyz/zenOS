@@ -16,6 +16,11 @@ from .storage import PKMStorage
 class ConversationProcessor:
     """Process conversations to extract knowledge and insights."""
 
+    # Pre-compiled regex patterns for performance
+    _WORD_PATTERN = re.compile(r"\b\w+\b")
+    _CODE_BLOCK_PATTERN = re.compile(r"```[\s\S]*?```")
+    _LIST_PATTERN = re.compile(r"^\d+\.|^[-*]", re.MULTILINE)
+
     def __init__(self, config: PKMConfig, storage: PKMStorage):
         """
         Initialize ConversationProcessor with PKM configuration and a storage backend.
@@ -95,7 +100,7 @@ class ConversationProcessor:
         user_topics = []
         for msg in user_messages:
             # Simple keyword extraction
-            words = re.findall(r"\b\w+\b", msg.lower())
+            words = self._WORD_PATTERN.findall(msg.lower())
             # Filter out common words
             common_words = {
                 "the",
@@ -209,7 +214,7 @@ class ConversationProcessor:
         combined_text = " ".join(all_text).lower()
 
         # Simple keyword extraction
-        words = re.findall(r"\b\w+\b", combined_text)
+        words = self._WORD_PATTERN.findall(combined_text)
 
         # Filter out common words
         common_words = {
@@ -360,7 +365,7 @@ class ConversationProcessor:
                 content = message.content
 
                 # Look for code blocks
-                code_blocks = re.findall(r"```[\s\S]*?```", content)
+                code_blocks = self._CODE_BLOCK_PATTERN.findall(content)
                 for j, code_block in enumerate(code_blocks):
                     entry = KnowledgeEntry(
                         id=f"{conversation.id}_code_{i}_{j}",
@@ -378,7 +383,7 @@ class ConversationProcessor:
                     entries.append(entry)
 
                 # Look for lists or structured information
-                if re.search(r"^\d+\.|^[-*]", content, re.MULTILINE):
+                if self._LIST_PATTERN.search(content):
                     entry = KnowledgeEntry(
                         id=f"{conversation.id}_list_{i}",
                         title=f"List from {conversation.title}",
@@ -428,7 +433,7 @@ class ConversationProcessor:
         Returns:
             List[str]: Up to five keywords ordered by frequency (most frequent first).
         """
-        words = re.findall(r"\b\w+\b", text.lower())
+        words = self._WORD_PATTERN.findall(text.lower())
         common_words = {
             "the",
             "a",
