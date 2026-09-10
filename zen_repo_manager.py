@@ -33,11 +33,7 @@ from clone_all_repos import (
     get_github_token,
 )
 from clone_all_repos import parse_arguments as parse_clone_args
-from clone_all_repos import (
-    repo_exists_locally,
-    save_results_to_json,
-    update_repository,
-)
+from clone_all_repos import repo_exists_locally, save_results_to_json, update_repository
 
 # Import our existing modules
 from find_all_local_repos import (
