@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import re
 import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass, field
-from importlib.metadata import PackageNotFoundError, version as pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
@@ -38,6 +40,8 @@ class CheckResult:
     ok: bool
     severity: str
     message: str
+    family: str = "runtime"
+    repairable: bool = True
 
 
 @dataclass
@@ -73,12 +77,16 @@ def check_python(version_info: Optional[Sequence[int]] = None) -> CheckResult:
                 f"Python {major}.{minor} detected ({rendered}). "
                 "Python 3.14+ is required — older runtimes are EOL for zenOS."
             ),
+            family="runtime",
+            repairable=False,
         )
     return CheckResult(
         name="python",
         ok=True,
         severity="ok",
         message=f"Python {rendered} OK (floor 3.14)",
+        family="runtime",
+        repairable=False,
     )
 
 
@@ -93,6 +101,8 @@ def check_setup_py_landmine(root: Optional[Path] = None) -> CheckResult:
             ok=True,
             severity="ok",
             message="No root setup.py landmine",
+            family="git_state",
+            repairable=True,
         )
     text = setup_py.read_text(encoding="utf-8", errors="replace")
     looks_like_setuptools = "setuptools" in text or "from setuptools" in text or "setup(" in text
@@ -106,12 +116,16 @@ def check_setup_py_landmine(root: Optional[Path] = None) -> CheckResult:
                 "pip/build backends treat that filename as a package script — "
                 "rename it (e.g. zenos_setup.py) before the next CLI fix pass."
             ),
+            family="git_state",
+            repairable=True,
         )
     return CheckResult(
         name="setup_py",
         ok=True,
         severity="ok",
         message="Root setup.py looks like a packaging script",
+        family="git_state",
+        repairable=True,
     )
 
 
@@ -125,12 +139,16 @@ def check_cli_entrypoint() -> CheckResult:
                 ok=False,
                 severity="fail",
                 message="zen.cli:main exists but is not callable",
+                family="runtime",
+                repairable=False,
             )
         return CheckResult(
             name="cli_entry",
             ok=True,
             severity="ok",
             message="zen.cli:main is callable (console script entrypoint)",
+            family="runtime",
+            repairable=False,
         )
     except Exception as exc:
         return CheckResult(
@@ -138,6 +156,8 @@ def check_cli_entrypoint() -> CheckResult:
             ok=False,
             severity="fail",
             message=f"zen.cli:main is missing or broken: {exc}",
+            family="runtime",
+            repairable=False,
         )
 
 
@@ -152,12 +172,16 @@ def check_cli_doctor_commands() -> CheckResult:
                 ok=False,
                 severity="fail",
                 message=f"Main CLI missing commands: {', '.join(missing)}",
+                family="runtime",
+                repairable=False,
             )
         return CheckResult(
             name="cli_doctor",
             ok=True,
             severity="ok",
             message="zen doctor and zen env-doctor are registered",
+            family="runtime",
+            repairable=False,
         )
     except Exception as exc:
         return CheckResult(
@@ -165,6 +189,8 @@ def check_cli_doctor_commands() -> CheckResult:
             ok=False,
             severity="fail",
             message=f"Could not inspect CLI commands: {exc}",
+            family="runtime",
+            repairable=False,
         )
 
 
@@ -183,6 +209,8 @@ def check_core_imports(pairs: Iterable[tuple[str, str]] = CORE_IMPORTS) -> list[
                     ok=True,
                     severity="ok",
                     message=f"{dist_name} importable ({installed})",
+                    family="package_manager",
+                    repairable=False,
                 )
             )
         except Exception as exc:
@@ -192,6 +220,8 @@ def check_core_imports(pairs: Iterable[tuple[str, str]] = CORE_IMPORTS) -> list[
                     ok=False,
                     severity="fail",
                     message=f"{dist_name} ({module_name}) failed to import: {exc}",
+                    family="package_manager",
+                    repairable=False,
                 )
             )
     return results
@@ -213,6 +243,8 @@ def check_outdated_packages(python_executable: Optional[str] = None) -> CheckRes
             ok=True,
             severity="warn",
             message=f"Could not scan outdated packages: {exc}",
+            family="package_manager",
+            repairable=True,
         )
     if proc.returncode != 0:
         return CheckResult(
@@ -220,6 +252,8 @@ def check_outdated_packages(python_executable: Optional[str] = None) -> CheckRes
             ok=True,
             severity="warn",
             message=f"pip list --outdated failed: {proc.stderr.strip() or proc.stdout.strip()}",
+            family="package_manager",
+            repairable=True,
         )
     try:
         rows = json.loads(proc.stdout or "[]")
@@ -229,6 +263,8 @@ def check_outdated_packages(python_executable: Optional[str] = None) -> CheckRes
             ok=True,
             severity="warn",
             message="pip list --outdated returned non-JSON output",
+            family="package_manager",
+            repairable=True,
         )
     if not rows:
         return CheckResult(
@@ -236,6 +272,8 @@ def check_outdated_packages(python_executable: Optional[str] = None) -> CheckRes
             ok=True,
             severity="ok",
             message="No outdated pip packages reported",
+            family="package_manager",
+            repairable=True,
         )
     names = ", ".join(
         f"{row.get('name')} {row.get('version')}->{row.get('latest_version')}" for row in rows[:20]
@@ -246,6 +284,8 @@ def check_outdated_packages(python_executable: Optional[str] = None) -> CheckRes
         ok=True,
         severity="warn",
         message=f"{len(rows)} outdated package(s): {names}{extra}",
+        family="package_manager",
+        repairable=True,
     )
 
 
@@ -257,6 +297,8 @@ def check_env_file(root: Optional[Path] = None) -> CheckResult:
             ok=True,
             severity="ok",
             message="Environment file found (.env)",
+            family="secrets_presence",
+            repairable=True,
         )
     if (repo / "env.example").exists():
         return CheckResult(
@@ -264,12 +306,16 @@ def check_env_file(root: Optional[Path] = None) -> CheckResult:
             ok=True,
             severity="warn",
             message="No .env yet — copy env.example to .env and add keys",
+            family="secrets_presence",
+            repairable=True,
         )
     return CheckResult(
         name="dotenv",
         ok=False,
         severity="fail",
         message="Neither .env nor env.example found",
+        family="secrets_presence",
+        repairable=True,
     )
 
 
@@ -285,6 +331,8 @@ def check_dex_files(root: Optional[Path] = None) -> list[CheckResult]:
                 ok=True,
                 severity="ok",
                 message="Model Dex found (dex/models.yaml)",
+                family="runtime",
+                repairable=True,
             )
         )
     else:
@@ -294,6 +342,8 @@ def check_dex_files(root: Optional[Path] = None) -> list[CheckResult]:
                 ok=True,
                 severity="warn",
                 message="Model Dex missing (dex/models.yaml) — run zen sync",
+                family="runtime",
+                repairable=True,
             )
         )
     if procedures.exists():
@@ -303,6 +353,8 @@ def check_dex_files(root: Optional[Path] = None) -> list[CheckResult]:
                 ok=True,
                 severity="ok",
                 message="Procedure Dex found (dex/procedures.yaml)",
+                family="runtime",
+                repairable=True,
             )
         )
     else:
@@ -312,6 +364,8 @@ def check_dex_files(root: Optional[Path] = None) -> list[CheckResult]:
                 ok=True,
                 severity="warn",
                 message="Procedure Dex missing (dex/procedures.yaml)",
+                family="runtime",
+                repairable=True,
             )
         )
     return results
@@ -342,6 +396,8 @@ def check_pyproject_python_floor(root: Optional[Path] = None) -> CheckResult:
             ok=False,
             severity="fail",
             message="pyproject.toml missing",
+            family="runtime",
+            repairable=False,
         )
     try:
         data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
@@ -352,6 +408,8 @@ def check_pyproject_python_floor(root: Optional[Path] = None) -> CheckResult:
             ok=False,
             severity="fail",
             message=f"pyproject.toml unreadable: {exc}",
+            family="runtime",
+            repairable=False,
         )
     if not spec or not requires_python_meets_floor(spec):
         floor = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
@@ -360,12 +418,145 @@ def check_pyproject_python_floor(root: Optional[Path] = None) -> CheckResult:
             ok=False,
             severity="fail",
             message=f"pyproject.toml requires-python must be >={floor} (got {spec!r})",
+            family="runtime",
+            repairable=False,
         )
     return CheckResult(
         name="pyproject",
         ok=True,
         severity="ok",
         message=f"pyproject.toml requires-python {spec}",
+        family="runtime",
+        repairable=False,
+    )
+
+
+LOCKFILE_CANDIDATES = ("requirements.txt", "uv.lock", "poetry.lock", "Pipfile.lock")
+REQUIRED_SECRET_NAMES = ("OPENROUTER_API_KEY",)
+OPTIONAL_SECRET_NAMES = ("GITHUB_TOKEN",)
+
+
+def check_lockfile(root: Optional[Path] = None) -> CheckResult:
+    repo = Path(root) if root is not None else Path.cwd()
+    found = [name for name in LOCKFILE_CANDIDATES if (repo / name).exists()]
+    if found:
+        return CheckResult(
+            name="lockfile",
+            ok=True,
+            severity="ok",
+            message=f"Lock/pin file present: {', '.join(found)}",
+            family="lockfile",
+            repairable=True,
+        )
+    return CheckResult(
+        name="lockfile",
+        ok=False,
+        severity="fail",
+        message="No requirements.txt / uv.lock / poetry.lock / Pipfile.lock",
+        family="lockfile",
+        repairable=True,
+    )
+
+
+def _secret_is_set(name: str) -> bool:
+    value = os.environ.get(name, "").strip()
+    if not value:
+        return False
+    return "your-" not in value.lower() and value.lower() not in {"changeme", "todo", "xxx"}
+
+
+def check_secrets_presence(root: Optional[Path] = None) -> CheckResult:
+    """Presence-only: names of unset keys, never values."""
+    missing_required = [name for name in REQUIRED_SECRET_NAMES if not _secret_is_set(name)]
+    missing_optional = [name for name in OPTIONAL_SECRET_NAMES if not _secret_is_set(name)]
+    if missing_required:
+        return CheckResult(
+            name="secrets",
+            ok=True,
+            severity="warn",
+            message="Unset env keys (names only): " + ", ".join(missing_required),
+            family="secrets_presence",
+            repairable=True,
+        )
+    if missing_optional:
+        return CheckResult(
+            name="secrets",
+            ok=True,
+            severity="warn",
+            message="Optional env keys unset (names only): " + ", ".join(missing_optional),
+            family="secrets_presence",
+            repairable=True,
+        )
+    return CheckResult(
+        name="secrets",
+        ok=True,
+        severity="ok",
+        message="Required env keys present (values not logged)",
+        family="secrets_presence",
+        repairable=True,
+    )
+
+
+def check_git_state(root: Optional[Path] = None) -> CheckResult:
+    repo = Path(root) if root is not None else Path.cwd()
+    try:
+        inside = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "--is-inside-work-tree"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
+        return CheckResult(
+            name="git_state",
+            ok=True,
+            severity="warn",
+            message=f"git not inspectable: {exc}",
+            family="git_state",
+            repairable=True,
+        )
+    if inside.returncode != 0 or inside.stdout.strip() != "true":
+        return CheckResult(
+            name="git_state",
+            ok=False,
+            severity="fail",
+            message="Not a git work tree",
+            family="git_state",
+            repairable=True,
+        )
+    dirty = subprocess.run(
+        ["git", "-C", str(repo), "status", "--porcelain"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    if dirty.returncode != 0:
+        return CheckResult(
+            name="git_state",
+            ok=True,
+            severity="warn",
+            message="git status failed",
+            family="git_state",
+            repairable=True,
+        )
+    if dirty.stdout.strip():
+        return CheckResult(
+            name="git_state",
+            ok=True,
+            severity="warn",
+            message="Working tree has uncommitted changes",
+            family="git_state",
+            repairable=True,
+        )
+    return CheckResult(
+        name="git_state",
+        ok=True,
+        severity="ok",
+        message="Git work tree clean",
+        family="git_state",
+        repairable=True,
     )
 
 
@@ -383,6 +574,9 @@ def run_env_doctor(
     report.checks.append(check_cli_doctor_commands())
     report.checks.append(check_setup_py_landmine(root=repo))
     report.checks.append(check_env_file(root=repo))
+    report.checks.append(check_secrets_presence(root=repo))
+    report.checks.append(check_lockfile(root=repo))
+    report.checks.append(check_git_state(root=repo))
     report.checks.extend(check_dex_files(root=repo))
     report.checks.extend(check_core_imports())
     if include_outdated:

@@ -93,3 +93,9 @@ disallow_untyped_defs = true
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "--cov=zen --cov-report=term-missing"
+markers = [
+    "contract: product/schema contract — failure means the product is wrong",
+    "harness: harness health — tooling contract broke",
+    "security: security invariant",
+    "docs: documentation consistency (must not block merge)",
+]
