@@ -6,6 +6,7 @@ import asyncio
 import json
 import signal
 import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -257,7 +258,7 @@ class PKMScheduler:
         try:
             while self.running:
                 schedule.run_pending()
-                asyncio.sleep(1)
+                time.sleep(1)
         except KeyboardInterrupt:
             console.print("\n[yellow]Scheduler stopped by user[/yellow]")
         except Exception as e:
@@ -283,7 +284,7 @@ class PKMScheduler:
         # Conversation extraction job
         self.add_job(
             name="extract_conversations",
-            schedule=self.config.cron_schedule,
+            schedule_str=self.config.cron_schedule,
             function=self._extract_conversations_job,
             metadata={"description": "Extract conversations from Google Gemini"},
         )
@@ -291,7 +292,7 @@ class PKMScheduler:
         # Knowledge processing job
         self.add_job(
             name="process_knowledge",
-            schedule="0 2 * * *",  # Daily at 2 AM
+            schedule_str="0 2 * * *",  # Daily at 2 AM
             function=self._process_knowledge_job,
             metadata={"description": "Process conversations and extract knowledge"},
         )
@@ -299,7 +300,7 @@ class PKMScheduler:
         # Cleanup job
         self.add_job(
             name="cleanup_old_data",
-            schedule="0 3 * * 0",  # Weekly on Sunday at 3 AM
+            schedule_str="0 3 * * 0",  # Weekly on Sunday at 3 AM
             function=self._cleanup_job,
             metadata={"description": "Clean up old data files"},
         )

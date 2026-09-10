@@ -7,7 +7,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import click
 
@@ -123,9 +123,9 @@ def add(item_type: str, content: str, metadata: str = None):
     click.echo(f"Added {item_type} item: {item_id}")
 
 
-@receive.command()
+@receive.command("list")
 @click.option("--status", help="Filter by status (new, processing, processed)")
-def list(status: str = None):
+def list_items(status: Optional[str] = None):
     """List items in the inbox"""
     manager = InboxManager()
     items = manager.list_items(status)
