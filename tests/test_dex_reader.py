@@ -70,6 +70,22 @@ dex_id: "0x7E:0x00"
         entry = self.reader.get("0x7F:0xFF")
         self.assertIsNotNone(entry)
 
+    def test_lowercase_dex_id_lookup_and_bank(self):
+        with open(self.index_path, "a", encoding="utf-8") as f:
+            f.write("| `0x7e:0x99` | `test` | 🟢 | [lower.py](lower.py) | `urn:lower` |\n")
+
+        self.reader.refresh()
+        entry = self.reader.get("0x7E:0x99")
+        self.assertIsNotNone(entry)
+        self.assertEqual(entry["dex_id"], "0x7E:0x99")
+        self.assertIsNotNone(self.reader.get("0x7e:0x99"))
+        self.assertTrue(any(e["dex_id"] == "0x7E:0x99" for e in self.reader.by_bank(0x7E)))
+
+    def test_unreadable_index_returns_empty_catalog(self):
+        reader = DexReader(str(self.test_dir.name))
+        self.assertEqual(reader.list_all(), [])
+        self.assertIsNone(reader.get("0x7C:0x01"))
+
 
 class TestGetDexMetadata(unittest.TestCase):
     def setUp(self):
