@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-zenOS Setup System Test Suite
+"""zenOS Setup System Test Suite
 
 This script demonstrates and tests the unified setup system across different scenarios.
 It shows how the setup system handles various environments and edge cases.

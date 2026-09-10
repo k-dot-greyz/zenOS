@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Prompt Critic Agent - Core Auto-Critique System
+"""Prompt Critic Agent - Core Auto-Critique System
 
 This is the core auto-critique system from PromptOS, integrated into zenOS.
 Every prompt gets automatically critiqued and upgraded for maximum effectiveness.

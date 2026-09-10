@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Environment Detector for zenOS Setup
+"""Environment Detector for zenOS Setup
 
 Detects and analyzes the current environment to provide optimal setup procedures.
 Handles Windows, macOS, Linux, and Termux environments with specific optimizations.
@@ -138,7 +137,7 @@ class EnvironmentDetector:
         try:
             result = subprocess.run(["git", "--version"], capture_output=True, text=True, timeout=5)
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False
 
     def _check_node_available(self) -> bool:
@@ -148,7 +147,7 @@ class EnvironmentDetector:
                 ["node", "--version"], capture_output=True, text=True, timeout=5
             )
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False
 
     def _detect_termux(self) -> bool:
@@ -256,13 +255,11 @@ class EnvironmentDetector:
         parts = env_info.python_version.split(".")
         try:
             detected = (int(parts[0]), int(parts[1]))
-        except (ValueError, IndexError):
+        except ValueError, IndexError:
             detected = (0, 0)
         if detected < MIN_PYTHON:
             floor = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
-            warnings.append(
-                f"Python {env_info.python_version} detected - Python {floor}+ required"
-            )
+            warnings.append(f"Python {env_info.python_version} detected - Python {floor}+ required")
 
         if env_info.is_windows and "powershell" not in env_info.shell.lower():
             warnings.append("PowerShell recommended on Windows for best compatibility")

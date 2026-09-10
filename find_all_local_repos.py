@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Local Git Repository Scanner for zenOS
+"""Local Git Repository Scanner for zenOS
 
 Scans local filesystem for all git repositories and provides comprehensive
 repository management capabilities.
@@ -49,6 +48,7 @@ def is_git_repository(path: Path) -> bool:
 
     Returns:
         bool: True if the path contains a '.git' directory, False otherwise.
+
     """
     git_dir = path / ".git"
     return git_dir.exists() and git_dir.is_dir()
@@ -72,6 +72,7 @@ def get_git_info(repo_path: Path) -> Dict:
             - ahead_behind (str | None): Ahead/behind shorthand from `git status` (e.g., 'ahead 1, behind 2'), or None if not applicable.
             - uncommitted_changes (bool): True if there are uncommitted changes in the working tree, False otherwise.
             - has_staged_changes (bool): True if any changes are staged for commit, False otherwise.
+
     """
     info = {
         "path": str(repo_path),
@@ -185,6 +186,7 @@ def scan_for_repositories(
 
     Returns:
         List[Dict]: A list of repository information dictionaries (one per detected repository).
+
     """
     if exclude_patterns is None:
         exclude_patterns = ["node_modules", ".git", "__pycache__", ".venv", "venv", "env"]
@@ -250,6 +252,7 @@ def get_default_scan_paths() -> List[Path]:
 
     Returns:
         List[Path]: Existing Path objects to use as default scan roots.
+
     """
     paths = []
 
@@ -344,6 +347,7 @@ def print_repository_details(repositories: List[Dict], show_details: bool = Fals
             - ahead_behind (str or None)
             - last_commit (str or None)
         show_details (bool): If true, include the last commit information for each repository.
+
     """
     if not repositories:
         print_colored("❌ No repositories found!", Colors.RED)
@@ -396,6 +400,7 @@ def save_to_json(repositories: List[Dict], output_file: Path) -> None:
     Parameters:
         repositories (List[Dict]): List of repository metadata dictionaries as produced by the scanner.
         output_file (Path): Filesystem path to the JSON file to write.
+
     """
     data = {
         "scan_timestamp": datetime.now().isoformat(),

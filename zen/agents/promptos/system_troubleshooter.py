@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-System Troubleshooter Agent - Development Environment Diagnostics
+"""System Troubleshooter Agent - Development Environment Diagnostics
 
 This agent diagnoses, troubleshoots, and automatically resolves common
 local development setup issues including git, shell configuration,
@@ -282,14 +281,14 @@ class SystemTroubleshooterAgent(Agent):
             report += f"- ❌ {issue}\n"
 
         if analysis.get("issues"):
-            report += f"\n## Recommended Fixes\n"
+            report += "\n## Recommended Fixes\n"
             for fix in fixes:
                 report += f"\n### {fix['description']}\n"
                 for command in fix.get("commands", []):
                     report += f"```bash\n{command}\n```\n"
 
         if applied_fixes:
-            report += f"\n## Applied Fixes\n"
+            report += "\n## Applied Fixes\n"
             for fix in applied_fixes:
                 status = "✅" if fix["success"] else "❌"
                 report += f"{status} {fix['command']}\n"

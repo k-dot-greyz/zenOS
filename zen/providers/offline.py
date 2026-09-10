@@ -1,5 +1,4 @@
-"""
-Offline/Local Model Provider for zenOS
+"""Offline/Local Model Provider for zenOS
 True offline AI - because your phone IS the computer
 """
 
@@ -127,8 +126,7 @@ DESKTOP_MODELS = {
 
 
 class OllamaProvider:
-    """
-    Ollama backend for local models.
+    """Ollama backend for local models.
     Works on Termux with some effort!
     """
 
@@ -208,8 +206,7 @@ class OllamaProvider:
 
 
 class LlamaCppProvider:
-    """
-    llama.cpp backend - runs on literally anything!
+    """llama.cpp backend - runs on literally anything!
     Perfect for Termux.
     """
 
@@ -282,8 +279,7 @@ class LlamaCppProvider:
 
 
 class OfflineManager:
-    """
-    Manages offline/local model execution.
+    """Manages offline/local model execution.
     Automatically selects best backend and model for device.
     """
 
@@ -417,8 +413,7 @@ class OfflineManager:
 
 
 class HybridProvider:
-    """
-    Intelligent hybrid online/offline provider.
+    """Intelligent hybrid online/offline provider.
     Uses online when available, falls back to offline seamlessly.
     """
 

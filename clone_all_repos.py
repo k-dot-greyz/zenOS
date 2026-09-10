@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-GitHub Repository Cloner - Enhanced Version
+"""GitHub Repository Cloner - Enhanced Version
 Clones or updates all repositories from specified GitHub accounts
 
 Features:
@@ -45,6 +44,7 @@ def print_colored(message: str, color: str = Colors.WHITE) -> None:
     Parameters:
         message (str): The text to print.
         color (str): ANSI color code or sequence to prepend to the message (defaults to Colors.WHITE).
+
     """
     # Remove emojis for Windows compatibility
     clean_message = message.encode("ascii", "ignore").decode("ascii")
@@ -66,6 +66,7 @@ def parse_arguments():
             yes (bool),
             include_private (bool),
             exclude_forks (bool).
+
     """
     parser = argparse.ArgumentParser(
         description="Clone or update all repositories from GitHub accounts",
@@ -121,6 +122,7 @@ def check_dependencies() -> bool:
 
     Returns:
         bool: `True` if all required dependencies are present, `False` otherwise.
+
     """
     missing = []
 
@@ -133,7 +135,7 @@ def check_dependencies() -> bool:
     # Check if git is available
     try:
         subprocess.run(["git", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except subprocess.CalledProcessError, FileNotFoundError:
         missing.append("git")
 
     if missing:
@@ -165,6 +167,7 @@ def get_configuration(args) -> Dict:
             - `include_private` (bool): Whether to include private repositories.
             - `exclude_forks` (bool): Whether to exclude forked repositories.
             - `json_output` (str | None): Path to write JSON results, if provided.
+
     """
     config = {}
 
@@ -214,6 +217,7 @@ def get_github_token() -> Optional[str]:
 
     Returns:
         token (str) or None: The validated GitHub token if available and valid, otherwise None.
+
     """
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -251,6 +255,7 @@ def ensure_destination_dir(destination: Path, dry_run: bool = False) -> bool:
 
     Returns:
         bool: `True` if the destination is confirmed (or would be created in dry-run), `False` if directory creation failed.
+
     """
     try:
         if not dry_run:
@@ -274,6 +279,7 @@ def confirm_action(message: str, auto_confirm: bool = False) -> bool:
 
     Returns:
         bool: `True` if the action is confirmed, `False` otherwise.
+
     """
     if auto_confirm:
         return True
@@ -300,6 +306,7 @@ def fetch_all_repos(
 
     Returns:
         repos (List[Dict]): A list of repository objects (dictionaries) as returned by the GitHub API, filtered according to the parameters. May contain a partial set of repositories if a network or request error occurs during pagination.
+
     """
     print_colored(f"🔍 Fetching repositories for user: {username}", Colors.BLUE)
 
@@ -355,6 +362,7 @@ def repo_exists_locally(repo_name: str, destination: Path) -> bool:
 
     Returns:
         True if a directory named `repo_name` exists inside `destination` and contains a `.git` directory, False otherwise.
+
     """
     repo_path = destination / repo_name
     return repo_path.exists() and (repo_path / ".git").exists()
@@ -380,6 +388,7 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
                 - "dry_run" — operation was simulated
                 - "clone_failed" — git clone returned a non-zero exit code
                 - "error" — an unexpected exception occurred during cloning
+
     """
     repo_name = repo["name"]
     clone_url = repo["clone_url"]
@@ -437,6 +446,7 @@ def update_repository(repo_name: str, destination: Path, dry_run: bool = False) 
             - "not_git_repo": target directory is not a Git repository
             - "pull_failed": `git pull` returned a non-zero exit code
             - "error": an unexpected exception occurred during the update
+
     """
     repo_path = destination / repo_name
 
@@ -480,6 +490,7 @@ def save_results_to_json(config: Dict, all_results: List[Dict], json_file: Path)
         config (Dict): Runtime configuration dictionary. Expected keys used: 'usernames', 'destination', 'dry_run', 'include_private', 'exclude_forks'.
         all_results (List[Dict]): List of per-repository result records to include under the 'results' key.
         json_file (Path): Filesystem path where the JSON output will be written.
+
     """
     data = {
         "timestamp": datetime.now().isoformat(),

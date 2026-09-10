@@ -1,6 +1,4 @@
-"""
-General-purpose assistant agent.
-"""
+"""General-purpose assistant agent."""
 
 import asyncio
 

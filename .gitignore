@@ -248,3 +248,9 @@ temp/
 workspace/temp/
 inbox/temp/
 .zenos_setup_complete
+
+# Broken nested-repo placeholders (were gitlinks without .gitmodules)
+mcp-config/
+neuro-spicy-devkit/
+zenOS-dev/
+.coverage

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-zenOS Unified Setup Script
+"""zenOS Unified Setup Script
 
 The master setup script that combines the best procedures from promptOS and mcp-config
 to create a bulletproof, environment-agnostic development environment.

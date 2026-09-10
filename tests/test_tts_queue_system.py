@@ -1,6 +1,4 @@
-"""
-Unit tests for the TTS Queue System
-"""
+"""Unit tests for the TTS Queue System"""
 
 import asyncio
 import threading
@@ -180,11 +178,10 @@ class TestTTSWorker:
         mock_tts_engine = AsyncMock(return_value=b"audio_data")
 
         # Mock the audio generation and playback
-        with patch.object(
-            worker, "_generate_audio", new_callable=AsyncMock
-        ) as mock_generate, patch.object(
-            worker, "_play_audio", new_callable=AsyncMock
-        ) as mock_play:
+        with (
+            patch.object(worker, "_generate_audio", new_callable=AsyncMock) as mock_generate,
+            patch.object(worker, "_play_audio", new_callable=AsyncMock) as mock_play,
+        ):
 
             mock_generate.return_value = b"audio_data"
 

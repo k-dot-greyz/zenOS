@@ -1,15 +1,12 @@
-"""
-Conversation processing and knowledge extraction for PKM module.
-"""
+"""Conversation processing and knowledge extraction for PKM module."""
 
-import asyncio
 import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 from .config import PKMConfig
-from .models import Conversation, KnowledgeEntry, Message, MessageRole
+from .models import Conversation, KnowledgeEntry, MessageRole
 from .storage import PKMStorage
 
 
@@ -23,6 +20,7 @@ class ConversationProcessor:
         Parameters:
             config (PKMConfig): Configuration that controls feature toggles (e.g., auto_summarize, extract_keywords, generate_tags) and processing metadata.
             storage (PKMStorage): Storage backend used to persist extracted KnowledgeEntry objects.
+
         """
         self.config = config
         self.storage = storage
@@ -38,6 +36,7 @@ class ConversationProcessor:
 
         Returns:
             Conversation: The same Conversation instance, updated with any generated summary, keywords, tags, knowledge entries persistence, and metadata.
+
         """
         # Generate summary if enabled
         if self.config.auto_summarize:
@@ -77,6 +76,7 @@ class ConversationProcessor:
 
         Returns:
             summary (str): A human-readable summary describing topics, message count, and key assistant insights, or the literal strings "Empty conversation" or "No summary available" when applicable.
+
         """
         # Simple extractive summarization
         # In a real implementation, you'd use an AI model for this
@@ -156,7 +156,7 @@ class ConversationProcessor:
         summary_parts = []
 
         if user_topics:
-            summary_parts.append(f"Topics discussed: {', '.join(set(user_topics)[:5])}")
+            summary_parts.append(f"Topics discussed: {', '.join(list(set(user_topics))[:5])}")
 
         if len(conversation.messages) > 0:
             summary_parts.append(f"Conversation with {len(conversation.messages)} messages")
@@ -200,6 +200,7 @@ class ConversationProcessor:
 
         Returns:
             List[str]: Top keywords (lowercase) ordered by descending frequency, up to 10 items.
+
         """
         all_text = []
 
@@ -302,6 +303,7 @@ class ConversationProcessor:
 
         Returns:
             List[str]: A list of unique tags derived from the conversation, limited to at most 10 items.
+
         """
         tags = []
 
@@ -351,6 +353,7 @@ class ConversationProcessor:
 
         Returns:
             List[KnowledgeEntry]: A list of knowledge entries extracted from the conversation.
+
         """
         entries = []
 
@@ -427,6 +430,7 @@ class ConversationProcessor:
 
         Returns:
             List[str]: Up to five keywords ordered by frequency (most frequent first).
+
         """
         words = re.findall(r"\b\w+\b", text.lower())
         common_words = {

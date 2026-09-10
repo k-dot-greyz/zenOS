@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple test suite for PKM module (Windows compatible).
-"""
+"""Comprehensive test suite for PKM module."""
 
 import asyncio
 import sys
@@ -14,87 +12,87 @@ sys.path.insert(0, ".")
 
 def test_imports():
     """Test that all PKM modules can be imported."""
-    print("Testing PKM module imports...")
+    print("🧪 Testing PKM module imports...")
 
     try:
         import zen.pkm
 
-        print("OK: Main PKM module imported")
+        print("✅ Main PKM module imported")
 
         from zen.pkm.config import PKMConfig
 
-        print("OK: PKMConfig imported")
+        print("✅ PKMConfig imported")
 
         from zen.pkm.models import Conversation, KnowledgeEntry, Message, MessageRole
 
-        print("OK: Data models imported")
+        print("✅ Data models imported")
 
         from zen.pkm.storage import PKMStorage
 
-        print("OK: PKMStorage imported")
+        print("✅ PKMStorage imported")
 
         from zen.pkm.extractor import GeminiExtractor
 
-        print("OK: GeminiExtractor imported")
+        print("✅ GeminiExtractor imported")
 
         from zen.pkm.processor import ConversationProcessor
 
-        print("OK: ConversationProcessor imported")
+        print("✅ ConversationProcessor imported")
 
         from zen.pkm.scheduler import PKMScheduler
 
-        print("OK: PKMScheduler imported")
+        print("✅ PKMScheduler imported")
 
         from zen.pkm.agent import PKMAgent
 
-        print("OK: PKMAgent imported")
+        print("✅ PKMAgent imported")
 
         from zen.pkm.cli import pkm
 
-        print("OK: PKM CLI imported")
+        print("✅ PKM CLI imported")
 
         return True
     except Exception as e:
-        print(f"FAIL: Import failed: {e}")
+        print(f"❌ Import failed: {e}")
         return False
 
 
 def test_config():
     """Test PKM configuration."""
-    print("\nTesting PKM configuration...")
+    print("\n🧪 Testing PKM configuration...")
 
     try:
         from zen.pkm.config import PKMConfig
 
         # Test default config
         config = PKMConfig()
-        print(f"OK: Default config created: {config.pkm_dir}")
+        print(f"✅ Default config created: {config.pkm_dir}")
 
         # Test config serialization
         config_dict = config.to_dict()
-        print(f"OK: Config serialized: {len(config_dict)} keys")
+        print(f"✅ Config serialized: {len(config_dict)} keys")
 
         # Test config save/load
         test_config_path = Path("test_pkm_config.yaml")
         config.save(test_config_path)
-        print("OK: Config saved to file")
+        print("✅ Config saved to file")
 
         loaded_config = PKMConfig.load(test_config_path)
-        print("OK: Config loaded from file")
+        print("✅ Config loaded from file")
 
         # Cleanup
         test_config_path.unlink()
-        print("OK: Test config file cleaned up")
+        print("✅ Test config file cleaned up")
 
         return True
     except Exception as e:
-        print(f"FAIL: Config test failed: {e}")
+        print(f"❌ Config test failed: {e}")
         return False
 
 
 def test_models():
     """Test data models."""
-    print("\nTesting data models...")
+    print("\n🧪 Testing data models...")
 
     try:
         from zen.pkm.models import (
@@ -109,7 +107,7 @@ def test_models():
         message = Message(
             role=MessageRole.USER, content="Hello, this is a test message", timestamp=datetime.now()
         )
-        print("OK: Message created")
+        print("✅ Message created")
 
         # Test Conversation creation
         conversation = Conversation(
@@ -120,15 +118,15 @@ def test_models():
             updated_at=datetime.now(),
             status=ConversationStatus.COMPLETED,
         )
-        print("OK: Conversation created")
+        print("✅ Conversation created")
 
         # Test serialization
         conv_dict = conversation.to_dict()
-        print(f"OK: Conversation serialized: {len(conv_dict)} keys")
+        print(f"✅ Conversation serialized: {len(conv_dict)} keys")
 
         # Test deserialization
         conv_restored = Conversation.from_dict(conv_dict)
-        print("OK: Conversation deserialized")
+        print("✅ Conversation deserialized")
 
         # Test KnowledgeEntry
         knowledge = KnowledgeEntry(
@@ -140,17 +138,17 @@ def test_models():
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
-        print("OK: KnowledgeEntry created")
+        print("✅ KnowledgeEntry created")
 
         return True
     except Exception as e:
-        print(f"FAIL: Models test failed: {e}")
+        print(f"❌ Models test failed: {e}")
         return False
 
 
 def test_storage():
     """Test storage functionality."""
-    print("\nTesting storage functionality...")
+    print("\n🧪 Testing storage functionality...")
 
     try:
         from zen.pkm.config import PKMConfig
@@ -163,7 +161,7 @@ def test_storage():
 
         # Initialize storage
         storage = PKMStorage(config)
-        print("OK: PKMStorage initialized")
+        print("✅ PKMStorage initialized")
 
         # Create test conversation
         test_message = Message(
@@ -181,65 +179,167 @@ def test_storage():
 
         # Test save conversation
         storage.save_conversation(test_conversation)
-        print("OK: Conversation saved")
+        print("✅ Conversation saved")
 
         # Test load conversation
         loaded_conv = storage.load_conversation("storage-test-001")
-        print("OK: Conversation loaded")
+        print("✅ Conversation loaded")
 
         # Test list conversations
         conversations = storage.list_conversations()
-        print(f"OK: Listed {len(conversations)} conversations")
+        print(f"✅ Listed {len(conversations)} conversations")
 
         # Test search
         search_results = storage.search_conversations("test")
-        print(f"OK: Search returned {len(search_results)} results")
+        print(f"✅ Search returned {len(search_results)} results")
 
         # Test statistics
         stats = storage.get_statistics()
-        print(f"OK: Statistics: {stats}")
+        print(f"✅ Statistics: {stats}")
 
         # Cleanup
         import shutil
 
         shutil.rmtree("test_pkm_storage", ignore_errors=True)
-        print("OK: Test storage cleaned up")
+        print("✅ Test storage cleaned up")
 
         return True
     except Exception as e:
-        print(f"FAIL: Storage test failed: {e}")
+        print(f"❌ Storage test failed: {e}")
+        return False
+
+
+def test_processor():
+    """Test conversation processor."""
+    print("\n🧪 Testing conversation processor...")
+
+    try:
+        from zen.pkm.config import PKMConfig
+        from zen.pkm.models import Conversation, ConversationStatus, Message, MessageRole
+        from zen.pkm.processor import ConversationProcessor
+        from zen.pkm.storage import PKMStorage
+
+        # Create test config
+        config = PKMConfig()
+        config.auto_summarize = True
+        config.extract_keywords = True
+        config.generate_tags = True
+        config.pkm_dir = Path("test_pkm_processor")
+
+        # Initialize storage and processor
+        storage = PKMStorage(config)
+        processor = ConversationProcessor(config, storage)
+        print("✅ ConversationProcessor initialized")
+
+        # Create test conversation
+        messages = [
+            Message(role=MessageRole.USER, content="What is Python programming?"),
+            Message(
+                role=MessageRole.ASSISTANT,
+                content="Python is a high-level programming language known for its simplicity and readability.",
+            ),
+            Message(role=MessageRole.USER, content="Can you give me an example?"),
+            Message(
+                role=MessageRole.ASSISTANT,
+                content="Sure! Here's a simple Python example:\n\nprint('Hello, World!')",
+            ),
+        ]
+
+        conversation = Conversation(
+            id="processor-test-001",
+            title="Python Programming Discussion",
+            messages=messages,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+            status=ConversationStatus.COMPLETED,
+        )
+
+        # Test processing
+        processed_conv = processor.process_conversation(conversation)
+        print("✅ Conversation processed")
+
+        # Check if processing added metadata
+        if processed_conv.summary:
+            print(f"✅ Summary generated: {len(processed_conv.summary)} chars")
+
+        if processed_conv.keywords:
+            print(f"✅ Keywords extracted: {processed_conv.keywords}")
+
+        if processed_conv.tags:
+            print(f"✅ Tags generated: {processed_conv.tags}")
+
+        return True
+    except Exception as e:
+        print(f"❌ Processor test failed: {e}")
+        return False
+
+
+def test_scheduler():
+    """Test scheduler functionality."""
+    print("\n🧪 Testing scheduler functionality...")
+
+    try:
+        from zen.pkm.config import PKMConfig
+        from zen.pkm.scheduler import PKMScheduler
+
+        # Create test config
+        config = PKMConfig()
+        config.cron_enabled = True
+
+        # Initialize scheduler
+        scheduler = PKMScheduler(config)
+        print("✅ PKMScheduler initialized")
+
+        # Test job registration
+        def test_job():
+            print("Test job executed")
+
+        scheduler.register_job("test_job", test_job, "*/1 * * * *")  # Every minute
+        print("✅ Test job registered")
+
+        # Test job listing
+        jobs = scheduler.list_jobs()
+        print(f"✅ Listed {len(jobs)} jobs")
+
+        # Test job removal
+        scheduler.remove_job("test_job")
+        print("✅ Test job removed")
+
+        return True
+    except Exception as e:
+        print(f"❌ Scheduler test failed: {e}")
         return False
 
 
 def test_agent():
     """Test PKM agent."""
-    print("\nTesting PKM agent...")
+    print("\n🧪 Testing PKM agent...")
 
     try:
         from zen.pkm.agent import PKMAgent
 
         # Initialize agent
         agent = PKMAgent()
-        print("OK: PKMAgent initialized")
+        print("✅ PKMAgent initialized")
 
         # Test agent manifest
         manifest = agent.manifest
-        print(f"OK: Agent manifest: {manifest.name} - {manifest.description}")
+        print(f"✅ Agent manifest: {manifest.name} - {manifest.description}")
 
         # Test agent execution (without actual extraction)
         test_prompt = "Show me my conversation statistics"
         result = agent.execute(test_prompt, {})
-        print("OK: Agent executed successfully")
+        print("✅ Agent executed successfully")
 
         return True
     except Exception as e:
-        print(f"FAIL: Agent test failed: {e}")
+        print(f"❌ Agent test failed: {e}")
         return False
 
 
 def test_cli():
     """Test CLI functionality."""
-    print("\nTesting CLI functionality...")
+    print("\n🧪 Testing CLI functionality...")
 
     try:
         import click.testing
@@ -251,39 +351,31 @@ def test_cli():
         result = runner.invoke(pkm, ["--help"])
 
         if result.exit_code == 0:
-            print("OK: PKM CLI help command works")
+            print("✅ PKM CLI help command works")
         else:
-            print(f"FAIL: PKM CLI help failed: {result.output}")
+            print(f"❌ PKM CLI help failed: {result.output}")
             return False
 
         # Test individual commands
-        commands = [
-            "extract",
-            "process",
-            "search",
-            "list_conversations",
-            "stats",
-            "export",
-            "schedule",
-        ]
+        commands = ["extract", "process", "search", "list", "stats", "export", "schedule"]
 
         for cmd in commands:
             result = runner.invoke(pkm, [cmd, "--help"])
             if result.exit_code == 0:
-                print(f"OK: PKM CLI {cmd} command available")
+                print(f"✅ PKM CLI {cmd} command available")
             else:
-                print(f"FAIL: PKM CLI {cmd} command failed")
+                print(f"❌ PKM CLI {cmd} command failed")
                 return False
 
         return True
     except Exception as e:
-        print(f"FAIL: CLI test failed: {e}")
+        print(f"❌ CLI test failed: {e}")
         return False
 
 
 async def test_async_functionality():
     """Test async functionality."""
-    print("\nTesting async functionality...")
+    print("\n🧪 Testing async functionality...")
 
     try:
         from zen.pkm.config import PKMConfig
@@ -294,17 +386,17 @@ async def test_async_functionality():
 
         # Test async context manager
         async with GeminiExtractor(config) as extractor:
-            print("OK: GeminiExtractor async context manager works")
+            print("✅ GeminiExtractor async context manager works")
 
         return True
     except Exception as e:
-        print(f"FAIL: Async test failed: {e}")
+        print(f"❌ Async test failed: {e}")
         return False
 
 
 def main():
     """Run all tests."""
-    print("PKM Module Test Suite")
+    print("PKM Module Comprehensive Test Suite")
     print("=" * 50)
 
     tests = [
@@ -312,6 +404,8 @@ def main():
         ("Configuration", test_config),
         ("Data Models", test_models),
         ("Storage", test_storage),
+        ("Processor", test_processor),
+        ("Scheduler", test_scheduler),
         ("Agent", test_agent),
         ("CLI", test_cli),
     ]
@@ -324,18 +418,18 @@ def main():
             if test_func():
                 passed += 1
             else:
-                print(f"FAIL: {test_name} test failed")
+                print(f"❌ {test_name} test failed")
         except Exception as e:
-            print(f"FAIL: {test_name} test crashed: {e}")
+            print(f"❌ {test_name} test crashed: {e}")
 
     # Test async functionality
     try:
         if asyncio.run(test_async_functionality()):
             passed += 1
         else:
-            print("FAIL: Async functionality test failed")
+            print("❌ Async functionality test failed")
     except Exception as e:
-        print(f"FAIL: Async functionality test crashed: {e}")
+        print(f"❌ Async functionality test crashed: {e}")
 
     total += 1
 
@@ -343,10 +437,10 @@ def main():
     print(f"Test Results: {passed}/{total} tests passed")
 
     if passed == total:
-        print("SUCCESS: All tests passed! PKM module is ready to use.")
+        print("All tests passed! PKM module is ready to use.")
         return True
     else:
-        print("WARNING: Some tests failed. Check the output above.")
+        print("Some tests failed. Check the output above.")
         return False
 
 

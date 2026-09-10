@@ -1,6 +1,4 @@
-"""
-Agent base class and registry for zenOS.
-"""
+"""Agent base class and registry for zenOS."""
 
 import json
 from abc import ABC, abstractmethod

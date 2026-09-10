@@ -1,6 +1,4 @@
-"""
-Display manager for zenOS - Beautiful terminal UI components.
-"""
+"""Display manager for zenOS - Beautiful terminal UI components."""
 
 import random
 from datetime import datetime

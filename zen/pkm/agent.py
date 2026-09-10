@@ -1,6 +1,4 @@
-"""
-PKM Agent for zenOS - provides conversation extraction and knowledge management.
-"""
+"""PKM Agent for zenOS - provides conversation extraction and knowledge management."""
 
 import asyncio
 from datetime import datetime
@@ -68,6 +66,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: The textual response produced by the selected handler. If an unhandled exception occurs, returns an error message beginning with "Error executing PKM command:".
+
         """
         try:
             # Parse the command from the prompt
@@ -105,6 +104,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: The agent's response text.
+
         """
         return asyncio.run(self.execute_async(prompt, variables))
 
@@ -116,6 +116,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
             result (Dict[str, Any]): Mapping with keys:
                 - "action": one of "extract", "list", "search", "process", "schedule", "export", "stats", "help", or "query".
                 - "args": the remaining prompt text after the recognized command (for "query", the original prompt is returned).
+
         """
         prompt_lower = prompt.lower().strip()
 
@@ -150,6 +151,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: A human-readable report describing the extraction outcome (success summary, failure details, or error message).
+
         """
         args = command["args"]
         max_conversations = None
@@ -209,6 +211,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: A user-facing summary message. The handler also prints a formatted table of recent conversations to the console and returns a short summary with next-step guidance.
+
         """
         args = command["args"]
         limit = 10
@@ -298,8 +301,10 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
         Process unprocessed conversations to extract knowledge, save updated conversations, and count created knowledge entries.
 
         The returned string is a user-facing, formatted summary that includes the number of conversations processed, the number of knowledge entries created, the knowledge base storage location, and brief next-step guidance.
+
         Returns:
             summary (str): Formatted summary of processing results and next steps.
+
         """
         console.print("[cyan]🔄 Processing conversations for knowledge extraction...[/cyan]")
 
@@ -352,6 +357,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: A user-facing status message describing the outcome or help text for the requested scheduler action.
+
         """
         args = command["args"].lower().strip()
 
@@ -400,6 +406,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: A formatted message describing the result. On success, includes paths to the exported conversations and knowledge base and the export directory. If the format is unsupported, returns an error message indicating valid formats. If an exception occurs during export, returns a failure message containing the exception text.
+
         """
         args = command["args"].lower().strip()
         format_type = "json"
@@ -441,6 +448,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             A string containing a human-readable Markdown summary of storage metrics (conversation and knowledge entry counts, total size, processed conversation count), content metrics (total and average message counts), relevant directory paths (conversations, knowledge base, exports), and current configuration flags (auto-summarize, extract keywords, generate tags, storage format).
+
         """
         stats = self.storage.get_statistics()
 
@@ -482,6 +490,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             help_text (str): A Markdown-formatted help message that lists core commands (extract, list, search, process, export, stats), scheduling commands, configuration notes (environment variables and config path), usage examples, a recommended workflow, and a note that the implementation is a demo.
+
         """
         return """🧘 **PKM Agent Help**
 
@@ -531,6 +540,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         Returns:
             str: A consolidated response containing actionable advice on PKM topics (extraction, organization, search, automation). On failure, an error message recommending `zen pkm help`.
+
         """
         # Use AI to provide helpful responses about PKM
         try:

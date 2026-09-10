@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-zenOS Setup System Demo
+"""zenOS Setup System Demo
 
 A simple demo showing the unified setup system in action.
 This demonstrates the key features without running full tests.
@@ -15,7 +14,6 @@ from pathlib import Path
 
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
 console = Console()
 

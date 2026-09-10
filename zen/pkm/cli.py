@@ -1,6 +1,4 @@
-"""
-CLI commands for PKM module.
-"""
+"""CLI commands for PKM module."""
 
 import asyncio
 from pathlib import Path
@@ -40,6 +38,7 @@ def extract(limit: Optional[int], config: Optional[str]):
     Parameters:
         limit (Optional[int]): If provided, override the configured maximum number of conversations to extract for this run.
         config (Optional[str]): Path to a PKM configuration file to load; if omitted, the default configuration is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -64,12 +63,12 @@ def extract(limit: Optional[int], config: Optional[str]):
             result = await extractor.extract_conversations(limit)
 
             if result.success:
-                console.print(f"[green]✅ Extraction completed successfully![/green]")
+                console.print("[green]✅ Extraction completed successfully![/green]")
                 console.print(f"📊 Conversations extracted: {result.conversations_extracted}")
                 console.print(f"📊 Total messages: {result.total_messages}")
                 console.print(f"⏱️ Duration: {result.duration:.2f} seconds")
             else:
-                console.print(f"[red]❌ Extraction failed[/red]")
+                console.print("[red]❌ Extraction failed[/red]")
                 for error in result.errors:
                     console.print(f"  • {error}")
 
@@ -88,6 +87,7 @@ def list_conversations(limit: int, config: Optional[str]):
     Parameters:
         limit (int): Maximum number of conversations to display.
         config (Optional[str]): Path to a PKM config file; when None, the default configuration location is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -132,6 +132,7 @@ def search(query: str, limit: int, config: Optional[str]):
         query (str): Search query string used to match conversations.
         limit (int): Maximum number of conversations to retrieve.
         config (Optional[str]): Path to a PKM configuration file; if None, the default configuration is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -175,6 +176,7 @@ def process(config: Optional[str]):
 
     Parameters:
         config (Optional[str]): Path to a PKM configuration file. If None, the default configuration location is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -267,6 +269,7 @@ def stats(config: Optional[str]):
 
     Parameters:
         config (Optional[str]): Path to a PKM configuration file; when omitted the default configuration is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -317,6 +320,7 @@ def schedule_list(config: Optional[str]):
 
     Parameters:
         config (Optional[str]): Path to a PKM configuration file. If omitted, the default configuration location is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -354,6 +358,7 @@ def schedule_start(config: Optional[str]):
 
     Parameters:
         config (Optional[str]): Path to a PKM configuration file. If `None`, the default configuration location is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -376,6 +381,7 @@ def schedule_stop(config: Optional[str]):
 
     Parameters:
         config (str | None): Path to a PKM configuration file to use; if omitted, the default configuration is loaded.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -393,6 +399,7 @@ def config_show(config: Optional[str]):
 
     Parameters:
         config (Optional[str]): Path to a PKM configuration file. If omitted, the default configuration location is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)
@@ -420,6 +427,7 @@ def setup(config: Optional[str]):
 
     Parameters:
         config (Optional[str]): Path to a configuration file to load; if omitted, the default configuration location is used.
+
     """
     config_path = Path(config) if config else None
     pkm_config = PKMConfig.load(config_path)

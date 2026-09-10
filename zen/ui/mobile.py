@@ -1,6 +1,4 @@
-"""
-Mobile-optimized UI for zenOS - Because you run Arch on your phone, you madlad.
-"""
+"""Mobile-optimized UI for zenOS - Because you run Arch on your phone, you madlad."""
 
 import os
 import sys

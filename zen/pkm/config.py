@@ -1,6 +1,4 @@
-"""
-Configuration for PKM module.
-"""
+"""Configuration for PKM module."""
 
 import os
 from dataclasses import dataclass
@@ -78,6 +76,7 @@ class PKMConfig:
 
         Returns:
             Dict[str, Any]: Mapping of configuration keys to JSON-serializable values.
+
         """
         return {
             "pkm_dir": str(self.pkm_dir),
@@ -125,6 +124,7 @@ class PKMConfig:
 
         Returns:
             PKMConfig: A configuration instance populated with values from the file (or defaults if the file is absent).
+
         """
         import yaml
 

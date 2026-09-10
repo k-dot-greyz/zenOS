@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""
-Git Setup Manager for zenOS
+"""Git Setup Manager for zenOS
 
 Handles all git-related setup procedures including repository initialization,
 .gitignore creation, git aliases, and user configuration.
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path

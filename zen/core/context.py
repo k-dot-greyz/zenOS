@@ -1,6 +1,4 @@
-"""
-Context management for zenOS - Project, Git, and Personality awareness.
-"""
+"""Context management for zenOS - Project, Git, and Personality awareness."""
 
 import json
 import os
@@ -39,8 +37,7 @@ class PersonalityProfile:
 
 
 class ContextManager:
-    """
-    Manages all context for zenOS:
+    """Manages all context for zenOS:
     - File and project awareness
     - Git integration
     - Personality profiles from genesis docs
@@ -358,7 +355,7 @@ Key philosophical principles from the genesis documents:
 
         # Add git context if available
         if self.git_context:
-            parts.append(f"\n--- Git Context ---")
+            parts.append("\n--- Git Context ---")
             parts.append(f"Branch: {self.git_context.get('branch', 'unknown')}")
             if "recent_commits" in self.git_context:
                 parts.append(f"Recent commits: {', '.join(self.git_context['recent_commits'][:3])}")

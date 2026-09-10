@@ -1,5 +1,4 @@
-"""
-zenOS Plugin CLI - Command-line interface for Git-based VST plugins
+"""zenOS Plugin CLI - Command-line interface for Git-based VST plugins
 This is where your mobile UI connects to the actual plugin system!
 """
 
@@ -191,7 +190,7 @@ def test(plugin_id: str):
 
                 if result.success:
                     progress.update(task, description="✅ Plugin test successful!")
-                    console.print(f"✅ Plugin test passed!")
+                    console.print("✅ Plugin test passed!")
                     console.print(f"📊 Data: {result.data}")
                     if result.metadata:
                         console.print(f"📈 Metadata: {result.metadata}")
@@ -244,7 +243,7 @@ def execute(plugin_id: str, procedure_id: str, input_data: str, user_id: str, se
 
                 if result.success:
                     progress.update(task, description="✅ Procedure executed successfully!")
-                    console.print(f"✅ Procedure executed successfully!")
+                    console.print("✅ Procedure executed successfully!")
                     console.print(f"📊 Result: {result.data}")
                     if result.metadata:
                         console.print(f"📈 Metadata: {result.metadata}")

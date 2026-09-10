@@ -1,6 +1,4 @@
-"""
-Template engine for zenOS using Jinja2.
-"""
+"""Template engine for zenOS using Jinja2."""
 
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -40,6 +38,7 @@ class TemplateEngine:
 
         Returns:
             Rendered string
+
         """
         template = Template(template_str)
         return template.render(**variables)
@@ -54,6 +53,7 @@ class TemplateEngine:
 
         Returns:
             Rendered string
+
         """
         if not self.env.loader:
             raise ValueError("No template directory configured")

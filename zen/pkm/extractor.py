@@ -1,6 +1,4 @@
-"""
-Google Gemini conversation extractor for PKM module.
-"""
+"""Google Gemini conversation extractor for PKM module."""
 
 import asyncio
 import json
@@ -14,7 +12,7 @@ from urllib.parse import urljoin, urlparse
 import aiohttp
 from bs4 import BeautifulSoup
 from rich.console import Console
-from rich.progress import Progress, TaskID
+from rich.progress import Progress
 
 from .config import PKMConfig
 from .models import Conversation, ConversationStatus, ExtractionResult, Message, MessageRole
@@ -31,6 +29,7 @@ class GeminiExtractor:
 
         Parameters:
             config (PKMConfig): Configuration containing HTTP settings (user agent, optional session cookie, timeouts) and storage settings (format and directories). The configuration is stored on the instance for use during extraction.
+
         """
         self.config = config
         self.session: Optional[aiohttp.ClientSession] = None
@@ -44,6 +43,7 @@ class GeminiExtractor:
 
         Returns:
             The extractor instance.
+
         """
         await self._create_session()
         return self
@@ -94,6 +94,7 @@ class GeminiExtractor:
 
         Returns:
             ExtractionResult: Aggregated extraction statistics and lists of errors/warnings collected during the run.
+
         """
         start_time = datetime.now()
         result = ExtractionResult(
@@ -172,6 +173,7 @@ class GeminiExtractor:
 
         Raises:
             RuntimeError: If the HTTP session has not been initialized.
+
         """
         if not self.session:
             raise RuntimeError("Session not initialized")
@@ -228,6 +230,7 @@ class GeminiExtractor:
 
         Raises:
             RuntimeError: If the HTTP session has not been initialized.
+
         """
         if not self.session:
             raise RuntimeError("Session not initialized")
@@ -277,6 +280,7 @@ class GeminiExtractor:
 
         Returns:
             str: The last path segment of the URL as the identifier, or a fallback of the form `conv_<timestamp>` when no usable path segment is found.
+
         """
         # Extract ID from URL path
         path_parts = urlparse(url).path.split("/")
@@ -295,6 +299,7 @@ class GeminiExtractor:
 
         Returns:
             str: The extracted title, or "Untitled Conversation" if no title is found.
+
         """
         # Look for title in various places
         title_selectors = [
@@ -322,6 +327,7 @@ class GeminiExtractor:
 
         Returns:
             list[Message]: A list of extracted messages; may be empty if no usable content is found.
+
         """
         messages = []
 
@@ -375,6 +381,7 @@ class GeminiExtractor:
             - Writes a JSON file if configuration is `"json"` or `"both"`.
             - Writes a Markdown file if configuration is `"markdown"` or `"both"`.
             - Updates `conversation.file_path` to the path of the last-written file and sets `conversation.file_size` to that file's size in bytes.
+
         """
         # Save as JSON
         if self.config.storage_format in ["json", "both"]:
@@ -402,18 +409,19 @@ class GeminiExtractor:
 
         Returns:
             str: The full Markdown document representing the conversation.
+
         """
         lines = [
             f"# {conversation.title}",
-            f"",
+            "",
             f"**ID:** {conversation.id}",
             f"**Created:** {conversation.created_at.strftime('%Y-%m-%d %H:%M:%S')}",
             f"**Updated:** {conversation.updated_at.strftime('%Y-%m-%d %H:%M:%S')}",
             f"**URL:** {conversation.url or 'N/A'}",
             f"**Status:** {conversation.status.value}",
-            f"",
+            "",
             "---",
-            f"",
+            "",
         ]
 
         for i, message in enumerate(conversation.messages, 1):

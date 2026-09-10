@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Quick Test for zenOS Setup System
+"""Quick Test for zenOS Setup System
 
 A minimal test to verify the setup system is working.
 """

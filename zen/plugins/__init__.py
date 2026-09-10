@@ -1,5 +1,4 @@
-"""
-zenOS Plugin System - Git-based VST Architecture
+"""zenOS Plugin System - Git-based VST Architecture
 Every GitHub repo is a potential AI tool, every commit is a new feature!
 """
 

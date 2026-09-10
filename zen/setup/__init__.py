@@ -1,5 +1,4 @@
-"""
-zenOS Unified Setup System
+"""zenOS Unified Setup System
 
 A bulletproof, environment-agnostic setup system that combines the best
 procedures from promptOS and mcp-config to ensure your dev environment

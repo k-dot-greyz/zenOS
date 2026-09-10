@@ -6,8 +6,8 @@ Transform your AI post templates into a beautiful web interface using n8n workfl
 
 - **Beautiful Web UI**: Responsive, mobile-friendly template selector
 - **Live GitHub Integration**: Automatically fetches latest templates from your repo
-- **One-Click Copying**: Browser clipboard integration with fallbacks
-- **Zero Installation**: Access from any device with a browser
+- **One-Click Copying**: Modern Clipboard API integration (requires HTTPS)
+- **Zero Installation**: Access from any modern browser
 - **Real-time Updates**: Always uses the latest template versions
 - **Auto-Selection**: Pre-selects the first template for better UX
 - **Usage Analytics**: Console logging for usage tracking
@@ -17,7 +17,28 @@ Transform your AI post templates into a beautiful web interface using n8n workfl
 ### 1. Prerequisites
 - n8n instance (self-hosted or cloud)
 - zenOS repository with `ai_post_templates.yaml` in the main branch
+- **Modern browser** (Chrome, Firefox, Safari, Edge - see Browser Requirements below)
 - Basic n8n workflow knowledge (helpful but not required)
+
+### Browser Requirements
+
+⚠️ **This integration is built for modern browsers only. No backwards compatibility for legacy platforms.**
+
+**Supported:**
+- Chrome/Edge 90+ (2021+)
+- Firefox 88+ (2021+)
+- Safari 14+ (2020+)
+- Mobile Chrome/Safari (iOS 14+, Android 5+)
+
+**NOT Supported:**
+- Internet Explorer (any version - seriously, upgrade already 😉)
+- Ancient browser versions from the 2010s
+- Browsers without ES2017+ support (async/await, template literals, etc.)
+
+**Requirements:**
+- HTTPS connection (required for Clipboard API)
+- JavaScript enabled
+- Cookies/LocalStorage not required
 
 ### 2. Import Workflow
 1. Copy the contents of `zenOS_template_selector.json`
@@ -78,26 +99,35 @@ Connect additional nodes to:
 4. **Respond with UI**: Returns the complete web application
 
 ### Dependencies
-- `js-yaml`: For parsing YAML templates (included in n8n)
-- Modern browser with Clipboard API support
-- HTTPS for secure clipboard access (falls back gracefully)
+- **`js-yaml`**: Required for parsing YAML templates (NOT included by default in n8n)
+  - **Option 1 (Recommended)**: Configure n8n External Modules:
+    - Set environment variables:
+      - `NODE_FUNCTION_ALLOW_EXTERNAL=js-yaml`
+      - `NODE_FUNCTION_EXTERNAL_MODULES=/home/node/.n8n/node_modules`
+    - Install js-yaml: `npm install js-yaml` in the external modules directory
+    - Restart n8n
+  - **Option 2**: Parse YAML client-side in the browser (requires workflow modification)
+- Modern browser with Clipboard API support (all modern browsers since 2020)
+- HTTPS for clipboard access (required, not optional)
 
 ### Security Notes
 - Uses HTTPS for GitHub API calls
 - No sensitive data stored in workflow
 - Clipboard access respects browser security policies
-- CORS headers properly configured
-- No external dependencies beyond GitHub
+- CORS headers configured for open access (`Access-Control-Allow-Origin: *`)
+- HTML content is properly escaped to prevent XSS attacks
+- No external dependencies beyond GitHub and js-yaml
 
 ## 📱 Mobile Support
 
-The interface is fully responsive and works seamlessly on:
-- Desktop browsers (Chrome, Firefox, Safari, Edge)
-- Mobile Safari (iOS)  
-- Chrome Mobile (Android)
-- Progressive Web App ready
+The interface is fully responsive and works seamlessly on modern mobile browsers:
+- Mobile Safari (iOS 14+)  
+- Chrome Mobile (Android 5+)
 - Touch-friendly interface
 - Responsive typography and spacing
+- Works great on tablets and phones
+
+**Note**: PWA features (offline support, app manifest, service workers) are not currently implemented. The interface works great as a web app but requires an active HTTPS connection for clipboard functionality.
 
 ## 🚀 Advanced Features
 
@@ -128,9 +158,11 @@ Extend the workflow to:
 
 - **Load Time**: ~200ms (depends on GitHub API)
 - **Template Updates**: Real-time via GitHub raw API
-- **Browser Compatibility**: IE11+ (with fallbacks)
-- **Mobile Performance**: Optimized for 3G networks
-- **Caching**: Configurable via workflow settings
+- **Browser Compatibility**: Modern evergreen browsers (Chrome, Firefox, Safari, Edge)
+  - Uses ES2017+ features (async/await, template literals, arrow functions)
+  - **Not compatible with IE11** - use modern browsers only
+- **Mobile Performance**: Optimized for modern mobile browsers on 3G+ networks
+- **Caching**: Disabled by default for fresh templates; configurable via workflow settings
 
 ## 🛍️ Troubleshooting
 
@@ -147,9 +179,10 @@ Extend the workflow to:
 - Ensure `ai_post_templates` key exists
 
 **Clipboard not working?**
-- Ensure HTTPS connection (required for Clipboard API)
-- Try the fallback copy method
+- Ensure HTTPS connection (required for Clipboard API - HTTP won't work)
+- Update to a modern browser version (see Browser Requirements above)
 - Check browser console for errors
+- Manually select and copy the template text as a workaround
 
 **Mobile issues?**
 - Clear browser cache
@@ -192,3 +225,21 @@ Found a bug or have an improvement?
 3. Submit a pull request
 
 Let's make social media automation even more powerful! 🚀
+
+### Development Philosophy
+
+**Modern-First Approach:**
+- This project targets modern browsers and platforms exclusively
+- No backwards compatibility for IE11, ancient browsers, or legacy platforms
+- Uses modern JavaScript (ES2017+): async/await, template literals, arrow functions, etc.
+- Requires modern Web APIs: Clipboard API, Fetch, Promises
+- HTTPS is required, not optional
+
+**Why?**
+- Cleaner, more maintainable code
+- Better security and performance
+- Smaller bundle sizes
+- Focus on features, not polyfills
+- If you're still using IE11 in 2025, that's a security risk anyway 😉
+
+**Note**: If you need legacy browser support, you'll need to fork and add transpilation/polyfills yourself. We won't accept PRs that add legacy browser support or bloat the codebase with fallback code.

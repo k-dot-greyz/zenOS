@@ -1,5 +1,4 @@
-"""
-TTS Queue System for Voice Models/Agents
+"""TTS Queue System for Voice Models/Agents
 
 A robust queue system designed to handle high-frequency text-to-speech requests
 from sources like streamer donation messages, preventing race conditions and
@@ -70,6 +69,7 @@ class TTSMessage:
 
         Returns:
             bool: `True` if `self` should come before `other` in the queue, `False` otherwise.
+
         """
         if self.priority.value != other.priority.value:
             return self.priority.value > other.priority.value
@@ -101,6 +101,7 @@ class AudioManager:
 
         Parameters:
             config (TTSConfig): Configuration used to control audio scheduling and playback behavior (e.g., overlap threshold, sample rate). The object is stored for use by other AudioManager methods.
+
         """
         self.config = config
         self.current_audio_end_time = 0
@@ -116,6 +117,7 @@ class AudioManager:
 
         Returns:
             bool: `True` if the audio can start immediately without exceeding the configured overlap threshold, `False` otherwise.
+
         """
         with self.audio_lock:
             current_time = time.time()
@@ -135,6 +137,7 @@ class AudioManager:
 
         Returns:
             float: UNIX timestamp (seconds since the epoch) representing when playback should start.
+
         """
         with self.audio_lock:
             current_time = time.time()
@@ -148,6 +151,7 @@ class AudioManager:
 
         Returns:
             float: Estimated duration in seconds (minimum 0.5 seconds).
+
         """
         # Rough estimation: ~150 words per minute, ~2.5 characters per word
         words = len(text.split())
@@ -164,6 +168,7 @@ class RateLimiter:
 
         Parameters:
             config (TTSConfig): Configuration that controls rate limiting behavior (e.g., `rate_limit_per_minute` and `enable_rate_limiting`).
+
         """
         self.config = config
         self.requests = []
@@ -178,6 +183,7 @@ class RateLimiter:
 
         Returns:
             `True` if the request may be processed and its timestamp was recorded, `False` if the per-minute limit has been reached.
+
         """
         if not self.config.enable_rate_limiting:
             return True
@@ -210,6 +216,7 @@ class TTSWorker:
             audio_manager (AudioManager): Manager responsible for audio scheduling and overlap checks.
 
         The constructor initializes the worker's logger, sets `is_running` to False, and sets `current_message` to None.
+
         """
         self.worker_id = worker_id
         self.config = config
@@ -228,6 +235,7 @@ class TTSWorker:
 
         Returns:
             bool: `true` if the message completed playback and was marked COMPLETED, `false` if processing failed (message marked FAILED).
+
         """
         try:
             self.current_message = message
@@ -282,15 +290,13 @@ class TTSWorker:
 
         Returns:
             audio_bytes (bytes): Synthesized audio data for the given message.
+
         """
-        # This is a placeholder - replace with actual TTS engine call
-        # For example: return await tts_engine(message.text, voice=message.metadata.get('voice', self.config.default_voice))
-
-        # Simulate TTS processing time
-        await asyncio.sleep(0.1)
-
-        # Return dummy audio data (in real implementation, this would be actual audio)
-        return b"dummy_audio_data"
+        voice = message.metadata.get("voice", self.config.default_voice)
+        result = tts_engine(message.text, voice=voice)
+        if asyncio.iscoroutine(result) or asyncio.isfuture(result):
+            result = await result
+        return result
 
     async def _play_audio(self, audio_data: bytes, message: TTSMessage) -> None:
         """
@@ -301,6 +307,7 @@ class TTSWorker:
         Parameters:
             audio_data (bytes): Raw audio bytes to be played.
             message (TTSMessage): Message whose text is used to estimate playback duration.
+
         """
         # This is a placeholder - replace with actual audio playback
         # For example: pygame.mixer.music.load(io.BytesIO(audio_data))
@@ -321,6 +328,7 @@ class TTSQueueManager:
 
         Parameters:
             config (TTSConfig, optional): Configuration for queue behavior and limits; if omitted a default TTSConfig() is used.
+
         """
         self.config = config or TTSConfig()
         self.logger = logging.getLogger(__name__ + ".QueueManager")
@@ -337,6 +345,7 @@ class TTSQueueManager:
 
         # Worker management
         self.workers: List[TTSWorker] = []
+        self.worker_tasks: List[asyncio.Task] = []
         self.worker_pool = ThreadPoolExecutor(max_workers=self.config.max_concurrent_workers)
         self.is_running = False
         self.tts_engine: Optional[Callable] = None
@@ -361,6 +370,7 @@ class TTSQueueManager:
 
         Parameters:
             tts_engine (Callable): A function or coroutine function that takes at least one positional argument `text` (str) and returns audio bytes. Optional keyword arguments such as `voice` or `audio_format` are permitted.
+
         """
         self.tts_engine = tts_engine
 
@@ -377,7 +387,8 @@ class TTSQueueManager:
         for i in range(self.config.max_concurrent_workers):
             worker = TTSWorker(i, self.config, self.audio_manager)
             self.workers.append(worker)
-            asyncio.create_task(self._worker_loop(worker))
+            task = asyncio.create_task(self._worker_loop(worker))
+            self.worker_tasks.append(task)
 
         self.logger.info(f"Started {len(self.workers)} TTS workers")
 
@@ -385,13 +396,21 @@ class TTSQueueManager:
         """
         Signal the TTS queue manager to stop processing and shut down worker resources.
 
-        Sets the running flag to False, waits briefly to allow in-flight worker tasks to complete, and shuts down the thread pool executor used for workers.
+        Sets the running flag to False, cancels and awaits worker tasks, and shuts down
+        the thread pool executor used for workers.
         """
         self.is_running = False
         self.logger.info("Stopping TTS queue system")
 
-        # Wait for workers to finish
-        await asyncio.sleep(1)
+        for task in self.worker_tasks:
+            task.cancel()
+        if self.worker_tasks:
+            try:
+                await asyncio.gather(*self.worker_tasks, return_exceptions=True)
+            except ValueError:
+                # Tasks may belong to a different event loop (e.g. tests using asyncio.run twice)
+                pass
+        self.worker_tasks.clear()
         self.worker_pool.shutdown(wait=True)
 
     async def _worker_loop(self, worker: TTSWorker):
@@ -402,19 +421,15 @@ class TTSQueueManager:
 
         Parameters:
             worker (TTSWorker): The worker instance that will process dequeued messages.
+
         """
         while self.is_running:
             try:
                 # Get message from queue
-                if self.config.enable_priority_queue:
-                    message = self.message_queue.get_nowait()
-                else:
-                    message = self.message_queue.get_nowait()
+                message = self.message_queue.get_nowait()
 
-                # Check rate limiting
+                # Check rate limiting — requeue without demoting priority
                 if not self.rate_limiter.can_process():
-                    # Re-queue message with lower priority
-                    message.priority = MessagePriority.LOW
                     self.message_queue.put(message)
                     await asyncio.sleep(1)
                     continue
@@ -482,6 +497,7 @@ class TTSQueueManager:
                 - "is_running": whether the manager is running (bool)
                 - "active_workers": number of workers currently processing a message (int)
                 - ...plus any additional metrics present in the manager's internal `stats` dictionary
+
         """
         return {
             **self.stats,
@@ -529,6 +545,7 @@ async def example_usage():
 
         Returns:
             bytes: Mock audio data representing synthesized speech.
+
         """
         print(f"Generating TTS for: {text}")
         await asyncio.sleep(0.2)  # Simulate TTS processing

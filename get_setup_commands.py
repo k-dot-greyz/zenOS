@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Get Setup Commands for Current Environment
+"""Get Setup Commands for Current Environment
 
 This script detects your current environment and provides the exact commands
 you need to run for a complete development setup.
@@ -39,6 +38,7 @@ def get_windows_commands():
             prerequisites (list[str]): Commands to install required tools (Git, Python, NodeJS) on Windows.
             setup (list[str]): Step-by-step commands to clone the repo and run unattended setup.
             validation (str): Command to validate the installed setup.
+
     """
     return {
         "platform": "Windows",
@@ -68,6 +68,7 @@ def get_linux_commands():
             - prerequisites (list[str]): Suggested package installation commands and distro notes.
             - setup (list[str]): Step-by-step commands to clone the repo and run unattended setup.
             - validation (str): A command to validate the installation without making changes.
+
     """
     return {
         "platform": "Linux",
@@ -98,6 +99,7 @@ def get_macos_commands():
             prerequisites (list[str]): Homebrew-based prerequisite install commands and notes.
             setup (list[str]): Ordered shell commands to clone the repo, enter it, and run unattended setup.
             validation (str): Command to validate the installation.
+
     """
     return {
         "platform": "macOS",
@@ -127,6 +129,7 @@ def get_generic_commands():
             - prerequisites (list[str]): High-level prerequisite instructions or notes.
             - setup (list[str]): Ordered shell commands to clone the repo and run unattended setup.
             - validation (str): Command to validate the installation.
+
     """
     return {
         "platform": "Unknown",
@@ -160,6 +163,7 @@ def get_termux_commands():
             - prerequisites: List of prerequisite shell commands to run before setup.
             - setup: Ordered list of commands for manual setup steps.
             - validation: Command to validate the completed setup.
+
     """
     return {
         "platform": "Termux (Android)",
@@ -212,11 +216,11 @@ def main():
 
     # Check if zenOS is already available
     if Path("setup.py").exists():
-        print(f"\n🎉 zenOS detected in current directory!")
-        print(f"   Run: python setup.py --validate-only")
-        print(f"   Or:  python setup.py --unattended")
+        print("\n🎉 zenOS detected in current directory!")
+        print("   Run: python setup.py --validate-only")
+        print("   Or:  python setup.py --unattended")
     else:
-        print(f"\n💡 Tip: Run the one-command setup above to get started!")
+        print("\n💡 Tip: Run the one-command setup above to get started!")
 
 
 if __name__ == "__main__":

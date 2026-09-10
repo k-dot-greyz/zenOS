@@ -1,6 +1,4 @@
-"""
-Storage and retrieval system for PKM module.
-"""
+"""Storage and retrieval system for PKM module."""
 
 import asyncio
 import gzip
@@ -11,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 from .config import PKMConfig
-from .models import Conversation, KnowledgeEntry, Message, MessageRole
+from .models import Conversation, KnowledgeEntry, MessageRole
 
 
 class PKMStorage:
@@ -23,6 +21,7 @@ class PKMStorage:
 
         Parameters:
             config (PKMConfig): Configuration containing `conversations_dir`, `knowledge_base_dir`, and `exports_dir`; those directories will be created if they do not already exist.
+
         """
         self.config = config
         self.conversations_dir = config.conversations_dir
@@ -45,6 +44,7 @@ class PKMStorage:
 
         Returns:
             bool: `True` if the conversation was successfully written, `False` if an error occurred.
+
         """
         try:
             # Save as JSON
@@ -74,6 +74,7 @@ class PKMStorage:
 
         Returns:
             Conversation: The loaded Conversation if the corresponding JSON file exists and is parsed successfully, `None` if the file does not exist or an error occurs while reading or parsing.
+
         """
         json_path = self.conversations_dir / f"{conversation_id}.json"
 
@@ -160,6 +161,7 @@ class PKMStorage:
 
         Returns:
             bool: True if deletion succeeded (or files were already absent), False if an error occurred.
+
         """
         try:
             # Delete JSON file
@@ -189,6 +191,7 @@ class PKMStorage:
 
         Returns:
             bool: `true` if the entry was written successfully, `false` otherwise.
+
         """
         try:
             json_path = self.knowledge_base_dir / f"{entry.id}.json"
@@ -208,6 +211,7 @@ class PKMStorage:
 
         Returns:
             Optional[KnowledgeEntry]: The loaded KnowledgeEntry instance if the file exists and parses successfully, `None` if the file is missing or an error occurs while reading/parsing.
+
         """
         json_path = self.knowledge_base_dir / f"{entry_id}.json"
 
@@ -259,6 +263,7 @@ class PKMStorage:
 
         Returns:
             List[KnowledgeEntry]: Matching knowledge entries, up to `limit` if provided.
+
         """
         results = []
         query_lower = query.lower()
@@ -300,6 +305,7 @@ class PKMStorage:
 
         Raises:
             ValueError: If an unsupported export format is provided.
+
         """
         conversations = self.list_conversations(limit)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -336,6 +342,7 @@ class PKMStorage:
 
         Raises:
             ValueError: If `format` is not "json" or "markdown".
+
         """
         entries = self.list_knowledge_entries(limit)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -370,6 +377,7 @@ class PKMStorage:
 
         Returns:
             cleaned_count (int): Number of conversation files that were deleted or compressed.
+
         """
         cutoff_date = datetime.now() - timedelta(days=days)
         cleaned_count = 0
@@ -404,18 +412,19 @@ class PKMStorage:
 
         Returns:
             markdown (str): The conversation serialized as a Markdown document.
+
         """
         lines = [
             f"# {conversation.title}",
-            f"",
+            "",
             f"**ID:** {conversation.id}",
             f"**Created:** {conversation.created_at.strftime('%Y-%m-%d %H:%M:%S')}",
             f"**Updated:** {conversation.updated_at.strftime('%Y-%m-%d %H:%M:%S')}",
             f"**URL:** {conversation.url or 'N/A'}",
             f"**Status:** {conversation.status.value}",
-            f"",
+            "",
             "---",
-            f"",
+            "",
         ]
 
         for i, message in enumerate(conversation.messages, 1):
@@ -479,6 +488,7 @@ class PKMStorage:
                 - "total_size_mb" (float): `total_size_bytes` converted to megabytes, rounded to two decimals.
                 - "status_breakdown" (Dict[str, int]): Mapping of conversation status values to their counts.
                 - "storage_path" (str): Path to the conversations storage directory as a string.
+
         """
         conversations = self.list_conversations()
 

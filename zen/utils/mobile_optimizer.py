@@ -1,5 +1,4 @@
-"""
-Mobile Performance Optimizer for zenOS
+"""Mobile Performance Optimizer for zenOS
 Optimize for battery life, data usage, and mobile processors
 """
 

@@ -1,5 +1,4 @@
-"""
-zenOS - The Zen of AI Workflow Orchestration
+"""zenOS - The Zen of AI Workflow Orchestration
 
 A powerful, modular AI agent orchestration framework that brings
 zen-like simplicity to complex AI workflows.

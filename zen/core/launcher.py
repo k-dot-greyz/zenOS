@@ -1,6 +1,4 @@
-"""
-Launcher for zenOS - orchestrates agent execution with AI providers.
-"""
+"""Launcher for zenOS - orchestrates agent execution with AI providers."""
 
 import asyncio
 from typing import Any, Dict, Optional
@@ -50,6 +48,7 @@ class Launcher:
 
         Returns:
             Enhanced prompt
+
         """
         if not self.config.config.auto_critique:
             return prompt
@@ -82,6 +81,7 @@ class Launcher:
 
         Returns:
             Agent response
+
         """
         if not self.current_agent:
             raise ValueError("No agent loaded")

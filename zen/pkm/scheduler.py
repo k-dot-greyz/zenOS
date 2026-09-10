@@ -1,6 +1,4 @@
-"""
-Cron job scheduler for PKM module.
-"""
+"""Cron job scheduler for PKM module."""
 
 import asyncio
 import json
@@ -13,7 +11,6 @@ from typing import Any, Callable, Dict, Optional
 
 import schedule
 from rich.console import Console
-from rich.panel import Panel
 
 from .config import PKMConfig
 from .extractor import GeminiExtractor
@@ -59,6 +56,7 @@ class PKMScheduler:
             - Creates storage and conversation processor instances derived from `config`.
             - Restores scheduler state from a `scheduler_state.json` file in `config.pkm_dir`.
             - Installs signal handlers for SIGINT and SIGTERM to enable graceful shutdown.
+
         """
         self.config = config
         self.storage = PKMStorage(config)
@@ -85,6 +83,7 @@ class PKMScheduler:
 
         Returns:
             CronJob: The newly created and scheduled CronJob instance.
+
         """
         job = CronJob(name=name, schedule=schedule_str, function=function, **kwargs)
 
@@ -104,6 +103,7 @@ class PKMScheduler:
 
         Returns:
             bool: `True` if the job was found and removed, `False` otherwise.
+
         """
         if name in self.jobs:
             # Clear the job from schedule
@@ -125,6 +125,7 @@ class PKMScheduler:
 
         Returns:
             bool: `True` if the job was found and enabled, `False` otherwise.
+
         """
         if name in self.jobs:
             self.jobs[name].enabled = True
@@ -143,6 +144,7 @@ class PKMScheduler:
 
         Returns:
             bool: `True` if the job was found and disabled, `False` otherwise.
+
         """
         if name in self.jobs:
             self.jobs[name].enabled = False
@@ -194,6 +196,7 @@ class PKMScheduler:
 
         Returns:
             bool: `True` if the job existed, was enabled, and completed successfully; `False` otherwise.
+
         """
         if name not in self.jobs:
             console.print(f"[red]Job '{name}' not found[/red]")
@@ -305,9 +308,7 @@ class PKMScheduler:
         )
 
     async def _extract_conversations_job(self) -> None:
-        """
-        Extract conversations from Google Gemini up to the configured per-run limit and report success or errors to the console.
-        """
+        """Extract conversations from Google Gemini up to the configured per-run limit and report success or errors to the console."""
         console.print("[cyan]🔄 Running conversation extraction job...[/cyan]")
 
         try:
@@ -424,6 +425,7 @@ class PKMScheduler:
 
         Parameters:
             job_name (str): The name of the job to run.
+
         """
         if job_name in self.jobs:
             job = self.jobs[job_name]
@@ -516,6 +518,7 @@ class PKMScheduler:
         Parameters:
             signum (int): Numeric signal identifier received (e.g., signal.SIGINT).
             frame (types.FrameType): Current stack frame at signal delivery.
+
         """
         console.print(f"\n[yellow]Received signal {signum}, shutting down...[/yellow]")
         self.stop_scheduler()
