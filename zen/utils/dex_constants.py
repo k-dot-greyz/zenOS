@@ -1,6 +1,7 @@
 """
 dex constants and regex patterns
 """
+
 import re
 
 # Regex for YAML frontmatter
@@ -20,5 +21,5 @@ PATTERNS = {
     "dex_id": re.compile(DEX_ID_PATTERN, re.MULTILINE),
     "dex_type": re.compile(DEX_TYPE_PATTERN, re.MULTILINE),
     "status": re.compile(STATUS_PATTERN, re.MULTILINE),
-    "pe_id": re.compile(PE_ID_PATTERN, re.MULTILINE)
+    "pe_id": re.compile(PE_ID_PATTERN, re.MULTILINE),
 }

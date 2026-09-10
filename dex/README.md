@@ -1,17 +1,23 @@
 ---
 dex_id: "0x7E:0x02"
 dex_type: "documentation"
-midi_2_0_context:
-  resource_type: "Documentation"
-  property_exchange_id: "urn:zenos:runtime:dex-readme"
-legacy_map:
-  midi_1_0_bank: 126
-  midi_1_0_prog: 2
 status: "active"
 tags: ["documentation", "dex", "zenos", "runtime"]
 ---
 
-# zenOS dex integration
+# zenOS dex
+
+Runtime catalog + protocol index for zenOS.
+
+## Catalog
+
+- `dex/models.yaml` — AI model catalog
+- `dex/procedures.yaml` — procedure catalog
+- Python: `from zen.dex import DexCatalog, get_dex_catalog`
+- CLI: `zen dex` (models / procedures / sync / bench)
+
+## Protocol index
+
 
 this directory implements the dex protocol for zenOS runtime resources.
 
