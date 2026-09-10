@@ -8,8 +8,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import pytest
-
 # Add current directory to path for imports
 sys.path.insert(0, ".")
 
@@ -27,8 +25,7 @@ def test_imports():
 
         print("OK: PKMConfig imported")
 
-        from zen.pkm.models import (Conversation, KnowledgeEntry, Message,
-                                    MessageRole)
+        from zen.pkm.models import Conversation, KnowledgeEntry, Message, MessageRole
 
         print("OK: Data models imported")
 
@@ -100,8 +97,13 @@ def test_models():
     print("\nTesting data models...")
 
     try:
-        from zen.pkm.models import (Conversation, ConversationStatus,
-                                    KnowledgeEntry, Message, MessageRole)
+        from zen.pkm.models import (
+            Conversation,
+            ConversationStatus,
+            KnowledgeEntry,
+            Message,
+            MessageRole,
+        )
 
         # Test Message creation
         message = Message(
@@ -152,8 +154,7 @@ def test_storage():
 
     try:
         from zen.pkm.config import PKMConfig
-        from zen.pkm.models import (Conversation, ConversationStatus, Message,
-                                    MessageRole)
+        from zen.pkm.models import Conversation, ConversationStatus, Message, MessageRole
         from zen.pkm.storage import PKMStorage
 
         # Create test config with temp directory
@@ -280,7 +281,6 @@ def test_cli():
         return False
 
 
-@pytest.mark.asyncio
 async def test_async_functionality():
     """Test async functionality."""
     print("\nTesting async functionality...")

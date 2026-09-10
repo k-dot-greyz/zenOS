@@ -17,8 +17,7 @@ from rich.console import Console
 from rich.progress import Progress, TaskID
 
 from .config import PKMConfig
-from .models import (Conversation, ConversationStatus, ExtractionResult,
-                     Message, MessageRole)
+from .models import Conversation, ConversationStatus, ExtractionResult, Message, MessageRole
 
 console = Console()
 

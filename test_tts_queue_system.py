@@ -9,9 +9,16 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from tts_queue_system import (AudioManager, MessagePriority, RateLimiter,
-                              TTSConfig, TTSMessage, TTSQueueManager,
-                              TTSStatus, TTSWorker)
+from tts_queue_system import (
+    AudioManager,
+    MessagePriority,
+    RateLimiter,
+    TTSConfig,
+    TTSMessage,
+    TTSQueueManager,
+    TTSStatus,
+    TTSWorker,
+)
 
 
 class TestTTSMessage:

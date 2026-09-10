@@ -175,9 +175,11 @@ class AgentRegistry:
     def _load_promptos_agents(self) -> None:
         """Load PromptOS agents."""
         try:
-            from zen.agents.promptos import (PromptCriticAgent,
-                                             PromptSecurityAgent,
-                                             SystemTroubleshooterAgent)
+            from zen.agents.promptos import (
+                PromptCriticAgent,
+                PromptSecurityAgent,
+                SystemTroubleshooterAgent,
+            )
 
             # Create agent manifests for PromptOS agents
             prompt_critic_manifest = AgentManifest(

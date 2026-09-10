@@ -95,9 +95,11 @@ class InboxManager:
 
 
 @click.group()
-@click.alias("inbox")
 def receive():
-    """zenOS Receive System - Process incoming items"""
+    """zenOS Receive System - Process incoming items.
+
+    Canonical command is `zen receive`. `zen inbox` is registered as an alias.
+    """
     pass
 
 
@@ -133,7 +135,9 @@ def list(status: str = None):
         return
 
     for item in items:
-        status_emoji = {"new": "🆕", "processing": "⚙️", "processed": "✅"}.get(item["status"], "❓")
+        status_emoji = {"new": "🆕", "processing": "⚙️", "processed": "✅"}.get(
+            item["status"], "❓"
+        )
 
         click.echo(f"{status_emoji} {item['id']} - {item['type']} - {item['content'][:50]}...")
 

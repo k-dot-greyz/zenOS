@@ -1,6 +1,6 @@
 """
 Plugin Discovery - Find and discover Git-based plugins
-The Pokédex for finding new plugins!
+The Dex for finding new plugins!
 """
 
 import asyncio
@@ -31,7 +31,7 @@ class DiscoveredPlugin:
 
 
 class PluginDiscovery:
-    """Discover plugins from GitHub - The Plugin Pokédex!"""
+    """Discover plugins from GitHub - The Plugin Dex!"""
 
     def __init__(self, github_token: Optional[str] = None):
         self.github_token = github_token

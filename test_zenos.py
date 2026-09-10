@@ -6,13 +6,10 @@ Test script for zenOS - Let's see if this thing actually works!
 import asyncio
 import os
 
-import pytest
-
 from zen.agents import builtin_agents
 from zen.core.launcher import Launcher
 
 
-@pytest.mark.asyncio
 async def test_agents():
     """Test the basic agents"""
     print("🧘 Testing zenOS Agents...")

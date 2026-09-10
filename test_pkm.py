@@ -10,7 +10,6 @@ from pathlib import Path
 # Add the zenOS package to the path
 sys.path.insert(0, str(Path(__file__).parent))
 
-import pytest
 from rich.console import Console
 from rich.panel import Panel
 
@@ -21,16 +20,6 @@ from zen.pkm.scheduler import PKMScheduler
 from zen.pkm.storage import PKMStorage
 
 console = Console()
-
-
-@pytest.fixture
-def config():
-    return PKMConfig.load()
-
-
-@pytest.fixture
-def storage(config):
-    return PKMStorage(config)
 
 
 def test_config():
@@ -89,12 +78,11 @@ def test_storage(config):
 
     # Test statistics
     stats = storage.get_statistics()
-    console.print(f"✅ Storage stats: {stats['total_conversations']} conversations")
+    console.print(f"✅ Storage stats: {stats['conversations_count']} conversations")
 
     return storage
 
 
-@pytest.mark.asyncio
 async def test_processor(config, storage):
     """Test conversation processing."""
     console.print("\n[cyan]Testing processor...[/cyan]")

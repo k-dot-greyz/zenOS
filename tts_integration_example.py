@@ -15,8 +15,7 @@ from typing import Any, Dict, Optional
 
 import websockets
 
-from tts_queue_system import (MessagePriority, TTSConfig, TTSMessage,
-                              TTSQueueManager)
+from tts_queue_system import MessagePriority, TTSConfig, TTSMessage, TTSQueueManager
 
 # Optional imports for different TTS engines
 try:

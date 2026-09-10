@@ -24,16 +24,30 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
-from clone_all_repos import (clone_repository, confirm_action,
-                             ensure_destination_dir, fetch_all_repos,
-                             get_configuration, get_github_token)
+from clone_all_repos import (
+    clone_repository,
+    confirm_action,
+    ensure_destination_dir,
+    fetch_all_repos,
+    get_configuration,
+    get_github_token,
+)
 from clone_all_repos import parse_arguments as parse_clone_args
-from clone_all_repos import (repo_exists_locally, save_results_to_json,
-                             update_repository)
+from clone_all_repos import (
+    repo_exists_locally,
+    save_results_to_json,
+    update_repository,
+)
+
 # Import our existing modules
-from find_all_local_repos import (Colors, get_default_scan_paths, get_git_info,
-                                  is_git_repository, print_colored,
-                                  scan_for_repositories)
+from find_all_local_repos import (
+    Colors,
+    get_default_scan_paths,
+    get_git_info,
+    is_git_repository,
+    print_colored,
+    scan_for_repositories,
+)
 
 
 class ZenRepoManager:
@@ -82,8 +96,7 @@ class ZenRepoManager:
         )
 
         # Print results
-        from find_all_local_repos import (print_repository_details,
-                                          print_repository_summary)
+        from find_all_local_repos import print_repository_details, print_repository_summary
 
         print_repository_summary(repositories)
 

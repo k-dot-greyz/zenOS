@@ -113,8 +113,7 @@ async def demo_pkm_module():
 
     # 9. Show CLI Commands
     console.print("\n[cyan]9. Available CLI commands...[/cyan]")
-    console.print(
-        """
+    console.print("""
 🧘 PKM Commands:
   zen pkm setup                    # Setup PKM module
   zen pkm extract [--limit N]      # Extract conversations
@@ -126,13 +125,11 @@ async def demo_pkm_module():
   zen pkm schedule list            # List scheduled jobs
   zen pkm schedule run <job>       # Run specific job
   zen pkm config-show              # Show configuration
-"""
-    )
+""")
 
     # 10. Next Steps
     console.print("\n[cyan]10. Next steps...[/cyan]")
-    console.print(
-        """
+    console.print("""
 🚀 To get started with PKM:
 
 1. Setup authentication:
@@ -152,8 +149,7 @@ async def demo_pkm_module():
 
 5. Set up automation:
    zen pkm schedule start
-"""
-    )
+""")
 
     console.print("\n[green]✅ PKM Module Demo completed![/green]")
     console.print("For more information, see: zen/pkm/README.md")
