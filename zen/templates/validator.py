@@ -49,7 +49,7 @@ class TemplateValidator:
         engine: Optional[TemplateEngine] = None,
         schema_root: Optional[Path] = None,
     ):
-        self.engine = engine or TemplateEngine()
+        self.engine = engine or TemplateEngine(require_registry=True)
         if schema_root is None:
             schema_root = self.engine.template_dir / "metadata" / "schemas"
         self.schema_root = schema_root
@@ -124,14 +124,14 @@ class TemplateValidator:
             report.add("info", "Schema validation passed.")
 
     def _lint_placeholders(self, entry: Dict[str, Any], report: ValidationReport) -> None:
-        """Warn about unused placeholders in template files."""
+        """Detect Jinja-style placeholders declared in template source."""
         path = entry.get("path")
         if not path:
             report.add("error", "Template entry missing path attribute.")
             return
 
         try:
-            content = self.engine._read_template_file(path)
+            content = self.engine.read_template_source(path)
         except TemplateRegistryError as exc:
             report.add("error", str(exc))
             return

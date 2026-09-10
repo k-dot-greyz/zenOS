@@ -1,5 +1,5 @@
 """
-Template Pokédex - discovery, cataloging, and analytics for the template registry.
+Template catalog - discovery, indexing, and analytics for the template registry.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ class TemplateRecord:
     evolution: Dict[str, Any]
 
 
-class TemplatePokedex:
+class TemplateCatalog:
     """
     High-level facade around TemplateEngine providing template discovery,
     rarity calculation, evolution tracking, and usage analytics.
@@ -40,10 +40,10 @@ class TemplatePokedex:
         engine: Optional[TemplateEngine] = None,
         evolution_path: Optional[Path] = None,
     ):
-        self.engine = engine or TemplateEngine()
-        repo_root = Path(__file__).resolve().parents[1]
+        self.engine = engine or TemplateEngine(require_registry=True)
+        repo_root = Path(__file__).resolve().parents[2]
         if evolution_path is None:
-            evolution_path = repo_root.parent / "templates" / "metadata" / "evolution.yaml"
+            evolution_path = repo_root / "templates" / "metadata" / "evolution.yaml"
 
         self.evolution_path = evolution_path
         self._evolution_index = self._load_evolution(evolution_path)

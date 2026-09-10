@@ -15,7 +15,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
+  issues: write
 
 jobs:
   check-pr-status:
@@ -204,11 +205,13 @@ jobs:
       
       - name: Comment PR Status (if triggered by PR event)
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python << 'EOF'
           import os
+          import sys
           from github import Github
           
           token = os.environ.get('GITHUB_TOKEN')
@@ -219,9 +222,8 @@ jobs:
           repo = g.get_repo(repo_name)
           pr = repo.get_pull(int(pr_number))
           
-          # Create status comment
           mergeable_status = "✅ Ready" if pr.mergeable else "❌ Has Conflicts"
-          comment = f"""## 🔍 PR Status Check
+          comment_body = f"""## 🔍 PR Status Check
           
           **Merge Status:** {mergeable_status}
           **Merge State:** {pr.mergeable_state.upper()}
@@ -230,13 +232,16 @@ jobs:
           This PR has been automatically checked. See the Actions tab for full details.
           """
           
-          # Check if comment already exists
-          comments = pr.get_issue_comments()
-          for existing in comments:
-              if existing.user.login == 'github-actions[bot]' and 'PR Status Check' in existing.body:
-                  existing.edit(comment)
-                  break
-          else:
-              pr.create_issue_comment(comment)
+          try:
+              comments = pr.get_issue_comments()
+              for existing in comments:
+                  if existing.user.login == 'github-actions[bot]' and 'PR Status Check' in existing.body:
+                      existing.edit(comment_body)
+                      break
+              else:
+                  pr.create_issue_comment(comment_body)
+          except Exception as exc:
+              print(f"Unable to post PR status comment: {exc}", file=sys.stderr)
+              sys.exit(0)
           EOF
 

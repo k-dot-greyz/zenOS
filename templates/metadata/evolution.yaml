@@ -7,7 +7,7 @@ lineage:
       - version: "1.0.0"
         date: "2025-11-11"
         author: "human:kaspars"
-        changes: "Initial creation for Template Pokédex bootstrap."
+        changes: "Initial creation for Template Dex bootstrap."
         motivations:
           - "Provide canonical daily standup format"
           - "Establish baseline reporting structure"
@@ -25,7 +25,7 @@ lineage:
       - version: "1.0.0"
         date: "2025-11-11"
         author: "human:kaspars"
-        changes: "Migrated ai_post_templates.yaml into Template Pokédex."
+        changes: "Migrated ai_post_templates.yaml into Template Dex."
         motivations:
           - "Consolidate social templates under registry"
           - "Enable evolution tracking and analytics"
@@ -79,7 +79,7 @@ lineage:
       - version: "1.0.0"
         date: "2025-11-11"
         author: "human:kaspars"
-        changes: "Initial creation for Template Pokédex bootstrap."
+        changes: "Initial creation for Template Dex bootstrap."
         motivations:
           - "Define canonical registry structure"
           - "Enable validation of registry entries"

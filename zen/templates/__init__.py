@@ -1,7 +1,8 @@
 """
-Template Pokédex package exposing registry-aware utilities.
+Template catalog package exposing registry-aware utilities.
 """
 
-from .pokedex import TemplatePokedex
+from .catalog import TemplateCatalog
+from .validator import TemplateValidator
 
-__all__ = ["TemplatePokedex"]
+__all__ = ["TemplateCatalog", "TemplateValidator"]

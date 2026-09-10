@@ -12,7 +12,7 @@ templates:
     discovery:
       discovered_by: "human:kaspars"
       discovery_date: "2025-11-11"
-      origin: "Template Pokédex bootstrap"
+      origin: "Template Dex bootstrap"
     usage:
       usage_count: 0
       last_used: null
@@ -86,7 +86,7 @@ templates:
     discovery:
       discovered_by: "ai:claude"
       discovery_date: "2025-11-11"
-      origin: "Template Pokédex bootstrap"
+      origin: "Template Dex bootstrap"
     usage:
       usage_count: 0
       last_used: null
@@ -110,7 +110,7 @@ templates:
     discovery:
       discovered_by: "human:kaspars"
       discovery_date: "2025-11-11"
-      origin: "Template Pokédex bootstrap"
+      origin: "Template Dex bootstrap"
     usage:
       usage_count: 0
       last_used: null

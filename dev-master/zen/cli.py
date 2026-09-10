@@ -14,12 +14,13 @@ from rich.table import Table
 
 from zen.cli_plugins import plugins
 from zen.inbox import receive
-from zen.templates import TemplatePokedex, TemplateValidator
+from zen.templates import TemplateCatalog, TemplateValidator
 from zen.utils.template import TemplateEngine, TemplateRegistryError
 
 console = Console()
 
-TEMPLATES_ROOT = Path(__file__).resolve().parents[1] / "templates"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TEMPLATES_ROOT = REPO_ROOT / "templates"
 REGISTRY_PATH = TEMPLATES_ROOT / "registry.yaml"
 EVOLUTION_PATH = TEMPLATES_ROOT / "metadata" / "evolution.yaml"
 SCHEMA_ROOT = TEMPLATES_ROOT / "metadata" / "schemas"
@@ -41,11 +42,15 @@ FORMAT_EXTENSION_MAP = {
 
 
 def get_template_engine() -> TemplateEngine:
-    return TemplateEngine(template_dir=TEMPLATES_ROOT, registry_path=REGISTRY_PATH)
+    return TemplateEngine(
+        template_dir=TEMPLATES_ROOT,
+        registry_path=REGISTRY_PATH,
+        require_registry=True,
+    )
 
 
-def get_template_pokedex() -> TemplatePokedex:
-    return TemplatePokedex(
+def get_template_catalog() -> TemplateCatalog:
+    return TemplateCatalog(
         engine=get_template_engine(),
         evolution_path=EVOLUTION_PATH,
     )
@@ -122,7 +127,12 @@ def parse_template_variables(value: Optional[str]) -> Dict[str, Any]:
     try:
         return json.loads(value)
     except json.JSONDecodeError:
-        return parse_variables(value)
+        variables: Dict[str, Any] = {}
+        for pair in value.split(","):
+            if "=" in pair:
+                key, parsed = pair.split("=", 1)
+                variables[key.strip()] = parsed.strip()
+        return variables
 
 
 def bump_version(version: str, mode: str) -> str:

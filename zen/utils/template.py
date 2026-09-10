@@ -19,13 +19,17 @@ class TemplateRegistryError(RuntimeError):
 class TemplateEngine:
     """
     Jinja2-based template engine for rendering prompts and content with
-    Template Pokédex registry integration.
+    template registry integration.
     """
+
+    _JSON_TEMPLATE_TYPES = frozenset({"json", "json-schema", "n8n-workflow"})
 
     def __init__(
         self,
         template_dir: Optional[Path] = None,
         registry_path: Optional[Path] = None,
+        *,
+        require_registry: bool = False,
     ):
         """Initialize the template engine with registry-aware configuration."""
         repo_root = Path(__file__).resolve().parents[2]
@@ -38,6 +42,7 @@ class TemplateEngine:
         self.registry_path = registry_path
         self._registry_meta: Dict[str, Any] = {}
         self._registry_index: Dict[str, Dict[str, Any]] = {}
+        self._registry_loaded = False
 
         self.env = Environment(
             loader=FileSystemLoader(str(template_dir)) if template_dir.exists() else None,
@@ -50,11 +55,19 @@ class TemplateEngine:
         self.env.filters["code"] = self._code_filter
         self.env.globals["include_template"] = self.render_by_id
 
-        self._load_registry()
+        if require_registry:
+            self._ensure_registry_loaded()
 
     # ------------------------------------------------------------------
     # Registry operations
     # ------------------------------------------------------------------
+    def _ensure_registry_loaded(self) -> None:
+        """Load registry metadata on first use."""
+        if self._registry_loaded:
+            return
+        self._load_registry()
+        self._registry_loaded = True
+
     def _load_registry(self) -> None:
         """Load and index the template registry file."""
         if not self.registry_path.exists():
@@ -67,10 +80,12 @@ class TemplateEngine:
 
     def refresh_registry(self) -> None:
         """Reload registry from disk."""
-        self._load_registry()
+        self._registry_loaded = False
+        self._ensure_registry_loaded()
 
     def get_registry_meta(self) -> Dict[str, Any]:
         """Return registry metadata (version, maintainer, etc.)."""
+        self._ensure_registry_loaded()
         return dict(self._registry_meta)
 
     def list_templates(self, *, tags: Optional[Iterable[str]] = None) -> Iterable[Dict[str, Any]]:
@@ -80,6 +95,7 @@ class TemplateEngine:
         Args:
             tags: Optional tag collection to filter by.
         """
+        self._ensure_registry_loaded()
         if not tags:
             return list(self._registry_index.values())
 
@@ -92,6 +108,7 @@ class TemplateEngine:
 
     def get_template_entry(self, template_id: str) -> Dict[str, Any]:
         """Retrieve raw registry entry for a template id."""
+        self._ensure_registry_loaded()
         try:
             return self._registry_index[template_id]
         except KeyError as exc:
@@ -132,17 +149,20 @@ class TemplateEngine:
             return self.render_file(template_path, variables)
 
         if template_type in {"markdown", "md"} or template_path.endswith(".md"):
-            content = self._read_template_file(template_path)
+            content = self.read_template_source(template_path)
             return self.render(content, variables)
 
-        if template_type in {"yaml", "yml", "json"}:
-            content = self._read_template_file(template_path)
+        if template_type in {"yaml", "yml"} or template_path.endswith((".yaml", ".yml")):
+            content = self.read_template_source(template_path)
+            return self.render(content, variables)
+
+        if template_type in self._JSON_TEMPLATE_TYPES or template_path.endswith(".json"):
+            content = self.read_template_source(template_path)
             rendered = self.render(content, variables)
-            if template_type == "json":
-                json.loads(rendered)
+            json.loads(rendered)
             return rendered
 
-        content = self._read_template_file(template_path)
+        content = self.read_template_source(template_path)
         return self.render(content, variables)
 
     # ------------------------------------------------------------------
@@ -158,7 +178,16 @@ class TemplateEngine:
 
     def _read_template_file(self, relative_path: str) -> str:
         """Read a template file relative to the template directory."""
-        file_path = self.template_dir / relative_path
+        normalized = self._normalize_template_name(relative_path)
+        file_path = (self.template_dir / normalized).resolve()
+        template_root = self.template_dir.resolve()
+        try:
+            file_path.relative_to(template_root)
+        except ValueError as exc:
+            raise TemplateRegistryError(
+                f"Template path escapes template directory: {relative_path}"
+            ) from exc
+
         if not file_path.exists():
             raise TemplateRegistryError(f"Template file not found: {relative_path}")
         return file_path.read_text(encoding="utf-8")
