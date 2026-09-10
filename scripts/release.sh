@@ -40,9 +40,9 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-# Pull latest changes
-echo -e "${INFO} Pulling latest changes..."
-git pull origin main
+# Pull latest changes from the branch we are releasing
+echo -e "${INFO} Pulling latest changes from ${CURRENT_BRANCH}..."
+git pull origin "$CURRENT_BRANCH"
 
 # Determine release type
 if [ -z "$1" ]; then
@@ -70,9 +70,19 @@ else
     RELEASE_TYPE=$1
 fi
 
+# GNU and BSD sed both accept -i.bak; GNU-only `sed -i` breaks on macOS.
+sed_inplace() {
+    sed -i.bak "$1" "$2" && rm -f "$2.bak"
+}
+
 # Get current version from pyproject.toml
 CURRENT_VERSION=$(grep -E "^version = " pyproject.toml | sed 's/version = "\(.*\)"/\1/')
 echo -e "${INFO} Current version: ${BLUE}v${CURRENT_VERSION}${NC}"
+if [[ ! "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo -e "${RED}❌ Error: version '${CURRENT_VERSION}' is not MAJOR.MINOR.PATCH${NC}"
+    echo "Pre-release / build metadata is not supported by this script."
+    exit 1
+fi
 
 # Calculate new version
 if [ "$RELEASE_TYPE" = "custom" ]; then
@@ -98,6 +108,11 @@ print(f'{major}.{minor}.{patch}')
 ")
 fi
 
+if [[ ! "$NEW_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo -e "${RED}❌ Error: new version '${NEW_VERSION}' is not MAJOR.MINOR.PATCH${NC}"
+    exit 1
+fi
+
 echo -e "${INFO} New version will be: ${GREEN}v${NEW_VERSION}${NC}"
 
 # Confirmation
@@ -120,12 +135,12 @@ echo -e "${ROCKET} Starting release process..."
 
 # Update version in pyproject.toml
 echo -e "${INFO} Updating pyproject.toml..."
-sed -i "s/version = \"${CURRENT_VERSION}\"/version = \"${NEW_VERSION}\"/" pyproject.toml
+sed_inplace "s/version = \"${CURRENT_VERSION}\"/version = \"${NEW_VERSION}\"/" pyproject.toml
 
 # Update version in __init__.py if it exists
 if [ -f "zen/__init__.py" ]; then
     echo -e "${INFO} Updating zen/__init__.py..."
-    sed -i "s/__version__ = \"${CURRENT_VERSION}\"/__version__ = \"${NEW_VERSION}\"/" zen/__init__.py 2>/dev/null || true
+    sed_inplace "s/__version__ = \"${CURRENT_VERSION}\"/__version__ = \"${NEW_VERSION}\"/" zen/__init__.py
 fi
 
 # Update CHANGELOG.md
@@ -133,12 +148,12 @@ echo -e "${INFO} Updating CHANGELOG.md..."
 TODAY=$(date +%Y-%m-%d)
 
 # Create new version section in CHANGELOG
-sed -i "/## \[Unreleased\]/a\\
+sed_inplace "/## \[Unreleased\]/a\\
 \\
 ## [${NEW_VERSION}] - ${TODAY}" CHANGELOG.md
 
 # Update links at bottom of CHANGELOG
-sed -i "s|\[Unreleased\]:.*|\[Unreleased\]: https://github.com/k-dot-greyz/zenOS/compare/v${NEW_VERSION}...HEAD\\
+sed_inplace "s|\[Unreleased\]:.*|\[Unreleased\]: https://github.com/k-dot-greyz/zenOS/compare/v${NEW_VERSION}...HEAD\\
 [${NEW_VERSION}]: https://github.com/k-dot-greyz/zenOS/compare/v${CURRENT_VERSION}...v${NEW_VERSION}|" CHANGELOG.md
 
 # Commit version bump
@@ -155,7 +170,7 @@ git tag -a "v${NEW_VERSION}" -m "Release version ${NEW_VERSION}"
 
 # Push changes
 echo -e "${INFO} Pushing to remote..."
-git push origin main
+git push origin "$CURRENT_BRANCH"
 git push origin "v${NEW_VERSION}"
 
 echo ""
