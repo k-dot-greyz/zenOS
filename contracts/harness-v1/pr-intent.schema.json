@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://zenos.ai/contracts/harness-v1/pr-intent.schema.json",
+  "title": "Harness Contract v1 — PR intent",
+  "type": "object",
+  "required": [
+    "intent",
+    "risk",
+    "supersedes",
+    "depends_on",
+    "touches_contracts",
+    "expiry_days"
+  ],
+  "properties": {
+    "contract": { "type": "string" },
+    "intent": {
+      "type": "string",
+      "minLength": 1,
+      "description": "feat | fix | chore | docs | refactor | security | other"
+    },
+    "risk": { "enum": ["low", "medium", "high"] },
+    "supersedes": {
+      "type": "array",
+      "items": { "type": ["string", "integer"] },
+      "description": "PR or issue numbers this change replaces. Required when changed paths overlap an open PR."
+    },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": ["string", "integer"] }
+    },
+    "touches_contracts": {
+      "type": "boolean",
+      "description": "Must be true when the diff touches contracts/, zen/contracts/, dex/registry.yaml, or .github/pr-intent.yaml"
+    },
+    "expiry_days": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Stale-PR threshold. Default 14. CI/stale action labels at this age."
+    },
+    "summary": { "type": "string" }
+  },
+  "additionalProperties": true
+}

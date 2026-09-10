@@ -3,3 +3,10 @@
 # All files require approval from @k-dot-greyz
 
 * @k-dot-greyz
+
+# Harness Contract v1 surfaces (ZEN-313 Track 3) — still k-dot-greyz,
+# listed so contract diffs are obvious in review routing.
+/contracts/ @k-dot-greyz
+/zen/contracts/ @k-dot-greyz
+/.github/pr-intent.yaml @k-dot-greyz
+/dex/registry.yaml @k-dot-greyz

@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://zenos.ai/contracts/harness-v1/env-doctor.schema.json",
+  "title": "Harness Contract v1 — env-doctor JSON",
+  "type": "object",
+  "required": ["doctor"],
+  "properties": {
+    "doctor": {
+      "type": "object",
+      "required": [
+        "contract",
+        "profile",
+        "status",
+        "exit_code",
+        "process_exit",
+        "checks",
+        "families"
+      ],
+      "properties": {
+        "contract": { "const": "1.0" },
+        "profile": { "enum": ["local", "ci"] },
+        "status": { "enum": ["healthy", "repairable", "blocked"] },
+        "exit_code": { "enum": [0, 10, 20] },
+        "process_exit": { "enum": [0, 10, 20] },
+        "families": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "enum": [
+              "runtime",
+              "package_manager",
+              "lockfile",
+              "secrets_presence",
+              "git_state"
+            ]
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "properties": {
+            "human": { "const": "rich" },
+            "machine": { "const": "json" }
+          }
+        },
+        "exit_codes": {
+          "type": "object",
+          "properties": {
+            "0": { "const": "healthy" },
+            "10": { "const": "repairable" },
+            "20": { "const": "blocked" }
+          }
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "family", "ok", "severity", "repairable", "message"],
+            "properties": {
+              "id": { "type": "string" },
+              "family": {
+                "enum": [
+                  "runtime",
+                  "package_manager",
+                  "lockfile",
+                  "secrets_presence",
+                  "git_state"
+                ]
+              },
+              "ok": { "type": "boolean" },
+              "severity": { "enum": ["ok", "warn", "fail", "info"] },
+              "repairable": { "type": "boolean" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -41,7 +41,15 @@ def cli(version: bool):
 
 
 def main() -> None:
-    """Console-script entrypoint (`zen` / `zenos` → zen.cli:main)."""
+    """Console-script entrypoint (`zen` / `zenos` → zen.cli:main).
+
+    `doctor` / `env-doctor` skip the process-wide floor so they can emit the
+    Harness Contract v1 JSON payload (exit 20) instead of a bare SystemExit(1).
+    """
+    doctorish = {"doctor", "env-doctor"}
+    if any(arg in doctorish for arg in sys.argv[1:]):
+        cli()
+        return
     require_runtime()
     cli()
 
@@ -377,29 +385,69 @@ cli.add_command(sync)
 cli.add_command(arena)
 
 
-def _run_env_doctor(ai_mode: bool, outdated: bool) -> None:
+def _run_env_doctor(
+    ai_mode: bool,
+    outdated: bool,
+    output_format: str = "rich",
+    profile: str = "local",
+) -> None:
+    from zen.contracts.doctor import classify_report, process_exit_for_profile, to_doctor_payload
     from zen.setup.env_doctor import format_report, run_env_doctor
 
     report = run_env_doctor(include_outdated=outdated)
+    if output_format == "json":
+        payload = to_doctor_payload(report, profile=profile)
+        click.echo(json.dumps(payload, indent=2, sort_keys=False))
+        raise SystemExit(int(payload["doctor"]["process_exit"]))
     console.print(format_report(report, ai_mode=ai_mode), highlight=False)
-    if report.has_failures:
-        raise SystemExit(1)
+    _, code = classify_report(report)
+    raise SystemExit(process_exit_for_profile(code, profile))
 
 
 @cli.command("doctor")
 @click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
 @click.option("--outdated", is_flag=True, help="Also query pip for outdated packages")
-def doctor(ai_mode: bool, outdated: bool) -> None:
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["rich", "json"], case_sensitive=False),
+    default="rich",
+    show_default=True,
+    help="Human (rich) or machine (json) env-doctor contract output",
+)
+@click.option(
+    "--profile",
+    type=click.Choice(["local", "ci"], case_sensitive=False),
+    default="local",
+    show_default=True,
+    help="local: process exit 0/10/20. ci: non-zero only when blocked (20)",
+)
+def doctor(ai_mode: bool, outdated: bool, output_format: str, profile: str) -> None:
     """Check zenOS system + environment health."""
-    _run_env_doctor(ai_mode, outdated)
+    _run_env_doctor(ai_mode, outdated, output_format, profile)
 
 
 @cli.command("env-doctor")
 @click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
 @click.option("--outdated", is_flag=True, help="Also query pip for outdated packages")
-def env_doctor(ai_mode: bool, outdated: bool) -> None:
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["rich", "json"], case_sensitive=False),
+    default="rich",
+    show_default=True,
+    help="Human (rich) or machine (json) env-doctor contract output",
+)
+@click.option(
+    "--profile",
+    type=click.Choice(["local", "ci"], case_sensitive=False),
+    default="local",
+    show_default=True,
+    help="local: process exit 0/10/20. ci: non-zero only when blocked (20)",
+)
+def env_doctor(ai_mode: bool, outdated: bool, output_format: str, profile: str) -> None:
     """Alias for doctor — environment, Python floor, and dependency status."""
-    _run_env_doctor(ai_mode, outdated)
+    _run_env_doctor(ai_mode, outdated, output_format, profile)
 
 
 if __name__ == "__main__":

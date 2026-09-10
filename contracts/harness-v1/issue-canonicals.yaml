@@ -1,0 +1,15 @@
+# Canonical GitHub issues for duplicated doc work (ZEN-313 Track 3).
+# Close the superseded issues in favour of the canonical ones.
+# This agent token cannot close GitHub issues (read-only gh).
+
+topics:
+  documentation-guide:
+    canonical_github: 27
+    canonical_linear: ZEN-72
+    supersedes_github: [21]
+    supersedes_linear: [ZEN-66]
+  commit-workflow-docs:
+    canonical_github: 26
+    canonical_linear: ZEN-71
+    supersedes_github: [20]
+    supersedes_linear: [ZEN-65]

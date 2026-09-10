@@ -73,6 +73,7 @@ bash scripts/zenos-env-install.sh   # preferred: uv 3.14 venv + current deps
 # or: python3.14 -m pip install -e .
 bash scripts/zenos-env-start.sh     # per-boot gate used by Cloud Agent start
 zen env-doctor                      # fails hard if the floor is wrong
+zen env-doctor --format json --profile ci   # Harness Contract v1 JSON (exit 0/10/20)
 ```
 
 ---

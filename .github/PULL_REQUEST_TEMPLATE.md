@@ -1,5 +1,6 @@
 ## What
 
+<<<<<<< HEAD
 <!-- Concrete changes—not a file list. -->
 
 ## Why
@@ -37,6 +38,15 @@
 - [ ] Public docs updated in `docs/` if user-facing behavior changed
 
 ## Related issues
+=======
+Machine-readable twin: update `.github/pr-intent.yaml` in this PR
+(`intent`, `risk`, `supersedes`, `depends_on`, `touches_contracts`, `expiry_days`).
+Contract diffs (`contracts/`, `zen/contracts/`, `dex/registry.yaml`) **must** set
+`touches_contracts: true`. Overlapping open PRs **must** declare `supersedes`.
+
+### Summary
+Briefly describe what this PR does.
+>>>>>>> f5fafaf (feat(harness): add Contract v1 for env-doctor, PR intent, and dex registry)
 
 Closes #
 
