@@ -71,7 +71,7 @@ jobs:
       - name: Contract tests
         env:
           PYTHONPATH: ${{ github.workspace }}
-        run: pytest tests/test_env_doctor_contract.py tests/test_pr_intent.py tests/test_capability_registry.py -m contract -v --no-cov
+        run: pytest tests/test_env_doctor_contract.py tests/test_pr_intent.py tests/test_capability_registry.py -v --no-cov
 
       - name: Registry + pr-intent validation
         env:
