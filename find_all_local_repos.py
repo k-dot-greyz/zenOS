@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 
-
 # Colors for output
 class Colors:
     RED = "\033[91m"
