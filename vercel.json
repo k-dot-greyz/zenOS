@@ -1,7 +1,5 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "installCommand": "echo skip-install",
-  "buildCommand": "mkdir -p public && printf '%s\\n' '<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>zenOS</title></head><body><main><h1>zenOS</h1><p>A terminal-centric AI workflow toolkit. The CLI lives on GitHub; this page is a static Vercel preview stub so GitHub status checks can pass.</p><p><a href=\"https://github.com/k-dot-greyz/zenOS\">Source repository</a></p></main></body></html>' > public/index.html",
-  "outputDirectory": "public"
+  "buildCommand": "mkdir -p dist && echo '<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>zenOS</title></head><body><h1>zenOS</h1><p>CLI toolkit. See the GitHub repository.</p></body></html>' > dist/index.html",
+  "outputDirectory": "dist",
+  "installCommand": "echo skipped"
 }

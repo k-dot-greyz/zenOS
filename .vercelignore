@@ -1,11 +1,5 @@
 .venv
-.venv/**
 .git
 .pytest_cache
 __pycache__
-zenOS-dev
 workspace/prototype
-n8n
-docs
-tests
-*.pyc
