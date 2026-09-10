@@ -11,73 +11,69 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
 from zen.utils.safe_commands import SafeCommandExecutor
+
 
 class GitSetupManager:
     """Manages git repository setup and configuration"""
-    
+
     def __init__(self, zenos_root: Path):
         self.zenos_root = zenos_root
         self.gitignore_path = self.zenos_root / ".gitignore"
         self.safe_executor = SafeCommandExecutor()
-        
+
     def is_git_repo(self) -> bool:
         """Check if the current directory is a Git repository"""
         result = self.safe_executor.run_command(
-            ["git", "rev-parse", "--git-dir"],
-            cwd=self.zenos_root,
-            timeout=5
+            ["git", "rev-parse", "--git-dir"], cwd=self.zenos_root, timeout=5
         )
-        return result['success']
-    
+        return result["success"]
+
     def init_repository(self) -> bool:
         """Initialize a new git repository"""
-        result = self.safe_executor.run_command(
-            ["git", "init"],
-            cwd=self.zenos_root,
-            timeout=10
-        )
-        if result['success']:
+        result = self.safe_executor.run_command(["git", "init"], cwd=self.zenos_root, timeout=10)
+        if result["success"]:
             print(f"  ✅ Git repository initialized")
         else:
             print(f"  ❌ Failed to initialize git repository: {result['stderr']}")
-        return result['success']
-    
+        return result["success"]
+
     def setup_gitignore(self) -> bool:
         """Setup comprehensive .gitignore file"""
         try:
             # Detect project types
             project_types = self._detect_project_types()
-            
+
             # Generate .gitignore content
             content = self._generate_gitignore_content(project_types)
-            
+
             # Write .gitignore
-            with open(self.gitignore_path, 'w') as f:
+            with open(self.gitignore_path, "w") as f:
                 f.write(content)
-            
+
             print(f"  ✅ .gitignore created for: {', '.join(project_types)}")
             return True
         except Exception as e:
             print(f"  ❌ Failed to create .gitignore: {e}")
             return False
-    
+
     def _detect_project_types(self) -> List[str]:
         """Detect project types based on files present"""
         project_types = []
-        
+
         # Check for Python
         if any(self.zenos_root.glob("*.py")) or (self.zenos_root / "requirements.txt").exists():
             project_types.append("python")
-        
+
         # Check for Node.js
         if (self.zenos_root / "package.json").exists() or (self.zenos_root / "yarn.lock").exists():
             project_types.append("node")
-        
+
         # Check for build files
         if any(self.zenos_root.glob("Makefile")) or any(self.zenos_root.glob("CMakeLists.txt")):
             project_types.append("build")
-        
+
         # Always add OS-specific patterns
         if sys.platform == "darwin":
             project_types.append("macos")
@@ -85,24 +81,24 @@ class GitSetupManager:
             project_types.append("windows")
         elif sys.platform.startswith("linux"):
             project_types.append("linux")
-        
+
         # Always add IDE and logs patterns
         project_types.extend(["ide", "logs"])
-        
+
         return project_types
-    
+
     def _generate_gitignore_content(self, project_types: List[str]) -> str:
         """Generate .gitignore content based on project types"""
         templates = self._get_gitignore_templates()
-        
+
         content = "# zenOS .gitignore\n"
         content += f"# Project types detected: {', '.join(project_types)}\n\n"
-        
+
         for project_type in project_types:
             if project_type in templates:
                 content += f"# {project_type.upper()}\n"
                 content += templates[project_type] + "\n"
-        
+
         # Add zenOS-specific patterns
         content += "\n# zenOS Specific\n"
         content += "setup.log\n"
@@ -111,9 +107,9 @@ class GitSetupManager:
         content += "workspace/temp/\n"
         content += "inbox/temp/\n"
         content += ".zenos_setup_complete\n"
-        
+
         return content
-    
+
     def _get_gitignore_templates(self) -> Dict[str, str]:
         """Get .gitignore templates for different project types"""
         return {
@@ -544,78 +540,73 @@ target/
 *.db
 *.sqlite
 *.sqlite3
-"""
+""",
         }
-    
+
     def setup_aliases(self) -> bool:
         """Setup git aliases for better workflow"""
         try:
             aliases = {
-                'st': 'status',
-                'co': 'checkout',
-                'br': 'branch',
-                'ci': 'commit',
-                'unstage': 'reset HEAD --',
-                'last': 'log -1 HEAD',
-                'visual': '!gitk',
-                'lg': 'log --oneline --decorate --graph --all',
-                'amend': 'commit --amend --no-edit',
-                'undo': 'reset HEAD~1',
-                'wip': 'commit -am "WIP"',
-                'unwip': 'reset HEAD~1',
-                'wipe': '!git add -A && git commit -qm "WIPE SAVEPOINT" && git reset HEAD~1 --hard',
-                'save': '!git add -A && git commit -m "SAVEPOINT"',
-                'restore': '!git reset HEAD~1 --hard'
+                "st": "status",
+                "co": "checkout",
+                "br": "branch",
+                "ci": "commit",
+                "unstage": "reset HEAD --",
+                "last": "log -1 HEAD",
+                "visual": "!gitk",
+                "lg": "log --oneline --decorate --graph --all",
+                "amend": "commit --amend --no-edit",
+                "undo": "reset HEAD~1",
+                "wip": 'commit -am "WIP"',
+                "unwip": "reset HEAD~1",
+                "wipe": '!git add -A && git commit -qm "WIPE SAVEPOINT" && git reset HEAD~1 --hard',
+                "save": '!git add -A && git commit -m "SAVEPOINT"',
+                "restore": "!git reset HEAD~1 --hard",
             }
-            
+
             for alias, command in aliases.items():
-                subprocess.run(
-                    ["git", "config", "--global", f"alias.{alias}", command],
-                    check=True
-                )
-            
+                subprocess.run(["git", "config", "--global", f"alias.{alias}", command], check=True)
+
             print("  ✅ Git aliases configured")
             return True
         except subprocess.CalledProcessError as e:
             print(f"  ❌ Failed to setup git aliases: {e}")
             return False
-    
+
     def has_user_config(self) -> bool:
         """Check if git user is configured"""
         try:
             name_result = subprocess.run(
                 ["git", "config", "--global", "user.name"],
-                capture_output=True, text=True, check=True
+                capture_output=True,
+                text=True,
+                check=True,
             )
             email_result = subprocess.run(
                 ["git", "config", "--global", "user.email"],
-                capture_output=True, text=True, check=True
+                capture_output=True,
+                text=True,
+                check=True,
             )
             return bool(name_result.stdout.strip() and email_result.stdout.strip())
         except subprocess.CalledProcessError:
             return False
-    
+
     def configure_user(self, name: str, email: str) -> bool:
         """Configure git user"""
         try:
-            subprocess.run(
-                ["git", "config", "--global", "user.name", name],
-                check=True
-            )
-            subprocess.run(
-                ["git", "config", "--global", "user.email", email],
-                check=True
-            )
+            subprocess.run(["git", "config", "--global", "user.name", name], check=True)
+            subprocess.run(["git", "config", "--global", "user.email", email], check=True)
             print(f"  ✅ Git user configured: {name} <{email}>")
             return True
         except subprocess.CalledProcessError as e:
             print(f"  ❌ Failed to configure git user: {e}")
             return False
-    
+
     def remove_tracked_unwanted_files(self) -> List[str]:
         """Remove tracked files that should be ignored"""
         removed_files = []
-        
+
         # Common patterns to remove
         patterns = [
             ".DS_Store",
@@ -642,9 +633,9 @@ target/
             "**/logs",
             "**/tmp",
             "**/temp",
-            "**/.cache"
+            "**/.cache",
         ]
-        
+
         for pattern in patterns:
             try:
                 result = subprocess.run(
@@ -652,39 +643,33 @@ target/
                     cwd=self.zenos_root,
                     capture_output=True,
                     text=True,
-                    check=False
+                    check=False,
                 )
-                
+
                 if result.returncode == 0 and result.stdout.strip():
-                    removed_files.extend(result.stdout.strip().split('\n'))
+                    removed_files.extend(result.stdout.strip().split("\n"))
             except Exception as e:
                 print(f"  ⚠️  Warning: Could not process pattern '{pattern}': {e}")
-        
+
         return removed_files
-    
-    def commit_changes(self, message: str = "chore: add .gitignore and cleanup tracked files") -> bool:
+
+    def commit_changes(
+        self, message: str = "chore: add .gitignore and cleanup tracked files"
+    ) -> bool:
         """Commit the .gitignore and cleanup changes"""
         try:
             # Add .gitignore
-            subprocess.run(
-                ["git", "add", ".gitignore"],
-                cwd=self.zenos_root,
-                check=True
-            )
-            
+            subprocess.run(["git", "add", ".gitignore"], cwd=self.zenos_root, check=True)
+
             # Commit changes
-            subprocess.run(
-                ["git", "commit", "-m", message],
-                cwd=self.zenos_root,
-                check=True
-            )
-            
+            subprocess.run(["git", "commit", "-m", message], cwd=self.zenos_root, check=True)
+
             print("  ✅ Changes committed successfully")
             return True
         except subprocess.CalledProcessError as e:
             print(f"  ❌ Failed to commit changes: {e}")
             return False
-    
+
     def verify_setup(self) -> bool:
         """Verify that the git setup is working correctly"""
         try:
@@ -694,9 +679,9 @@ target/
                 cwd=self.zenos_root,
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
-            
+
             # Check if .DS_Store files are being ignored
             test_file = self.zenos_root / ".DS_Store"
             if test_file.exists():
@@ -705,19 +690,19 @@ target/
                     cwd=self.zenos_root,
                     capture_output=True,
                     text=True,
-                    check=False
+                    check=False,
                 )
-                
+
                 if result.returncode == 0:
                     print("  ✅ .gitignore is working correctly")
                     return True
                 else:
                     print("  ⚠️  Warning: .DS_Store files might not be ignored")
                     return False
-            
+
             print("  ✅ Git setup verified")
             return True
-            
+
         except Exception as e:
             print(f"  ❌ Failed to verify git setup: {e}")
             return False

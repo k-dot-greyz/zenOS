@@ -523,23 +523,23 @@ WS     /api/v1/ai/stream            # Real-time communication
 
 ---
 
-## Part 8: The Pokédex Concept 🎮
+## Part 8: The Dex Concept 🎮
 
 ### Discovery & Collection System
 
-#### Model Pokédex (`pokedex/models.yaml`)
+#### Model Dex (`dex/models.yaml`)
 ```yaml
 models:
   - id: "claude-3-opus"
     name: "Claude the Wise"
     type: "conversational"
-    rarity: "legendary"
+    tier: "legendary"
     stats:
       intelligence: 95
       creativity: 90
       speed: 70
       memory: 85
-    abilities:
+    feats:
       - "Deep Context"
       - "Code Master"
       - "Philosophical Insight"
@@ -550,13 +550,13 @@ models:
     discovery_date: "2024-01-15"
 ```
 
-#### Procedure Pokédex (`pokedex/procedures.yaml`)
+#### Procedure Dex (`dex/procedures.yaml`)
 ```yaml
 procedures:
   - id: "zen.swarm.analyze"
     name: "Swarm Analysis"
     type: "collaborative"
-    rarity: "epic"
+    tier: "epic"
     stats:
       complexity: 80
       efficiency: 95
