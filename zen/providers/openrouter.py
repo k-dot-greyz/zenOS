@@ -2,12 +2,12 @@
 OpenRouter Provider - Unified access to all LLMs through OpenRouter.
 """
 
-import os
-import json
 import asyncio
-from typing import Optional, Dict, Any, AsyncIterator, List
+import json
+import os
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, AsyncIterator, Dict, List, Optional
 
 import aiohttp
 from pydantic import BaseModel, Field

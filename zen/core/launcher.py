@@ -3,13 +3,14 @@ Launcher for zenOS - orchestrates agent execution with AI providers.
 """
 
 import asyncio
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from rich.console import Console
 
-from zen.core.agent import AgentRegistry
-from zen.providers.openrouter import OpenRouterProvider, ModelTier
-from zen.utils.config import Config
 from zen.agents.promptos.prompt_critic import PromptCriticAgent
+from zen.core.agent import AgentRegistry
+from zen.providers.openrouter import ModelTier, OpenRouterProvider
+from zen.utils.config import Config
 
 console = Console()
 

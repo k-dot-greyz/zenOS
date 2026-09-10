@@ -2,16 +2,16 @@
 Context management for zenOS - Project, Git, and Personality awareness.
 """
 
+import json
 import os
 import subprocess
-import json
-import yaml
-from pathlib import Path
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
+import yaml
 from rich.console import Console
 
 console = Console()

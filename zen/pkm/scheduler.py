@@ -6,10 +6,10 @@ import asyncio
 import json
 import signal
 import sys
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Dict, Any, Callable
-from dataclasses import dataclass
+from typing import Any, Callable, Dict, Optional
 
 import schedule
 from rich.console import Console

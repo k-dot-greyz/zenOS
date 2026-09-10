@@ -2,8 +2,9 @@
 CLI interface for the Text Processor Plugin
 """
 
-import sys
 import json
+import sys
+
 from .main import TextProcessorPlugin, create_plugin
 
 

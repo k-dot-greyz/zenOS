@@ -10,12 +10,14 @@ from pathlib import Path
 # Add the zenOS package to the path
 sys.path.insert(0, str(Path(__file__).parent))
 
+from rich.console import Console
+from rich.panel import Panel
+
 from zen.pkm.config import PKMConfig
-from zen.pkm.storage import PKMStorage
 from zen.pkm.models import Conversation, Message, MessageRole
 from zen.pkm.processor import ConversationProcessor
 from zen.pkm.scheduler import PKMScheduler
-from rich.console import Console
+from zen.pkm.storage import PKMStorage
 
 console = Console()
 

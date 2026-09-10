@@ -6,11 +6,12 @@ This utility provides safe, timeout-protected command execution
 following the patterns from promptOS git_troubleshooter.py and git_aliases.sh
 """
 
+import os
 import subprocess
 import sys
-import os
-from typing import Dict, List, Optional, Union
 from pathlib import Path
+from typing import Dict, List, Optional, Union
+
 
 
 class SafeCommandExecutor:

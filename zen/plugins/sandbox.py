@@ -4,14 +4,15 @@ Safety first! No plugin can break your system!
 """
 
 import asyncio
+import os
+import shutil
 import subprocess
 import tempfile
-import shutil
-import os
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-from dataclasses import dataclass
+
 import psutil
 
 # Import resource only on Unix systems

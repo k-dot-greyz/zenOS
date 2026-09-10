@@ -4,15 +4,18 @@ This is where the magic happens - turning Git repos into live plugins!
 """
 
 import asyncio
+import shutil
 import subprocess
 import tempfile
-import shutil
+from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
-import yaml
+
 import aiohttp
-from .registry import PluginRegistry, PluginManifest, PluginEntry
+import yaml
+
+from .registry import PluginEntry, PluginManifest, PluginRegistry
 from .sandbox import PluginSandbox
 
 

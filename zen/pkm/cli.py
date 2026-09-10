@@ -14,8 +14,8 @@ from rich.table import Table
 from .config import PKMConfig
 from .extractor import GeminiExtractor
 from .processor import ConversationProcessor
-from .storage import PKMStorage
 from .scheduler import PKMScheduler
+from .storage import PKMStorage
 
 console = Console()
 

@@ -1,16 +1,17 @@
 """
 Plugin Discovery - Find and discover Git-based plugins
-The Pokédex for finding new plugins!
+The Dex for finding new plugins!
 """
 
 import asyncio
+import json
+import re
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+from urllib.parse import urlencode
+
 import aiohttp
 import yaml
-import json
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
-from urllib.parse import urlencode
-import re
 
 
 @dataclass
@@ -30,7 +31,7 @@ class DiscoveredPlugin:
 
 
 class PluginDiscovery:
-    """Discover plugins from GitHub - The Plugin Pokédex!"""
+    """Discover plugins from GitHub - The Plugin Dex!"""
 
     def __init__(self, github_token: Optional[str] = None):
         self.github_token = github_token

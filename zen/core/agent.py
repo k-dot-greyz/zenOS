@@ -2,15 +2,16 @@
 Agent base class and registry for zenOS.
 """
 
-import yaml
 import json
-from pathlib import Path
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from zen.utils.template import TemplateEngine
+import yaml
+
 from zen.utils.config import Config
+from zen.utils.template import TemplateEngine
 
 
 @dataclass
@@ -176,8 +177,8 @@ class AgentRegistry:
         try:
             from zen.agents.promptos import (
                 PromptCriticAgent,
-                SystemTroubleshooterAgent,
                 PromptSecurityAgent,
+                SystemTroubleshooterAgent,
             )
 
             # Create agent manifests for PromptOS agents

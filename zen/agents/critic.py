@@ -3,6 +3,7 @@ Critic agent for prompt analysis and improvement.
 """
 
 import asyncio
+
 from zen.core.agent import Agent, AgentManifest
 from zen.providers.openrouter import OpenRouterProvider
 

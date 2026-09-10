@@ -3,19 +3,21 @@ Unit tests for the TTS Queue System
 """
 
 import asyncio
-import pytest
-import time
 import threading
-from unittest.mock import Mock, patch, AsyncMock
+import time
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+
 from tts_queue_system import (
-    TTSQueueManager,
-    TTSWorker,
     AudioManager,
-    RateLimiter,
-    TTSMessage,
     MessagePriority,
-    TTSStatus,
+    RateLimiter,
     TTSConfig,
+    TTSMessage,
+    TTSQueueManager,
+    TTSStatus,
+    TTSWorker,
 )
 
 

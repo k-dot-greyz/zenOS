@@ -2,12 +2,13 @@
 Configuration management for zenOS.
 """
 
-import os
 import json
-import yaml
-from pathlib import Path
-from typing import Dict, Any, Optional
+import os
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+import yaml
 from dotenv import load_dotenv
 
 

@@ -8,17 +8,18 @@ to create a bulletproof, environment-agnostic development environment.
 This is the "one command" solution that works everywhere and never gets lost.
 """
 
-import os
-import sys
-import subprocess
-import json
-import yaml
 import argparse
+import json
+import os
 import platform
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+import subprocess
+import sys
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import yaml
 
 from .environment_detector import EnvironmentDetector
 from .git_setup import GitSetupManager
@@ -55,6 +56,24 @@ class SetupContext:
     zenos_root: Path
     user_home: Path
     setup_log: Path
+
+
+# Must stay aligned with pyproject.toml [project].dependencies / zen.runtime.REQUIRED_MODULES.
+FALLBACK_REQUIREMENTS = """# zenOS Core Dependencies (Python 3.14+)
+click>=8.2
+rich>=14.0
+pyyaml>=6.0.2
+jinja2>=3.1.6
+pydantic>=2.13.5,<2.14
+aiohttp>=3.11
+python-dotenv>=1.1
+prompt-toolkit>=3.0.50
+beautifulsoup4>=4.13
+schedule>=1.2.2
+httpx>=0.28
+aiofiles>=24.1
+psutil>=7.0
+"""
 
 
 class UnifiedSetupManager:
@@ -348,17 +367,8 @@ class UnifiedSetupManager:
 
     def _create_basic_requirements(self):
         """Create basic requirements.txt if none exists"""
-        requirements = """# zenOS Core Dependencies
-click>=8.0.0
-rich>=13.0.0
-pyyaml>=6.0
-requests>=2.28.0
-httpx>=0.24.0
-psutil>=5.9.0
-nltk>=3.8.0
-"""
         with open(self.zenos_root / "requirements.txt", "w") as f:
-            f.write(requirements)
+            f.write(FALLBACK_REQUIREMENTS)
 
     def _setup_zenos_config(self) -> bool:
         """Setup zenOS configuration"""

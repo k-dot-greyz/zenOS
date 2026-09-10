@@ -3,12 +3,13 @@
 zenOS Inbox System - Process incoming items
 """
 
-import os
 import json
-import click
+import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import click
 
 
 class InboxManager:
@@ -94,9 +95,11 @@ class InboxManager:
 
 
 @click.group()
-@click.alias("inbox")
 def receive():
-    """zenOS Receive System - Process incoming items"""
+    """zenOS Receive System - Process incoming items.
+
+    Canonical command is `zen receive`. `zen inbox` is registered as an alias.
+    """
     pass
 
 

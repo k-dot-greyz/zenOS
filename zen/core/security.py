@@ -3,7 +3,7 @@ Security framework for zenOS - defense against prompt injection and other attack
 """
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 class SecurityFramework:

@@ -6,14 +6,15 @@ Scans local filesystem for all git repositories and provides comprehensive
 repository management capabilities.
 """
 
-import os
-import sys
-import json
 import argparse
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple
-from datetime import datetime
+import json
+import os
 import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
 
 
 # Colors for output

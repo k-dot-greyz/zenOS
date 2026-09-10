@@ -3,10 +3,10 @@
 Simple test suite for PKM module (Windows compatible).
 """
 
-import sys
 import asyncio
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Add current directory to path for imports
 sys.path.insert(0, ".")
@@ -25,7 +25,7 @@ def test_imports():
 
         print("OK: PKMConfig imported")
 
-        from zen.pkm.models import Conversation, Message, MessageRole, KnowledgeEntry
+        from zen.pkm.models import Conversation, KnowledgeEntry, Message, MessageRole
 
         print("OK: Data models imported")
 
@@ -99,10 +99,10 @@ def test_models():
     try:
         from zen.pkm.models import (
             Conversation,
+            ConversationStatus,
+            KnowledgeEntry,
             Message,
             MessageRole,
-            KnowledgeEntry,
-            ConversationStatus,
         )
 
         # Test Message creation
@@ -153,9 +153,9 @@ def test_storage():
     print("\nTesting storage functionality...")
 
     try:
-        from zen.pkm.storage import PKMStorage
         from zen.pkm.config import PKMConfig
-        from zen.pkm.models import Conversation, Message, MessageRole, ConversationStatus
+        from zen.pkm.models import Conversation, ConversationStatus, Message, MessageRole
+        from zen.pkm.storage import PKMStorage
 
         # Create test config with temp directory
         config = PKMConfig()
@@ -242,8 +242,9 @@ def test_cli():
     print("\nTesting CLI functionality...")
 
     try:
-        from zen.pkm.cli import pkm
         import click.testing
+
+        from zen.pkm.cli import pkm
 
         # Test CLI group creation
         runner = click.testing.CliRunner()
@@ -285,8 +286,8 @@ async def test_async_functionality():
     print("\nTesting async functionality...")
 
     try:
-        from zen.pkm.extractor import GeminiExtractor
         from zen.pkm.config import PKMConfig
+        from zen.pkm.extractor import GeminiExtractor
 
         # Create test config
         config = PKMConfig()

@@ -3,14 +3,14 @@ Mobile Performance Optimizer for zenOS
 Optimize for battery life, data usage, and mobile processors
 """
 
-import os
-import json
-import time
 import hashlib
-from typing import Optional, Dict, Any, List
-from pathlib import Path
+import json
+import os
+import time
+from dataclasses import asdict, dataclass
 from functools import lru_cache
-from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -272,8 +272,8 @@ class DataOptimizer:
     @staticmethod
     def compress_text(text: str) -> str:
         """Compress text for transmission."""
-        import zlib
         import base64
+        import zlib
 
         compressed = zlib.compress(text.encode("utf-8"), level=9)
         return base64.b64encode(compressed).decode("ascii")
@@ -281,8 +281,8 @@ class DataOptimizer:
     @staticmethod
     def decompress_text(compressed: str) -> str:
         """Decompress text."""
-        import zlib
         import base64
+        import zlib
 
         data = base64.b64decode(compressed.encode("ascii"))
         return zlib.decompress(data).decode("utf-8")

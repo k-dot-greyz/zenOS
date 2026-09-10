@@ -6,12 +6,13 @@ This is the core auto-critique system from PromptOS, integrated into zenOS.
 Every prompt gets automatically critiqued and upgraded for maximum effectiveness.
 """
 
+import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 import yaml
-import json
 
 from zen.core.agent import Agent, AgentManifest
 from zen.providers.openrouter import OpenRouterProvider

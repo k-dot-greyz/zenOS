@@ -8,7 +8,7 @@ import re
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Dict, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
 import aiohttp
@@ -17,7 +17,7 @@ from rich.console import Console
 from rich.progress import Progress, TaskID
 
 from .config import PKMConfig
-from .models import Conversation, Message, MessageRole, ConversationStatus, ExtractionResult
+from .models import Conversation, ConversationStatus, ExtractionResult, Message, MessageRole
 
 console = Console()
 

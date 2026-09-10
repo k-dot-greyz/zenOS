@@ -2,7 +2,8 @@
 Auto-critique system for zenOS.
 """
 
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from zen.providers.openrouter import OpenRouterProvider
 
 

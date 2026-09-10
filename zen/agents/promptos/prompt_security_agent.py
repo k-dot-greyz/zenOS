@@ -6,11 +6,11 @@ This agent analyzes prompts for security vulnerabilities and attack patterns,
 providing protection against 178+ known attack patterns with multi-layer defense.
 """
 
-import re
 import json
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+import re
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 from zen.core.agent import Agent, AgentManifest
 from zen.providers.openrouter import OpenRouterProvider

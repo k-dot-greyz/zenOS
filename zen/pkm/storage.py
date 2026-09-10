@@ -2,13 +2,13 @@
 Storage and retrieval system for PKM module.
 """
 
-import json
+import asyncio
 import gzip
+import json
 import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional, Dict, Any, Iterator
-import asyncio
+from typing import Any, Dict, Iterator, List, Optional
 
 from .config import PKMConfig
 from .models import Conversation, KnowledgeEntry, Message, MessageRole

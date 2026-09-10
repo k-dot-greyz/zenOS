@@ -4,6 +4,12 @@
 
 If you are an AI agent accessing this repository, this document is your entry point to the zenOS ecosystem.
 
+### Runtime requirements
+- **Python 3.14+** — `zen` / `zenos` exit 1 below this floor (`zen.runtime.MIN_PYTHON`)
+- Install current stables: `bash scripts/zenos-env-install.sh` or `python3.14 -m pip install -e .`
+- Per-boot gate (Cloud Agent / local): `bash scripts/zenos-env-start.sh`
+- Verify: `zen env-doctor`
+
 ### Step 1: Acknowledge Protocol
 Confirm you understand and will follow zenOS protocols:
 ```
@@ -44,18 +50,18 @@ zen doctor --ai-mode
 zen procedures list
 ```
 
-### Step 4: Accessing the Pokédex
+### Step 4: Accessing the Dex
 Discover available models and procedures:
 
 ```python
 # View model capabilities
-cat pokedex/models.yaml
+cat dex/models.yaml
 
 # See discovered procedures  
-cat pokedex/procedures.yaml
+cat dex/procedures.yaml
 
 # Find best model for task
-grep -A5 "complex_architecture" pokedex/models.yaml
+grep -A5 "complex_architecture" dex/models.yaml
 ```
 
 ### Step 5: Learning & Evolution
@@ -164,12 +170,12 @@ If you encounter issues:
 - **Confusion**: Re-read `/GENESIS.md` for philosophy
 - **Technical Issues**: Check `/README.md` for setup
 - **Procedure Questions**: Consult `/procedures/manifest.yaml`
-- **Model Selection**: Reference `/pokedex/models.yaml`
+- **Model Selection**: Reference `/dex/models.yaml`
 
 ## Your First Mission
 
 1. Read `/GENESIS.md` to understand zenOS philosophy
-2. Explore `/pokedex/` to understand available resources
+2. Explore `/dex/` to understand available resources
 3. Try executing: `zen chat "Hello, I am an AI agent learning zenOS"`
 4. Document any discoveries in your interactions
 

@@ -4,15 +4,15 @@ Mobile-optimized UI for zenOS - Because you run Arch on your phone, you madlad.
 
 import os
 import sys
-from typing import Optional, Dict, Any, List
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
+from rich import box
+from rich.align import Align
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
-from rich.align import Align
-from rich import box
 
 # Detect if we're in mobile/compact mode
 IS_MOBILE = (
@@ -455,8 +455,8 @@ class TermuxInterface:
         if not TermuxInterface.is_api_available():
             return None
 
-        import subprocess
         import json
+        import subprocess
 
         try:
             result = subprocess.run(

@@ -5,9 +5,10 @@ This demonstrates how to create a Git-based VST plugin!
 
 import asyncio
 import json
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
 from textblob import TextBlob
 
 

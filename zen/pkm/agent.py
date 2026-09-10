@@ -4,20 +4,21 @@ PKM Agent for zenOS - provides conversation extraction and knowledge management.
 
 import asyncio
 from datetime import datetime
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
+
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
+from rich.table import Table
 
 from zen.core.agent import Agent, AgentManifest
 from zen.providers.openrouter import OpenRouterProvider
 
 from .config import PKMConfig
 from .extractor import GeminiExtractor
-from .processor import ConversationProcessor
-from .storage import PKMStorage
-from .scheduler import PKMScheduler
 from .models import Conversation, KnowledgeEntry
+from .processor import ConversationProcessor
+from .scheduler import PKMScheduler
+from .storage import PKMStorage
 
 console = Console()
 

@@ -4,29 +4,29 @@ Interactive chat mode for zenOS - The zen way to talk to AI.
 
 import asyncio
 import sys
-from typing import Optional, Dict, Any, List
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from prompt_toolkit import PromptSession
-from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import WordCompleter, Completer, Completion
+from prompt_toolkit.completion import Completer, Completion, WordCompleter
 from prompt_toolkit.formatted_text import HTML
-from prompt_toolkit.styles import Style
+from prompt_toolkit.history import FileHistory
 from prompt_toolkit.key_binding import KeyBindings
-from rich.console import Console
-from rich.panel import Panel
-from rich.markdown import Markdown
-from rich.live import Live
-from rich.table import Table
+from prompt_toolkit.styles import Style
 from rich.columns import Columns
+from rich.console import Console
+from rich.live import Live
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.table import Table
 from rich.text import Text
 
-from zen.providers.openrouter import OpenRouterProvider, ModelTier
-from zen.utils.config import Config
+from zen.core.context import AgentPersonality, ContextManager
+from zen.providers.openrouter import ModelTier, OpenRouterProvider
 from zen.ui.display import DisplayManager
-from zen.core.context import ContextManager, AgentPersonality
+from zen.utils.config import Config
 
 console = Console()
 

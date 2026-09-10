@@ -3,16 +3,16 @@ Offline/Local Model Provider for zenOS
 True offline AI - because your phone IS the computer
 """
 
-import os
-import sys
-import json
-import subprocess
 import asyncio
-from typing import Optional, Dict, Any, List, AsyncIterator
-from pathlib import Path
+import json
+import logging
+import os
+import subprocess
+import sys
 from dataclasses import dataclass
 from enum import Enum
-import logging
+from pathlib import Path
+from typing import Any, AsyncIterator, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -11,9 +11,11 @@ This file demonstrates how to integrate the TTS queue system with:
 import asyncio
 import json
 import logging
+from typing import Any, Dict, Optional
+
 import websockets
-from typing import Dict, Any, Optional
-from tts_queue_system import TTSQueueManager, TTSConfig, MessagePriority, TTSMessage
+
+from tts_queue_system import MessagePriority, TTSConfig, TTSMessage, TTSQueueManager
 
 # Optional imports for different TTS engines
 try:
@@ -24,8 +26,8 @@ except ImportError:
     PYTTSX3_AVAILABLE = False
 
 try:
-    from gtts import gTTS
     import pygame
+    from gtts import gTTS
 
     GTTS_AVAILABLE = True
 except ImportError:
@@ -84,8 +86,8 @@ class Pyttsx3TTSEngine:
         """
         # pyttsx3 doesn't return audio data directly, so we'll use a workaround
         # In a real implementation, you might want to use a different approach
-        import tempfile
         import os
+        import tempfile
 
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
             self.engine.save_to_file(text, tmp_file.name)
@@ -135,8 +137,8 @@ class GTTS_Engine:
         tts = gTTS(text=text, lang=self.language, tld=self.tld)
 
         # Save to temporary file
-        import tempfile
         import os
+        import tempfile
 
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_file:
             tts.save(tmp_file.name)
@@ -156,8 +158,8 @@ class GTTS_Engine:
 
         The function blocks (awaits) until playback finishes.
         """
-        import tempfile
         import os
+        import tempfile
 
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_file:
             tmp_file.write(audio_data)

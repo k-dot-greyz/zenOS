@@ -14,36 +14,39 @@ Features:
 - Multi-user support
 """
 
-import os
-import sys
-import json
 import argparse
-import subprocess
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple, Set
-from datetime import datetime, timedelta
+import json
+import os
 import shutil
+import subprocess
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional, Set, Tuple
+
+from clone_all_repos import (
+    clone_repository,
+    confirm_action,
+    ensure_destination_dir,
+    fetch_all_repos,
+    get_configuration,
+    get_github_token,
+)
+from clone_all_repos import parse_arguments as parse_clone_args
+from clone_all_repos import (
+    repo_exists_locally,
+    save_results_to_json,
+    update_repository,
+)
 
 # Import our existing modules
 from find_all_local_repos import (
     Colors,
-    print_colored,
-    is_git_repository,
-    get_git_info,
-    scan_for_repositories,
     get_default_scan_paths,
-)
-from clone_all_repos import (
-    parse_arguments as parse_clone_args,
-    get_configuration,
-    get_github_token,
-    ensure_destination_dir,
-    confirm_action,
-    fetch_all_repos,
-    repo_exists_locally,
-    clone_repository,
-    update_repository,
-    save_results_to_json,
+    get_git_info,
+    is_git_repository,
+    print_colored,
+    scan_for_repositories,
 )
 
 
@@ -93,7 +96,7 @@ class ZenRepoManager:
         )
 
         # Print results
-        from find_all_local_repos import print_repository_summary, print_repository_details
+        from find_all_local_repos import print_repository_details, print_repository_summary
 
         print_repository_summary(repositories)
 

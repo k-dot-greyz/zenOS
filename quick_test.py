@@ -5,8 +5,8 @@ Quick Test for zenOS Setup System
 A minimal test to verify the setup system is working.
 """
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 

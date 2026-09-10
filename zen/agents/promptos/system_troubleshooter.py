@@ -7,12 +7,12 @@ local development setup issues including git, shell configuration,
 permissions, and tool installation problems.
 """
 
-import os
-import sys
-import subprocess
-from pathlib import Path
-from typing import Dict, List, Optional, Any
 import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from zen.core.agent import Agent, AgentManifest
 from zen.providers.openrouter import OpenRouterProvider

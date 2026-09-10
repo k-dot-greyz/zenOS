@@ -2,9 +2,10 @@
 Template engine for zenOS using Jinja2.
 """
 
-from jinja2 import Environment, Template, FileSystemLoader, select_autoescape
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
 
 class TemplateEngine:

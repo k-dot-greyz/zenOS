@@ -4,8 +4,8 @@
 Comprehensive test suite for zenOS core functionality and bridge system
 """
 
-import sys
 import os
+import sys
 import traceback
 from pathlib import Path
 

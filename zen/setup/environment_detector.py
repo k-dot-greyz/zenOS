@@ -7,12 +7,12 @@ Handles Windows, macOS, Linux, and Termux environments with specific optimizatio
 """
 
 import os
-import sys
-import subprocess
 import platform
+import subprocess
+import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
-from dataclasses import dataclass
 
 
 @dataclass
@@ -251,8 +251,18 @@ class EnvironmentDetector:
         if not env_info.node_available:
             warnings.append("Node.js not available - MCP integration will be disabled")
 
-        if env_info.python_version < "3.7":
-            warnings.append(f"Python {env_info.python_version} detected - Python 3.7+ recommended")
+        from zen.runtime import MIN_PYTHON
+
+        parts = env_info.python_version.split(".")
+        try:
+            detected = (int(parts[0]), int(parts[1]))
+        except (ValueError, IndexError):
+            detected = (0, 0)
+        if detected < MIN_PYTHON:
+            floor = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
+            warnings.append(
+                f"Python {env_info.python_version} detected - Python {floor}+ required"
+            )
 
         if env_info.is_windows and "powershell" not in env_info.shell.lower():
             warnings.append("PowerShell recommended on Windows for best compatibility")

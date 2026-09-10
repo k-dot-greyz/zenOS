@@ -4,12 +4,13 @@ zenOS AI Post Template Selector
 Loads YAML templates and provides interactive selection with clipboard support
 """
 
-import yaml
-import sys
+import os
 import platform
 import subprocess
-import os
+import sys
 from pathlib import Path
+
+import yaml
 
 
 def load_templates(yaml_path="../ai_post_templates.yaml"):

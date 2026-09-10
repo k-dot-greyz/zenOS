@@ -1,16 +1,17 @@
 """
 Plugin Registry - Central catalog for all Git-based plugins
-Like a Pokédex for GitHub repositories!
+Like a Dex for GitHub repositories!
 """
 
-import yaml
-import json
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Set
-from dataclasses import dataclass, asdict
-from datetime import datetime
 import asyncio
+import json
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
+
 import aiofiles
+import yaml
 
 
 @dataclass
@@ -66,8 +67,8 @@ class PluginEntry:
     performance_metrics: Dict[str, float]
 
     @property
-    def rarity(self) -> str:
-        """Calculate plugin rarity based on usage and capabilities"""
+    def tier(self) -> str:
+        """Calculate plugin tier based on usage and capabilities"""
         if self.usage_count > 1000 and len(self.manifest.capabilities) > 5:
             return "legendary"
         elif self.usage_count > 500 and len(self.manifest.capabilities) > 3:
@@ -89,7 +90,7 @@ class PluginEntry:
 
 
 class PluginRegistry:
-    """Central registry for all Git-based plugins - The Pokédex of Plugins!"""
+    """Central registry for all Git-based plugins - The Dex of Plugins!"""
 
     def __init__(self, registry_path: Path = Path("~/.zenos/plugins").expanduser()):
         self.registry_path = registry_path
@@ -210,7 +211,7 @@ class PluginRegistry:
 
     def get_legendary_plugins(self) -> List[PluginEntry]:
         """Get all legendary plugins"""
-        return [p for p in self.plugins.values() if p.rarity == "legendary"]
+        return [p for p in self.plugins.values() if p.tier == "legendary"]
 
     def get_most_used_plugins(self, limit: int = 10) -> List[PluginEntry]:
         """Get most used plugins"""
@@ -263,17 +264,17 @@ class PluginRegistry:
         for capability, plugin_ids in self.capabilities.items():
             capabilities[capability] = len(plugin_ids)
 
-        rarities = {}
+        tiers = {}
         for entry in self.plugins.values():
-            rarity = entry.rarity
-            rarities[rarity] = rarities.get(rarity, 0) + 1
+            tier = entry.tier
+            tiers[tier] = tiers.get(tier, 0) + 1
 
         return {
             "total_plugins": total_plugins,
             "active_plugins": active_plugins,
             "categories": categories,
             "capabilities": capabilities,
-            "rarities": rarities,
+            "tiers": tiers,
             "total_usage": sum(p.usage_count for p in self.plugins.values()),
         }
 

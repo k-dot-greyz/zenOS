@@ -5,8 +5,9 @@ Test script for zenOS - Let's see if this thing actually works!
 
 import asyncio
 import os
-from zen.core.launcher import Launcher
+
 from zen.agents import builtin_agents
+from zen.core.launcher import Launcher
 
 
 async def test_agents():
@@ -47,7 +48,7 @@ def test_plugin_system():
     print("\n🔌 Testing Plugin System...")
 
     try:
-        from zen.plugins import PluginRegistry, GitPluginLoader
+        from zen.plugins import GitPluginLoader, PluginRegistry
 
         # Test registry
         registry = PluginRegistry()
