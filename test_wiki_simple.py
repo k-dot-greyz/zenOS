@@ -64,9 +64,16 @@ def test_locate_dev_master_monkeypatch(monkeypatch=None):
             shutil.rmtree(fake_dm, ignore_errors=True)
 
 
-def test_write_agent_context(tmp_path: Path):
+def test_write_agent_context(tmp_path: Path | None = None):
+    import tempfile
+
     from zen.wiki.export import write_agent_context
     from zen.wiki.paths import VisualWikiPaths
+
+    owned = None
+    if tmp_path is None:
+        owned = tempfile.TemporaryDirectory()
+        tmp_path = Path(owned.name)
 
     wiki_root = tmp_path / "wiki"
     wiki_root.mkdir()
@@ -79,10 +86,14 @@ def test_write_agent_context(tmp_path: Path):
         package_json=wiki_root / "package.json",
         source="test",
     )
-    written = write_agent_context(output_dir=tmp_path / "out", paths=paths)
-    assert written["json"].is_file()
-    payload = json.loads(written["json"].read_text())
-    assert "resources" in payload
+    try:
+        written = write_agent_context(output_dir=tmp_path / "out", paths=paths)
+        assert written["json"].is_file()
+        payload = json.loads(written["json"].read_text())
+        assert "resources" in payload
+    finally:
+        if owned is not None:
+            owned.cleanup()
 
 
 if __name__ == "__main__":
