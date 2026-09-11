@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -524,9 +525,10 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
             found, source = locate_visual_wiki(self.zenos_root)
             if found and (found / "package.json").is_file():
                 print(f"  ✅ Visual Wiki found ({source})")
-                if self.context.node_available:
+                npm_bin = shutil.which("npm") if self.context.node_available else None
+                if npm_bin:
                     npm_result = subprocess.run(
-                        ["npm", "install"],
+                        [npm_bin, "install"],
                         cwd=str(found),
                         capture_output=True,
                         text=True,
@@ -536,6 +538,8 @@ alias zen-plugins='python3 "{self.zenos_root}/zen/cli.py" plugins'
                     else:
                         detail = (npm_result.stderr or npm_result.stdout or "").strip()
                         print(f"  ⚠️  npm install failed: {detail}")
+                elif self.context.node_available:
+                    print("  ⚠️  npm not found — install Node.js tooling, then `zen wiki setup`")
                 else:
                     print("  ⚠️  Node.js not available — run `zen wiki setup` later")
             else:

@@ -89,4 +89,5 @@ if __name__ == "__main__":
     test_imports()
     test_export_shape()
     test_locate_dev_master_monkeypatch()
+    test_write_agent_context()
     print("OK: visual wiki tests passed")
