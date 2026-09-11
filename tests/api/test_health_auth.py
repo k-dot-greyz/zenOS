@@ -108,3 +108,28 @@ def test_non_loopback_bind_requires_token():
     with pytest.raises(ValueError, match="ZEN_API_TOKEN"):
         require_token_for_bind("192.168.1.10", "")
     require_token_for_bind("0.0.0.0", "secret")
+
+
+def test_session_store_caps_oldest_and_expires(monkeypatch):
+    from zen.api.session import SessionStore
+
+    clock = {"now": 1000.0}
+
+    def fake_monotonic() -> float:
+        return clock["now"]
+
+    monkeypatch.setattr("zen.api.session.monotonic", fake_monotonic)
+    store = SessionStore(ttl_seconds=10, max_sessions=2)
+    first = store.create()
+    clock["now"] += 1
+    second = store.create()
+    clock["now"] += 1
+    third = store.create()
+    assert not store.exists(first)
+    assert store.exists(second)
+    assert store.exists(third)
+    assert store.next_seq(third) == 1
+
+    clock["now"] += 11
+    assert not store.exists(second)
+    assert store.next_seq(third) == 0

@@ -56,7 +56,7 @@ async def get_model(
 @router.get("/cards/procedures")
 async def list_procedures(
     request: Request,
-    type: Optional[str] = Query(default=None, alias="type"),
+    proc_type: Optional[str] = Query(default=None, alias="type"),
     tier: Optional[str] = Query(default=None),
     service: DexService = Depends(get_dex_service),
 ) -> dict:
@@ -64,7 +64,7 @@ async def list_procedures(
     sid, seq = _sid_seq(request)
     cards = [
         make_card("zen.procedure", procedure.id, service.procedure_fields(procedure))
-        for procedure in service.list_procedures(proc_type=type, tier=tier)
+        for procedure in service.list_procedures(proc_type=proc_type, tier=tier)
     ]
     return make_collection("zen.procedure", cards, sid=sid, seq=seq).to_wire()
 

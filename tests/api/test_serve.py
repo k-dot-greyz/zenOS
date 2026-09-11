@@ -36,3 +36,20 @@ def test_zen_serve_help():
     assert result.exit_code == 0
     assert "--host" in result.output
     assert "--port" in result.output
+
+
+def test_parse_bind_port_rejects_invalid_values():
+    from zen.api.serve import parse_bind_port
+
+    assert parse_bind_port(None) == 8080
+    assert parse_bind_port("") == 8080
+    assert parse_bind_port("9090") == 9090
+    with pytest.raises(ValueError, match="Invalid API port"):
+        parse_bind_port("nope")
+    with pytest.raises(ValueError, match="Invalid API port"):
+        parse_bind_port("70000")
+
+
+def test_main_invalid_env_port_exits_2(monkeypatch):
+    monkeypatch.setenv("ZEN_API_PORT", "not-a-port")
+    assert main([]) == 2

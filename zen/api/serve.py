@@ -13,6 +13,18 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8080
 
 
+def parse_bind_port(raw: Optional[str], default: int = DEFAULT_PORT) -> int:
+    """Parse an API bind port from env or CLI text."""
+    text = str(default) if raw is None or str(raw).strip() == "" else str(raw).strip()
+    try:
+        port = int(text)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid API port: {raw!r}") from exc
+    if not 1 <= port <= 65535:
+        raise ValueError(f"Invalid API port: {port}")
+    return port
+
+
 def build_parser() -> argparse.ArgumentParser:
     """CLI parser for `zen serve` / `python -m zen.api`."""
     parser = argparse.ArgumentParser(
@@ -27,7 +39,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--port",
         type=int,
-        default=int(os.getenv("ZEN_API_PORT", str(DEFAULT_PORT))),
+        default=None,
         help=f"Bind port (default {DEFAULT_PORT})",
     )
     parser.add_argument(
@@ -57,7 +69,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     """Parse args and serve. Returns a process exit code."""
     args = build_parser().parse_args(argv)
     try:
-        run_server(args.host, args.port, args.reload)
+        port = args.port if args.port is not None else parse_bind_port(os.getenv("ZEN_API_PORT"))
+        run_server(args.host, port, args.reload)
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2

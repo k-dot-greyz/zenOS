@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any, Dict, List, Optional
 
 from zen.inbox import InboxManager
@@ -30,9 +31,12 @@ class InboxService:
     ) -> Dict[str, Any]:
         """Capture an inbox item and return the stored record."""
         item_id = self.manager.add_item(item_type, content, metadata)
-        for item in self.manager.list_items():
-            if item.get("id") == item_id:
-                return item
+        item_file = self.manager.incoming_path / f"{item_id}.json"
+        if item_file.is_file():
+            with item_file.open() as handle:
+                stored = json.load(handle)
+            if isinstance(stored, dict) and stored.get("id") == item_id:
+                return stored
         return {
             "id": item_id,
             "type": item_type,

@@ -367,11 +367,11 @@ def setup(unattended, validate_only, phase):
 @click.option("--reload", is_flag=True, help="Reload on code changes")
 def serve(host: Optional[str], port: Optional[int], reload: bool) -> None:
     """Run the zenOS REST API."""
-    from zen.api.serve import run_server
+    from zen.api.serve import parse_bind_port, run_server
 
     bind_host = host or os.getenv("ZEN_API_HOST", "127.0.0.1")
-    bind_port = port if port is not None else int(os.getenv("ZEN_API_PORT", "8080"))
     try:
+        bind_port = port if port is not None else parse_bind_port(os.getenv("ZEN_API_PORT"))
         run_server(bind_host, bind_port, reload)
     except ValueError as exc:
         console.print(f"[red]{exc}[/red]")

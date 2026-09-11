@@ -110,4 +110,5 @@ SSE streams emit `kind: delta` packets (only changed fields) and finish with
 ## Docker
 
 `docker compose up zen-cli` serves the API on port 8080. Set `ZEN_API_TOKEN` in
-`.env` — the container binds `0.0.0.0`.
+`.env` — the container binds `0.0.0.0`, and the process refuses to start without
+a token. The image is Python 3.14 to match `zen.runtime.MIN_PYTHON`.

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hmac
 from typing import Optional
 
 from fastapi import Header, Request
@@ -33,5 +34,9 @@ async def require_api_token(
     if not authorization or not authorization.startswith("Bearer "):
         raise PacketError(401, "unauthorized", "Bearer token required")
     provided = authorization[7:].strip()
-    if provided != expected:
+    try:
+        matched = hmac.compare_digest(provided, expected)
+    except (TypeError, ValueError):
+        matched = False
+    if not matched:
         raise PacketError(401, "unauthorized", "Invalid token")
