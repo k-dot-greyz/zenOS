@@ -54,6 +54,14 @@
 - Closes: #27, #21
 - Status: verification complete; ready for human review
 
+## Rebase onto main — 2026-09-11
+
+- Rebased onto `origin/main` (`e43ae8b`). Do not merge/close.
+- Conflict: add/add on `docs/archive/README.md` (main already had a short SSOT stub after the dex rebrand).
+- Resolution: kept this PR's archive policy + naming/header, and retained main's current sources of truth (`dex/`, GENESIS, AI_INSTRUCTIONS, README).
+- Path refresh after pokedex→dex rebrand already on main: guide + ADR-001 now point at `dex/` / `zen/dex/catalog.py`; conversation archive path is `docs/archive/CONVERSATION_ARCHIVE.md`.
+- Copilot review: switched “do not commit private URLs” to “do not commit tokens/credentials/secret endpoints”; private GitHub repo URLs stay in `repos/registry.yaml` with `visibility: private`.
+
 ## Next issue (deferred — separate PR)
 
 **#22** — README documentation & repo ecosystem sections (depends on this guide landing first)
