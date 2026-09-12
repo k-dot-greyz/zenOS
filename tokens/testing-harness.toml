@@ -1,0 +1,28 @@
+# zenOS testing harness tokens (I2 — literals live here only)
+# Referenced by policy/, CI, and zen.testing.hydrate — never inline in logic.
+
+[testing]
+# Substrate perf gate — TESTING.md §3 (value is a token, debate T3 applies)
+perf_specimen_count = 120
+perf_target_fps = 120
+
+# pytest / smoke timeouts (seconds)
+pytest_timeout = 300
+smoke_cli_timeout = 10
+
+# Provisional binding TTL — PROVISIONING P5
+provisional_binding_ttl_days = 14
+
+# Golden file policy — TESTING.md §5
+golden_auto_regen_allowed = false
+
+[viewport]
+# SPINE.md — viewport.sm.width example; axes reference these keys
+sm_width = 768
+md_width = 1024
+lg_width = 1280
+
+[ci]
+# Harness validate strictness
+require_deterministic_negotiation = true
+offline_bootstrap_required = false  # enable when VITRINE engine ships

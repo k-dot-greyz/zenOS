@@ -1,0 +1,89 @@
+# zenOS stack binding lock (I2 exemption — package names/versions live here only)
+# Git-tracked, human-diffable. Amend via negotiate → approve → hydrate.
+# See docs/testing-harness/PROVISIONING.md
+
+schema_version = "1"
+profile_default = "ci/headless"
+
+[[bindings]]
+requirement = "execute_test_plan"
+profile = "ci/headless"
+provider = "pytest"
+state = "VERIFIED"
+provenance = ["zenos.stack.lock", "tokens/testing-harness.toml"]
+
+[[bindings]]
+requirement = "resolve_python_deps"
+profile = "ci/headless"
+provider = "pip-ci"
+state = "VERIFIED"
+provenance = ["requirements.txt", "pyproject.toml"]
+
+[[bindings]]
+requirement = "lint_python"
+profile = "ci/headless"
+provider = "black-isort-flake8"
+state = "VERIFIED"
+provenance = [".github/workflows/zenos-ci.yml"]
+
+[[bindings]]
+requirement = "execute_test_plan"
+profile = "linux/wayland/chromium/dev"
+provider = "vitrine-gauntlet"
+state = "PROVISIONAL"
+provenance = ["docs/testing-harness/TESTING.md"]
+note = "Design reference only — runtime not shipped"
+
+[[bindings]]
+requirement = "isolate_specimen"
+profile = "linux/wayland/chromium/dev"
+provider = "substrate-d1-pending"
+state = "FAILED"
+provenance = ["docs/testing-harness/DECISIONS.md#d1"]
+
+[[bindings]]
+requirement = "render_gpu_world_plane"
+profile = "linux/wayland/chromium/dev"
+provider = "wgpu-world-pending"
+state = "FAILED"
+provenance = ["docs/testing-harness/UX-STACK.md"]
+
+[[bindings]]
+requirement = "serve_static_chrome"
+profile = "linux/wayland/chromium/dev"
+provider = "astro-shell-pending"
+state = "PROVISIONAL"
+provenance = ["docs/testing-harness/UX-STACK.md"]
+
+[providers.pytest]
+ecosystem = "python"
+packages = [
+  { name = "pytest", version = "7.4.4" },
+  { name = "pytest-cov", version = "4.1.0" },
+  { name = "pytest-asyncio", version = "0.23.8" },
+]
+lockfile = "requirements.txt"
+
+[providers.pip-ci]
+ecosystem = "python"
+command = "pip install -r requirements.txt"
+replay_command = "pip install -r requirements.txt"
+note = "Use pip ci replay when lockfile semantics exist"
+
+[providers.black-isort-flake8]
+ecosystem = "python"
+packages = [
+  { name = "black", version = "24.8.0" },
+  { name = "isort", version = "5.13.2" },
+  { name = "flake8", version = "7.1.1" },
+]
+
+[providers.vitrine-gauntlet]
+ecosystem = "design"
+packages = []
+note = "VITRINE GAUNTLET — binding placeholder until runtime provider"
+
+[providers.substrate-d1-pending]
+ecosystem = "design"
+packages = []
+note = "D1 open — see DECISIONS.md"
