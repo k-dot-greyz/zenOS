@@ -1,0 +1,9 @@
+[submodule "mcp-config"]
+	path = mcp-config
+	url = https://github.com/k-dot-greyz/mcp-config.git
+[submodule "neuro-spicy-devkit"]
+	path = neuro-spicy-devkit
+	url = https://github.com/k-dot-greyz/neuro-spicy-devkit.git
+[submodule "zenOS-dev"]
+	path = zenOS-dev
+	url = https://github.com/k-dot-greyz/zenOS-dev.git
