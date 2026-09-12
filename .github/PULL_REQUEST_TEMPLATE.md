@@ -18,7 +18,8 @@
 - [ ] `black --check .`
 - [ ] `isort --check-only .`
 - [ ] `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics`
-- [ ] `pytest --cov=. --cov-report=term-missing -v`
+- [ ] `PYTHONPATH=. pytest --cov=. --cov-report=term-missing -v`
+- [ ] `yamllint` (optional; non-blocking in CI)
 - [ ] Other:
 
 ## QA steps
