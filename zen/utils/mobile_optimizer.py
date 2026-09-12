@@ -3,6 +3,7 @@ Mobile Performance Optimizer for zenOS
 Optimize for battery life, data usage, and mobile processors
 """
 
+import asyncio
 import hashlib
 import json
 import os
@@ -456,7 +457,7 @@ def optimize_for_mobile(func):
         result = await func(*args, **kwargs)
 
         if optimizer.should_sleep():
-            time.sleep(optimizer.get_sleep_duration())
+            await asyncio.sleep(optimizer.get_sleep_duration())
 
         return result
 
