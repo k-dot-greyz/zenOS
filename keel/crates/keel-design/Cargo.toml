@@ -1,0 +1,10 @@
+[package]
+name = "keel-design"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Offline SOS / Kirkeby IR design (f64 allowed)"
+
+[dependencies]
+keel-iir = { path = "../keel-iir" }
