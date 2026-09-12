@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Python Plugin Boilerplate Variables",
+  "type": "object",
+  "required": ["plugin_id", "class_name", "description"],
+  "properties": {
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_.-]+$",
+      "description": "Snake-case identifier used in registry."
+    },
+    "class_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+$",
+      "description": "Python class name used as entry point."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human readable summary of the plugin."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Optional capability list."
+    }
+  },
+  "additionalProperties": true
+}
+
