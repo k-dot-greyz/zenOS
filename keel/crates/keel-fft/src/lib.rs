@@ -4,7 +4,7 @@
 //! Packed length is `N + 2`. Inverse (`c2r`) includes `1/N`.
 //! See `docs/blueprints/keel/layout.md`.
 //!
-//! Year-one kernels live in [`scalar`]. [`backend::neon`] is the swap point.
+//! Year-one kernels live in `scalar`. `backend` is the ISA swap point.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -135,7 +135,7 @@ impl FftPlan {
         Ok(())
     }
 
-    fn tw(&self) -> (&[f32], &[f32]) {
+    pub(crate) fn tw(&self) -> (&[f32], &[f32]) {
         (&self.tw_re, &self.tw_im)
     }
 }
