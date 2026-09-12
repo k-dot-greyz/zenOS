@@ -1,0 +1,52 @@
+# ducky — portable zenOS env setup & hydration payload
+# Tap on Android (Termux) or run from USB to bootstrap a dev environment.
+
+name: ducky
+version: 0.1.0
+description: Portable env setup, local diagnostics, and hydration scaffold for zenOS
+
+default_profile: developer
+
+profiles:
+  minimal:
+    description: env-doctor + .env scaffold + pip install
+    hydrate: hydrate/default
+    setup: validate-only
+
+  developer:
+    description: Full dev scaffold with workspace dirs and MCP pointers
+    hydrate: hydrate/default
+    setup: unattended
+
+  mobile:
+    description: Termux aliases, wake-lock hooks, widget scripts
+    hydrate: hydrate/mobile
+    setup: unattended
+
+  offline:
+    description: Offline model hooks via setup-offline.sh
+    hydrate: hydrate/default
+    setup: offline
+
+hydration_sources:
+  # Checked in order; first match wins
+  - type: path
+    name: dev-master
+    paths:
+      - "${ZEN_DEV_MASTER}"
+      - "../dev-master"
+      - "../../dev-master"
+    hydrate_dir: hydration
+  - type: repo
+    name: zenOS-dev
+    url: "https://github.com/k-dot-greyz/zenOS-dev.git"
+    branch: development
+    hydrate_dir: hydration
+  - type: fallback
+    name: zenos-programmatic
+    entry: setup.py
+
+outputs:
+  local_deets: ".zen-hydration/local-deets.json"
+  manifest: ".zen-hydration/manifest.json"
+  doctor_report: ".zen-hydration/ducky-report.json"
