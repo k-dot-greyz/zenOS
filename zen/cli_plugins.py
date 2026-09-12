@@ -82,8 +82,8 @@ def install(source: str, version: str, force: bool, local: bool):
     asyncio.run(_install())
 
 
-@plugins.command()
-def list():
+@plugins.command(name="list")
+def list_plugins():
     """List all installed plugins"""
     registry = PluginRegistry()
     plugins = registry.plugins

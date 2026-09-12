@@ -406,7 +406,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
 
         if args:
             if args in ["json", "markdown", "md"]:
-                format_type = args
+                format_type = "markdown" if args == "md" else args
             else:
                 return f"❌ **Invalid export format: {args}**\n\nSupported formats: json, markdown"
 

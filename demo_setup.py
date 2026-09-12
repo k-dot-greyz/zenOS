@@ -28,23 +28,17 @@ def demo_environment_detection():
         from zen.setup.environment_detector import EnvironmentDetector
 
         detector = EnvironmentDetector()
-        system_info = detector.detect_system_info()
+        env_info = detector.detect_environment(Path.cwd())
 
-        console.print(f"🖥️  OS: {system_info['os']}")
-        console.print(f"🐚 Shell: {system_info['shell']}")
-        console.print(f"🐍 Python: {system_info['python_version']}")
-        console.print(f"📁 Working Directory: {system_info['working_directory']}")
-        console.print(
-            f"🌐 Internet: {'✅ Connected' if system_info['internet_available'] else '❌ Offline'}"
-        )
+        console.print(f"🖥️  OS: {env_info.platform}")
+        console.print(f"🐚 Shell: {env_info.shell}")
+        console.print(f"🐍 Python: {env_info.python_version}")
+        console.print(f"📁 zenOS root: {env_info.zenos_root}")
+        console.print(f"🔧 Git: {'✅ Available' if env_info.git_available else '❌ Missing'}")
 
-        # Run validation
         console.print("\n🔍 Running validation...")
-        results = detector.validate_environment(system_info)
-
-        for result in results:
-            status = "✅" if result.passed else "❌"
-            console.print(f"  {status} {result.message}")
+        for warning in detector.get_environment_warnings(env_info):
+            console.print(f"  ⚠️  {warning}")
 
         return True
 
@@ -71,11 +65,14 @@ def demo_git_setup():
         console.print(f"🔍 Is Git repo: {'✅ Yes' if is_repo else '❌ No'}")
 
         if not is_repo:
+            git_exe = shutil.which("git")
+            if not git_exe:
+                raise FileNotFoundError("git executable not found in PATH")
             console.print("🚀 Initializing Git repository...")
-            subprocess.run(["git", "init"], cwd=temp_dir, check=True)
-            subprocess.run(["git", "config", "user.name", "Demo User"], cwd=temp_dir, check=True)
+            subprocess.run([git_exe, "init"], cwd=temp_dir, check=True)
+            subprocess.run([git_exe, "config", "user.name", "Demo User"], cwd=temp_dir, check=True)
             subprocess.run(
-                ["git", "config", "user.email", "demo@example.com"], cwd=temp_dir, check=True
+                [git_exe, "config", "user.email", "demo@example.com"], cwd=temp_dir, check=True
             )
             console.print("✅ Git repository initialized")
 

@@ -68,7 +68,6 @@ def run(
     no_critique: bool,
     upgrade_only: bool,
     debug: bool,
-    version: bool,
     chat: bool,
     offline: bool,
     model: Optional[str],
@@ -86,10 +85,6 @@ def run(
         zen --list
         zen --create my-agent
     """
-
-    if version:
-        console.print(f"[cyan]zenOS version {__version__}[/cyan]")
-        return
 
     if chat or (agent and agent == "chat"):
         # Start interactive chat mode

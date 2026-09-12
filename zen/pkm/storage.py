@@ -481,20 +481,28 @@ class PKMStorage:
                 - "storage_path" (str): Path to the conversations storage directory as a string.
         """
         conversations = self.list_conversations()
+        knowledge_entries = self.list_knowledge_entries()
 
         total_messages = sum(len(conv.messages) for conv in conversations)
         total_size = sum(conv.file_size or 0 for conv in conversations)
+        conversations_dir = str(self.config.conversations_dir)
 
         status_counts = {}
         for conv in conversations:
             status = conv.status.value
             status_counts[status] = status_counts.get(status, 0) + 1
 
+        conversation_count = len(conversations)
         return {
-            "total_conversations": len(conversations),
+            "total_conversations": conversation_count,
+            "conversations_count": conversation_count,
+            "knowledge_entries_count": len(knowledge_entries),
             "total_messages": total_messages,
             "total_size_bytes": total_size,
             "total_size_mb": round(total_size / (1024 * 1024), 2),
             "status_breakdown": status_counts,
-            "storage_path": str(self.config.conversations_dir),
+            "storage_path": conversations_dir,
+            "conversations_dir": conversations_dir,
+            "knowledge_base_dir": str(self.config.knowledge_base_dir),
+            "exports_dir": str(self.config.exports_dir),
         }

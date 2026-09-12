@@ -92,6 +92,33 @@ class PluginSandbox:
             sandbox_info = self.active_sandboxes[sandbox_id]
             sandbox_path = sandbox_info["path"]
 
+            if not self.config.allowed_network:
+                binary = Path(str(command[0])).name.lower() if command else ""
+                if binary in {"curl", "wget", "nc", "ncat", "ssh", "scp", "ftp"}:
+                    return {
+                        "success": False,
+                        "error": "Network access is disabled for this sandbox",
+                        "output": "",
+                        "stderr": "allowed_network is False",
+                    }
+
+            if not self.config.allowed_file_access:
+                for arg in command[1:]:
+                    candidate = Path(str(arg))
+                    if not candidate.is_absolute():
+                        continue
+                    resolved = candidate.resolve()
+                    if (
+                        sandbox_path.resolve() not in resolved.parents
+                        and resolved != sandbox_path.resolve()
+                    ):
+                        return {
+                            "success": False,
+                            "error": "File access outside the sandbox is disabled",
+                            "output": "",
+                            "stderr": "allowed_file_access is False",
+                        }
+
             # Prepare input data
             if input_data is not None:
                 input_file = sandbox_path / "input" / "data.json"
@@ -165,6 +192,7 @@ class PluginSandbox:
                 cwd=sandbox_path,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
+                env=self._sandbox_env(),
                 preexec_fn=set_limits if HAS_RESOURCE and os.name != "nt" else None,
             )
 
@@ -176,6 +204,16 @@ class PluginSandbox:
         except Exception as e:
             print(f"Error starting limited process: {e}")
             raise
+
+    def _sandbox_env(self) -> Dict[str, str]:
+        """Build a process environment that honors sandbox network restrictions."""
+        env = os.environ.copy()
+        if not self.config.allowed_network:
+            blocked = "http://127.0.0.1:0"
+            for key in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"):
+                env[key] = blocked
+            env["NO_PROXY"] = env["no_proxy"] = ""
+        return env
 
     async def _setup_resource_limits(self, sandbox_id: str):
         """Set up resource limits for the sandbox"""

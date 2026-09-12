@@ -15,6 +15,7 @@ Key Features:
 """
 
 import asyncio
+import inspect
 import json
 import logging
 import queue
@@ -283,14 +284,32 @@ class TTSWorker:
         Returns:
             audio_bytes (bytes): Synthesized audio data for the given message.
         """
-        # This is a placeholder - replace with actual TTS engine call
-        # For example: return await tts_engine(message.text, voice=message.metadata.get('voice', self.config.default_voice))
+        # Call the actual TTS engine (async or sync; voice is optional)
+        voice = message.metadata.get("voice", self.config.default_voice)
 
-        # Simulate TTS processing time
-        await asyncio.sleep(0.1)
+        def _invoke_sync() -> bytes:
+            try:
+                signature = inspect.signature(tts_engine)
+                accepts_voice = "voice" in signature.parameters or any(
+                    p.kind == inspect.Parameter.VAR_KEYWORD for p in signature.parameters.values()
+                )
+            except TypeError, ValueError:
+                accepts_voice = True
+            if accepts_voice:
+                try:
+                    return tts_engine(message.text, voice=voice)
+                except TypeError:
+                    return tts_engine(message.text)
+            return tts_engine(message.text)
 
-        # Return dummy audio data (in real implementation, this would be actual audio)
-        return b"dummy_audio_data"
+        if asyncio.iscoroutinefunction(tts_engine):
+            try:
+                return await tts_engine(message.text, voice=voice)
+            except TypeError:
+                return await tts_engine(message.text)
+
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, _invoke_sync)
 
     async def _play_audio(self, audio_data: bytes, message: TTSMessage) -> None:
         """
@@ -369,6 +388,11 @@ class TTSQueueManager:
         if self.is_running:
             self.logger.warning("TTS queue system is already running")
             return
+
+        if self.tts_engine is None:
+            raise RuntimeError(
+                "TTS engine is not configured. Call set_tts_engine() before start()."
+            )
 
         self.is_running = True
         self.logger.info("Starting TTS queue system")

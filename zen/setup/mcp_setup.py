@@ -434,7 +434,7 @@ echo "🎉 MCP configuration linking complete!"
 
     def _get_audit_script_content(self) -> str:
         """Get audit script content"""
-        return """#!/bin/bash
+        return r"""#!/bin/bash
 # MCP Configuration Audit Script for zenOS
 # Captures current system state for MCP servers and configuration
 

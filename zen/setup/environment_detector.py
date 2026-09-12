@@ -127,7 +127,9 @@ class EnvironmentDetector:
             parent = current_process.parent()
             if parent:
                 return Path(parent.exe()).name
-        except:
+        except ImportError:
+            pass
+        except OSError, ValueError:
             pass
 
         # Fallback

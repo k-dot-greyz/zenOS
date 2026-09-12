@@ -354,4 +354,9 @@ if __name__ == "__main__":
     # Example battle
     print("Starting example battle...")
     result = quick_battle("gpt-4-turbo", "claude-3-opus")
-    print(f"\nBattle Result: {result['winner_name']} wins in {result['turns']} turns!")
+    if isinstance(result, dict) and result.get("error"):
+        print(f"\nBattle failed: {result['error']}")
+    elif isinstance(result, dict) and "winner_name" in result and "turns" in result:
+        print(f"\nBattle Result: {result['winner_name']} wins in {result['turns']} turns!")
+    else:
+        print(f"\nBattle Result: {result}")

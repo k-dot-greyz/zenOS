@@ -13,8 +13,9 @@ from typing import Any, Dict, Optional
 import click
 import yaml
 
-# Check if we're in AI mode
-AI_MODE = os.environ.get("ZEN_AI_MODE", "false").lower() == "true"
+
+def is_ai_mode_enabled() -> bool:
+    return os.environ.get("ZEN_AI_MODE", "false").lower() == "true"
 
 
 @click.group(invoke_without_command=True)
@@ -38,7 +39,7 @@ def cli(ctx, ai_mode, offline, model, eco):
 
     # If no command specified, show interactive menu
     if ctx.invoked_subcommand is None:
-        if AI_MODE or ai_mode:
+        if is_ai_mode_enabled() or ai_mode:
             print("zenOS AI Mode Active. Ready for instructions.")
             print("Available commands: chat, analyze, bench, arena, sync, dex")
         else:
@@ -325,7 +326,7 @@ def doctor(ai_mode):
         checks.append(("ℹ️", "No arena rankings (run 'zen sync' to generate)"))
 
     # AI mode checks
-    if ai_mode or AI_MODE:
+    if ai_mode or is_ai_mode_enabled():
         checks.append(("✅", "AI mode enabled"))
 
         if Path("AI_INSTRUCTIONS.md").exists():
@@ -353,8 +354,8 @@ def doctor(ai_mode):
     print("  • Use 'zen dex models --tier legendary' to see top models")
 
 
-@cli.command()
-def help():
+@cli.command(name="help")
+def help_cmd():
     """❓ Show detailed help"""
     print("""
 zenOS v2.0 Help System

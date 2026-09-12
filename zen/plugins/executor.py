@@ -189,7 +189,7 @@ class PluginExecutor:
 
             # Initialize plugin
             if hasattr(plugin_instance, "initialize"):
-                init_success = await plugin_instance.initialize()
+                init_success = await self._maybe_await(plugin_instance.initialize())
                 if not init_success:
                     return None
 
@@ -198,6 +198,12 @@ class PluginExecutor:
         except Exception as e:
             print(f"Error loading plugin instance: {e}")
             return None
+
+    async def _maybe_await(self, value: Any) -> Any:
+        """Await coroutine results; pass through sync plugin hook returns."""
+        if inspect.isawaitable(value):
+            return await value
+        return value
 
     async def _execute_procedure(
         self,
@@ -221,7 +227,9 @@ class PluginExecutor:
             # Execute the procedure
             if hasattr(plugin_instance, "process"):
                 # Use the main process method
-                result = await plugin_instance.process(input_data, plugin_context)
+                result = await self._maybe_await(
+                    plugin_instance.process(input_data, plugin_context)
+                )
 
                 # Handle different result types
                 if isinstance(result, dict):
@@ -245,7 +253,7 @@ class PluginExecutor:
             elif hasattr(plugin_instance, procedure["id"]):
                 # Use a specific procedure method
                 method = getattr(plugin_instance, procedure["id"])
-                result = await method(input_data, plugin_context)
+                result = await self._maybe_await(method(input_data, plugin_context))
 
                 return ExecutionResult(
                     success=True, data=result, metadata={"method": procedure["id"]}
@@ -319,7 +327,7 @@ class PluginExecutor:
 
                 # Call cleanup if available
                 if hasattr(plugin_instance, "cleanup"):
-                    await plugin_instance.cleanup()
+                    await self._maybe_await(plugin_instance.cleanup())
 
                 del self.active_plugins[plugin_id]
 

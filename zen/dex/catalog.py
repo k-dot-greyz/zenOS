@@ -78,6 +78,8 @@ class DexCatalog:
         self.models: Dict[str, ModelEntry] = {}
         self.procedures: Dict[str, ProcedureEntry] = {}
         self.achievements: List[Dict] = []
+        self.selection_guide: Dict[str, Any] = {}
+        self.combos: List[Dict] = []
         self.load_data()
 
     def load_data(self):
@@ -86,7 +88,7 @@ class DexCatalog:
         models_file = self.base_path / "models.yaml"
         if models_file.exists():
             with open(models_file) as f:
-                data = yaml.safe_load(f)
+                data = yaml.safe_load(f) or {}
                 for model_data in data.get("models", []):
                     model = ModelEntry(
                         id=model_data["id"],
@@ -108,7 +110,7 @@ class DexCatalog:
         procedures_file = self.base_path / "procedures.yaml"
         if procedures_file.exists():
             with open(procedures_file) as f:
-                data = yaml.safe_load(f)
+                data = yaml.safe_load(f) or {}
                 for proc_data in data.get("procedures", []):
                     procedure = ProcedureEntry(
                         id=proc_data["id"],

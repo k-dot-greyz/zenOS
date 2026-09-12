@@ -1,0 +1,5 @@
+{
+  "buildCommand": "mkdir -p dist && echo '<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>zenOS</title></head><body><h1>zenOS</h1><p>CLI toolkit. See the GitHub repository.</p></body></html>' > dist/index.html",
+  "outputDirectory": "dist",
+  "installCommand": "echo skipped"
+}
