@@ -18,24 +18,24 @@ This guide covers the **bulletproof setup system** that combines the best proced
 
 ```bash
 # Clone and setup in one command
-git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git && cd zenOS && python setup.py
 ```
 
 ### **Platform-Specific One-Liners**
 
 **Windows (PowerShell):**
 ```powershell
-git clone https://github.com/k-dot-greyz/zenOS.git; cd zenOS; python setup.py
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git; cd zenOS; python setup.py
 ```
 
 **macOS/Linux:**
 ```bash
-git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git && cd zenOS && python setup.py
 ```
 
 **Termux (Mobile):**
 ```bash
-git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git && cd zenOS && python setup.py
 ```
 
 ## 🎯 **What Gets Set Up**
@@ -120,7 +120,7 @@ node --version
 ### **2. Installation**
 ```bash
 # Clone repository
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS
 
 # Python 3.14+
@@ -250,7 +250,7 @@ zenOS/
 The setup system is designed to work across different environments:
 
 ### **Switching Between Machines**
-1. **Clone repository**: `git clone https://github.com/k-dot-greyz/zenOS.git`
+1. **Clone repository**: `git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git`
 2. **Run setup**: `python setup.py`
 3. **Everything works**: All procedures are restored automatically
 
@@ -266,7 +266,7 @@ The setup system is designed to work across different environments:
 git add . && git commit -m "backup setup" && git push
 
 # Restore on new machine
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS && python setup.py
 ```
 

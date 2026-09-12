@@ -7,7 +7,11 @@ param(
 )
 
 # Configuration
-$PRIVATE_REPO = "https://github.com/k-dot-greyz/zenOS-dev.git"
+$owner = $env:ZENOS_GITHUB_OWNER
+if (-not $owner) { $owner = $env:GITHUB_OWNER }
+if (-not $owner) { $owner = $env:GITHUB_USERNAME }
+if (-not $owner) { $owner = "YOUR_GITHUB_USERNAME" }
+$PRIVATE_REPO = if ($env:ZENOS_PRIVATE_REPO) { $env:ZENOS_PRIVATE_REPO } else { "https://github.com/$owner/zenOS-dev.git" }
 $DEVELOPMENT_BRANCH = "development"
 $MAIN_BRANCH = "main"
 

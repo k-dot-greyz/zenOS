@@ -403,7 +403,7 @@ zenOS v2.0 Help System
   - Tier affects power multipliers
   - Tournament mode for multiple fighters
 
-For more: https://github.com/k-dot-greyz/zenOS
+For more: https://zenos.ai
     """)
 
 

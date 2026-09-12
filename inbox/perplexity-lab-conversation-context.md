@@ -2,13 +2,13 @@
 
 **Date:** October 02, 2025, 2:08 AM EEST  
 **Source:** Perplexity AI Conversation  
-**User:** k.greyZ (@k-dot-greyz)  
+**User:** operator (@YOUR_GITHUB_USERNAME)  
 **Project Context:** zenOS development  
 
 ## Current Context
 
 ### User Profile Summary
-- **Identity:** k.greyZ - neuro-spicy AI architect, audio engineer, and software developer from Riga, Latvia
+- **Identity:** operator - neuro-spicy AI architect, audio engineer, and software developer from unspecified
 - **Core Philosophy:** "work as play"
 - **Primary Focus:** Building zenOS - a modular, terminal-centric "life OS" for personal sovereignty
 - **zenOS Architecture:** Three engines - Product, Persona, and Investment
@@ -16,11 +16,11 @@
 - **Project Anthem:** "We Can Make the World Stop" by The Glitch Mob
 
 ### Current GitHub Context
-- **Username:** k-dot-greyz  
-- **Profile:** https://github.com/k-dot-greyz
+- **Username:** YOUR_GITHUB_USERNAME  
+- **Profile:** https://github.com/YOUR_GITHUB_USERNAME
 - **Company:** GlitchWorks
 - **Bio:** AI Architect, Alchemist & Audio Engineer
-- **Location:** Riga, Latvia
+- **Location:** unspecified
 - **Public Repos:** 13
 - **Private Repos:** 14
 
@@ -31,7 +31,7 @@
    - Language: Python
    - Stars: 2
    - Open Issues: 3
-   - URL: https://github.com/k-dot-greyz/zenOS
+   - URL: https://github.com/YOUR_GITHUB_USERNAME/zenOS
 
 2. **zenOS-dev** (Private) - Personal dev branch
    - Created: September 17, 2025

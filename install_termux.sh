@@ -28,7 +28,12 @@ python3 -m textblob.download_corpora
 # Clone zenOS if not already present
 if [ ! -d "zenOS" ]; then
     echo "📥 Cloning zenOS repository..."
-    git clone https://github.com/k-dot-greyz/zenOS.git
+    owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
+    if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
+        echo "No GitHub owner is baked into this template. Clone your fork and rerun, or set ZENOS_GITHUB_OWNER."
+        exit 1
+    fi
+    git clone "https://github.com/${owner}/zenOS.git"
 fi
 
 cd zenOS

@@ -1,6 +1,6 @@
 """Env doctor + CLI entrypoint contracts.
 
-Guiding story: Kaspars runs `zen env-doctor` on a fresh box and gets a
+Guiding story: an operator runs `zen env-doctor` on a fresh box and gets a
 hard fail if Python is below 3.14, plus a real status dump of deps/CLI wiring.
 """
 

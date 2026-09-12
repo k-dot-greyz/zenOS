@@ -20,7 +20,7 @@
 ## Step 2: One-Command Install! ⚡ (1 minute)
 Open PowerShell and run:
 ```powershell
-iwr -useb https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.ps1 | iex
 ```
 
 This will:

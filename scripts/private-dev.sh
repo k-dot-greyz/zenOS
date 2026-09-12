@@ -15,7 +15,11 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # Configuration
-PRIVATE_REPO="https://github.com/k-dot-greyz/zenOS-dev.git"
+_ZENOS_OWNER="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
+if [[ -z "$_ZENOS_OWNER" ]]; then
+    _ZENOS_OWNER="YOUR_GITHUB_USERNAME"
+fi
+PRIVATE_REPO="${ZENOS_PRIVATE_REPO:-https://github.com/${_ZENOS_OWNER}/zenOS-dev.git}"
 DEVELOPMENT_BRANCH="development"
 MAIN_BRANCH="main"
 

@@ -79,22 +79,31 @@ zen env-doctor                      # fails hard if the floor is wrong
 
 ## 🚀 Quick Start
 
+This repo is template-friendly: no GitHub username is baked in. Replace
+`YOUR_GITHUB_USERNAME` with your user or org, or clone your fork and run
+installers in-place. Curl bootstraps also accept `ZENOS_GITHUB_OWNER`.
+
 ### Instant Setup (One-Liners)
 
 #### 🖥️ Desktop (Windows/Mac/Linux)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+bash install.sh
+# or: ZENOS_GITHUB_OWNER=YOUR_GITHUB_USERNAME curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.sh | bash
 ```
 
 #### 📱 Mobile (Termux/Android)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install_termux.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+bash install_termux.sh
 ```
 
 #### ✈️ Offline Mode (No Internet)
 ```bash
 # First download while online:
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS
 
 # Then install offline (Python 3.14+ required):
@@ -105,7 +114,7 @@ python3.14 -m pip install -e .
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/k-dot-greyz/zenOS.git
+   git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
    cd zenOS
    ```
 
@@ -342,9 +351,9 @@ Special thanks to:
 
 ## 📬 Contact & Community
 
-- **GitHub**: [k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS)
-- **Issues**: [Report bugs or request features](https://github.com/k-dot-greyz/zenOS/issues)
-- **Discussions**: [Join the conversation](https://github.com/k-dot-greyz/zenOS/discussions)
+- **GitHub**: [YOUR_GITHUB_USERNAME/zenOS](https://github.com/YOUR_GITHUB_USERNAME/zenOS) (replace the placeholder after you fork)
+- **Issues**: [Report bugs or request features](https://github.com/YOUR_GITHUB_USERNAME/zenOS/issues)
+- **Discussions**: [Join the conversation](https://github.com/YOUR_GITHUB_USERNAME/zenOS/discussions)
 
 ---
 

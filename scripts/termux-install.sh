@@ -58,7 +58,12 @@ if [ -d "$HOME/zenOS" ]; then
     git pull
 else
     cd $HOME
-    git clone https://github.com/k-dot-greyz/zenOS.git
+    owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
+    if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
+        echo "No GitHub owner is baked into this template. Clone your fork and rerun, or set ZENOS_GITHUB_OWNER."
+        exit 1
+    fi
+    git clone "https://github.com/${owner}/zenOS.git"
 fi
 
 cd $HOME/zenOS

@@ -22,7 +22,7 @@ On Cursor Cloud, keep distro `/usr/bin/python3` alone (often 3.12). Use `.venv` 
 ### **One-Command Setup (Any Environment)**
 ```bash
 # Clone and setup zenOS (Python 3.14+ required)
-git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git && cd zenOS
 bash scripts/zenos-env-install.sh
 
 # Or if you already have zenOS
@@ -92,7 +92,7 @@ winget install Python.Python.3.14
 winget install OpenJS.NodeJS
 
 # 4. Clone and setup
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS
 python setup.py --unattended
 ```
@@ -122,7 +122,7 @@ sudo apt-get install -y nodejs
 brew install node
 
 # 4. Clone and setup
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS
 python setup.py --unattended
 ```
@@ -136,7 +136,7 @@ pkg update && pkg upgrade
 pkg install git python nodejs
 
 # 3. Clone and setup
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS
 python setup.py --unattended
 ```
@@ -274,7 +274,7 @@ pkg install git python nodejs
 termux-setup-storage
 
 # 4. Clone and setup zenOS
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS
 python setup.py --unattended
 ```
@@ -331,7 +331,7 @@ git pull origin main
 ### **Fresh Environment**
 ```bash
 # All platforms
-git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git && cd zenOS && python setup.py
 ```
 
 ### **Existing Project**

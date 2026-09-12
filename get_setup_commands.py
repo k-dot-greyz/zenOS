@@ -13,6 +13,17 @@ import sys
 from pathlib import Path
 
 
+def repo_clone_url() -> str:
+    """Clone URL for this template — owner comes from env, never a baked-in user."""
+    owner = (
+        os.environ.get("ZENOS_GITHUB_OWNER")
+        or os.environ.get("GITHUB_OWNER")
+        or os.environ.get("GITHUB_USERNAME")
+        or "YOUR_GITHUB_USERNAME"
+    )
+    return f"https://github.com/{owner}/zenOS.git"
+
+
 def detect_environment():
     """Detect the current environment and return setup commands"""
 
@@ -42,14 +53,14 @@ def get_windows_commands():
     """
     return {
         "platform": "Windows",
-        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": f"git clone {repo_clone_url()} && cd zenOS && python setup.py",
         "prerequisites": [
             "winget install Git.Git",
             "winget install Python.Python.3.11",
             "winget install OpenJS.NodeJS",
         ],
         "setup": [
-            "git clone https://github.com/k-dot-greyz/zenOS.git",
+            f"git clone {repo_clone_url()}",
             "cd zenOS",
             "python setup.py --unattended",
         ],
@@ -71,7 +82,7 @@ def get_linux_commands():
     """
     return {
         "platform": "Linux",
-        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": f"git clone {repo_clone_url()} && cd zenOS && python setup.py",
         "prerequisites": [
             "sudo apt update && sudo apt install git python3 python3-pip nodejs",
             "# Or for other distros:",
@@ -79,7 +90,7 @@ def get_linux_commands():
             "# sudo pacman -S git python python-pip nodejs     # Arch",
         ],
         "setup": [
-            "git clone https://github.com/k-dot-greyz/zenOS.git",
+            f"git clone {repo_clone_url()}",
             "cd zenOS",
             "python3 setup.py --unattended",
         ],
@@ -101,14 +112,14 @@ def get_macos_commands():
     """
     return {
         "platform": "macOS",
-        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": f"git clone {repo_clone_url()} && cd zenOS && python setup.py",
         "prerequisites": [
             "brew install git python node",
             "# If you don't have Homebrew:",
             '# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
         ],
         "setup": [
-            "git clone https://github.com/k-dot-greyz/zenOS.git",
+            f"git clone {repo_clone_url()}",
             "cd zenOS",
             "python3 setup.py --unattended",
         ],
@@ -130,13 +141,13 @@ def get_generic_commands():
     """
     return {
         "platform": "Unknown",
-        "one_liner": "git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": f"git clone {repo_clone_url()} && cd zenOS && python setup.py",
         "prerequisites": [
             "Install Git, Python 3.7+, and Node.js (optional)",
             "See docs/guides/DEV_ENVIRONMENT_SETUP.md for details",
         ],
         "setup": [
-            "git clone https://github.com/k-dot-greyz/zenOS.git",
+            f"git clone {repo_clone_url()}",
             "cd zenOS",
             "python setup.py --unattended",
         ],
@@ -163,10 +174,10 @@ def get_termux_commands():
     """
     return {
         "platform": "Termux (Android)",
-        "one_liner": "pkg update && pkg upgrade && pkg install git python nodejs && git clone https://github.com/k-dot-greyz/zenOS.git && cd zenOS && python setup.py",
+        "one_liner": f"pkg update && pkg upgrade && pkg install git python nodejs && git clone {repo_clone_url()} && cd zenOS && python setup.py",
         "prerequisites": ["pkg update && pkg upgrade", "pkg install git python nodejs"],
         "setup": [
-            "git clone https://github.com/k-dot-greyz/zenOS.git",
+            f"git clone {repo_clone_url()}",
             "cd zenOS",
             "python setup.py --unattended",
         ],

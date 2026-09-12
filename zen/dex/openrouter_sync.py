@@ -14,6 +14,8 @@ from typing import Any, Dict, List, Optional
 import httpx
 import yaml
 
+from zen.origin import http_referer
+
 
 @dataclass
 class ModelAPIStats:
@@ -94,7 +96,7 @@ class OpenRouterSync:
         async with httpx.AsyncClient() as client:
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "HTTP-Referer": "https://github.com/k-dot-greyz/zenOS",
+                "HTTP-Referer": http_referer(),
                 "X-Title": "zenOS Dex",
             }
 

@@ -6,7 +6,7 @@ zen-like simplicity to complex AI workflows.
 """
 
 __version__ = "0.1.0"
-__author__ = "Kaspars Greizis"
+__author__ = "zenOS contributors"
 
 from zen.core.agent import Agent
 from zen.core.critique import AutoCritique

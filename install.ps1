@@ -1,5 +1,6 @@
 # zenOS Universal Installer for Windows - One Command to Rule Them All! 🧘
-# Usage: iwr -useb https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.ps1 | iex
+# Usage (from a checkout): .\install.ps1
+# Bootstrap: $env:ZENOS_GITHUB_OWNER = "YOUR_GITHUB_USERNAME"; iwr -useb https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.ps1 | iex
 
 Write-Host "🧘 zenOS Universal Installer for Windows" -ForegroundColor Cyan
 Write-Host "=======================================" -ForegroundColor Cyan
@@ -55,15 +56,28 @@ function Install-SamplePlugin {
     Write-Host "✅ Sample plugin installed!" -ForegroundColor Green
 }
 
+function Get-ZenosCloneUrl {
+    $owner = $env:ZENOS_GITHUB_OWNER
+    if (-not $owner) { $owner = $env:GITHUB_OWNER }
+    if (-not $owner) { $owner = $env:GITHUB_USERNAME }
+    if (-not $owner -or $owner -eq "YOUR_GITHUB_USERNAME") {
+        throw "No GitHub owner is baked into this template. Clone your fork and rerun, or set ZENOS_GITHUB_OWNER."
+    }
+    $repo = if ($env:ZENOS_REPO_NAME) { $env:ZENOS_REPO_NAME } else { "zenOS" }
+    return "https://github.com/$owner/$repo.git"
+}
+
 # Main installation
 function Main {
-    # Clone repository if not already present
-    if (-not (Test-Path "zenOS")) {
-        Write-Host "📥 Cloning zenOS repository..." -ForegroundColor Yellow
-        git clone https://github.com/k-dot-greyz/zenOS.git
+    if ((Test-Path "pyproject.toml") -and (Test-Path "zen")) {
+        Write-Host "Using existing zenOS checkout at $PWD" -ForegroundColor Yellow
+    } elseif (-not (Test-Path "zenOS")) {
+        Write-Host "Cloning zenOS repository..." -ForegroundColor Yellow
+        git clone (Get-ZenosCloneUrl)
+        Set-Location zenOS
+    } else {
+        Set-Location zenOS
     }
-    
-    Set-Location zenOS
     
     # Install dependencies
     Install-Dependencies
@@ -87,10 +101,10 @@ function Main {
     Write-Host "  python zen/cli.py plugins list"
     Write-Host "  python zen/cli.py plugins execute com.example.text-processor text.summarize \"Hello world!\""
     Write-Host ""
-    Write-Host "📚 Full guides:" -ForegroundColor Cyan
-    Write-Host "  Mobile: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_MOBILE.md"
-    Write-Host "  Windows: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_WINDOWS.md"
-    Write-Host "  Linux: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_LINUX.md"
+    Write-Host "Full guides (in this checkout):" -ForegroundColor Cyan
+    Write-Host "  Mobile:  docs/guides/QUICKSTART_MOBILE.md"
+    Write-Host "  Windows: docs/guides/QUICKSTART_WINDOWS.md"
+    Write-Host "  Linux:   docs/guides/QUICKSTART_LINUX.md"
     Write-Host ""
     Write-Host "Welcome to zenOS! Enjoy the zen!" -ForegroundColor Magenta
 }

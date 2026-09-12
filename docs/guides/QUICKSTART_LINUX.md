@@ -20,7 +20,7 @@
 ## Step 2: One-Command Install! ⚡ (1 minute)
 Open terminal and run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.sh | bash
 ```
 
 This will:

@@ -208,7 +208,7 @@ class OpenRouterProvider:
         
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "https://github.com/k-dot-greyz/zenOS",
+            "HTTP-Referer": "https://github.com/YOUR_GITHUB_USERNAME/zenOS",
             "X-Title": "zenOS CLI"
         }
         

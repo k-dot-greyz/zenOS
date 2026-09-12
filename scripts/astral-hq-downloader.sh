@@ -5,7 +5,7 @@
 # ═══════════════════════════════════════════════════════════════════
 # Downloads all audio tracks, PDFs, and docs from Astral HQ page
 # Integrates with zenOS git inbox workflow
-# Author: k.greyZ | Part of zenOS automation suite
+# Part of zenOS automation suite
 # ═══════════════════════════════════════════════════════════════════
 
 set -e  # Exit on any error

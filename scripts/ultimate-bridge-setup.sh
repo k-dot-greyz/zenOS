@@ -109,7 +109,12 @@ install_zenos() {
         git pull origin main
     else
         log "Cloning zenOS repository..."
-        git clone https://github.com/k-dot-greyz/zenOS.git "$ZENOS_PATH"
+        owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
+        if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
+            log_error "No GitHub owner is baked into this template. Set ZENOS_GITHUB_OWNER."
+            exit 1
+        fi
+        git clone "https://github.com/${owner}/zenOS.git" "$ZENOS_PATH"
     fi
     
     cd "$ZENOS_PATH"

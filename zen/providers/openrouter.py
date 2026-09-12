@@ -13,6 +13,8 @@ import aiohttp
 from pydantic import BaseModel, Field
 from rich.console import Console
 
+from zen.origin import http_referer
+
 console = Console()
 
 
@@ -245,7 +247,7 @@ class OpenRouterProvider:
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "https://github.com/k-dot-greyz/zenOS",
+            "HTTP-Referer": http_referer(),
             "X-Title": "zenOS CLI",
             "Content-Type": "application/json",
         }
