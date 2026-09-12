@@ -418,9 +418,7 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
             from zen.origin import github_token as origin_github_token
 
             token = origin_github_token() or os.environ.get("GITHUB_TOKEN")
-            auth_url = clone_url.replace(
-                "https://github.com/", f"https://{token}@github.com/"
-            )
+            auth_url = clone_url.replace("https://github.com/", f"https://{token}@github.com/")
         else:
             auth_url = clone_url
 

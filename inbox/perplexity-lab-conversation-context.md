@@ -18,8 +18,8 @@
 ### Current GitHub Context
 - **Username:** YOUR_GITHUB_USERNAME  
 - **Profile:** https://github.com/YOUR_GITHUB_USERNAME
-- **Company:** GlitchWorks
-- **Bio:** AI Architect, Alchemist & Audio Engineer
+- **Company:** YOUR_COMPANY
+- **Bio:** YOUR_BIO
 - **Location:** unspecified
 - **Public Repos:** 13
 - **Private Repos:** 14

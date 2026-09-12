@@ -17,7 +17,7 @@
     },
     {
       "parameters": {
-        "url": "https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/ai_post_templates.yaml",
+        "url": "=https://raw.githubusercontent.com/{{ $env.ZENOS_GITHUB_OWNER }}/{{ $env.ZENOS_REPO_NAME || 'zenOS' }}/{{ $env.ZENOS_REPO_BRANCH || 'main' }}/ai_post_templates.yaml",
         "options": {}
       },
       "id": "fetch-templates",

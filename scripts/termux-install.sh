@@ -65,7 +65,7 @@ else
         echo "GitHub origin is not configured. Clone this repo or set ZENOS_GITHUB_OWNER in .env."
         exit 1
     }
-    git clone "$clone_url"
+    git clone "$clone_url" zenOS
 fi
 
 cd $HOME/zenOS

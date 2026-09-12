@@ -18,6 +18,7 @@
 ---
 
 ## Step 2: Clone this repo, then install ⚡
+Fork first, then replace `YOUR_GITHUB_USERNAME` in the clone URL with your GitHub username.
 Open Termux and run:
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git

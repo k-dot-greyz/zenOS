@@ -195,11 +195,7 @@ def resolve(
         or _clean(dotenv.get("GITHUB_OWNER"))
         or _clean(dotenv.get("GITHUB_USERNAME"))
     )
-    repo = (
-        _clean(env.get("ZENOS_REPO_NAME"))
-        or _clean(dotenv.get("ZENOS_REPO_NAME"))
-        or REPO_NAME
-    )
+    repo = _clean(env.get("ZENOS_REPO_NAME")) or _clean(dotenv.get("ZENOS_REPO_NAME")) or REPO_NAME
     owner: Optional[str] = None
     source = "unset"
     explicit_url = env_url or dotenv_url
@@ -243,8 +239,10 @@ def resolve(
     web_url = None
     raw_base = None
     if configured:
-        clone_url = explicit_url if explicit_url and explicit_url.endswith(".git") else (
-            f"https://github.com/{owner}/{repo}.git"
+        clone_url = (
+            explicit_url
+            if explicit_url and explicit_url.endswith(".git")
+            else (f"https://github.com/{owner}/{repo}.git")
         )
         # Prefer canonical HTTPS clone URL when we parsed GitHub owner/repo
         if parse_github_remote(clone_url):

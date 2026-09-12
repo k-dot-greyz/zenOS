@@ -180,6 +180,7 @@ def zen(prompt, model, stream, context):
 ```python
 # zen/providers/openrouter.py
 from typing import Optional, AsyncIterator
+import os
 import httpx
 from pydantic import BaseModel
 
@@ -208,7 +209,7 @@ class OpenRouterProvider:
         
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "https://github.com/YOUR_GITHUB_USERNAME/zenOS",
+            "HTTP-Referer": os.environ.get("ZENOS_HTTP_REFERER", "https://zenos.ai"),
             "X-Title": "zenOS CLI"
         }
         

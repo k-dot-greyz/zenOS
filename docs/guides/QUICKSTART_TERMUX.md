@@ -7,6 +7,7 @@ Forget the proot/Arch complexity. Let's run zenOS directly on Termux - fast, nat
 ---
 
 ## 🎯 Clone, then install (origin is the git remote)
+Fork first, then replace `YOUR_GITHUB_USERNAME` in the clone URL with your GitHub username.
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
 cd zenOS

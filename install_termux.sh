@@ -25,8 +25,10 @@ pip install --user textblob nltk
 echo "📥 Downloading NLTK data..."
 python3 -m textblob.download_corpora
 
-# Clone zenOS if not already present
-if [ ! -d "zenOS" ]; then
+# Use this checkout when present (pyproject.toml + zen/), otherwise clone into ./zenOS.
+if [[ -f pyproject.toml && -d zen ]]; then
+    echo "📂 Using existing zenOS checkout at $PWD"
+elif [[ ! -d "zenOS" ]]; then
     echo "📥 Cloning zenOS repository..."
     SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
     if [ -f "$SCRIPT_DIR/scripts/zenos-origin.sh" ]; then
@@ -39,10 +41,16 @@ if [ ! -d "zenOS" ]; then
         echo "GitHub origin is not configured. Clone this repo or set ZENOS_GITHUB_OWNER in .env."
         exit 1
     }
-    git clone "$clone_url"
+    git clone "$clone_url" zenOS
+    cd zenOS
+else
+    cd zenOS
 fi
 
-cd zenOS
+if [[ ! -f pyproject.toml || ! -d zen ]]; then
+    echo "Could not find a zenOS checkout (expected pyproject.toml + zen/)."
+    exit 1
+fi
 
 # Set up environment
 echo "🔧 Setting up environment..."

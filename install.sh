@@ -142,7 +142,7 @@ main() {
         echo "📂 Using existing zenOS checkout at $PWD"
     elif [[ ! -d "zenOS" ]]; then
         echo "📥 Cloning zenOS repository..."
-        git clone "$(zenos_clone_url)"
+        git clone "$(zenos_clone_url)" zenOS
         cd zenOS
     else
         cd zenOS

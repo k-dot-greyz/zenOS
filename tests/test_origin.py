@@ -217,6 +217,25 @@ def test_clone_all_repos_requires_owner_when_nothing_configured(monkeypatch):
     assert exc.value.code == 2
 
 
+def test_install_sh_clones_into_zenos_dir():
+    text = (ROOT / "install.sh").read_text(encoding="utf-8")
+    assert 'git clone "$(zenos_clone_url)" zenOS' in text
+
+
+def test_install_ps1_stops_when_clone_or_checkout_fails():
+    text = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "git clone (Get-ZenosCloneUrl) zenOS" in text
+    assert "$LASTEXITCODE" in text
+    assert 'Test-Path "pyproject.toml"' in text
+    assert 'Test-Path "zen"' in text
+
+
+def test_install_termux_uses_inplace_checkout():
+    text = (ROOT / "install_termux.sh").read_text(encoding="utf-8")
+    assert "pyproject.toml" in text
+    assert 'git clone "$clone_url" zenOS' in text
+
+
 def test_install_sh_loads_central_config():
     text = (ROOT / "install.sh").read_text(encoding="utf-8")
     assert "zenos-origin.sh" in text or "ZENOS_GITHUB_OWNER" in text
@@ -228,9 +247,7 @@ def test_codeowners_is_commented_template():
     text = (ROOT / ".github" / "CODEOWNERS").read_text(encoding="utf-8")
     assert "@YOUR_GITHUB_USERNAME" in text
     active = [
-        line
-        for line in text.splitlines()
-        if line.strip() and not line.strip().startswith("#")
+        line for line in text.splitlines() if line.strip() and not line.strip().startswith("#")
     ]
     assert active == []
 
@@ -289,7 +306,7 @@ def test_start_scripts_use_origin_not_old_placeholder():
     start_ps1 = (ROOT / "start.ps1").read_text(encoding="utf-8")
     assert 'grep -q "sk-or-v1-your-api-key-here"' not in start_sh
     assert 'grep -q "sk-or-v1-your-api-key-here"' not in start_ps1
-    assert "-match \"sk-or-v1-your-api-key-here\"" not in start_ps1
+    assert '-match "sk-or-v1-your-api-key-here"' not in start_ps1
     assert "zenos-origin.sh" in start_sh
     assert "zenos_openrouter_key" in start_sh or "zenos_require_openrouter_key" in start_sh
     assert "Get-DotEnvValue" in start_ps1
@@ -339,7 +356,11 @@ def test_origin_sh_reads_dotenv(tmp_path: Path):
     import subprocess
 
     result = subprocess.run(
-        ["bash", "-c", f"cd '{tmp_path}' && . '{script}' && zenos_github_owner && echo && zenos_github_clone_url"],
+        [
+            "bash",
+            "-c",
+            f"cd '{tmp_path}' && . '{script}' && zenos_github_owner && echo && zenos_github_clone_url",
+        ],
         capture_output=True,
         text=True,
         check=False,
@@ -389,6 +410,12 @@ def test_install_ps1_copies_env_example():
     assert "OPENROUTER_API_KEY" in text
 
 
+def test_n8n_template_url_uses_n8n_env():
+    text = (ROOT / "n8n" / "zenOS_template_selector.json").read_text(encoding="utf-8")
+    assert "YOUR_GITHUB_USERNAME" not in text
+    assert "$env.ZENOS_GITHUB_OWNER" in text
+
+
 def test_env_example_is_the_ssot_for_identity_and_keys():
     text = (ROOT / "env.example").read_text(encoding="utf-8")
     for key in (
@@ -400,7 +427,5 @@ def test_env_example_is_the_ssot_for_identity_and_keys():
     ):
         assert key in text
     # Keep values empty — never a personal GitHub username
-    owner_line = next(
-        line for line in text.splitlines() if line.startswith("ZENOS_GITHUB_OWNER=")
-    )
+    owner_line = next(line for line in text.splitlines() if line.startswith("ZENOS_GITHUB_OWNER="))
     assert owner_line == "ZENOS_GITHUB_OWNER="

@@ -74,6 +74,8 @@ FORBIDDEN: Sequence[Tuple[str, Pattern[str]]] = (
     ("k.greyZ", re.compile(r"\bk\.greyZ\b", re.IGNORECASE)),
     ("greyZ alias", re.compile(r"\bgreyZ\b")),
     ("personal vault path", re.compile(r"E:\\Vault\\Code")),
+    # Public Gemini share links are world-readable. gemini.google.com/gem/ is not this.
+    ("gemini share link", re.compile(r"g\.co/gemini/share/", re.IGNORECASE)),
 )
 
 
@@ -100,6 +102,9 @@ def scan(root: Path) -> List[str]:
             continue
         if rel.endswith(".egg-info") or "/.egg-info/" in f"/{rel}/":
             continue
+        for label, pattern in FORBIDDEN:
+            if pattern.search(rel):
+                hits.append(f"{rel}: [path {label}]")
         try:
             text = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):

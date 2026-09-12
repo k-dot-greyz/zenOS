@@ -50,13 +50,17 @@ check_zenos() {
         log_error "zenOS not found at $ZENOS_PATH"
         log "Installing zenOS..."
         SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-        # shellcheck source=zenos-origin.sh
-        . "$SCRIPT_DIR/zenos-origin.sh"
-        raw_installer="$(zenos_github_raw_url scripts/termux-install.sh)" || {
-            log_error "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
-            exit 1
-        }
-        curl -sSL "$raw_installer" | bash
+        if [ -f "$SCRIPT_DIR/termux-install.sh" ]; then
+            bash "$SCRIPT_DIR/termux-install.sh"
+        else
+            # shellcheck source=zenos-origin.sh
+            . "$SCRIPT_DIR/zenos-origin.sh"
+            raw_installer="$(zenos_github_raw_url scripts/termux-install.sh)" || {
+                log_error "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
+                exit 1
+            }
+            curl -sSL "$raw_installer" | bash
+        fi
         if [ $? -eq 0 ]; then
             log_success "zenOS installed successfully"
         else

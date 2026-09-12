@@ -26,6 +26,8 @@ You'll learn how to:
 Clone **this** fork (GitHub → Code), then set keys once in `.env`.
 `curl | bash` without a checkout cannot guess your GitHub owner.
 
+If you copy the clone URLs below, **replace `YOUR_GITHUB_USERNAME` with your GitHub username** after you fork.
+
 #### Desktop (Windows/Mac/Linux)
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git

@@ -99,20 +99,17 @@ echo "   - Copy to clipboard"
 echo "   - Paste and dominate social media!"
 echo ""
 
-print_info "GitHub origin (set once in ../.env, or git remote):"
+print_info "GitHub origin (set once in n8n env, matching ../.env):"
+echo "   Set n8n env ZENOS_GITHUB_OWNER (and optional ZENOS_REPO_NAME / ZENOS_REPO_BRANCH)."
+echo "   The HTTP Request node resolves:"
+echo "   https://raw.githubusercontent.com/\${ZENOS_GITHUB_OWNER}/zenOS/main/ai_post_templates.yaml"
 ORIGIN_SH="$(cd "$(dirname "$0")/.." && pwd)/scripts/zenos-origin.sh"
 if [[ -f "$ORIGIN_SH" ]]; then
     # shellcheck source=../scripts/zenos-origin.sh
     . "$ORIGIN_SH"
     if raw="$(zenos_github_raw_url ai_post_templates.yaml 2>/dev/null)"; then
-        echo "   $raw"
-        echo "   n8n JSON still ships with YOUR_GITHUB_USERNAME — paste the URL above after import."
-    else
-        echo "   Set ZENOS_GITHUB_OWNER / ZENOS_REPO_URL in .env once, then re-run this script."
-        echo "   Placeholder in the workflow: YOUR_GITHUB_USERNAME/zenOS"
+        echo "   This checkout would fetch: $raw"
     fi
-else
-    echo "   https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/ai_post_templates.yaml"
 fi
 echo ""
 echo "🎨 Customization:"

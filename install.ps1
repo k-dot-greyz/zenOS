@@ -97,10 +97,17 @@ function Main {
         Write-Host "Using existing zenOS checkout at $PWD" -ForegroundColor Yellow
     } elseif (-not (Test-Path "zenOS")) {
         Write-Host "Cloning zenOS repository..." -ForegroundColor Yellow
-        git clone (Get-ZenosCloneUrl)
+        git clone (Get-ZenosCloneUrl) zenOS
+        if ($LASTEXITCODE -ne 0) {
+            throw "Could not clone zenOS repository."
+        }
         Set-Location zenOS
     } else {
         Set-Location zenOS
+    }
+
+    if (-not ((Test-Path "pyproject.toml") -and (Test-Path "zen"))) {
+        throw "Could not find a zenOS checkout (expected pyproject.toml + zen/)."
     }
 
     if ((Test-Path "env.example") -and -not (Test-Path ".env")) {

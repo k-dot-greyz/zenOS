@@ -18,6 +18,7 @@
 ---
 
 ## Step 2: Clone this repo, then install ⚡
+Fork first, then replace `YOUR_GITHUB_USERNAME` in the clone URL with your GitHub username.
 Open PowerShell and run:
 ```powershell
 git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
