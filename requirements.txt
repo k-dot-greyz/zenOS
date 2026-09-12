@@ -12,6 +12,7 @@ beautifulsoup4>=4.13
 schedule>=1.2.2
 aiofiles>=24.1
 psutil>=7.0
+requests>=2.32
 
 # Testing
 pytest>=8.3
