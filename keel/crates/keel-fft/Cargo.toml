@@ -1,0 +1,19 @@
+[package]
+name = "keel-fft"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Audio-size f32 FFT (NEON first)"
+
+[features]
+default = ["std"]
+std = ["keel-core/std"]
+# Reserved. Must stay off in the default CLAP / OSS build.
+armpl = []
+
+[dependencies]
+keel-core = { path = "../keel-core" }
+
+[dev-dependencies]
+keel-core = { path = "../keel-core" }
