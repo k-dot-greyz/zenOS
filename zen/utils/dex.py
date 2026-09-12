@@ -35,6 +35,15 @@ class DexReader:
         self._index_by_id: Dict[str, Dict] = {}
         self._load_index()
 
+    @staticmethod
+    def _normalize_dex_id(value: str) -> str:
+        """canonical `0xNN:0xNN` form so mixed-case hex ids match."""
+        try:
+            bank, program = value.split(":")
+            return f"0x{int(bank, 16):02X}:0x{int(program, 16):02X}"
+        except ValueError, TypeError, AttributeError:
+            return value
+
     def _load_index(self):
         """load entries from the dex index"""
         self.entries = []
@@ -43,8 +52,11 @@ class DexReader:
         if not self.index_path.exists():
             return
 
-        with open(self.index_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        try:
+            with open(self.index_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        except OSError:
+            return
 
         # parse markdown table
         in_table = False
@@ -58,7 +70,7 @@ class DexReader:
                 parts = [p.strip() for p in line.split("|")[1:-1]]
                 if len(parts) >= 5:
                     # extract dex_id from backticks
-                    dex_id = parts[0].strip("`")
+                    dex_id = self._normalize_dex_id(parts[0].strip("`"))
                     entry = {
                         "dex_id": dex_id,
                         "type": parts[1].strip("`"),
@@ -82,12 +94,12 @@ class DexReader:
 
     def get(self, dex_id: str) -> Optional[Dict]:
         """get entry by dex_id"""
-        return self._index_by_id.get(dex_id)
+        return self._index_by_id.get(self._normalize_dex_id(dex_id))
 
     def by_bank(self, bank: int) -> List[Dict]:
         """get all entries in a bank (e.g., 0x7E)"""
         bank_hex = f"0x{bank:02X}"
-        return [e for e in self.entries if e["dex_id"].startswith(bank_hex)]
+        return [e for e in self.entries if self._normalize_dex_id(e["dex_id"]).startswith(bank_hex)]
 
     def by_type(self, dex_type: str) -> List[Dict]:
         """get all entries of a specific type"""
