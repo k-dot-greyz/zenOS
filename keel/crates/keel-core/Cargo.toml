@@ -1,0 +1,11 @@
+[package]
+name = "keel-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Realtime law, planar buffers, ISA detect for keel"
+
+[features]
+default = ["std"]
+std = []

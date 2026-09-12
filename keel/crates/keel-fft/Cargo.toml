@@ -1,0 +1,10 @@
+[package]
+name = "keel-fft"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Audio-size f32 FFT (NEON first)"
+
+[dependencies]
+keel-core = { path = "../keel-core" }
