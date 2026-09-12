@@ -75,6 +75,10 @@ class OpenRouterSync:
 
     def __init__(self, api_key: str = None):
         self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
+        if not self.api_key:
+            from zen.origin import openrouter_api_key
+
+            self.api_key = openrouter_api_key()
         self.base_url = "https://openrouter.ai/api/v1"
         self.dex_path = Path("dex")
         self.cache_file = self.dex_path / ".api_cache.json"

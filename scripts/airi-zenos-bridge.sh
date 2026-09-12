@@ -49,12 +49,14 @@ check_zenos() {
     if [ ! -d "$ZENOS_PATH" ]; then
         log_error "zenOS not found at $ZENOS_PATH"
         log "Installing zenOS..."
-        owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
-        if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
-            log_error "No GitHub owner is baked into this template. Set ZENOS_GITHUB_OWNER."
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        # shellcheck source=zenos-origin.sh
+        . "$SCRIPT_DIR/zenos-origin.sh"
+        raw_installer="$(zenos_github_raw_url scripts/termux-install.sh)" || {
+            log_error "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
             exit 1
-        fi
-        curl -sSL "https://raw.githubusercontent.com/${owner}/zenOS/main/scripts/termux-install.sh" | bash
+        }
+        curl -sSL "$raw_installer" | bash
         if [ $? -eq 0 ]; then
             log_success "zenOS installed successfully"
         else

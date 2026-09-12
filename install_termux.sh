@@ -28,12 +28,18 @@ python3 -m textblob.download_corpora
 # Clone zenOS if not already present
 if [ ! -d "zenOS" ]; then
     echo "📥 Cloning zenOS repository..."
-    owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
-    if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
-        echo "No GitHub owner is baked into this template. Clone your fork and rerun, or set ZENOS_GITHUB_OWNER."
-        exit 1
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    if [ -f "$SCRIPT_DIR/scripts/zenos-origin.sh" ]; then
+        # shellcheck source=scripts/zenos-origin.sh
+        . "$SCRIPT_DIR/scripts/zenos-origin.sh"
+    elif [ -f scripts/zenos-origin.sh ]; then
+        . scripts/zenos-origin.sh
     fi
-    git clone "https://github.com/${owner}/zenOS.git"
+    clone_url="$(zenos_github_clone_url)" || {
+        echo "GitHub origin is not configured. Clone this repo or set ZENOS_GITHUB_OWNER in .env."
+        exit 1
+    }
+    git clone "$clone_url"
 fi
 
 cd zenOS

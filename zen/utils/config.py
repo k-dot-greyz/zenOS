@@ -26,6 +26,9 @@ class ZenConfig:
     # API Configuration
     openrouter_api_key: Optional[str] = None
     default_model: str = "anthropic/claude-3-sonnet"
+    github_owner: Optional[str] = None
+    github_repo: str = "zenOS"
+    github_clone_url: Optional[str] = None
 
     # Database
     db_url: Optional[str] = None
@@ -74,8 +77,14 @@ class Config:
 
     def _load_from_env(self):
         """Load configuration from environment variables."""
-        # API keys
-        self.config.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+        # API keys + identity — same .env SSOT as zen.origin
+        from zen.origin import resolve as resolve_origin
+
+        origin = resolve_origin()
+        self.config.openrouter_api_key = origin.openrouter_api_key
+        self.config.github_owner = origin.owner if origin.configured else None
+        self.config.github_repo = origin.repo
+        self.config.github_clone_url = origin.clone_url
 
         # Database URLs
         self.config.db_url = os.getenv(

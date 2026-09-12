@@ -58,12 +58,14 @@ if [ -d "$HOME/zenOS" ]; then
     git pull
 else
     cd $HOME
-    owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
-    if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
-        echo "No GitHub owner is baked into this template. Clone your fork and rerun, or set ZENOS_GITHUB_OWNER."
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    # shellcheck source=zenos-origin.sh
+    . "$SCRIPT_DIR/zenos-origin.sh"
+    clone_url="$(zenos_github_clone_url)" || {
+        echo "GitHub origin is not configured. Clone this repo or set ZENOS_GITHUB_OWNER in .env."
         exit 1
-    fi
-    git clone "https://github.com/${owner}/zenOS.git"
+    }
+    git clone "$clone_url"
 fi
 
 cd $HOME/zenOS

@@ -79,42 +79,59 @@ zen env-doctor                      # fails hard if the floor is wrong
 
 ## 🚀 Quick Start
 
-This repo is template-friendly: no GitHub username is baked in. Replace
-`YOUR_GITHUB_USERNAME` with your user or org, or clone your fork and run
-installers in-place. Curl bootstraps also accept `ZENOS_GITHUB_OWNER`.
+This repo does not bake in a GitHub username. **Set origin and API keys once**
+in `.env` (copy `env.example`). If you skip the owner fields, zenOS reads
+`git remote get-url origin` — so cloning *this* fork is already enough.
 
-### Instant Setup (One-Liners)
+### Instant Setup
+
+```bash
+# 1. Clone THIS repo (GitHub → Code → HTTPS/SSH). That remote is the origin config.
+git clone <url-from-the-green-Code-button>
+cd zenOS
+
+# 2. One-time config: identity + keys
+cp env.example .env
+# edit .env: OPENROUTER_API_KEY=...  (optional: ZENOS_GITHUB_OWNER=your-user)
+
+# 3. Install in-place (does not re-clone)
+bash install.sh
+```
+
+Inspect what will be used:
+
+```bash
+python -m zen.origin
+```
 
 #### 🖥️ Desktop (Windows/Mac/Linux)
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+git clone <url-from-the-green-Code-button>
 cd zenOS
+cp env.example .env   # set OPENROUTER_API_KEY once
 bash install.sh
-# or: ZENOS_GITHUB_OWNER=YOUR_GITHUB_USERNAME curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.sh | bash
 ```
 
 #### 📱 Mobile (Termux/Android)
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+git clone <url-from-the-green-Code-button>
 cd zenOS
+cp env.example .env
 bash install_termux.sh
 ```
 
 #### ✈️ Offline Mode (No Internet)
 ```bash
-# First download while online:
-git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+git clone <url-from-the-green-Code-button>
 cd zenOS
-
-# Then install offline (Python 3.14+ required):
 python3.14 -m pip install -e .
 ```
 
 ### Manual Setup
 
-1. **Clone the repository:**
+1. **Clone this repository** (use the URL GitHub shows for this fork):
    ```bash
-   git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+   git clone <url-from-the-green-Code-button>
    cd zenOS
    ```
 
@@ -351,9 +368,8 @@ Special thanks to:
 
 ## 📬 Contact & Community
 
-- **GitHub**: [YOUR_GITHUB_USERNAME/zenOS](https://github.com/YOUR_GITHUB_USERNAME/zenOS) (replace the placeholder after you fork)
-- **Issues**: [Report bugs or request features](https://github.com/YOUR_GITHUB_USERNAME/zenOS/issues)
-- **Discussions**: [Join the conversation](https://github.com/YOUR_GITHUB_USERNAME/zenOS/discussions)
+Use this GitHub repository's **Issues** and **Discussions** tabs (the clone
+remote from `python -m zen.origin` is the one you forked).
 
 ---
 

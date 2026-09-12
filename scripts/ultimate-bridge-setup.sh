@@ -109,12 +109,14 @@ install_zenos() {
         git pull origin main
     else
         log "Cloning zenOS repository..."
-        owner="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
-        if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
-            log_error "No GitHub owner is baked into this template. Set ZENOS_GITHUB_OWNER."
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        # shellcheck source=zenos-origin.sh
+        . "$SCRIPT_DIR/zenos-origin.sh"
+        clone_url="$(zenos_github_clone_url)" || {
+            log_error "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
             exit 1
-        fi
-        git clone "https://github.com/${owner}/zenOS.git" "$ZENOS_PATH"
+        }
+        git clone "$clone_url" "$ZENOS_PATH"
     fi
     
     cd "$ZENOS_PATH"

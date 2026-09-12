@@ -56,14 +56,38 @@ function Install-SamplePlugin {
     Write-Host "✅ Sample plugin installed!" -ForegroundColor Green
 }
 
+function Get-DotEnvValue([string]$Key) {
+    $paths = @(".env", (Join-Path $PSScriptRoot "env.example"))
+    foreach ($path in $paths) {
+        if (-not (Test-Path $path)) { continue }
+        foreach ($line in Get-Content $path) {
+            if ($line -match "^\s*#" -or $line -notmatch "=") { continue }
+            $name, $val = $line.Split("=", 2)
+            if ($name.Trim() -eq $Key -and $val.Trim()) { return $val.Trim().Trim("'`"") }
+        }
+    }
+    return $null
+}
+
 function Get-ZenosCloneUrl {
     $owner = $env:ZENOS_GITHUB_OWNER
     if (-not $owner) { $owner = $env:GITHUB_OWNER }
     if (-not $owner) { $owner = $env:GITHUB_USERNAME }
+    if (-not $owner) { $owner = Get-DotEnvValue "ZENOS_GITHUB_OWNER" }
+    $repoUrl = $env:ZENOS_REPO_URL
+    if (-not $repoUrl) { $repoUrl = Get-DotEnvValue "ZENOS_REPO_URL" }
+    if ($repoUrl) { return $repoUrl }
     if (-not $owner -or $owner -eq "YOUR_GITHUB_USERNAME") {
-        throw "No GitHub owner is baked into this template. Clone your fork and rerun, or set ZENOS_GITHUB_OWNER."
+        try { $owner = $null; $remote = git remote get-url origin 2>$null
+            if ($remote -match "github.com[:/]([^/]+)/([^/.]+)") { $owner = $Matches[1] }
+        } catch {}
     }
-    $repo = if ($env:ZENOS_REPO_NAME) { $env:ZENOS_REPO_NAME } else { "zenOS" }
+    if (-not $owner -or $owner -eq "YOUR_GITHUB_USERNAME") {
+        throw "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
+    }
+    $repo = $env:ZENOS_REPO_NAME
+    if (-not $repo) { $repo = Get-DotEnvValue "ZENOS_REPO_NAME" }
+    if (-not $repo) { $repo = "zenOS" }
     return "https://github.com/$owner/$repo.git"
 }
 

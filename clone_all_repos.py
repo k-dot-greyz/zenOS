@@ -175,16 +175,17 @@ def get_configuration(args) -> Dict:
     # Get usernames — never default to a specific person
     usernames = args.username or []
     if not usernames:
-        env_user = (
-            os.environ.get("GITHUB_USERNAME")
-            or os.environ.get("ZENOS_GITHUB_OWNER")
-            or os.environ.get("GITHUB_OWNER")
-        )
-        if env_user:
-            usernames = [env_user]
+        try:
+            from zen.origin import resolve
+
+            origin = resolve()
+        except Exception:
+            origin = None
+        if origin is not None and origin.configured:
+            usernames = [origin.owner]
         else:
             print_colored(
-                "No GitHub owner set. Pass -u YOUR_GITHUB_USERNAME or set GITHUB_USERNAME / ZENOS_GITHUB_OWNER.",
+                "No GitHub owner set. Pass -u <owner>, set ZENOS_GITHUB_OWNER in .env, or clone this repo.",
                 Colors.RED,
             )
             sys.exit(2)

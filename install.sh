@@ -1,7 +1,8 @@
 #!/bin/bash
 # zenOS Universal Installer - One Command to Rule Them All!
 # Usage (from a checkout): bash install.sh
-# Bootstrap: ZENOS_GITHUB_OWNER=YOUR_GITHUB_USERNAME curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.sh | bash
+# Config: copy env.example → .env (API keys + optional ZENOS_GITHUB_OWNER).
+# git remote origin fills owner/repo if .env does not.
 
 set -e
 
@@ -17,31 +18,26 @@ echo "🧘 zenOS Universal Installer"
 echo "=========================="
 echo ""
 
-zenos_github_owner() {
-    if [[ -n "${ZENOS_GITHUB_OWNER:-}" ]]; then
-        printf '%s' "$ZENOS_GITHUB_OWNER"
-        return 0
-    fi
-    if [[ -n "${GITHUB_OWNER:-}" ]]; then
-        printf '%s' "$GITHUB_OWNER"
-        return 0
-    fi
-    if [[ -n "${GITHUB_USERNAME:-}" ]]; then
-        printf '%s' "$GITHUB_USERNAME"
-        return 0
-    fi
-    printf '%s' "YOUR_GITHUB_USERNAME"
-}
+# Prefer the shared origin loader when this file lives in a checkout.
+if [[ -f "${BASH_SOURCE[0]%/*}/scripts/zenos-origin.sh" ]]; then
+    # shellcheck source=scripts/zenos-origin.sh
+    . "${BASH_SOURCE[0]%/*}/scripts/zenos-origin.sh"
+elif [[ -f scripts/zenos-origin.sh ]]; then
+    # shellcheck source=scripts/zenos-origin.sh
+    . scripts/zenos-origin.sh
+fi
 
 zenos_clone_url() {
-    local owner
-    owner="$(zenos_github_owner)"
-    if [[ -z "$owner" || "$owner" == "YOUR_GITHUB_USERNAME" ]]; then
-        echo -e "${RED}No GitHub owner is baked into this template.${NC}"
-        echo "Clone your fork and rerun from the checkout, or set ZENOS_GITHUB_OWNER."
-        exit 1
+    local url
+    if command -v zenos_github_clone_url >/dev/null 2>&1; then
+        if url="$(zenos_github_clone_url)"; then
+            printf '%s\n' "$url"
+            return 0
+        fi
     fi
-    echo "https://github.com/${owner}/${ZENOS_REPO_NAME:-zenOS}.git"
+    echo -e "${RED}GitHub origin is not configured.${NC}"
+    echo "Clone this repo (git remote origin becomes the config), or set ZENOS_GITHUB_OWNER / ZENOS_REPO_URL in .env."
+    exit 1
 }
 
 is_zenos_checkout() {
@@ -155,6 +151,11 @@ main() {
     if ! is_zenos_checkout; then
         echo -e "${RED}Could not find a zenOS checkout (expected pyproject.toml + zen/).${NC}"
         exit 1
+    fi
+
+    if [[ ! -f .env && -f env.example ]]; then
+        cp env.example .env
+        echo "📝 Wrote .env from env.example — set OPENROUTER_API_KEY (and origin) once there."
     fi
     
     # Install dependencies

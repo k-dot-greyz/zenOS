@@ -14,12 +14,15 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# Configuration
-_ZENOS_OWNER="${ZENOS_GITHUB_OWNER:-${GITHUB_OWNER:-${GITHUB_USERNAME:-}}}"
-if [[ -z "$_ZENOS_OWNER" ]]; then
-    _ZENOS_OWNER="YOUR_GITHUB_USERNAME"
+# Configuration — owner/repo from .env or git remote (scripts/zenos-origin.sh)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=zenos-origin.sh
+. "$SCRIPT_DIR/zenos-origin.sh"
+PRIVATE_REPO="${ZENOS_PRIVATE_REPO:-}"
+if [[ -z "$PRIVATE_REPO" ]]; then
+    _ZENOS_OWNER="$(zenos_github_owner)"
+    PRIVATE_REPO="https://github.com/${_ZENOS_OWNER}/$(zenos_github_repo)-dev.git"
 fi
-PRIVATE_REPO="${ZENOS_PRIVATE_REPO:-https://github.com/${_ZENOS_OWNER}/zenOS-dev.git}"
 DEVELOPMENT_BRANCH="development"
 MAIN_BRANCH="main"
 

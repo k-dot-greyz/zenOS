@@ -14,14 +14,10 @@ from pathlib import Path
 
 
 def repo_clone_url() -> str:
-    """Clone URL for this template — owner comes from env, never a baked-in user."""
-    owner = (
-        os.environ.get("ZENOS_GITHUB_OWNER")
-        or os.environ.get("GITHUB_OWNER")
-        or os.environ.get("GITHUB_USERNAME")
-        or "YOUR_GITHUB_USERNAME"
-    )
-    return f"https://github.com/{owner}/zenOS.git"
+    """Clone URL from the centralized origin (.env, env vars, or git remote)."""
+    from zen.origin import resolve
+
+    return resolve().require_clone_url()
 
 
 def detect_environment():
