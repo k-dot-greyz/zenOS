@@ -5,7 +5,6 @@ Pulls real model data and combines with subjective ratings
 
 import asyncio
 import json
-import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -74,11 +73,9 @@ class OpenRouterSync:
     """Syncs Dex with OpenRouter API data"""
 
     def __init__(self, api_key: str = None):
-        self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
-        if not self.api_key:
-            from zen.origin import openrouter_api_key
+        from zen.origin import openrouter_api_key
 
-            self.api_key = openrouter_api_key()
+        self.api_key = api_key or openrouter_api_key()
         self.base_url = "https://openrouter.ai/api/v1"
         self.dex_path = Path("dex")
         self.cache_file = self.dex_path / ".api_cache.json"

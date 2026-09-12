@@ -4,7 +4,6 @@ OpenRouter Provider - Unified access to all LLMs through OpenRouter.
 
 import asyncio
 import json
-import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, AsyncIterator, Dict, List, Optional
@@ -131,11 +130,9 @@ class OpenRouterProvider:
 
     def __init__(self, api_key: Optional[str] = None):
         """Initialize the OpenRouter provider."""
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
-        if not self.api_key:
-            from zen.origin import openrouter_api_key
+        from zen.origin import openrouter_api_key
 
-            self.api_key = openrouter_api_key()
+        self.api_key = api_key or openrouter_api_key()
         if not self.api_key:
             raise ValueError(
                 "OpenRouter API key not found. Set OPENROUTER_API_KEY in .env "

@@ -102,6 +102,11 @@ function Main {
     } else {
         Set-Location zenOS
     }
+
+    if ((Test-Path "env.example") -and -not (Test-Path ".env")) {
+        Copy-Item "env.example" ".env"
+        Write-Host "Wrote .env from env.example — set OPENROUTER_API_KEY (and origin) once there." -ForegroundColor Yellow
+    }
     
     # Install dependencies
     Install-Dependencies

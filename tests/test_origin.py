@@ -13,6 +13,7 @@ from zen.origin import (
     github_raw_url,
     github_repo_url,
     http_referer,
+    is_configured_secret,
     parse_github_remote,
     resolve,
 )
@@ -261,6 +262,77 @@ def test_openrouter_reads_key_from_origin(monkeypatch):
     assert openrouter_api_key() == "sk-or-v1-from-env"
 
 
+def test_placeholder_and_empty_secrets_are_unset():
+    assert is_configured_secret(None) is False
+    assert is_configured_secret("") is False
+    assert is_configured_secret("sk-or-v1-your-api-key-here") is False
+    assert is_configured_secret("your-api-key-here") is False
+    assert is_configured_secret("sk-or-v1-real-key") is True
+
+    env = _empty_env()
+    env["OPENROUTER_API_KEY"] = "sk-or-v1-your-api-key-here"
+    env["GITHUB_TOKEN"] = "your_token_here"
+    origin = resolve(environ=env, git_remote=None, dotenv_path=None)
+    assert origin.openrouter_api_key is None
+    assert origin.github_token is None
+
+
+def test_empty_dotenv_key_does_not_count_as_configured(tmp_path: Path):
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=\nGITHUB_TOKEN=\n", encoding="utf-8")
+    origin = resolve(root=tmp_path, environ=_empty_env(), git_remote=None)
+    assert origin.openrouter_api_key is None
+    assert origin.github_token is None
+
+
+def test_start_scripts_use_origin_not_old_placeholder():
+    start_sh = (ROOT / "start.sh").read_text(encoding="utf-8")
+    start_ps1 = (ROOT / "start.ps1").read_text(encoding="utf-8")
+    assert 'grep -q "sk-or-v1-your-api-key-here"' not in start_sh
+    assert 'grep -q "sk-or-v1-your-api-key-here"' not in start_ps1
+    assert "-match \"sk-or-v1-your-api-key-here\"" not in start_ps1
+    assert "zenos-origin.sh" in start_sh
+    assert "zenos_openrouter_key" in start_sh or "zenos_require_openrouter_key" in start_sh
+    assert "Get-DotEnvValue" in start_ps1
+    assert "OPENROUTER_API_KEY" in start_ps1
+
+
+def test_termux_install_writes_openrouter_key_via_origin():
+    text = (ROOT / "scripts" / "termux-install.sh").read_text(encoding="utf-8")
+    assert "sk-or-v1-your-api-key-here" not in text
+    assert "zenos_set_dotenv_value" in text
+    assert "OPENROUTER_API_KEY" in text
+
+
+def test_clone_all_repos_token_reads_origin(monkeypatch):
+    import clone_all_repos as cloner
+
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.setattr("zen.origin.github_token", lambda: "ghp_from_dotenv")
+
+    class FakeResp:
+        status_code = 200
+
+        def json(self):
+            return {"login": "acme-org"}
+
+    monkeypatch.setattr(
+        cloner,
+        "requests",
+        SimpleNamespace(get=lambda *a, **k: FakeResp(), RequestException=Exception),
+    )
+    assert cloner.get_github_token() == "ghp_from_dotenv"
+
+
+def test_openrouter_provider_loads_key_from_dotenv(monkeypatch, tmp_path: Path):
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=sk-or-v1-from-dotenv\n", encoding="utf-8")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.chdir(tmp_path)
+    from zen.providers.openrouter import OpenRouterProvider
+
+    provider = OpenRouterProvider()
+    assert provider.api_key == "sk-or-v1-from-dotenv"
+
+
 def test_origin_sh_reads_dotenv(tmp_path: Path):
     script = ROOT / "scripts" / "zenos-origin.sh"
     (tmp_path / ".env").write_text("ZENOS_GITHUB_OWNER=acme-org\n", encoding="utf-8")
@@ -276,6 +348,45 @@ def test_origin_sh_reads_dotenv(tmp_path: Path):
     lines = [line for line in result.stdout.splitlines() if line.strip()]
     assert lines[0] == "acme-org"
     assert lines[1] == "https://github.com/acme-org/zenOS.git"
+
+
+def test_origin_sh_openrouter_key_and_set_dotenv(tmp_path: Path):
+    script = ROOT / "scripts" / "zenos-origin.sh"
+    (tmp_path / ".env").write_text("OPENROUTER_API_KEY=\n", encoding="utf-8")
+    import subprocess
+
+    empty = subprocess.run(
+        ["bash", "-c", f"cd '{tmp_path}' && . '{script}' && zenos_openrouter_key"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert empty.returncode != 0
+
+    written = subprocess.run(
+        [
+            "bash",
+            "-c",
+            (
+                f"cd '{tmp_path}' && . '{script}' && "
+                "zenos_set_dotenv_value OPENROUTER_API_KEY sk-or-v1-set-once .env && "
+                "zenos_openrouter_key"
+            ),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert written.returncode == 0, written.stderr
+    assert written.stdout.strip() == "sk-or-v1-set-once"
+    env_text = (tmp_path / ".env").read_text(encoding="utf-8")
+    assert "OPENROUTER_API_KEY=sk-or-v1-set-once" in env_text
+
+
+def test_install_ps1_copies_env_example():
+    text = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "env.example" in text
+    assert "OPENROUTER_API_KEY" in text
 
 
 def test_env_example_is_the_ssot_for_identity_and_keys():

@@ -33,10 +33,11 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# Check if API key is set
-if grep -q "sk-or-v1-your-api-key-here" .env; then
-    echo "⚠️  Please update your OpenRouter API key in .env"
-    echo "   Get your key at: https://openrouter.ai/keys"
+# Check if API key is set (empty + placeholders count as unset)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+# shellcheck source=scripts/zenos-origin.sh
+. "$SCRIPT_DIR/scripts/zenos-origin.sh"
+if ! zenos_require_openrouter_key; then
     exit 1
 fi
 

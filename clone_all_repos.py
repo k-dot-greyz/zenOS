@@ -221,12 +221,18 @@ def get_github_token() -> Optional[str]:
     Returns:
         token (str) or None: The validated GitHub token if available and valid, otherwise None.
     """
-    token = os.environ.get("GITHUB_TOKEN")
+    token = None
+    try:
+        from zen.origin import github_token as origin_github_token
+
+        token = origin_github_token()
+    except Exception:
+        token = os.environ.get("GITHUB_TOKEN")
     if not token:
-        print_colored("❌ GITHUB_TOKEN environment variable not found", Colors.RED)
-        print_colored("Please set your GitHub token:", Colors.YELLOW)
+        print_colored("❌ GITHUB_TOKEN not found in .env or the environment", Colors.RED)
+        print_colored("Set it once in .env (copy env.example) or:", Colors.YELLOW)
         print_colored("  PowerShell: $env:GITHUB_TOKEN='your_token_here'", Colors.CYAN)
-        print_colored("  CMD: set GITHUB_TOKEN=your_token_here", Colors.CYAN)
+        print_colored("  bash: export GITHUB_TOKEN=your_token_here", Colors.CYAN)
         print_colored("  Create token at: https://github.com/settings/tokens", Colors.CYAN)
         print_colored("  Required scopes: repo (for private repos)", Colors.CYAN)
         return None
@@ -409,9 +415,11 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
     try:
         # Use token for authentication if it's a private repo
         if repo.get("private", False):
-            # Replace https://github.com with token-based auth
+            from zen.origin import github_token as origin_github_token
+
+            token = origin_github_token() or os.environ.get("GITHUB_TOKEN")
             auth_url = clone_url.replace(
-                "https://github.com/", f'https://{os.environ.get("GITHUB_TOKEN")}@github.com/'
+                "https://github.com/", f"https://{token}@github.com/"
             )
         else:
             auth_url = clone_url

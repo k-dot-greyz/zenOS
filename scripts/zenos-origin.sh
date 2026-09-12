@@ -24,6 +24,17 @@ _zenos_is_placeholder() {
     esac
 }
 
+_zenos_is_placeholder_secret() {
+    local value
+    value="$(_zenos_trim "${1-}")"
+    case "$value" in
+        ""|"your-api-key-here"|"sk-or-v1-your-api-key-here"|"YOUR_API_KEY"|"<your-api-key>"|"changeme"|"your_token_here"|"your_personal_access_token")
+            return 0
+            ;;
+        *) return 1 ;;
+    esac
+}
+
 _zenos_load_dotenv() {
     local file="$1"
     [[ -f "$file" ]] || return 0
@@ -162,4 +173,58 @@ zenos_require_github_owner() {
         return 1
     fi
     printf '%s' "$owner"
+}
+
+zenos_openrouter_key() {
+    local key
+    zenos_load_dotenv
+    key="$(_zenos_trim "${OPENROUTER_API_KEY:-}")"
+    if _zenos_is_placeholder_secret "$key"; then
+        return 1
+    fi
+    printf '%s' "$key"
+}
+
+zenos_github_token() {
+    local token
+    zenos_load_dotenv
+    token="$(_zenos_trim "${GITHUB_TOKEN:-}")"
+    if _zenos_is_placeholder_secret "$token"; then
+        return 1
+    fi
+    printf '%s' "$token"
+}
+
+zenos_require_openrouter_key() {
+    if zenos_openrouter_key >/dev/null; then
+        return 0
+    fi
+    echo "OPENROUTER_API_KEY is not set." >&2
+    echo "Set it once in .env (copy env.example) or export it in the environment." >&2
+    echo "Get a key at: https://openrouter.ai/keys" >&2
+    return 1
+}
+
+zenos_set_dotenv_value() {
+    local key="${1:?key required}"
+    local value="${2-}"
+    local file="${3:-.env}"
+    local tmp
+    tmp="$(mktemp)"
+    if [[ -f "$file" ]]; then
+        awk -v k="$key" -v v="$value" '
+            BEGIN { done = 0 }
+            index($0, k "=") == 1 {
+                print k "=" v
+                done = 1
+                next
+            }
+            { print }
+            END { if (!done) print k "=" v }
+        ' "$file" > "$tmp"
+        mv "$tmp" "$file"
+    else
+        printf '%s=%s\n' "$key" "$value" > "$file"
+    fi
+    export "$key=$value"
 }

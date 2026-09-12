@@ -6,10 +6,12 @@ Forget the proot/Arch complexity. Let's run zenOS directly on Termux - fast, nat
 
 ---
 
-## 🎯 One-Line Install (The Dream)
+## 🎯 Clone, then install (origin is the git remote)
 ```bash
-# Complete airi-zenOS bridge setup
-curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/scripts/ultimate-bridge-setup.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+cp env.example .env   # set OPENROUTER_API_KEY once
+bash scripts/ultimate-bridge-setup.sh
 ```
 
 **What this installs:**

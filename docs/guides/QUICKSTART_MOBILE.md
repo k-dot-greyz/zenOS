@@ -17,18 +17,19 @@
 
 ---
 
-## Step 2: One-Command Install! ⚡ (1 minute)
+## Step 2: Clone this repo, then install ⚡
 Open Termux and run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+cp env.example .env
+bash install.sh
 ```
 
 This will:
-- Auto-detect Termux
-- Download zenOS
+- Use the existing checkout (git remote is already origin)
 - Update Termux packages
 - Install Python and dependencies
-- Download NLTK data
 - Install the sample plugin
 - Test everything
 - Set up your environment
@@ -37,16 +38,12 @@ This will:
 
 ## Step 3: Add Your API Key (1 minute)
 ```bash
-# Copy the example config
-cp env.example .env
-
-# Edit it
 nano .env
 ```
 
 In the editor:
-1. Find the line: `OPENROUTER_API_KEY=sk-or-v1-your-api-key-here`
-2. Replace `sk-or-v1-your-api-key-here` with YOUR key from Step 1
+1. Find the line: `OPENROUTER_API_KEY=`
+2. Paste YOUR key from Step 1
 3. Save and exit (Ctrl+X, then Y, then Enter)
 
 ---

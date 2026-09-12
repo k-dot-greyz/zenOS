@@ -69,6 +69,9 @@ else
 fi
 
 cd $HOME/zenOS
+# Always load origin from the checkout so key writes work on update AND first clone.
+# shellcheck source=zenos-origin.sh
+. "$HOME/zenOS/scripts/zenos-origin.sh"
 
 # Install Python dependencies
 echo -e "${YELLOW}🐍 Installing Python dependencies...${NC}"
@@ -93,7 +96,7 @@ if [ ! -f ".env" ]; then
     if [[ "$response" =~ ^[Yy]$ ]]; then
         echo "Please enter your OpenRouter API key:"
         read -r api_key
-        sed -i "s/sk-or-v1-your-api-key-here/$api_key/" .env
+        zenos_set_dotenv_value OPENROUTER_API_KEY "$api_key" .env
         echo -e "${GREEN}✅ API key saved!${NC}"
     else
         echo -e "${YELLOW}⚠️  Remember to add your API key to ~/zenOS/.env later!${NC}"
@@ -273,7 +276,7 @@ echo -e "${CYAN}Widgets:${NC}"
 echo "  Add Termux:Widget to your home screen for quick access!"
 echo ""
 echo -e "${CYAN}API Key:${NC}"
-if grep -q "sk-or-v1-your-api-key-here" $HOME/zenOS/.env; then
+if ! (cd "$HOME/zenOS" && zenos_openrouter_key >/dev/null); then
     echo -e "  ${YELLOW}⚠️  Don't forget to add your OpenRouter API key!${NC}"
     echo "  Edit: ${YELLOW}nano ~/zenOS/.env${NC}"
     echo "  Get key at: https://openrouter.ai/keys"

@@ -39,6 +39,19 @@ _PLACEHOLDERS = frozenset(
     }
 )
 
+_SECRET_PLACEHOLDERS = frozenset(
+    {
+        "",
+        "your-api-key-here",
+        "sk-or-v1-your-api-key-here",
+        "YOUR_API_KEY",
+        "<your-api-key>",
+        "changeme",
+        "your_token_here",
+        "your_personal_access_token",
+    }
+)
+
 
 @dataclass(frozen=True)
 class Origin:
@@ -84,6 +97,18 @@ def _is_placeholder(value: Optional[str]) -> bool:
     if value is None:
         return True
     return value.strip() in _PLACEHOLDERS
+
+
+def is_configured_secret(value: Optional[str]) -> bool:
+    """True when a key/token is present and not a documented placeholder."""
+    cleaned = _clean(value)
+    if cleaned is None:
+        return False
+    return cleaned not in _SECRET_PLACEHOLDERS
+
+
+def _secret(value: Optional[str]) -> Optional[str]:
+    return value if is_configured_secret(value) else None
 
 
 def _clean(value: Optional[str]) -> Optional[str]:
@@ -240,8 +265,8 @@ def resolve(
         web_url=web_url,
         raw_base=raw_base,
         private_repo=private_repo,
-        openrouter_api_key=_lookup(env, dotenv, "OPENROUTER_API_KEY"),
-        github_token=_lookup(env, dotenv, "GITHUB_TOKEN"),
+        openrouter_api_key=_secret(_lookup(env, dotenv, "OPENROUTER_API_KEY")),
+        github_token=_secret(_lookup(env, dotenv, "GITHUB_TOKEN")),
         configured=configured,
         source=source if configured else "unset",
     )
@@ -287,6 +312,10 @@ def openrouter_api_key() -> Optional[str]:
 
 def github_token() -> Optional[str]:
     return resolve().github_token
+
+
+def has_openrouter_key() -> bool:
+    return is_configured_secret(openrouter_api_key())
 
 
 if __name__ == "__main__":
