@@ -50,18 +50,31 @@ if ! command -v pip &> /dev/null; then
     pkg install -y python-pip
 fi
 
-# Clone zenOS
-echo -e "${YELLOW}📥 Cloning zenOS...${NC}"
-if [ -d "$HOME/zenOS" ]; then
+# Use this checkout when present; otherwise install into ~/zenOS.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ -f pyproject.toml && -d zen ]]; then
+    echo -e "${BLUE}Using existing zenOS checkout at $PWD${NC}"
+    INSTALL_ROOT="$PWD"
+elif [ -d "$HOME/zenOS" ]; then
     echo -e "${BLUE}Found existing zenOS installation, updating...${NC}"
-    cd $HOME/zenOS
+    cd "$HOME/zenOS"
     git pull
+    INSTALL_ROOT="$HOME/zenOS"
 else
-    cd $HOME
-    git clone https://github.com/k-dot-greyz/zenOS.git
+    cd "$HOME"
+    # shellcheck source=zenos-origin.sh
+    . "$SCRIPT_DIR/zenos-origin.sh"
+    clone_url="$(zenos_github_clone_url)" || {
+        echo "GitHub origin is not configured. Clone this repo or set ZENOS_GITHUB_OWNER in .env."
+        exit 1
+    }
+    git clone "$clone_url" zenOS
+    INSTALL_ROOT="$HOME/zenOS"
 fi
 
-cd $HOME/zenOS
+cd "$INSTALL_ROOT"
+# shellcheck source=zenos-origin.sh
+. "$INSTALL_ROOT/scripts/zenos-origin.sh"
 
 # Install Python dependencies
 echo -e "${YELLOW}🐍 Installing Python dependencies...${NC}"
@@ -86,7 +99,7 @@ if [ ! -f ".env" ]; then
     if [[ "$response" =~ ^[Yy]$ ]]; then
         echo "Please enter your OpenRouter API key:"
         read -r api_key
-        sed -i "s/sk-or-v1-your-api-key-here/$api_key/" .env
+        zenos_set_dotenv_value OPENROUTER_API_KEY "$api_key" .env
         echo -e "${GREEN}✅ API key saved!${NC}"
     else
         echo -e "${YELLOW}⚠️  Remember to add your API key to ~/zenOS/.env later!${NC}"
@@ -266,7 +279,7 @@ echo -e "${CYAN}Widgets:${NC}"
 echo "  Add Termux:Widget to your home screen for quick access!"
 echo ""
 echo -e "${CYAN}API Key:${NC}"
-if grep -q "sk-or-v1-your-api-key-here" $HOME/zenOS/.env; then
+if ! (cd "$INSTALL_ROOT" && zenos_openrouter_key >/dev/null); then
     echo -e "  ${YELLOW}⚠️  Don't forget to add your OpenRouter API key!${NC}"
     echo "  Edit: ${YELLOW}nano ~/zenOS/.env${NC}"
     echo "  Get key at: https://openrouter.ai/keys"

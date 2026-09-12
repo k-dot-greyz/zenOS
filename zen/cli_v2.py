@@ -297,12 +297,14 @@ def doctor(ai_mode):
     else:
         checks.append(("❌", "Environment file missing (copy env.example to .env)"))
 
-    # Check API key
-    api_key = os.environ.get("OPENROUTER_API_KEY", "")
-    if api_key and api_key != "your-api-key-here":
+    # Check API key via the same .env SSOT as origin/config
+    from zen.origin import openrouter_api_key
+
+    api_key = openrouter_api_key() or ""
+    if api_key:
         checks.append(("✅", "OpenRouter API key configured"))
     else:
-        checks.append(("⚠️", "OpenRouter API key not configured"))
+        checks.append(("⚠️", "OpenRouter API key not configured (set OPENROUTER_API_KEY in .env)"))
 
     # Check Dex
     if Path("dex/models.yaml").exists():
@@ -403,7 +405,7 @@ zenOS v2.0 Help System
   - Tier affects power multipliers
   - Tournament mode for multiple fighters
 
-For more: https://github.com/k-dot-greyz/zenOS
+For more: https://zenos.ai
     """)
 
 

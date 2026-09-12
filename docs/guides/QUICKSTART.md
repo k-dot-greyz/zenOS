@@ -23,26 +23,39 @@ You'll learn how to:
 
 ### Instant Setup (One-Liners)
 
+Clone **this** fork (GitHub → Code), then set keys once in `.env`.
+`curl | bash` without a checkout cannot guess your GitHub owner.
+
+If you copy the clone URLs below, **replace `YOUR_GITHUB_USERNAME` with your GitHub username** after you fork.
+
 #### Desktop (Windows/Mac/Linux)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+cp env.example .env   # set OPENROUTER_API_KEY=... once (optional: ZENOS_GITHUB_OWNER)
+bash install.sh
 ```
 
 #### Mobile (Termux/Android)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+cp env.example .env
+bash install_termux.sh
 ```
 
 #### Offline Mode (No Internet)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup-offline.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+python3.14 -m pip install -e .
 ```
 
 ### Manual Setup
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/k-dot-greyz/zenOS.git
+   git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
    cd zenOS
    ```
 

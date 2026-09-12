@@ -21,7 +21,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import requests
+try:
+    import requests
+except ImportError:  # optional until clone/API calls run
+    requests = None
 
 
 # Colors for output
@@ -72,8 +75,8 @@ def parse_arguments():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python clone_all_repos.py                          # Clone repos for default user to default dir
-  python clone_all_repos.py -u k-dot-greyz -d ./repos # Specific user and directory
+  python clone_all_repos.py                          # Requires GITHUB_USERNAME or -u YOUR_GITHUB_USERNAME
+  python clone_all_repos.py -u YOUR_GITHUB_USERNAME -d ./repos     # Specific user/org and directory
   python clone_all_repos.py -u user1 -u user2 --dry-run # Multiple users, preview mode
   python clone_all_repos.py --json results.json      # Save results to JSON
   python clone_all_repos.py --yes                     # Skip confirmation prompts
@@ -133,7 +136,7 @@ def check_dependencies() -> bool:
     # Check if git is available
     try:
         subprocess.run(["git", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except subprocess.CalledProcessError, FileNotFoundError:
         missing.append("git")
 
     if missing:
@@ -156,8 +159,9 @@ def get_configuration(args) -> Dict:
 
     Returns:
         dict: Configuration mapping with keys:
-            - `usernames` (list[str]): GitHub usernames determined from `args.username`,
-              the `GITHUB_USERNAME` environment variable, or the default "k-dot-greyz".
+            - `usernames` (list[str]): GitHub usernames determined from `args.username`
+              or `GITHUB_USERNAME` / `ZENOS_GITHUB_OWNER` / `GITHUB_OWNER`.
+              There is no baked-in default account.
             - `destination` (Path): Resolved destination directory from `args.destination`,
               the `REPO_DEST_DIR` environment variable, or a sensible platform-specific default.
             - `dry_run` (bool): Whether to perform a dry run.
@@ -168,32 +172,34 @@ def get_configuration(args) -> Dict:
     """
     config = {}
 
-    # Get usernames
+    # Get usernames — never default to a specific person
     usernames = args.username or []
     if not usernames:
-        # Try environment variable
-        env_user = os.environ.get("GITHUB_USERNAME")
-        if env_user:
-            usernames = [env_user]
+        try:
+            from zen.origin import resolve
+
+            origin = resolve()
+        except Exception:
+            origin = None
+        if origin is not None and origin.configured:
+            usernames = [origin.owner]
         else:
-            # Default fallback
-            usernames = ["k-dot-greyz"]
+            print_colored(
+                "No GitHub owner set. Pass -u <owner>, set ZENOS_GITHUB_OWNER in .env, or clone this repo.",
+                Colors.RED,
+            )
+            sys.exit(2)
 
     config["usernames"] = usernames
 
     # Get destination directory
     destination = args.destination
     if not destination:
-        # Try environment variable
         env_dest = os.environ.get("REPO_DEST_DIR")
         if env_dest:
             destination = Path(env_dest)
         else:
-            # Default fallback based on platform
-            if sys.platform == "win32":
-                destination = Path(r"E:\Vault\Code")
-            else:
-                destination = Path.home() / "repos"
+            destination = Path.home() / "repos"
 
     config["destination"] = destination
     config["dry_run"] = args.dry_run
@@ -215,14 +221,24 @@ def get_github_token() -> Optional[str]:
     Returns:
         token (str) or None: The validated GitHub token if available and valid, otherwise None.
     """
-    token = os.environ.get("GITHUB_TOKEN")
+    token = None
+    try:
+        from zen.origin import github_token as origin_github_token
+
+        token = origin_github_token()
+    except Exception:
+        token = os.environ.get("GITHUB_TOKEN")
     if not token:
-        print_colored("❌ GITHUB_TOKEN environment variable not found", Colors.RED)
-        print_colored("Please set your GitHub token:", Colors.YELLOW)
+        print_colored("❌ GITHUB_TOKEN not found in .env or the environment", Colors.RED)
+        print_colored("Set it once in .env (copy env.example) or:", Colors.YELLOW)
         print_colored("  PowerShell: $env:GITHUB_TOKEN='your_token_here'", Colors.CYAN)
-        print_colored("  CMD: set GITHUB_TOKEN=your_token_here", Colors.CYAN)
+        print_colored("  bash: export GITHUB_TOKEN=your_token_here", Colors.CYAN)
         print_colored("  Create token at: https://github.com/settings/tokens", Colors.CYAN)
         print_colored("  Required scopes: repo (for private repos)", Colors.CYAN)
+        return None
+
+    if requests is None:
+        print_colored("Install with: pip install requests", Colors.YELLOW)
         return None
 
     # Test token
@@ -302,6 +318,10 @@ def fetch_all_repos(
         repos (List[Dict]): A list of repository objects (dictionaries) as returned by the GitHub API, filtered according to the parameters. May contain a partial set of repositories if a network or request error occurs during pagination.
     """
     print_colored(f"🔍 Fetching repositories for user: {username}", Colors.BLUE)
+
+    if requests is None:
+        print_colored("Install with: pip install requests", Colors.YELLOW)
+        return []
 
     repos = []
     page = 1
@@ -395,10 +415,10 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
     try:
         # Use token for authentication if it's a private repo
         if repo.get("private", False):
-            # Replace https://github.com with token-based auth
-            auth_url = clone_url.replace(
-                "https://github.com/", f'https://{os.environ.get("GITHUB_TOKEN")}@github.com/'
-            )
+            from zen.origin import github_token as origin_github_token
+
+            token = origin_github_token() or os.environ.get("GITHUB_TOKEN")
+            auth_url = clone_url.replace("https://github.com/", f"https://{token}@github.com/")
         else:
             auth_url = clone_url
 

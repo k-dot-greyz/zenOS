@@ -22,7 +22,7 @@ procedures:
       reliability: 95
     requirements:
       - "LLM access"
-    discovered_by: "human:kaspars"
+    discovered_by: "human:operator"
     discovery_date: "2024-01-01"
     evolution_path:
       next: "zen.chat.context"
@@ -77,7 +77,7 @@ procedures:
       - "Code parser"
       - "LLM access"
     best_models: ["claude-3-opus", "gpt-4-turbo"]
-    discovered_by: "human:kaspars"
+    discovered_by: "human:operator"
     usage_count: 342
     
   - id: "zen.refactor"
@@ -148,7 +148,7 @@ procedures:
       - "Teaching interface"
       - "Learning validation"
     description: "Human teaches AI new procedures through examples"
-    discovered_by: "human:kaspars"
+    discovered_by: "human:operator"
     usage_count: 47
 
   - id: "zen.delegate"
@@ -164,7 +164,7 @@ procedures:
       - "Progress tracking"
       - "Human approval"
     best_models: ["gpt-4-turbo", "claude-3-opus"]
-    discovered_by: "human:kaspars"
+    discovered_by: "human:operator"
     usage_count: 234
 
   - id: "zen.repo.scan"
@@ -297,7 +297,7 @@ leaderboard:
   most_discovered:
     - entity: "ai:bender-prime"
       count: 23
-    - entity: "human:kaspars"
+    - entity: "human:operator"
       count: 18
     - entity: "ai:claude"
       count: 15

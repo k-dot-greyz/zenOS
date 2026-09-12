@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Fail if Pokédex / Pokémon / Nintendo-adjacent branding remains in the tree."""
+"""Fail if personal GitHub/user identity remains in the working tree.
+
+zenOS is a template-friendly repo. Clone URLs, authors, CODEOWNERS, and
+HTTP referers must not bake in a specific human or GitHub username.
+Allowed placeholders: YOUR_GITHUB_USERNAME, YOUR_GITHUB_OWNER.
+"""
 
 from __future__ import annotations
 
@@ -55,21 +60,22 @@ SKIP_SUFFIXES = {
 
 # Self / tooling allowlist: these files intentionally mention forbidden tokens.
 ALLOWLIST_RELATIVE = {
-    "scripts/check_no_legacy_branding.py",
-    "scripts/rebrand_to_dex.py",
-    "tests/test_no_legacy_branding.py",
+    "scripts/check_no_identity_leaks.py",
+    "tests/test_no_identity_leaks.py",
 }
 
 FORBIDDEN: Sequence[Tuple[str, Pattern[str]]] = (
-    ("pokedex", re.compile(r"pok[eé]dex", re.IGNORECASE)),
-    ("pokemon", re.compile(r"pok[eé]mon", re.IGNORECASE)),
-    ("nintendo", re.compile(r"nintendo", re.IGNORECASE)),
-    ("gotta catch", re.compile(r"gotta\s*catch", re.IGNORECASE)),
-    ("BattleArena", re.compile(r"\bBattleArena\b")),
-    ("get_pokedex", re.compile(r"\bget_pokedex\b")),
-    ("sync_pokedex", re.compile(r"\bsync_pokedex\b")),
-    ("Pokedex class", re.compile(r"\bPokedex\b")),
-    ("pokedex_path", re.compile(r"\bpokedex_path\b")),
+    ("k-dot-greyz", re.compile(r"k-dot-greyz", re.IGNORECASE)),
+    ("kasparsgreizis", re.compile(r"kasparsgreizis", re.IGNORECASE)),
+    ("Kaspars Greizis", re.compile(r"Kaspars\s+Greizis", re.IGNORECASE)),
+    ("kaspars.greizis", re.compile(r"kaspars\.greizis", re.IGNORECASE)),
+    ("Kaspars", re.compile(r"\bKaspars\b")),
+    ("kaspars", re.compile(r"\bkaspars\b", re.IGNORECASE)),
+    ("k.greyZ", re.compile(r"\bk\.greyZ\b", re.IGNORECASE)),
+    ("greyZ alias", re.compile(r"\bgreyZ\b")),
+    ("personal vault path", re.compile(r"E:\\Vault\\Code")),
+    # Public Gemini share links are world-readable. gemini.google.com/gem/ is not this.
+    ("gemini share link", re.compile(r"g\.co/gemini/share/", re.IGNORECASE)),
 )
 
 
@@ -94,10 +100,11 @@ def scan(root: Path) -> List[str]:
         rel = path.relative_to(root).as_posix()
         if rel in ALLOWLIST_RELATIVE:
             continue
-        # After rebrand, the rebrand script itself may still be named with pokedex —
-        # allowlist covers it. Also skip egg-info etc.
         if rel.endswith(".egg-info") or "/.egg-info/" in f"/{rel}/":
             continue
+        for label, pattern in FORBIDDEN:
+            if pattern.search(rel):
+                hits.append(f"{rel}: [path {label}]")
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError, OSError:
@@ -122,11 +129,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     root = args.root.resolve()
     hits = scan(root)
     if hits:
-        print(f"FOUND {len(hits)} legacy branding hit(s) under {root}:", file=sys.stderr)
+        print(f"FOUND {len(hits)} identity leak(s) under {root}:", file=sys.stderr)
         for hit in hits:
             print(f"  {hit}", file=sys.stderr)
         return 1
-    print(f"OK: no legacy branding tokens under {root}")
+    print(f"OK: no personal identity tokens under {root}")
     return 0
 
 

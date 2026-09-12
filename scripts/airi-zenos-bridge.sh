@@ -44,12 +44,23 @@ log_warning() {
 
 # check_zenos verifies presence of zenOS at $ZENOS_PATH and installs it if missing.
 # If zenOS is not found, it runs the remote Termux installer script at
-# https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh; on installation failure the script exits with status 1.
+# Remote installer URL is derived from ZENOS_GITHUB_OWNER; on installation failure the script exits with status 1.
 check_zenos() {
     if [ ! -d "$ZENOS_PATH" ]; then
         log_error "zenOS not found at $ZENOS_PATH"
         log "Installing zenOS..."
-        curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/termux-install.sh | bash
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        if [ -f "$SCRIPT_DIR/termux-install.sh" ]; then
+            bash "$SCRIPT_DIR/termux-install.sh"
+        else
+            # shellcheck source=zenos-origin.sh
+            . "$SCRIPT_DIR/zenos-origin.sh"
+            raw_installer="$(zenos_github_raw_url scripts/termux-install.sh)" || {
+                log_error "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
+                exit 1
+            }
+            curl -sSL "$raw_installer" | bash
+        fi
         if [ $? -eq 0 ]; then
             log_success "zenOS installed successfully"
         else

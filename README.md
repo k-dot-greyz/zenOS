@@ -79,33 +79,59 @@ zen env-doctor                      # fails hard if the floor is wrong
 
 ## 🚀 Quick Start
 
-### Instant Setup (One-Liners)
+This repo does not bake in a GitHub username. **Set origin and API keys once**
+in `.env` (copy `env.example`). If you skip the owner fields, zenOS reads
+`git remote get-url origin` — so cloning *this* fork is already enough.
+
+### Instant Setup
+
+```bash
+# 1. Clone THIS repo (GitHub → Code → HTTPS/SSH). That remote is the origin config.
+git clone <url-from-the-green-Code-button>
+cd zenOS
+
+# 2. One-time config: identity + keys
+cp env.example .env
+# edit .env: OPENROUTER_API_KEY=...  (optional: ZENOS_GITHUB_OWNER=your-user)
+
+# 3. Install in-place (does not re-clone)
+bash install.sh
+```
+
+Inspect what will be used:
+
+```bash
+python -m zen.origin
+```
 
 #### 🖥️ Desktop (Windows/Mac/Linux)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+git clone <url-from-the-green-Code-button>
+cd zenOS
+cp env.example .env   # set OPENROUTER_API_KEY once
+bash install.sh
 ```
 
 #### 📱 Mobile (Termux/Android)
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install_termux.sh | bash
+git clone <url-from-the-green-Code-button>
+cd zenOS
+cp env.example .env
+bash install_termux.sh
 ```
 
 #### ✈️ Offline Mode (No Internet)
 ```bash
-# First download while online:
-git clone https://github.com/k-dot-greyz/zenOS.git
+git clone <url-from-the-green-Code-button>
 cd zenOS
-
-# Then install offline (Python 3.14+ required):
 python3.14 -m pip install -e .
 ```
 
 ### Manual Setup
 
-1. **Clone the repository:**
+1. **Clone this repository** (use the URL GitHub shows for this fork):
    ```bash
-   git clone https://github.com/k-dot-greyz/zenOS.git
+   git clone <url-from-the-green-Code-button>
    cd zenOS
    ```
 
@@ -342,9 +368,8 @@ Special thanks to:
 
 ## 📬 Contact & Community
 
-- **GitHub**: [k-dot-greyz/zenOS](https://github.com/k-dot-greyz/zenOS)
-- **Issues**: [Report bugs or request features](https://github.com/k-dot-greyz/zenOS/issues)
-- **Discussions**: [Join the conversation](https://github.com/k-dot-greyz/zenOS/discussions)
+Use this GitHub repository's **Issues** and **Discussions** tabs (the clone
+remote from `python -m zen.origin` is the one you forked).
 
 ---
 

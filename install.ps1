@@ -1,5 +1,6 @@
 # zenOS Universal Installer for Windows - One Command to Rule Them All! 🧘
-# Usage: iwr -useb https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.ps1 | iex
+# Usage (from a checkout): .\install.ps1
+# Bootstrap: $env:ZENOS_GITHUB_OWNER = "YOUR_GITHUB_USERNAME"; iwr -useb https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/zenOS/main/install.ps1 | iex
 
 Write-Host "🧘 zenOS Universal Installer for Windows" -ForegroundColor Cyan
 Write-Host "=======================================" -ForegroundColor Cyan
@@ -55,15 +56,64 @@ function Install-SamplePlugin {
     Write-Host "✅ Sample plugin installed!" -ForegroundColor Green
 }
 
+function Get-DotEnvValue([string]$Key) {
+    $paths = @(".env", (Join-Path $PSScriptRoot "env.example"))
+    foreach ($path in $paths) {
+        if (-not (Test-Path $path)) { continue }
+        foreach ($line in Get-Content $path) {
+            if ($line -match "^\s*#" -or $line -notmatch "=") { continue }
+            $name, $val = $line.Split("=", 2)
+            if ($name.Trim() -eq $Key -and $val.Trim()) { return $val.Trim().Trim("'`"") }
+        }
+    }
+    return $null
+}
+
+function Get-ZenosCloneUrl {
+    $owner = $env:ZENOS_GITHUB_OWNER
+    if (-not $owner) { $owner = $env:GITHUB_OWNER }
+    if (-not $owner) { $owner = $env:GITHUB_USERNAME }
+    if (-not $owner) { $owner = Get-DotEnvValue "ZENOS_GITHUB_OWNER" }
+    $repoUrl = $env:ZENOS_REPO_URL
+    if (-not $repoUrl) { $repoUrl = Get-DotEnvValue "ZENOS_REPO_URL" }
+    if ($repoUrl) { return $repoUrl }
+    if (-not $owner -or $owner -eq "YOUR_GITHUB_USERNAME") {
+        try { $owner = $null; $remote = git remote get-url origin 2>$null
+            if ($remote -match "github.com[:/]([^/]+)/([^/.]+)") { $owner = $Matches[1] }
+        } catch {}
+    }
+    if (-not $owner -or $owner -eq "YOUR_GITHUB_USERNAME") {
+        throw "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
+    }
+    $repo = $env:ZENOS_REPO_NAME
+    if (-not $repo) { $repo = Get-DotEnvValue "ZENOS_REPO_NAME" }
+    if (-not $repo) { $repo = "zenOS" }
+    return "https://github.com/$owner/$repo.git"
+}
+
 # Main installation
 function Main {
-    # Clone repository if not already present
-    if (-not (Test-Path "zenOS")) {
-        Write-Host "📥 Cloning zenOS repository..." -ForegroundColor Yellow
-        git clone https://github.com/k-dot-greyz/zenOS.git
+    if ((Test-Path "pyproject.toml") -and (Test-Path "zen")) {
+        Write-Host "Using existing zenOS checkout at $PWD" -ForegroundColor Yellow
+    } elseif (-not (Test-Path "zenOS")) {
+        Write-Host "Cloning zenOS repository..." -ForegroundColor Yellow
+        git clone (Get-ZenosCloneUrl) zenOS
+        if ($LASTEXITCODE -ne 0) {
+            throw "Could not clone zenOS repository."
+        }
+        Set-Location zenOS
+    } else {
+        Set-Location zenOS
     }
-    
-    Set-Location zenOS
+
+    if (-not ((Test-Path "pyproject.toml") -and (Test-Path "zen"))) {
+        throw "Could not find a zenOS checkout (expected pyproject.toml + zen/)."
+    }
+
+    if ((Test-Path "env.example") -and -not (Test-Path ".env")) {
+        Copy-Item "env.example" ".env"
+        Write-Host "Wrote .env from env.example — set OPENROUTER_API_KEY (and origin) once there." -ForegroundColor Yellow
+    }
     
     # Install dependencies
     Install-Dependencies
@@ -87,10 +137,10 @@ function Main {
     Write-Host "  python zen/cli.py plugins list"
     Write-Host "  python zen/cli.py plugins execute com.example.text-processor text.summarize \"Hello world!\""
     Write-Host ""
-    Write-Host "📚 Full guides:" -ForegroundColor Cyan
-    Write-Host "  Mobile: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_MOBILE.md"
-    Write-Host "  Windows: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_WINDOWS.md"
-    Write-Host "  Linux: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_LINUX.md"
+    Write-Host "Full guides (in this checkout):" -ForegroundColor Cyan
+    Write-Host "  Mobile:  docs/guides/QUICKSTART_MOBILE.md"
+    Write-Host "  Windows: docs/guides/QUICKSTART_WINDOWS.md"
+    Write-Host "  Linux:   docs/guides/QUICKSTART_LINUX.md"
     Write-Host ""
     Write-Host "Welcome to zenOS! Enjoy the zen!" -ForegroundColor Magenta
 }

@@ -1,6 +1,8 @@
 #!/bin/bash
 # zenOS Universal Installer - One Command to Rule Them All!
-# Usage: curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+# Usage (from a checkout): bash install.sh
+# Config: copy env.example → .env (API keys + optional ZENOS_GITHUB_OWNER).
+# git remote origin fills owner/repo if .env does not.
 
 set -e
 
@@ -15,6 +17,32 @@ NC='\033[0m' # No Color
 echo "🧘 zenOS Universal Installer"
 echo "=========================="
 echo ""
+
+# Prefer the shared origin loader when this file lives in a checkout.
+if [[ -f "${BASH_SOURCE[0]%/*}/scripts/zenos-origin.sh" ]]; then
+    # shellcheck source=scripts/zenos-origin.sh
+    . "${BASH_SOURCE[0]%/*}/scripts/zenos-origin.sh"
+elif [[ -f scripts/zenos-origin.sh ]]; then
+    # shellcheck source=scripts/zenos-origin.sh
+    . scripts/zenos-origin.sh
+fi
+
+zenos_clone_url() {
+    local url
+    if command -v zenos_github_clone_url >/dev/null 2>&1; then
+        if url="$(zenos_github_clone_url)"; then
+            printf '%s\n' "$url"
+            return 0
+        fi
+    fi
+    echo -e "${RED}GitHub origin is not configured.${NC}"
+    echo "Clone this repo (git remote origin becomes the config), or set ZENOS_GITHUB_OWNER / ZENOS_REPO_URL in .env."
+    exit 1
+}
+
+is_zenos_checkout() {
+    [[ -f pyproject.toml && -d zen ]]
+}
 
 # Detect platform
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -107,15 +135,28 @@ install_sample() {
     echo "✅ Sample plugin installed!"
 }
 
-# main orchestrates the zenOS installation: clones the repository if missing, installs dependencies, configures the environment, verifies the installation, installs a sample plugin, and prints quick-start and guide links.
+# main orchestrates the zenOS installation: uses the current checkout when present,
+# otherwise clones via ZENOS_GITHUB_OWNER, then installs dependencies.
 main() {
-    # Clone repository if not already present
-    if [[ ! -d "zenOS" ]]; then
+    if is_zenos_checkout; then
+        echo "📂 Using existing zenOS checkout at $PWD"
+    elif [[ ! -d "zenOS" ]]; then
         echo "📥 Cloning zenOS repository..."
-        git clone https://github.com/k-dot-greyz/zenOS.git
+        git clone "$(zenos_clone_url)" zenOS
+        cd zenOS
+    else
+        cd zenOS
     fi
-    
-    cd zenOS
+
+    if ! is_zenos_checkout; then
+        echo -e "${RED}Could not find a zenOS checkout (expected pyproject.toml + zen/).${NC}"
+        exit 1
+    fi
+
+    if [[ ! -f .env && -f env.example ]]; then
+        cp env.example .env
+        echo "📝 Wrote .env from env.example — set OPENROUTER_API_KEY (and origin) once there."
+    fi
     
     # Install dependencies
     install_deps
@@ -147,10 +188,10 @@ main() {
             ;;
     esac
     echo ""
-    echo "📚 Full guides:"
-    echo "  Mobile: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_MOBILE.md"
-    echo "  Windows: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_WINDOWS.md"
-    echo "  Linux: https://github.com/k-dot-greyz/zenOS/blob/main/QUICKSTART_LINUX.md"
+    echo "📚 Full guides (in this checkout):"
+    echo "  Mobile:  docs/guides/QUICKSTART_MOBILE.md"
+    echo "  Windows: docs/guides/QUICKSTART_WINDOWS.md"
+    echo "  Linux:   docs/guides/QUICKSTART_LINUX.md"
     echo ""
     echo "Welcome to zenOS! Enjoy the zen!"
 }

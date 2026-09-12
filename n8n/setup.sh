@@ -99,11 +99,18 @@ echo "   - Copy to clipboard"
 echo "   - Paste and dominate social media!"
 echo ""
 
-print_info "Additional Configuration:"
-echo ""
-echo "🔗 GitHub Integration:"
-echo "   The workflow automatically fetches from:"
-echo "   https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/ai_post_templates.yaml"
+print_info "GitHub origin (set once in n8n env, matching ../.env):"
+echo "   Set n8n env ZENOS_GITHUB_OWNER (and optional ZENOS_REPO_NAME / ZENOS_REPO_BRANCH)."
+echo "   The HTTP Request node resolves:"
+echo "   https://raw.githubusercontent.com/\${ZENOS_GITHUB_OWNER}/zenOS/main/ai_post_templates.yaml"
+ORIGIN_SH="$(cd "$(dirname "$0")/.." && pwd)/scripts/zenos-origin.sh"
+if [[ -f "$ORIGIN_SH" ]]; then
+    # shellcheck source=../scripts/zenos-origin.sh
+    . "$ORIGIN_SH"
+    if raw="$(zenos_github_raw_url ai_post_templates.yaml 2>/dev/null)"; then
+        echo "   This checkout would fetch: $raw"
+    fi
+fi
 echo ""
 echo "🎨 Customization:"
 echo "   - Edit the 'Generate Beautiful Web UI' node for styling changes"

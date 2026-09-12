@@ -78,7 +78,7 @@ plugin:
   id: "com.github.user.awesome-ai-tool"
   name: "Awesome AI Tool"
   version: "1.2.3"
-  author: "Kaspars Greizis"
+  author: "Contributor"
   description: "An amazing AI tool for mobile zenOS"
   
   # Plugin metadata

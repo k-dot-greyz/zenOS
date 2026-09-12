@@ -99,17 +99,27 @@ install_essentials() {
     log_success "Essential packages installed"
 }
 
-# install_zenos installs or updates the zenOS repository at $ZENOS_PATH, installs its Python dependencies, and creates a .env from env.example if one does not exist.
+# install_zenos installs or updates zenOS: current checkout if present, else $ZENOS_PATH.
 install_zenos() {
     log "Installing zenOS..."
-    
-    if [ -d "$ZENOS_PATH" ]; then
+
+    if [[ -f pyproject.toml && -d zen ]]; then
+        ZENOS_PATH="$PWD"
+        log "Using existing zenOS checkout at $ZENOS_PATH"
+    elif [ -d "$ZENOS_PATH" ]; then
         log_warning "zenOS already exists, updating..."
         cd "$ZENOS_PATH"
         git pull origin main
     else
         log "Cloning zenOS repository..."
-        git clone https://github.com/k-dot-greyz/zenOS.git "$ZENOS_PATH"
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        # shellcheck source=zenos-origin.sh
+        . "$SCRIPT_DIR/zenos-origin.sh"
+        clone_url="$(zenos_github_clone_url)" || {
+            log_error "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
+            exit 1
+        }
+        git clone "$clone_url" "$ZENOS_PATH"
     fi
     
     cd "$ZENOS_PATH"

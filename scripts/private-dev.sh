@@ -14,8 +14,20 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# Configuration
-PRIVATE_REPO="https://github.com/k-dot-greyz/zenOS-dev.git"
+# Configuration — owner/repo from .env or git remote (scripts/zenos-origin.sh)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=zenos-origin.sh
+. "$SCRIPT_DIR/zenos-origin.sh"
+PRIVATE_REPO="${ZENOS_PRIVATE_REPO:-}"
+
+ensure_private_repo() {
+    if [[ -n "$PRIVATE_REPO" ]]; then
+        return 0
+    fi
+    local owner
+    owner="$(zenos_require_github_owner)" || return 1
+    PRIVATE_REPO="https://github.com/${owner}/$(zenos_github_repo)-dev.git"
+}
 DEVELOPMENT_BRANCH="development"
 MAIN_BRANCH="main"
 
@@ -37,6 +49,7 @@ show_help() {
 
 setup_private() {
     echo -e "${YELLOW}🔧 Setting up private development workflow...${NC}"
+    ensure_private_repo || exit 1
     
     # Check if private remote exists
     if git remote get-url private >/dev/null 2>&1; then

@@ -7,7 +7,22 @@ param(
 )
 
 # Configuration
-$PRIVATE_REPO = "https://github.com/k-dot-greyz/zenOS-dev.git"
+$owner = $env:ZENOS_GITHUB_OWNER
+if (-not $owner) { $owner = $env:GITHUB_OWNER }
+if (-not $owner) { $owner = $env:GITHUB_USERNAME }
+if (-not $owner) {
+    try {
+        $remote = git remote get-url origin 2>$null
+        if ($remote -match "github.com[:/]([^/]+)/") { $owner = $Matches[1] }
+    } catch {}
+}
+if (-not $env:ZENOS_PRIVATE_REPO -and $owner -and $owner -ne "YOUR_GITHUB_USERNAME") {
+    $PRIVATE_REPO = "https://github.com/$owner/zenOS-dev.git"
+} elseif ($env:ZENOS_PRIVATE_REPO) {
+    $PRIVATE_REPO = $env:ZENOS_PRIVATE_REPO
+} else {
+    throw "GitHub origin is not configured. Set ZENOS_GITHUB_OWNER in .env or clone this repo."
+}
 $DEVELOPMENT_BRANCH = "development"
 $MAIN_BRANCH = "main"
 

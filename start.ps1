@@ -34,10 +34,29 @@ if (-not (Test-Path ".env")) {
     exit 1
 }
 
-# Check if API key is set
-$envContent = Get-Content ".env"
-if ($envContent -match "sk-or-v1-your-api-key-here") {
-    Write-Host "⚠️  Please update your OpenRouter API key in .env" -ForegroundColor Yellow
+# Check if API key is set (empty + placeholders count as unset)
+function Get-DotEnvValue([string]$Key) {
+    if (-not (Test-Path ".env")) { return $null }
+    foreach ($line in Get-Content ".env") {
+        if ($line -match "^\s*#" -or $line -notmatch "=") { continue }
+        $name, $val = $line.Split("=", 2)
+        if ($name.Trim() -eq $Key) { return $val.Trim().Trim("'`"") }
+    }
+    return $null
+}
+
+$placeholders = @(
+    "",
+    "your-api-key-here",
+    "sk-or-v1-your-api-key-here",
+    "YOUR_API_KEY",
+    "<your-api-key>",
+    "changeme"
+)
+$key = $env:OPENROUTER_API_KEY
+if (-not $key) { $key = Get-DotEnvValue "OPENROUTER_API_KEY" }
+if (-not $key -or $placeholders -contains $key) {
+    Write-Host "⚠️  Please set OPENROUTER_API_KEY in .env (copy env.example)" -ForegroundColor Yellow
     Write-Host "   Get your key at: https://openrouter.ai/keys" -ForegroundColor Cyan
     exit 1
 }

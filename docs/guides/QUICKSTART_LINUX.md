@@ -17,17 +17,20 @@
 
 ---
 
-## Step 2: One-Command Install! ⚡ (1 minute)
-Open terminal and run:
+## Step 2: Clone this repo, then install ⚡
+
+Fork first, then replace `YOUR_GITHUB_USERNAME` in the clone URL with your GitHub username.
 ```bash
-curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/install.sh | bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/zenOS.git
+cd zenOS
+cp env.example .env
+bash install.sh
 ```
 
 This will:
-- Auto-detect Linux
-- Download zenOS
+- Use the existing checkout (git remote is already origin)
 - Install Python packages
-- Download NLTK data
+- Copy `env.example` → `.env` if needed
 - Install the sample plugin
 - Test everything
 - Set up your environment
@@ -36,17 +39,15 @@ This will:
 
 ## Step 3: Add Your API Key (1 minute)
 ```bash
-# Copy the example config
-cp env.example .env
-
-# Edit it with your favorite editor
+# Already copied in Step 2; just edit
 nano .env
 ```
 
 In the editor:
-1. Find the line: `OPENROUTER_API_KEY=sk-or-v1-your-api-key-here`
-2. Replace `sk-or-v1-your-api-key-here` with YOUR key from Step 1
+1. Find the line: `OPENROUTER_API_KEY=`
+2. Paste YOUR key from Step 1 (no quotes needed)
 3. Save and exit (Ctrl+X, then Y, then Enter)
+4. Optional: set `ZENOS_GITHUB_OWNER` if you did not clone your fork
 
 ---
 
