@@ -1,121 +1,123 @@
 name: zenOS CI
 
-# Optimized workflow for zenOS - a terminal-centric modular OS
-# Focuses on relevant checks instead of generic Python app testing
+# Merge-blocking: black (3.14), identity scanner, pytest.
+# Security / shellcheck / docs are informational. See docs/guides/REVIEW.md.
 
 on:
   push:
     branches: ["main"]
   pull_request:
-    branches: ["main"]
-  workflow_dispatch:  # Allow manual triggers
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  # Fast linting checks run first
   lint:
     name: Lint & Format Check
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-          cache: 'pip'
-      
+          cache: "pip"
+
       - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
-          pip install black isort flake8 yamllint
-      
+          pip install black isort flake8
+
       - name: Check Python formatting with black
         run: black --check .
-      
+
       - name: Check import sorting with isort
         run: isort --check-only .
-      
-      - name: Lint Python with flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      
-      - name: Lint YAML files
-        run: |
-          yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
-        continue-on-error: true
 
-  # Test Python scripts if present
+      - name: Lint Python syntax / undefined names
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  identity:
+    name: Identity leak scanner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Scan working tree for baked-in identity
+        run: |
+          if [ -f scripts/check_no_identity_leaks.py ]; then
+            python scripts/check_no_identity_leaks.py
+          else
+            echo "Identity scanner not in this checkout, skipping"
+          fi
+
   test:
     name: Python Tests
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    needs: lint
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-          cache: 'pip'
-      
-      - name: Install dependencies
+          cache: "pip"
+
+      - name: Install package (root setup.py is an installer, not setuptools)
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest pytest-cov
-      
-      - name: Run tests with pytest
-        run: |
-          if [ -d tests ] || ls test_*.py 1> /dev/null 2>&1; then
-            pytest --cov=. --cov-report=term-missing -v
-          else
-            echo "No tests found, skipping"
-          fi
+          if [ -f setup.py ]; then mv setup.py _setup.py.bak; fi
+          pip install -e ".[dev]"
+          if [ -f _setup.py.bak ]; then mv _setup.py.bak setup.py; fi
 
-  # Security checks
+      - name: Run tests
+        run: pytest tests/ -o addopts= -v
+
   security:
     name: Security Scan
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-          cache: 'pip'
-      
+          cache: "pip"
+
       - name: Install security tools
         run: |
           python -m pip install --upgrade pip
           pip install bandit safety
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      
+
       - name: Run Bandit security scan
         run: |
-          bandit -r . -f json -o bandit-report.json || true
           bandit -r . -ll || true
         continue-on-error: true
-      
+
       - name: Check for known vulnerabilities
         run: safety check --json || true
         continue-on-error: true
 
-  # Shell script validation
   shell-check:
     name: Shell Script Validation
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run ShellCheck
         run: |
           if find . -name "*.sh" -type f -print -quit | grep -q .; then
@@ -126,24 +128,22 @@ jobs:
           fi
         continue-on-error: true
 
-  # Documentation check
   docs:
     name: Documentation Build
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-          cache: 'pip'
-      
+          cache: "pip"
+
       - name: Install mkdocs
-        run: |
-          pip install mkdocs mkdocs-material
-      
+        run: pip install mkdocs mkdocs-material
+
       - name: Build documentation
         run: |
           if [ -f mkdocs.yml ]; then
@@ -153,24 +153,22 @@ jobs:
           fi
         continue-on-error: true
 
-  # Summary job - reports overall status
   ci-success:
     name: CI Status Check
     runs-on: ubuntu-24.04
-    needs: [lint, test, security, shell-check, docs]
+    needs: [lint, test, identity]
     if: always()
     steps:
-      - name: Check all jobs status
+      - name: Check required jobs
         run: |
           echo "Lint: ${{ needs.lint.result }}"
           echo "Test: ${{ needs.test.result }}"
-          echo "Security: ${{ needs.security.result }}"
-          echo "Shell Check: ${{ needs.shell-check.result }}"
-          echo "Docs: ${{ needs.docs.result }}"
-          
+          echo "Identity: ${{ needs.identity.result }}"
+
           if [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ]; then
-            echo "::warning::Some checks failed or were skipped"
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.identity.result }}" != "success" ]; then
+            echo "Required checks failed"
             exit 1
           fi
-          echo "✅ All critical checks passed!"
+          echo "Required checks passed (security/shell/docs are informational)"
