@@ -114,7 +114,7 @@ black --check .
 isort --check-only .
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-pytest --cov=. --cov-report=term-missing -v
+PYTHONPATH=. pytest --cov=. --cov-report=term-missing -v
 # Optional (CI is non-blocking):
 yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
 ```
@@ -215,7 +215,7 @@ zenOS welcomes contributions from humans and AI agents. When AI assists your wor
 
 ### Code standards
 
-- Python 3.8+ compatibility unless a deliberate bump is documented.
+- Python 3.14+ (see `requires-python` in `pyproject.toml`).
 - Sentence case for user-facing strings and docs headers unless matching an existing convention.
 - Comments earn their place: explain *why*, not what the code already says.
 - Business logic and validation belong in Python modules under `zen/`, not scattered in shell scripts.
@@ -291,7 +291,7 @@ docs(contributing): add Gumroad-inspired PR and issue guidelines
 
 ## Writing issues
 
-Issues for enhancements, features, or refactors use this structure (templates in [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/)):
+Issues for enhancements, features, or refactors use this structure (templates in [`.github/ISSUE_TEMPLATE/`](https://github.com/k-dot-greyz/zenOS/blob/main/.github/ISSUE_TEMPLATE/)):
 
 ### What
 
