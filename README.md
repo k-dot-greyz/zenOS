@@ -126,6 +126,13 @@ python3.14 -m pip install -e .
    zen chat
    ```
 
+5. **Or run the REST API:**
+   ```bash
+   zen serve
+   # http://127.0.0.1:8080/health  /docs  /api/v1/meta
+   ```
+   See [`docs/guides/REST_API.md`](docs/guides/REST_API.md).
+
 ---
 
 ## 💡 Features

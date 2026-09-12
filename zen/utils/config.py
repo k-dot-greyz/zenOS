@@ -42,6 +42,11 @@ class ZenConfig:
     max_cost_per_request: float = 1.0
     temperature: float = 0.7
 
+    # HTTP API
+    api_host: str = "127.0.0.1"
+    api_port: int = 8080
+    api_token: Optional[str] = None
+
 
 class Config:
     """
@@ -92,6 +97,10 @@ class Config:
         self.config.default_model = os.getenv("ZEN_DEFAULT_MODEL", self.config.default_model)
         self.config.max_tokens = int(os.getenv("ZEN_MAX_TOKENS", "2000"))
         self.config.temperature = float(os.getenv("ZEN_TEMPERATURE", "0.7"))
+
+        self.config.api_host = os.getenv("ZEN_API_HOST", "127.0.0.1")
+        self.config.api_port = int(os.getenv("ZEN_API_PORT", "8080"))
+        self.config.api_token = os.getenv("ZEN_API_TOKEN")
 
     def _load_from_home(self):
         """Load configuration from ~/.zenOS/config.yaml."""

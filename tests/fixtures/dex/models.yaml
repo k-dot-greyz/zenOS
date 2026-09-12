@@ -1,0 +1,35 @@
+version: "1.0.0"
+models:
+  - id: "test/fast-model"
+    name: "Fast Model"
+    provider: "test"
+    type: "chat"
+    tier: "common"
+    stats:
+      intelligence: 50
+      speed: 90
+    feats: ["speed"]
+    best_for: ["quick_question"]
+    context_window: 8000
+    cost_per_1k:
+      input: 0.001
+      output: 0.002
+  - id: "test/legend"
+    name: "Legend"
+    provider: "test"
+    type: "chat"
+    tier: "legendary"
+    stats:
+      intelligence: 99
+      speed: 40
+    feats: ["reasoning"]
+    best_for: ["complex_architecture"]
+    context_window: 200000
+    cost_per_1k:
+      input: 0.01
+      output: 0.03
+selection_guide:
+  by_task:
+    quick_question:
+      recommended: ["test/fast-model"]
+      budget: ["test/fast-model"]

@@ -13,19 +13,25 @@ services:
       - ZEN_CONFIG_PATH=/config
       - ZEN_DB_URL=postgresql://zen:${DB_PASSWORD:-zenpass}@zen-memory:5432/zenos
       - REDIS_URL=redis://zen-cache:6379
+      - ZEN_API_TOKEN=${ZEN_API_TOKEN:-}
+      - ZEN_API_HOST=0.0.0.0
+      - ZEN_API_PORT=8080
     volumes:
       - ./config:/config
       - ./workspace:/workspace
       - ~/.zenOS:/home/zen/.zenOS
       - ./zen:/app/zen:ro  # Mount source code for development
+      - ./dex:/app/dex:ro
     networks:
       - zen-network
+    ports:
+      - "8080:8080"
     stdin_open: true
     tty: true
     depends_on:
       - zen-memory
       - zen-cache
-    command: ["python", "-m", "zen.cli", "chat"]  # Default to interactive chat mode
+    command: ["python", "-m", "zen.api", "--host", "0.0.0.0", "--port", "8080"]
 
   # PostgreSQL for conversation history & vector storage
   zen-memory:

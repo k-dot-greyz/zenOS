@@ -35,6 +35,9 @@ dependencies = [
     "httpx>=0.28",
     "aiofiles>=24.1",
     "psutil>=7.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "sse-starlette>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -93,3 +96,4 @@ disallow_untyped_defs = true
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "--cov=zen --cov-report=term-missing"
+asyncio_mode = "auto"
