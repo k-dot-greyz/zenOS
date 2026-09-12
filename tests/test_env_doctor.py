@@ -151,7 +151,7 @@ def test_fallback_requirements_match_runtime_imports():
 def test_install_sh_windows_uses_python_bin_module_entrypoint():
     text = (ROOT / "install.sh").read_text(encoding="utf-8")
     assert "python zen/cli.py --help" not in text
-    assert "$env:PYTHONPATH = \"$PWD\"" not in text.split("install_sample()")[1].split("main()")[0]
+    assert '$env:PYTHONPATH = "$PWD"' not in text.split("install_sample()")[1].split("main()")[0]
     assert '"$PYTHON_BIN" -m zen.cli --help' in text
     assert "Set-Alias -Name zenos -Value" in text
     assert "-m zen.cli" in text
@@ -180,7 +180,9 @@ def test_env_doctor_flags_root_setup_py_landmine(tmp_path: Path):
     from zen.setup.env_doctor import check_setup_py_landmine
 
     fake_root = tmp_path
-    (fake_root / "setup.py").write_text("from zen.setup.unified_setup import main\n", encoding="utf-8")
+    (fake_root / "setup.py").write_text(
+        "from zen.setup.unified_setup import main\n", encoding="utf-8"
+    )
     (fake_root / "pyproject.toml").write_text("[project]\nname='zenos'\n", encoding="utf-8")
     result = check_setup_py_landmine(root=fake_root)
     assert result.ok is False

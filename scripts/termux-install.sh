@@ -50,15 +50,18 @@ if ! command -v pip &> /dev/null; then
     pkg install -y python-pip
 fi
 
-# Clone zenOS
-echo -e "${YELLOW}📥 Cloning zenOS...${NC}"
-if [ -d "$HOME/zenOS" ]; then
+# Use this checkout when present; otherwise install into ~/zenOS.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ -f pyproject.toml && -d zen ]]; then
+    echo -e "${BLUE}Using existing zenOS checkout at $PWD${NC}"
+    INSTALL_ROOT="$PWD"
+elif [ -d "$HOME/zenOS" ]; then
     echo -e "${BLUE}Found existing zenOS installation, updating...${NC}"
-    cd $HOME/zenOS
+    cd "$HOME/zenOS"
     git pull
+    INSTALL_ROOT="$HOME/zenOS"
 else
-    cd $HOME
-    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    cd "$HOME"
     # shellcheck source=zenos-origin.sh
     . "$SCRIPT_DIR/zenos-origin.sh"
     clone_url="$(zenos_github_clone_url)" || {
@@ -66,12 +69,12 @@ else
         exit 1
     }
     git clone "$clone_url" zenOS
+    INSTALL_ROOT="$HOME/zenOS"
 fi
 
-cd $HOME/zenOS
-# Always load origin from the checkout so key writes work on update AND first clone.
+cd "$INSTALL_ROOT"
 # shellcheck source=zenos-origin.sh
-. "$HOME/zenOS/scripts/zenos-origin.sh"
+. "$INSTALL_ROOT/scripts/zenos-origin.sh"
 
 # Install Python dependencies
 echo -e "${YELLOW}🐍 Installing Python dependencies...${NC}"
@@ -276,7 +279,7 @@ echo -e "${CYAN}Widgets:${NC}"
 echo "  Add Termux:Widget to your home screen for quick access!"
 echo ""
 echo -e "${CYAN}API Key:${NC}"
-if ! (cd "$HOME/zenOS" && zenos_openrouter_key >/dev/null); then
+if ! (cd "$INSTALL_ROOT" && zenos_openrouter_key >/dev/null); then
     echo -e "  ${YELLOW}⚠️  Don't forget to add your OpenRouter API key!${NC}"
     echo "  Edit: ${YELLOW}nano ~/zenOS/.env${NC}"
     echo "  Get key at: https://openrouter.ai/keys"

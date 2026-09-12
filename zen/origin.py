@@ -146,7 +146,7 @@ def detect_git_remote(root: Optional[Path] = None) -> Optional[str]:
             check=False,
             timeout=3,
         )
-    except (OSError, subprocess.TimeoutExpired):
+    except OSError, subprocess.TimeoutExpired:
         return None
     if result.returncode != 0:
         return None

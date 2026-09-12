@@ -234,6 +234,9 @@ def test_install_termux_uses_inplace_checkout():
     text = (ROOT / "install_termux.sh").read_text(encoding="utf-8")
     assert "pyproject.toml" in text
     assert 'git clone "$clone_url" zenOS' in text
+    termux = (ROOT / "scripts" / "termux-install.sh").read_text(encoding="utf-8")
+    assert "pyproject.toml" in termux
+    assert "INSTALL_ROOT" in termux
 
 
 def test_install_sh_loads_central_config():

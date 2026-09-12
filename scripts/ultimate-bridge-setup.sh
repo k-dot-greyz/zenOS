@@ -99,11 +99,14 @@ install_essentials() {
     log_success "Essential packages installed"
 }
 
-# install_zenos installs or updates the zenOS repository at $ZENOS_PATH, installs its Python dependencies, and creates a .env from env.example if one does not exist.
+# install_zenos installs or updates zenOS: current checkout if present, else $ZENOS_PATH.
 install_zenos() {
     log "Installing zenOS..."
-    
-    if [ -d "$ZENOS_PATH" ]; then
+
+    if [[ -f pyproject.toml && -d zen ]]; then
+        ZENOS_PATH="$PWD"
+        log "Using existing zenOS checkout at $ZENOS_PATH"
+    elif [ -d "$ZENOS_PATH" ]; then
         log_warning "zenOS already exists, updating..."
         cd "$ZENOS_PATH"
         git pull origin main
