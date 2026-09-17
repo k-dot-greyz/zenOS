@@ -55,6 +55,8 @@ SKIP_SUFFIXES = {
 
 # Self / tooling allowlist: these files intentionally mention forbidden tokens.
 ALLOWLIST_RELATIVE = {
+    "docs/planning/TEMPLATE_REGISTRY_FOLLOWUP_BOARD.md",
+    "docs/planning/TEMPLATE_REGISTRY_REHYDRATION.md",
     "scripts/check_no_legacy_branding.py",
     "scripts/rebrand_to_dex.py",
     "tests/test_no_legacy_branding.py",
