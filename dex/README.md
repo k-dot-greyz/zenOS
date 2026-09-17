@@ -14,7 +14,7 @@ Runtime catalog + protocol index for zenOS.
 - `dex/models.yaml` — AI model catalog
 - `dex/procedures.yaml` — procedure catalog
 - Python: `from zen.dex import DexCatalog, get_dex_catalog`
-- CLI: `zen dex` (models / procedures / search / sync / bench)
+- CLI: `zen dex` (models / procedures / search)
 - Capability registry: `dex/registry.yaml` — `zen dex search <query>`
 
 ## Protocol index

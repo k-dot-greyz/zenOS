@@ -16,6 +16,7 @@ CHECK_FAMILIES = (
 EXIT_HEALTHY = 0
 EXIT_REPAIRABLE = 10
 EXIT_BLOCKED = 20
+ALLOWED_PROFILES = frozenset({"local", "ci"})
 
 
 def classify_report(report: Any) -> tuple[str, int]:
@@ -30,6 +31,8 @@ def classify_report(report: Any) -> tuple[str, int]:
 
 def process_exit_for_profile(exit_code: int, profile: str) -> int:
     """CI process exit is non-zero only for blocked (20). Semantic 10 stays in JSON."""
+    if profile not in ALLOWED_PROFILES:
+        raise ValueError(f"unsupported env-doctor profile: {profile!r}")
     if profile == "ci" and exit_code == EXIT_REPAIRABLE:
         return EXIT_HEALTHY
     return exit_code
@@ -37,6 +40,8 @@ def process_exit_for_profile(exit_code: int, profile: str) -> int:
 
 def to_doctor_payload(report: Any, *, profile: str = "local") -> dict[str, Any]:
     """Serialize a DoctorReport into the portable env-doctor JSON contract."""
+    if profile not in ALLOWED_PROFILES:
+        raise ValueError(f"unsupported env-doctor profile: {profile!r}")
     status, code = classify_report(report)
     checks = []
     for check in getattr(report, "checks", []) or []:

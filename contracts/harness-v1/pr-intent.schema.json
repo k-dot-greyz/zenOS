@@ -30,7 +30,7 @@
     },
     "touches_contracts": {
       "type": "boolean",
-      "description": "Must be true when the diff touches contracts/, zen/contracts/, dex/registry.yaml, or .github/pr-intent.yaml"
+      "description": "Must be true when the diff touches contracts/, zen/contracts/, dex/registry.yaml, .github/pr-intent.yaml, or .github/CODEOWNERS"
     },
     "expiry_days": {
       "type": "integer",

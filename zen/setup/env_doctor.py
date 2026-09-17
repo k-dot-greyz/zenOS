@@ -525,13 +525,23 @@ def check_git_state(root: Optional[Path] = None) -> CheckResult:
             family="git_state",
             repairable=True,
         )
-    dirty = subprocess.run(
-        ["git", "-C", str(repo), "status", "--porcelain"],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        check=False,
-    )
+    try:
+        dirty = subprocess.run(
+            ["git", "-C", str(repo), "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as exc:
+        return CheckResult(
+            name="git_state",
+            ok=True,
+            severity="warn",
+            message=f"git status not inspectable: {exc}",
+            family="git_state",
+            repairable=True,
+        )
     if dirty.returncode != 0:
         return CheckResult(
             name="git_state",

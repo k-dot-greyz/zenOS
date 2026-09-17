@@ -90,6 +90,58 @@ def test_contract_paths_require_touches_contracts_flag():
     assert validate_touches_contracts(docs_only, declared=False) == []
 
 
+@pytest.mark.contract
+def test_missing_touches_contracts_is_rejected(tmp_path: Path):
+    from pydantic import ValidationError
+
+    from zen.contracts.pr_intent import load_pr_intent
+
+    path = tmp_path / "pr-intent.yaml"
+    path.write_text(
+        "intent: feat\nrisk: low\nsupersedes: []\ndepends_on: []\nexpiry_days: 14\n",
+        encoding="utf-8",
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        load_pr_intent(path)
+
+
+@pytest.mark.contract
+def test_empty_intent_is_rejected():
+    from pydantic import ValidationError
+
+    from zen.contracts.pr_intent import PrIntent
+
+    with pytest.raises((ValidationError, ValueError)):
+        PrIntent(
+            intent="",
+            risk="low",
+            supersedes=[],
+            depends_on=[],
+            touches_contracts=False,
+            expiry_days=14,
+        )
+
+
+@pytest.mark.contract
+def test_validator_flags_overlap_without_supersedes():
+    from zen.contracts.pr_intent import PrIntent, overlap_violations
+
+    intent = PrIntent(
+        intent="feat",
+        risk="low",
+        supersedes=[],
+        depends_on=[],
+        touches_contracts=True,
+        expiry_days=14,
+    )
+    ours = ["zen/contracts/doctor.py"]
+    others = [("42", ["zen/contracts/doctor.py", "README.md"])]
+    errors = overlap_violations(ours, others, intent)
+    assert errors
+    intent.supersedes = ["42"]
+    assert overlap_violations(ours, others, intent) == []
+
+
 @pytest.mark.harness
 def test_stale_when_age_exceeds_expiry_days():
     from zen.contracts.pr_intent import PrIntent, is_stale

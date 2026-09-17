@@ -189,12 +189,66 @@ def test_main_emits_json_when_python_is_below_floor(monkeypatch):
 
     from zen.cli import main
 
+    called = {"n": 0}
+
+    def boom(*_a, **_k):
+        called["n"] += 1
+        raise SystemExit(1)
+
+    monkeypatch.setattr("zen.cli.require_runtime", boom)
     monkeypatch.setattr(sys, "argv", ["zen", "env-doctor", "--format", "json", "--profile", "ci"])
     with pytest.raises(SystemExit) as exc:
         main()
+    assert called["n"] == 0
     assert exc.value.code in {0, 10, 20}
-    # Click already flushed JSON to stdout via the group; we only care the
-    # entrypoint did not collapse to the runtime floor's exit 1.
+
+
+@pytest.mark.harness
+def test_main_does_not_skip_runtime_when_doctor_is_not_the_subcommand(monkeypatch):
+    import sys
+
+    from zen.cli import main
+
+    monkeypatch.setattr(
+        "zen.cli.require_runtime",
+        lambda *_a, **_k: (_ for _ in ()).throw(SystemExit(99)),
+    )
+    monkeypatch.setattr(sys, "argv", ["zen", "chat", "doctor"])
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 99
+
+
+@pytest.mark.contract
+def test_unknown_doctor_profile_is_rejected():
+    from zen.contracts.doctor import process_exit_for_profile, to_doctor_payload
+    from zen.setup.env_doctor import CheckResult, DoctorReport
+
+    with pytest.raises(ValueError):
+        process_exit_for_profile(10, "CI")
+    report = DoctorReport(
+        checks=[CheckResult(name="python", ok=True, severity="ok", message="ok", family="runtime")]
+    )
+    with pytest.raises(ValueError):
+        to_doctor_payload(report, profile="CI")
+
+
+@pytest.mark.contract
+def test_git_status_timeout_stays_repairable(monkeypatch, tmp_path):
+    import subprocess
+
+    from zen.setup import env_doctor as ed
+
+    def fake_run(cmd, **_kw):
+        if "rev-parse" in cmd:
+            return subprocess.CompletedProcess(cmd, 0, stdout="true\n", stderr="")
+        raise subprocess.TimeoutExpired(cmd, 10)
+
+    monkeypatch.setattr(ed.subprocess, "run", fake_run)
+    result = ed.check_git_state(root=tmp_path)
+    assert result.family == "git_state"
+    assert result.severity == "warn"
+    assert result.repairable is True
 
 
 @pytest.mark.harness

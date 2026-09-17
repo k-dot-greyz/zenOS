@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   harness-contract:
@@ -21,6 +22,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
@@ -76,6 +78,32 @@ jobs:
       - name: Registry + pr-intent validation
         env:
           PYTHONPATH: ${{ github.workspace }}
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          THIS_PR: ${{ github.event.pull_request.number }}
         run: |
-          changed="$(git diff --name-only origin/main...HEAD || true)"
-          python scripts/validate_harness_contracts.py --changed $changed
+          set -euo pipefail
+          if [ -z "${BASE_SHA}" ] || [ "${BASE_SHA}" = "0000000000000000000000000000000000000000" ]; then
+            echo "missing event base SHA for changed-path diff"
+            exit 20
+          fi
+          mapfile -t changed < <(git diff --name-only "${BASE_SHA}...HEAD")
+          python - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+
+          this = str(os.environ.get("THIS_PR") or "")
+          raw = subprocess.check_output(
+              ["gh", "pr", "list", "--state", "open", "--json", "number,files", "--limit", "100"],
+              text=True,
+          )
+          others = []
+          for pr in json.loads(raw):
+              num = str(pr["number"])
+              if this and num == this:
+                  continue
+              files = [f.get("path") for f in (pr.get("files") or []) if f.get("path")]
+              others.append({"number": num, "files": files})
+          Path("others.json").write_text(json.dumps(others), encoding="utf-8")
+          PY
+          python scripts/validate_harness_contracts.py --others-json others.json --changed "${changed[@]}"

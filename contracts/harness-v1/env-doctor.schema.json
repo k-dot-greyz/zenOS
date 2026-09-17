@@ -16,6 +16,66 @@
         "checks",
         "families"
       ],
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "healthy" } }, "required": ["status"] },
+          "then": { "properties": { "exit_code": { "const": 0 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "repairable" } }, "required": ["status"] },
+          "then": { "properties": { "exit_code": { "const": 10 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "blocked" } }, "required": ["status"] },
+          "then": { "properties": { "exit_code": { "const": 20 } } }
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "profile": { "const": "local" },
+                "exit_code": { "const": 0 },
+                "process_exit": { "const": 0 }
+              }
+            },
+            {
+              "properties": {
+                "profile": { "const": "local" },
+                "exit_code": { "const": 10 },
+                "process_exit": { "const": 10 }
+              }
+            },
+            {
+              "properties": {
+                "profile": { "const": "local" },
+                "exit_code": { "const": 20 },
+                "process_exit": { "const": 20 }
+              }
+            },
+            {
+              "properties": {
+                "profile": { "const": "ci" },
+                "exit_code": { "const": 0 },
+                "process_exit": { "const": 0 }
+              }
+            },
+            {
+              "properties": {
+                "profile": { "const": "ci" },
+                "exit_code": { "const": 10 },
+                "process_exit": { "const": 0 }
+              }
+            },
+            {
+              "properties": {
+                "profile": { "const": "ci" },
+                "exit_code": { "const": 20 },
+                "process_exit": { "const": 20 }
+              }
+            }
+          ]
+        }
+      ],
       "properties": {
         "contract": { "const": "1.0" },
         "profile": { "enum": ["local", "ci"] },
@@ -25,6 +85,7 @@
         "families": {
           "type": "array",
           "minItems": 5,
+          "uniqueItems": true,
           "items": {
             "enum": [
               "runtime",

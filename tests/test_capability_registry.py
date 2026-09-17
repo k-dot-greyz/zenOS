@@ -70,6 +70,45 @@ def test_search_finds_env_doctor_by_purpose():
     assert empty == []
 
 
+@pytest.mark.contract
+def test_empty_owner_fails_validation():
+    from zen.contracts.registry import RegistryError, validate_entry
+
+    with pytest.raises(RegistryError):
+        validate_entry(
+            {
+                "id": "empty-owner",
+                "what": {
+                    "owner": "",
+                    "maturity": "beta",
+                    "risk": "low",
+                    "purpose": "purpose",
+                },
+                "how": {"entrypoint": "zen dex search", "env_doctor_profile": "ci"},
+                "proof": {"test": "pytest", "artifact": "json"},
+            }
+        )
+
+
+@pytest.mark.contract
+def test_registry_rejects_fewer_than_three_entries(tmp_path: Path):
+    from zen.contracts.registry import RegistryError, load_registry
+
+    path = tmp_path / "registry.yaml"
+    path.write_text("contract: '1.0'\nentries: []\n", encoding="utf-8")
+    with pytest.raises(RegistryError):
+        load_registry(path)
+
+
+@pytest.mark.contract
+def test_harness_workflow_does_not_persist_credentials():
+    text = (ROOT / ".github" / "workflows" / "harness-contract.yml").read_text(encoding="utf-8")
+    assert "persist-credentials: false" in text
+    assert "|| true" not in text
+    assert "BASE_SHA" in text
+    assert "--others-json" in text
+
+
 @pytest.mark.harness
 def test_cli_dex_search_env_doctor():
     from zen.cli import cli

@@ -47,7 +47,7 @@ def main() -> None:
     Harness Contract v1 JSON payload (exit 20) instead of a bare SystemExit(1).
     """
     doctorish = {"doctor", "env-doctor"}
-    if any(arg in doctorish for arg in sys.argv[1:]):
+    if sys.argv[1:2] and sys.argv[1] in doctorish:
         cli()
         return
     require_runtime()

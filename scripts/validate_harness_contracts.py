@@ -8,6 +8,7 @@ registry-validation step (ZEN-313).
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -22,10 +23,20 @@ def main(argv: list[str] | None = None) -> int:
         default=[],
         help="Changed paths (git diff). Used to enforce touches_contracts.",
     )
+    parser.add_argument(
+        "--others-json",
+        type=Path,
+        default=None,
+        help="JSON list of {number, files} for open PRs used in overlap checks.",
+    )
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(ROOT))
-    from zen.contracts.pr_intent import load_pr_intent, validate_touches_contracts
+    from zen.contracts.pr_intent import (
+        load_pr_intent,
+        overlap_violations,
+        validate_touches_contracts,
+    )
     from zen.contracts.registry import load_registry
 
     intent_path = ROOT / ".github" / "pr-intent.yaml"
@@ -39,6 +50,13 @@ def main(argv: list[str] | None = None) -> int:
     errors = []
     if args.changed:
         errors.extend(validate_touches_contracts(args.changed, declared=intent.touches_contracts))
+    if args.others_json is not None:
+        others_raw = json.loads(args.others_json.read_text(encoding="utf-8"))
+        if not isinstance(others_raw, list):
+            print("others-json must be a list of {number, files}", file=sys.stderr)
+            return 20
+        others = [(str(item["number"]), list(item.get("files") or [])) for item in others_raw]
+        errors.extend(overlap_violations(args.changed, others, intent))
     if errors:
         for err in errors:
             print(err, file=sys.stderr)

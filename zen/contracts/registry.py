@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -18,17 +18,17 @@ class RegistryError(ValueError):
 class What(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    owner: str
-    maturity: str
-    risk: str
-    purpose: str
+    owner: str = Field(min_length=1)
+    maturity: str = Field(min_length=1)
+    risk: str = Field(min_length=1)
+    purpose: str = Field(min_length=1)
 
 
 class How(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    entrypoint: str
-    env_doctor_profile: str
+    entrypoint: str = Field(min_length=1)
+    env_doctor_profile: Literal["ci", "local"]
 
     def model_post_init(self, __context: Any) -> None:
         if self.env_doctor_profile not in ALLOWED_PROFILES:
@@ -38,14 +38,14 @@ class How(BaseModel):
 class Proof(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    test: str
-    artifact: str
+    test: str = Field(min_length=1)
+    artifact: str = Field(min_length=1)
 
 
 class CapabilityEntry(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    id: str
+    id: str = Field(min_length=1)
     what: What
     how: How
     proof: Proof
@@ -55,8 +55,8 @@ class CapabilityEntry(BaseModel):
 class CapabilityRegistry(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    contract: str
-    entries: list[CapabilityEntry] = Field(default_factory=list)
+    contract: Literal["1.0"]
+    entries: list[CapabilityEntry] = Field(min_length=3)
 
 
 def validate_entry(data: dict[str, Any]) -> CapabilityEntry:
@@ -76,6 +76,8 @@ def load_registry(path: str | Path) -> CapabilityRegistry:
         raise RegistryError(str(exc)) from exc
     if registry.contract != "1.0":
         raise RegistryError(f"unsupported registry contract: {registry.contract!r}")
+    if len(registry.entries) < 3:
+        raise RegistryError(f"registry needs ≥3 entries, got {len(registry.entries)}")
     return registry
 
 

@@ -17,18 +17,34 @@ CONTRACT_PATH_PREFIXES = (
     ".github/CODEOWNERS",
 )
 
+REQUIRED_FIELDS = (
+    "intent",
+    "risk",
+    "supersedes",
+    "depends_on",
+    "touches_contracts",
+    "expiry_days",
+)
+
 
 class PrIntent(BaseModel):
     """Machine-readable PR intake metadata."""
 
     model_config = ConfigDict(extra="ignore")
 
-    intent: str
+    intent: str = Field(min_length=1)
     risk: str
-    supersedes: list[str] = Field(default_factory=list)
-    depends_on: list[str] = Field(default_factory=list)
-    touches_contracts: bool = False
+    supersedes: list[str]
+    depends_on: list[str]
+    touches_contracts: bool
     expiry_days: int = 14
+
+    @field_validator("intent")
+    @classmethod
+    def _intent_nonempty(cls, value: str) -> str:
+        if not (value or "").strip():
+            raise ValueError("intent must be non-empty")
+        return value
 
     @field_validator("risk")
     @classmethod
@@ -48,17 +64,18 @@ class PrIntent(BaseModel):
     @field_validator("supersedes", "depends_on", mode="before")
     @classmethod
     def _stringify_refs(cls, value: object) -> list[str]:
-        if value is None:
-            return []
-        if isinstance(value, list):
-            return [str(item) for item in value]
-        return [str(value)]
+        if not isinstance(value, list):
+            raise ValueError("supersedes and depends_on must be arrays")
+        return [str(item) for item in value]
 
 
 def load_pr_intent(path: str | Path) -> PrIntent:
     raw = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
     if not isinstance(raw, dict):
         raise ValueError(f"pr-intent must be a mapping: {path}")
+    missing = [field for field in REQUIRED_FIELDS if field not in raw]
+    if missing:
+        raise ValueError(f"pr-intent missing required fields: {missing}")
     return PrIntent.model_validate(raw)
 
 
@@ -72,6 +89,23 @@ def overlap_requires_supersedes(
     if not overlap:
         return False
     return not bool(intent.supersedes)
+
+
+def overlap_violations(
+    ours: Sequence[str],
+    others: Sequence[tuple[str, Sequence[str]]],
+    intent: PrIntent,
+) -> list[str]:
+    """Error strings for open PRs whose changed paths overlap without supersedes."""
+    errors: list[str] = []
+    superseded = {str(item) for item in intent.supersedes}
+    our_set = {_normalize_path(p) for p in ours}
+    for number, theirs in others:
+        overlap = our_set & {_normalize_path(p) for p in theirs}
+        if overlap and str(number) not in superseded:
+            sample = ", ".join(sorted(overlap)[:5])
+            errors.append(f"changed paths overlap open PR #{number} ({sample}); declare supersedes")
+    return errors
 
 
 def changed_paths_touch_contracts(paths: Iterable[str]) -> bool:
