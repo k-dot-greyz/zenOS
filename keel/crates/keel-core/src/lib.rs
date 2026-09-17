@@ -9,8 +9,9 @@ use core::marker::PhantomData;
 #[derive(Clone, Copy)]
 pub struct Rt<'a>(PhantomData<&'a ()>);
 
+#[cfg(any(test, feature = "test-rt"))]
 impl Rt<'static> {
-    /// Test / harness constructor. Production plugins should use a tighter lifetime.
+    /// Test / harness constructor. Not available in shipping plugin builds.
     pub fn now() -> Rt<'static> {
         Rt(PhantomData)
     }
@@ -37,7 +38,7 @@ pub enum Isa {
 }
 
 #[derive(Debug)]
-pub struct Error(&'static str);
+pub struct Error(pub &'static str);
 
 /// Planar f32 view. Lifetime is the caller's buffer.
 pub struct PlanarMut<'a> {

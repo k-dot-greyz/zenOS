@@ -8,3 +8,6 @@ description = "DF2T SOS and NEON channel bank"
 
 [dependencies]
 keel-core = { path = "../keel-core" }
+
+[dev-dependencies]
+keel-core = { path = "../keel-core", features = ["test-rt"] }

@@ -9,3 +9,5 @@ description = "Realtime law, planar buffers, ISA detect for keel"
 [features]
 default = ["std"]
 std = []
+# Harness-only audio-thread token. Never enable in a shipping plugin.
+test-rt = []
