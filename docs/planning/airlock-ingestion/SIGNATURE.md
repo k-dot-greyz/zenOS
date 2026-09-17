@@ -6,7 +6,13 @@ Ed25519. Governance Ed25519 in the spec is a future server-side control;
 this file records who reviewed what bytes.
 
 Machine form: [`SIGNATURE.json`](./SIGNATURE.json).
-Verified by `pytest dex/10-tests/test_airlock_ingestion_signature.py`.
+Verified in the SSOT repo (`k-dot-greyz/dev-master`), not zenOS:
+
+```bash
+pytest dex/10-tests/test_airlock_ingestion_signature.py
+```
+
+Human skim / GitHub-link verification of this zenOS copy is **pending**. The SHA-256 fingerprints below attest the archived bytes.
 
 ## Identity
 
