@@ -96,12 +96,20 @@ def overlap_violations(
     others: Sequence[tuple[str, Sequence[str]]],
     intent: PrIntent,
 ) -> list[str]:
-    """Error strings for open PRs whose changed paths overlap without supersedes."""
+    """Error strings when overlapping *contract* paths lack supersedes.
+
+    README/pyproject drive-bys across unrelated open PRs are not Track 3
+    replacements. Contract surfaces (see CONTRACT_PATH_PREFIXES) still fail
+    closed.
+    """
     errors: list[str] = []
     superseded = {str(item) for item in intent.supersedes}
-    our_set = {_normalize_path(p) for p in ours}
+    our_contract = {_normalize_path(p) for p in ours if changed_paths_touch_contracts([p])}
+    if not our_contract:
+        return []
     for number, theirs in others:
-        overlap = our_set & {_normalize_path(p) for p in theirs}
+        their_contract = {_normalize_path(p) for p in theirs if changed_paths_touch_contracts([p])}
+        overlap = our_contract & their_contract
         if overlap and str(number) not in superseded:
             sample = ", ".join(sorted(overlap)[:5])
             errors.append(f"changed paths overlap open PR #{number} ({sample}); declare supersedes")
@@ -142,4 +150,7 @@ def is_stale(
 
 
 def _normalize_path(path: str) -> str:
-    return path.replace("\\", "/").lstrip("./")
+    normalized = path.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    return normalized

@@ -142,6 +142,47 @@ def test_validator_flags_overlap_without_supersedes():
     assert overlap_violations(ours, others, intent) == []
 
 
+@pytest.mark.contract
+def test_docs_only_overlap_is_not_a_violation():
+    from zen.contracts.pr_intent import PrIntent, overlap_violations
+
+    intent = PrIntent(
+        intent="feat",
+        risk="low",
+        supersedes=[],
+        depends_on=[],
+        touches_contracts=False,
+        expiry_days=14,
+    )
+    errors = overlap_violations(
+        ["README.md", "pyproject.toml"],
+        [("88", ["README.md", "pyproject.toml", "docs/AI_INSTRUCTIONS.md"])],
+        intent,
+    )
+    assert errors == []
+
+
+@pytest.mark.contract
+def test_overlap_keeps_dot_github_prefix():
+    from zen.contracts.pr_intent import PrIntent, overlap_violations
+
+    intent = PrIntent(
+        intent="feat",
+        risk="low",
+        supersedes=[],
+        depends_on=[],
+        touches_contracts=True,
+        expiry_days=14,
+    )
+    errors = overlap_violations(
+        [".github/CODEOWNERS"],
+        [("87", [".github/CODEOWNERS"])],
+        intent,
+    )
+    assert errors
+    assert ".github/CODEOWNERS" in errors[0]
+
+
 @pytest.mark.harness
 def test_stale_when_age_exceeds_expiry_days():
     from zen.contracts.pr_intent import PrIntent, is_stale
