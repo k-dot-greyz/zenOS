@@ -10,3 +10,6 @@ description = "Uniform partitioned convolution + FIR head"
 keel-core = { path = "../keel-core" }
 keel-fft = { path = "../keel-fft" }
 keel-fir = { path = "../keel-fir" }
+
+[dev-dependencies]
+keel-core = { path = "../keel-core", features = ["test-support"] }
