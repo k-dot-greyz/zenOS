@@ -1,4 +1,5 @@
 //! IIR kernels. Implementation: issue #75 / `feat/keel-iir`.
+//! Stub only on `feat/keel-core` — real DF2T process does not land from #74.
 
 use keel_core::Kernel;
 
@@ -25,38 +26,27 @@ pub fn tick(x: f32, c: Coeffs, z: &mut BiquadState) -> f32 {
     y
 }
 
+#[derive(Default)]
 pub struct Sos {
     pub sections: [Coeffs; 16],
     pub len: usize,
     pub state: [BiquadState; 16],
 }
 
-impl Default for Sos {
-    fn default() -> Self {
-        Self {
-            sections: [Coeffs::default(); 16],
-            len: 0,
-            state: [BiquadState::default(); 16],
-        }
-    }
-}
-
 impl Kernel for Sos {
     fn prepare(&mut self, _p: keel_core::Prepare) -> Result<keel_core::Needs, keel_core::Error> {
+        let _ = keel_core::cache_isa();
         Ok(keel_core::Needs::default())
     }
     fn reset(&mut self) {
         self.state = [BiquadState::default(); 16];
     }
-    fn process(&mut self, _rt: keel_core::Rt<'_>, io: keel_core::PlanarMut<'_>, _scratch: &mut [f32]) {
-        for ch in io.channels.iter_mut() {
-            for s in ch.iter_mut() {
-                let mut x = *s;
-                for i in 0..self.len {
-                    x = tick(x, self.sections[i], &mut self.state[i]);
-                }
-                *s = x;
-            }
-        }
+    fn process(
+        &mut self,
+        _rt: keel_core::Rt<'_>,
+        _io: keel_core::PlanarMut<'_>,
+        _scratch: &mut [f32],
+    ) {
+        // Intentionally empty: SOS process is #75 / feat/keel-iir.
     }
 }
