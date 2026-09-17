@@ -30,7 +30,7 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return default
     try:
         return float(value)
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         return default
 
 
@@ -310,8 +310,12 @@ class OpenRouterSync:
                 "feats": feats,
                 "context_window": api_model.get("context_length", 4096),
                 "cost_per_1k": {
-                    "input": _safe_float(api_model.get("pricing", {}).get("prompt"), default=0.0) * 1000,
-                    "output": _safe_float(api_model.get("pricing", {}).get("completion"), default=0.0) * 1000,
+                    "input": _safe_float(api_model.get("pricing", {}).get("prompt"), default=0.0)
+                    * 1000,
+                    "output": _safe_float(
+                        api_model.get("pricing", {}).get("completion"), default=0.0
+                    )
+                    * 1000,
                 },
                 "api_data": {
                     "top_provider": api_model.get("top_provider"),
