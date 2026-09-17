@@ -210,6 +210,7 @@ jspm_packages/
 
 # dotenv environment variable files
 .env
+.zen-hydration/
 .env.development.local
 .env.test.local
 .env.production.local
