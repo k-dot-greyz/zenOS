@@ -76,10 +76,10 @@ FORBIDDEN: Sequence[Tuple[str, Pattern[str]]] = (
 def iter_files(root: Path) -> Iterable[Path]:
     """
     Yield eligible regular files under a repository root.
-    
+
     Parameters:
         root (Path): Root directory to scan.
-    
+
     Yields:
         Path: A regular file that is outside skipped directories and does not have an excluded suffix.
     """
@@ -100,10 +100,10 @@ def iter_files(root: Path) -> Iterable[Path]:
 def scan(root: Path) -> List[str]:
     """
     Scan repository files for forbidden legacy branding terms.
-    
+
     Parameters:
         root (Path): Repository directory to scan.
-    
+
     Returns:
         List[str]: Formatted findings containing each matching file path, line number,
             category, and matched text.
@@ -132,11 +132,11 @@ def scan(root: Path) -> List[str]:
 def main(argv: Sequence[str] | None = None) -> int:
     """
     Scan the repository for forbidden legacy branding terms and report the result.
-    
+
     Parameters:
         argv (Sequence[str] | None): Optional command-line arguments. When omitted,
             arguments are read from the command line.
-    
+
     Returns:
         int: `1` if forbidden terms are found, `0` otherwise.
     """

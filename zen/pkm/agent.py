@@ -139,10 +139,10 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     async def _handle_extract(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
         Extract conversations into local storage and produce a human-readable extraction report.
-        
+
         Parameters:
             command (Dict[str, Any]): Parsed command containing an optional numeric `args` limit for the number of conversations to extract.
-        
+
         Returns:
             str: A report describing the extraction results, failure details, or unexpected error.
         """
@@ -197,11 +197,11 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     async def _handle_list(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
         List recent conversations and display a summary table.
-        
+
         Parameters:
             command (Dict[str, Any]): Parsed command containing an optional numeric result limit in `"args"`.
             variables (Dict[str, Any]): Execution context passed through by the agent.
-        
+
         Returns:
             str: A message indicating whether conversations were found and suggesting related commands.
         """
@@ -291,10 +291,10 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     async def _handle_process(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
         Process unprocessed conversations and extract knowledge entries.
-        
+
         Returns:
             str: A formatted summary of the processing results and next steps.
-        
+
         Raises:
             RuntimeError: If a processed conversation cannot be saved.
         """
@@ -390,10 +390,10 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     async def _handle_export(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
         Export conversations and the knowledge base in the requested format.
-        
+
         Parameters:
             command (Dict[str, Any]): Parsed command containing an optional ``args`` value of ``json``, ``markdown``, or ``md``. Defaults to JSON when empty.
-            
+
         Returns:
             str: A status message containing exported file paths on success, or an error message for unsupported formats or export failures.
         """
@@ -475,7 +475,7 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     async def _handle_help(self, command: Dict[str, Any], variables: Dict[str, Any]) -> str:
         """
         Provide Markdown help for PKM agent commands, configuration, examples, workflow, and demo limitations.
-        
+
         Returns:
             str: A Markdown-formatted help message describing supported commands and configuration.
         """
@@ -520,11 +520,11 @@ Provide helpful guidance on PKM operations, conversation extraction, and knowled
     async def _handle_general_query(self, prompt: str, variables: Dict[str, Any]) -> str:
         """
         Generate practical personal knowledge-management guidance for a free-form query.
-        
+
         Parameters:
             prompt (str): The user's question or request.
             variables (Dict[str, Any]): Runtime context for the query.
-        
+
         Returns:
             str: The generated guidance, or an error message with a help command suggestion if processing fails.
         """

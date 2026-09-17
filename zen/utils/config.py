@@ -57,7 +57,7 @@ class Config:
     def __init__(self, config_path: Optional[Path] = None):
         """
         Initialize configuration from environment variables and available configuration files.
-        
+
         Parameters:
             config_path (Optional[Path]): Optional explicit configuration file to load after the default sources.
         """
@@ -142,7 +142,7 @@ class Config:
 
     def save(self, path: Optional[Path] = None):
         """Save selected configuration settings to a YAML file.
-        
+
         Parameters:
             path (Optional[Path]): Destination file path. Defaults to ``config.yaml`` in the configured directory.
         """
@@ -168,11 +168,11 @@ class Config:
     def get(self, key: str, default: Any = None) -> Any:
         """
         Retrieve a configuration value by attribute name.
-        
+
         Parameters:
             key (str): Name of the configuration attribute.
             default (Any): Value to return when the attribute does not exist.
-        
+
         Returns:
             Any: The configured value, or `default` when the attribute is unavailable.
         """
@@ -181,7 +181,7 @@ class Config:
     def set(self, key: str, value: Any):
         """
         Update an existing configuration setting.
-        
+
         Parameters:
             key (str): Name of the configuration field to update.
             value (Any): New value for the field. Unknown fields are ignored.

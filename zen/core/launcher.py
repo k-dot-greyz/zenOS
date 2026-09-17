@@ -44,10 +44,10 @@ class Launcher:
     async def critique_prompt_async(self, prompt: str) -> str:
         """
         Improve a prompt when automatic critique is enabled.
-        
+
         Parameters:
             prompt (str): The original prompt to evaluate.
-        
+
         Returns:
             str: The improved prompt, or the original prompt when critique is disabled, unavailable, or fails.
         """
@@ -71,10 +71,10 @@ class Launcher:
     def critique_prompt(self, prompt: str) -> str:
         """
         Improve a prompt using the configured critique system.
-        
+
         Parameters:
             prompt (str): The prompt to critique.
-        
+
         Returns:
             str: The improved prompt, or the original prompt when critique is unavailable or fails.
         """
@@ -83,14 +83,14 @@ class Launcher:
     async def execute_async(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """
         Execute the currently loaded agent with the provided prompt and variables.
-        
+
         Parameters:
             prompt (str): The prompt to send to the agent.
             variables (Dict[str, Any]): Additional values supplied to the agent.
-        
+
         Returns:
             Any: The agent's response.
-        
+
         Raises:
             ValueError: If no agent is loaded or the loaded agent has no execution method.
         """

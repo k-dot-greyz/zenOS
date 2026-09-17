@@ -15,9 +15,9 @@ import click
 class InboxManager:
     def __init__(self, base_path: str = "."):
         """Initialize inbox storage paths relative to the specified base directory.
-        
+
         Parameters:
-        	base_path (str): Root directory under which the inbox directories are located.
+                base_path (str): Root directory under which the inbox directories are located.
         """
         self.base_path = Path(base_path)
         self.inbox_path = self.base_path / "inbox"
@@ -28,12 +28,12 @@ class InboxManager:
     def add_item(self, item_type: str, content: str, metadata: Dict[str, Any] = None) -> str:
         """
         Add a new item to the inbox.
-        
+
         Parameters:
             item_type (str): Type assigned to the item.
             content (str): Content of the item.
             metadata (Dict[str, Any], optional): Additional structured information associated with the item.
-        
+
         Returns:
             str: Identifier assigned to the new item.
         """
@@ -60,12 +60,12 @@ class InboxManager:
     def list_items(self, status: str = None) -> list:
         """
         List inbox items across all status directories, optionally filtered by status.
-        
+
         Parameters:
-        	status (str): Status used to filter items. When omitted, includes items with any status.
-        
+                status (str): Status used to filter items. When omitted, includes items with any status.
+
         Returns:
-        	list: Items sorted from newest to oldest by creation time.
+                list: Items sorted from newest to oldest by creation time.
         """
         items = []
 
@@ -87,12 +87,12 @@ class InboxManager:
     def move_item(self, item_id: str, from_status: str, to_status: str) -> bool:
         """
         Move an inbox item from one status directory to another.
-        
+
         Parameters:
             item_id (str): Identifier of the item to move.
             from_status (str): Current status of the item.
             to_status (str): Destination status for the item.
-        
+
         Returns:
             bool: `True` if the item was moved successfully, `False` if either status is invalid or the item does not exist in the source directory.
         """
@@ -141,7 +141,7 @@ def receive():
 def add(item_type: str, content: str, metadata: str = None):
     """
     Add an item to the inbox.
-    
+
     Parameters:
         item_type (str): The type of item to add.
         content (str): The item's content.
@@ -166,7 +166,7 @@ def add(item_type: str, content: str, metadata: str = None):
 def list(status: str = None):
     """
     List inbox items, optionally filtered by status.
-    
+
     Parameters:
         status (str, optional): Status used to filter the displayed items.
     """
@@ -191,7 +191,7 @@ def list(status: str = None):
 def move(item_id: str, to_status: str):
     """
     Move an inbox item to a different status.
-    
+
     Parameters:
         item_id (str): Identifier of the item to move.
         to_status (str): Destination status for the item.

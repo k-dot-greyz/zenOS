@@ -100,11 +100,11 @@ class Conversation:
     def from_dict(cls, data: Dict[str, Any]) -> "Conversation":
         """
         Reconstruct a Conversation from its dictionary representation.
-        
+
         Parameters:
             data (Dict[str, Any]): Serialized conversation data, including identifiers,
                 timestamps, and optional messages and metadata.
-        
+
         Returns:
             Conversation: A conversation populated from the provided data.
         """
@@ -167,7 +167,7 @@ class ExtractionResult:
     def to_dict(self) -> Dict[str, Any]:
         """
         Serialize the extraction result into a JSON-compatible dictionary.
-        
+
         Returns:
             Dict[str, Any]: Extraction metrics, ISO 8601 timestamps, elapsed duration
             in seconds, errors, and warnings.

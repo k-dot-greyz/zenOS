@@ -53,7 +53,7 @@ class TermuxAPI:
     def get_battery_status(self) -> Dict[str, Any]:
         """
         Retrieve the device battery status from Termux.
-        
+
         Returns:
             Dict[str, Any]: Battery status data, or a default fully charged,
                 unplugged status when Termux is unavailable or the request fails.
@@ -75,9 +75,9 @@ class TermuxAPI:
     def get_location(self) -> Optional[str]:
         """
         Retrieve the device's current geographic coordinates.
-        
+
         Returns:
-        	str: Latitude and longitude as a comma-separated string, or None when the location is unavailable or cannot be retrieved.
+                str: Latitude and longitude as a comma-separated string, or None when the location is unavailable or cannot be retrieved.
         """
         if not self.available:
             return None
@@ -95,7 +95,7 @@ class TermuxAPI:
     def get_clipboard(self) -> Optional[str]:
         """
         Retrieve the current clipboard text from Termux.
-        
+
         Returns:
             Optional[str]: The clipboard contents, or `None` if unavailable or retrieval fails.
         """
@@ -116,10 +116,10 @@ class TermuxAPI:
     def set_clipboard(self, text: str) -> bool:
         """
         Set the device clipboard contents.
-        
+
         Parameters:
             text (str): Text to place on the clipboard.
-        
+
         Returns:
             bool: `True` if the clipboard was updated successfully, `False` otherwise.
         """
@@ -135,9 +135,9 @@ class TermuxAPI:
     def speech_to_text(self) -> Optional[str]:
         """
         Convert spoken input to text using the Termux speech recognition API.
-        
+
         Returns:
-        	str: The recognized text, or None if speech recognition is unavailable, times out, or fails.
+                str: The recognized text, or None if speech recognition is unavailable, times out, or fails.
         """
         if not self.available:
             return None
@@ -155,10 +155,10 @@ class TermuxAPI:
 
     def text_to_speech(self, text: str) -> bool:
         """Speak the provided text using the device's text-to-speech service.
-        
+
         Parameters:
             text (str): Text to vocalize.
-        
+
         Returns:
             bool: `true` if speech succeeds, `false` otherwise.
         """
@@ -174,11 +174,11 @@ class TermuxAPI:
     def show_notification(self, title: str, content: str) -> bool:
         """
         Display a notification on the Android device.
-        
+
         Parameters:
             title (str): Notification title.
             content (str): Notification body text.
-        
+
         Returns:
             bool: `True` if the notification is displayed successfully, `False` otherwise.
         """
@@ -203,7 +203,7 @@ class AiriBridge:
     ):
         """
         Initialize the airi bridge with its installation path.
-        
+
         Parameters:
             airi_path (str): Path to the airi installation.
         """
@@ -212,7 +212,7 @@ class AiriBridge:
 
     def _check_availability(self) -> bool:
         """Determine whether the configured airi installation is available.
-        
+
         Returns:
             bool: `true` if the configured airi path exists, `false` otherwise.
         """
@@ -221,11 +221,11 @@ class AiriBridge:
     def process(self, input_text: str, context: MobileContext) -> str:
         """
         Process input through the airi environment using the current mobile context.
-        
+
         Parameters:
             input_text (str): Text to process.
             context (MobileContext): Current mobile device context.
-        
+
         Returns:
             str: The airi processing output, or a formatted fallback response when airi is unavailable or processing fails.
         """
@@ -270,11 +270,11 @@ echo "🌉 airi-zenOS bridge active"
 
     def _fallback_processing(self, input_text: str, context: MobileContext) -> str:
         """Generate a mobile-optimized response when airi is unavailable.
-        
+
         Parameters:
             input_text (str): The user's input text.
             context (MobileContext): Current mobile device context.
-        
+
         Returns:
             str: A formatted response containing the input text and battery level.
         """
@@ -308,11 +308,11 @@ class OfflineModelManager:
 
     def process_offline(self, query: str, model: str = "phi-2") -> str:
         """Process a query with an available local Ollama model.
-        
+
         Parameters:
             query (str): The query to process.
             model (str): The preferred Ollama model name.
-        
+
         Returns:
             str: The model response, or an error message when no model is available,
                 Ollama cannot be found, processing fails, or the request times out.
@@ -353,9 +353,9 @@ class MobileAIAdapter:
     def get_mobile_context(self) -> MobileContext:
         """
         Collect the current device state for mobile AI processing.
-        
+
         Returns:
-        	MobileContext: The device's battery, location, clipboard, model, operating mode, timestamp, connectivity, and charging status.
+                MobileContext: The device's battery, location, clipboard, model, operating mode, timestamp, connectivity, and charging status.
         """
         battery_status = self.termux_api.get_battery_status()
 
@@ -373,7 +373,7 @@ class MobileAIAdapter:
     def _check_internet(self) -> bool:
         """
         Check whether the device can reach the internet.
-        
+
         Returns:
             bool: `true` if the connectivity check succeeds, `false` otherwise.
         """
@@ -386,13 +386,13 @@ class MobileAIAdapter:
     def process_mobile_query(self, query: str, context: Optional[MobileContext] = None) -> str:
         """
         Process a query through the mobile-optimized response pipeline.
-        
+
         Parameters:
-        	query (str): The user query to process.
-        	context (Optional[MobileContext]): Device context to use; collected automatically when omitted.
-        
+                query (str): The user query to process.
+                context (Optional[MobileContext]): Device context to use; collected automatically when omitted.
+
         Returns:
-        	str: A formatted response generated using offline processing or the online mobile pipeline.
+                str: A formatted response generated using offline processing or the online mobile pipeline.
         """
         if context is None:
             context = self.get_mobile_context()
@@ -415,13 +415,13 @@ class MobileAIAdapter:
 
     def _process_zenos(self, query: str, context: MobileContext) -> str:
         """Process a query through zenOS using the current mobile context.
-        
+
         Parameters:
-        	query (str): The query to process.
-        	context (MobileContext): The mobile context provided to zenOS.
-        
+                query (str): The query to process.
+                context (MobileContext): The mobile context provided to zenOS.
+
         Returns:
-        	str: The zenOS response or an error message if processing fails.
+                str: The zenOS response or an error message if processing fails.
         """
         try:
             # Create context file
@@ -471,14 +471,14 @@ class MobileAIAdapter:
     ) -> str:
         """
         Format zenOS and airi responses with mobile device status information.
-        
+
         Parameters:
-        	zenos_response (str): The response produced by zenOS.
-        	airi_response (str): The response produced by airi.
-        	context (MobileContext): Current mobile device context.
-        
+                zenos_response (str): The response produced by zenOS.
+                airi_response (str): The response produced by airi.
+                context (MobileContext): Current mobile device context.
+
         Returns:
-        	str: A formatted mobile-readable response containing both responses and bridge status.
+                str: A formatted mobile-readable response containing both responses and bridge status.
         """
         output = []
         output.append("🧘 zenOS:")
@@ -497,10 +497,10 @@ class MobileAIAdapter:
     def voice_processing(self, audio_input: Optional[str] = None) -> str:
         """
         Process voice input and return the mobile query response.
-        
+
         Parameters:
             audio_input (Optional[str]): Text to process instead of obtaining speech input from Termux.
-        
+
         Returns:
             str: The processed response, or an error message when no voice input is received.
         """
@@ -525,12 +525,12 @@ class MobileAIAdapter:
     def quick_query(self, query: str) -> str:
         """
         Process a query using a lightweight model when the battery is low and a fast zenOS model otherwise.
-        
+
         Parameters:
-        	query (str): The query to process.
-        
+                query (str): The query to process.
+
         Returns:
-        	str: The processed response, or an error message if quick processing fails.
+                str: The processed response, or an error message if quick processing fails.
         """
         context = self.get_mobile_context()
 

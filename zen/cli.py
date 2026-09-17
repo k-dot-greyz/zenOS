@@ -69,12 +69,12 @@ def run(
 ) -> None:
     """
     Run an AI agent, start interactive chat, or manage registered agents.
-    
+
     The command can display the version, list available agents, create an agent
     template, or execute an agent with optional variables and prompt-processing
     options. Interactive chat supports offline, eco, model, and compact-device
     settings.
-    
+
     Parameters:
         agent (Optional[str]): Agent name to execute, or ``"chat"`` to start
             interactive chat.
@@ -227,12 +227,12 @@ def create_agent(name: str) -> None:
 def parse_variables(vars_str: str) -> Dict[str, Any]:
     """
     Parse variables from JSON or comma-separated key-value input.
-    
+
     Parameters:
-    	vars_str (str): A JSON object or comma-separated sequence of key=value pairs.
-    
+        vars_str (str): A JSON object or comma-separated sequence of key=value pairs.
+
     Returns:
-    	Dict[str, Any]: The parsed variables, or an empty dictionary when no valid pairs are found.
+        Dict[str, Any]: The parsed variables, or an empty dictionary when no valid pairs are found.
     """
     # Try JSON first
     try:
@@ -260,7 +260,7 @@ def run_agent(
 ) -> None:
     """
     Load and execute an agent with the provided prompt and variables.
-    
+
     Parameters:
         agent (str): Name or identifier of the agent to run.
         prompt (str): Prompt to provide to the agent.
@@ -350,7 +350,7 @@ def run_agent(
 def setup(unattended, validate_only, phase):
     """
     Set up or validate the zenOS development environment.
-    
+
     Parameters:
         unattended (bool): Run setup without interactive prompts.
         validate_only (bool): Run validation without performing setup.

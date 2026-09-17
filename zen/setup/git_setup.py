@@ -20,9 +20,9 @@ class GitSetupManager:
 
     def __init__(self, zenos_root: Path):
         """Initialize a Git setup manager for the specified zenOS root directory.
-        
+
         Parameters:
-        	zenos_root (Path): The root directory of the zenOS installation.
+                zenos_root (Path): The root directory of the zenOS installation.
         """
         self.zenos_root = zenos_root
         self.gitignore_path = self.zenos_root / ".gitignore"
@@ -38,7 +38,7 @@ class GitSetupManager:
     def init_repository(self) -> bool:
         """
         Initialize a Git repository in the zenOS root directory.
-        
+
         Returns:
             bool: True if initialization succeeds, False otherwise.
         """
@@ -52,9 +52,9 @@ class GitSetupManager:
     def setup_gitignore(self) -> bool:
         """
         Create a comprehensive `.gitignore` file based on the detected project types.
-        
+
         Returns:
-        	bool: `True` if the file is created successfully, `False` if an error occurs.
+                bool: `True` if the file is created successfully, `False` if an error occurs.
         """
         try:
             # Detect project types
@@ -76,7 +76,7 @@ class GitSetupManager:
     def _detect_project_types(self) -> List[str]:
         """
         Identify project categories from files in the zenOS root directory and the current operating system.
-        
+
         Returns:
             List[str]: Detected project categories, including platform, IDE, and logging categories.
         """
@@ -110,12 +110,12 @@ class GitSetupManager:
     def _generate_gitignore_content(self, project_types: List[str]) -> str:
         """
         Generate `.gitignore` content for the detected project types.
-        
+
         Parameters:
-        	project_types (List[str]): Project type names whose ignore patterns should be included.
-        
+                project_types (List[str]): Project type names whose ignore patterns should be included.
+
         Returns:
-        	str: Combined project-specific and zenOS-specific ignore patterns.
+                str: Combined project-specific and zenOS-specific ignore patterns.
         """
         templates = self._get_gitignore_templates()
 
@@ -141,7 +141,7 @@ class GitSetupManager:
     def _get_gitignore_templates(self) -> Dict[str, str]:
         """
         Provide ignore-pattern templates for supported project types and development environments.
-        
+
         Returns:
             Dict[str, str]: A mapping from template names to their `.gitignore` contents.
         """
@@ -579,9 +579,9 @@ target/
     def setup_aliases(self) -> bool:
         """
         Configure global Git aliases for common repository workflows.
-        
+
         Returns:
-        	bool: `True` if all aliases are configured successfully, `False` if a Git command fails.
+                bool: `True` if all aliases are configured successfully, `False` if a Git command fails.
         """
         try:
             aliases = {
@@ -613,9 +613,9 @@ target/
 
     def has_user_config(self) -> bool:
         """Determine whether Git has both a global user name and email configured.
-        
+
         Returns:
-        	bool: `True` if both values are nonempty, `False` otherwise.
+                bool: `True` if both values are nonempty, `False` otherwise.
         """
         try:
             name_result = subprocess.run(
@@ -637,11 +637,11 @@ target/
     def configure_user(self, name: str, email: str) -> bool:
         """
         Configure the global Git user identity.
-        
+
         Parameters:
             name (str): Name to associate with Git commits.
             email (str): Email address to associate with Git commits.
-        
+
         Returns:
             bool: `True` if both identity values are configured successfully, `False` otherwise.
         """
@@ -657,7 +657,7 @@ target/
     def remove_tracked_unwanted_files(self) -> List[str]:
         """
         Remove tracked files matching common generated, temporary, environment, and IDE-specific patterns.
-        
+
         Returns:
             List[str]: Paths removed from Git tracking.
         """
@@ -714,10 +714,10 @@ target/
     ) -> bool:
         """
         Stage the repository's .gitignore file and commit the changes.
-        
+
         Parameters:
             message (str): Commit message to use.
-        
+
         Returns:
             bool: True if staging and committing succeed, False if either Git command fails.
         """
@@ -737,9 +737,9 @@ target/
     def verify_setup(self) -> bool:
         """
         Verify that the Git repository setup is functioning correctly.
-        
+
         Returns:
-        	bool: `True` if Git status succeeds and any existing `.DS_Store` file is ignored, `False` otherwise.
+                bool: `True` if Git status succeeds and any existing `.DS_Store` file is ignored, `False` otherwise.
         """
         try:
             # Check git status

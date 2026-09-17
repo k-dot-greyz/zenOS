@@ -77,11 +77,11 @@ class PKMScheduler:
     def add_job(self, name: str, schedule_str: str, function: Callable, **kwargs) -> CronJob:
         """
         Register a scheduled job and persist the updated scheduler state.
-        
+
         Parameters:
             schedule_str (str): Schedule expression, such as an interval or supported cron-like schedule.
             **kwargs: Additional fields passed to the CronJob constructor.
-        
+
         Returns:
             CronJob: The newly registered job.
         """
@@ -116,10 +116,10 @@ class PKMScheduler:
     def enable_job(self, name: str) -> bool:
         """
         Enable the specified job and persist the updated scheduler state.
-        
+
         Parameters:
             name (str): Name of the job to enable.
-        
+
         Returns:
             bool: `True` if the job was found and enabled, `False` otherwise.
         """
@@ -186,10 +186,10 @@ class PKMScheduler:
     def run_job(self, name: str) -> bool:
         """
         Execute an enabled job immediately by name.
-        
+
         Parameters:
             name (str): Name of the job to execute.
-        
+
         Returns:
             bool: `True` if the job completed successfully, `False` if it was not found, disabled, or failed.
         """
@@ -415,7 +415,7 @@ class PKMScheduler:
     def _run_job_wrapper(self, job_name: str) -> None:
         """
         Execute a scheduled job and update its run timestamps and persisted state.
-        
+
         Parameters:
             job_name (str): Name of the job to execute.
         """

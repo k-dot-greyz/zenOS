@@ -37,7 +37,7 @@ class ModelEntry:
     def overall_score(self) -> float:
         """
         Calculate the model's overall score from its statistics.
-        
+
         Returns:
             float: The average of the model's statistic values.
         """
@@ -46,12 +46,12 @@ class ModelEntry:
     def is_suitable_for(self, task: str) -> bool:
         """
         Determine whether the model is suitable for a task.
-        
+
         Parameters:
-        	task (str): The task to match against the model's supported tasks.
-        
+                task (str): The task to match against the model's supported tasks.
+
         Returns:
-        	bool: `true` if the task matches a supported task, `false` otherwise.
+                bool: `true` if the task matches a supported task, `false` otherwise.
         """
         return task.lower() in [t.lower() for t in self.best_for]
 
@@ -72,9 +72,9 @@ class ProcedureEntry:
     @property
     def complexity_rating(self) -> str:
         """Classify the procedure's complexity using its complexity statistic.
-        
+
         Returns:
-        	str: "Simple", "Moderate", "Complex", or "Expert".
+                str: "Simple", "Moderate", "Complex", or "Expert".
         """
         complexity = self.stats.get("complexity", 0)
         if complexity < 30:
@@ -92,9 +92,9 @@ class DexCatalog:
 
     def __init__(self, base_path: Path = Path("dex")):
         """Initialize the catalog with a data directory and load its catalog entries.
-        
+
         Parameters:
-        	base_path (Path): Directory containing the catalog data files.
+                base_path (Path): Directory containing the catalog data files.
         """
         self.base_path = base_path
         self.models: Dict[str, ModelEntry] = {}
@@ -152,12 +152,12 @@ class DexCatalog:
     def find_model_for_task(self, task: str) -> List[ModelEntry]:
         """
         Find models suited to a specific task.
-        
+
         Parameters:
-        	task (str): The task to match against the catalog's task recommendations or model suitability metadata.
-        
+                task (str): The task to match against the catalog's task recommendations or model suitability metadata.
+
         Returns:
-        	List[ModelEntry]: Recommended and budget models from the selection guide, or matching models sorted by descending overall score.
+                List[ModelEntry]: Recommended and budget models from the selection guide, or matching models sorted by descending overall score.
         """
         # Check selection guide first
         if "by_task" in self.selection_guide:
@@ -183,10 +183,10 @@ class DexCatalog:
     def get_models_by_tier(self, rarity: Tier) -> List[ModelEntry]:
         """
         Get all models assigned to a specific tier.
-        
+
         Parameters:
             rarity (Tier): Tier to match.
-        
+
         Returns:
             List[ModelEntry]: Models assigned to the specified tier.
         """
@@ -198,7 +198,7 @@ class DexCatalog:
 
     def get_legendary_items(self) -> Dict[str, List]:
         """Collect all models and procedures with legendary tier.
-        
+
         Returns:
             Dict[str, List]: A dictionary containing legendary models under ``"models"`` and legendary procedures under ``"procedures"``.
         """
@@ -210,7 +210,7 @@ class DexCatalog:
     def calculate_collection_stats(self) -> Dict[str, Any]:
         """
         Summarize the contents of the catalog.
-        
+
         Returns:
             Dict[str, Any]: Counts of models, procedures, models by tier, procedures by type,
             available achievements, and discovered combos.
@@ -239,7 +239,7 @@ class DexCatalog:
 
     def log_discovery(self, item_type: str, item_id: str, discovered_by: str):
         """Display a message announcing a newly discovered catalog item.
-        
+
         Parameters:
             item_type (str): The type of discovered item.
             item_id (str): The discovered item's identifier.
@@ -252,11 +252,11 @@ class DexCatalog:
     def check_achievements(self, entity_id: str, action: str) -> List[str]:
         """
         Check whether an entity action unlocks any achievements.
-        
+
         Parameters:
             entity_id (str): Identifier of the entity performing the action.
             action (str): Action to evaluate.
-        
+
         Returns:
             List[str]: Achievement identifiers unlocked by the action; currently always empty.
         """
@@ -273,7 +273,7 @@ _dex_catalog_instance: Optional[DexCatalog] = None
 def get_dex_catalog() -> DexCatalog:
     """
     Get the shared Dex catalog instance, creating it when necessary.
-    
+
     Returns:
         DexCatalog: The shared catalog instance.
     """

@@ -131,7 +131,7 @@ class ContextManager:
     def __init__(self, workspace: Optional[Path] = None):
         """
         Initialize context management for the specified workspace.
-        
+
         Parameters:
             workspace (Optional[Path]): Workspace to inspect. Defaults to the current directory.
         """
@@ -148,7 +148,7 @@ class ContextManager:
 
     def _load_genesis_docs(self):
         """Load available genesis documents from configured workspace and home-directory locations.
-        
+
         YAML content is stored as parsed data when possible; otherwise, the raw file
         content is stored.
         """
@@ -184,7 +184,7 @@ class ContextManager:
     def _load_project_context(self):
         """
         Load the project's directory structure, selected configuration files, and zenOS metadata.
-        
+
         Available key files are recorded with their contents limited to the first 1,000 characters. Errors are reported without interrupting context initialization.
         """
         try:
@@ -258,10 +258,10 @@ class ContextManager:
     def _get_tree(self, max_depth: int = 3) -> str:
         """
         Build a bounded textual directory tree for the workspace.
-        
+
         Parameters:
             max_depth (int): Maximum directory depth to traverse.
-        
+
         Returns:
             str: A newline-separated directory tree, limited to 50 lines and excluding hidden entries and selected dependency or cache directories.
         """
@@ -270,7 +270,7 @@ class ContextManager:
         def walk_dir(path: Path, prefix: str = "", depth: int = 0):
             """
             Append a bounded textual representation of a directory and its eligible descendants.
-            
+
             Parameters:
                 path (Path): Directory to traverse.
                 prefix (str): Prefix used to format the current tree level.
@@ -304,7 +304,7 @@ class ContextManager:
     def _get_zenos_version(self) -> str:
         """
         Retrieve the zenOS version defined in the workspace package.
-        
+
         Returns:
             str: The configured zenOS version, or ``"unknown"`` when it cannot be determined.
         """
@@ -333,9 +333,9 @@ class ContextManager:
     def get_personality_prompt(self) -> str:
         """
         Build a system prompt describing the active personality, guiding principles, and relevant cultural context.
-        
+
         Returns:
-        	str: The generated system prompt.
+                str: The generated system prompt.
         """
         profile = self.PERSONALITIES[self.current_personality]
 
@@ -370,9 +370,9 @@ Key philosophical principles from the genesis documents:
     def get_full_context(self) -> Dict[str, Any]:
         """
         Collect all available personality, genesis, project, Git, and cultural-reference context.
-        
+
         Returns:
-        	dict: A dictionary containing the active personality and its profile, loaded genesis documents, project details, Git metadata, and cultural references.
+                dict: A dictionary containing the active personality and its profile, loaded genesis documents, project details, Git metadata, and cultural references.
         """
         return {
             "personality": {
@@ -388,9 +388,9 @@ Key philosophical principles from the genesis documents:
     def format_context_for_prompt(self) -> str:
         """
         Format the available context into a prompt-ready string.
-        
+
         Returns:
-        	str: A combined prompt containing personality, project, Git, and genesis context when available.
+                str: A combined prompt containing personality, project, Git, and genesis context when available.
         """
         parts = []
 

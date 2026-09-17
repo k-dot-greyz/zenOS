@@ -42,30 +42,30 @@ class Fighter:
     @property
     def is_alive(self) -> bool:
         """Determine whether the fighter is still alive.
-        
+
         Returns:
-        	bool: `true` if the fighter's health is greater than zero, `false` otherwise.
+                bool: `true` if the fighter's health is greater than zero, `false` otherwise.
         """
         return self.hp > 0
 
     @property
     def hp_percentage(self) -> float:
         """Calculate the fighter's current health as a percentage of maximum health.
-        
+
         Returns:
-        	float: The current health percentage.
+                float: The current health percentage.
         """
         return (self.hp / self.max_hp) * 100
 
     def take_damage(self, damage: int) -> int:
         """
         Reduce health by incoming damage after applying defense mitigation.
-        
+
         Parameters:
-        	damage (int): Incoming damage before defense mitigation.
-        
+                damage (int): Incoming damage before defense mitigation.
+
         Returns:
-        	int: The actual damage dealt.
+                int: The actual damage dealt.
         """
         actual_damage = max(0, damage - (self.defense // 4))
         self.hp = max(0, self.hp - actual_damage)
@@ -73,12 +73,12 @@ class Fighter:
 
     def heal(self, amount: int) -> int:
         """Restore health up to the fighter's maximum HP.
-        
+
         Parameters:
-        	amount (int): The amount of health to restore.
-        
+                amount (int): The amount of health to restore.
+
         Returns:
-        	The actual amount of health restored.
+                The actual amount of health restored.
         """
         actual_heal = min(amount, self.max_hp - self.hp)
         self.hp += actual_heal
@@ -91,9 +91,9 @@ class ModelBench:
     def __init__(self, dex_path: Path = Path("dex")):
         """
         Initialize a model bench using model data from the specified Dex directory.
-        
+
         Parameters:
-        	dex_path (Path): Directory containing the model registry.
+                dex_path (Path): Directory containing the model registry.
         """
         self.dex_path = dex_path
         self.models = self._load_models()
@@ -103,7 +103,7 @@ class ModelBench:
     def _load_models(self) -> Dict[str, Dict]:
         """
         Load model records from the Dex configuration file.
-        
+
         Returns:
             Dict[str, Dict]: A mapping from model IDs to model records, or an empty
             mapping when the configuration file does not exist.
@@ -118,10 +118,10 @@ class ModelBench:
     def create_fighter(self, model_id: str) -> Optional[Fighter]:
         """
         Create a fighter from a registered model identifier.
-        
+
         Parameters:
             model_id (str): Identifier of the model used to create the fighter.
-        
+
         Returns:
             Optional[Fighter]: The corresponding fighter, or `None` if the model is not registered.
         """
@@ -160,12 +160,12 @@ class ModelBench:
     def calculate_damage(self, attacker: Fighter, move: BattleMove, defender: Fighter) -> int:
         """
         Calculate the damage produced by a combat move and apply move-specific self-effects.
-        
+
         Parameters:
             attacker (Fighter): Fighter performing the move.
             move (BattleMove): Combat action to evaluate.
             defender (Fighter): Fighter targeted by the move.
-        
+
         Returns:
             int: Damage amount after tier scaling, random variation, and any critical-hit bonus.
         """
@@ -235,11 +235,11 @@ class ModelBench:
     def choose_move(self, fighter: Fighter, opponent: Fighter) -> BattleMove:
         """
         Selects a combat move based on the fighter's health, capabilities, and strongest stat.
-        
+
         Parameters:
             fighter (Fighter): The fighter choosing the move.
             opponent (Fighter): The opposing fighter.
-        
+
         Returns:
             BattleMove: The selected combat action.
         """
@@ -276,13 +276,13 @@ class ModelBench:
     def battle_turn(self, fighter1: Fighter, fighter2: Fighter) -> bool:
         """
         Execute one combat turn and determine whether both fighters remain alive.
-        
+
         Parameters:
-        	fighter1 (Fighter): The first combatant.
-        	fighter2 (Fighter): The second combatant.
-        
+                fighter1 (Fighter): The first combatant.
+                fighter2 (Fighter): The second combatant.
+
         Returns:
-        	bool: `True` if both fighters remain alive after the turn, `False` otherwise.
+                bool: `True` if both fighters remain alive after the turn, `False` otherwise.
         """
         self.turn_count += 1
         self.log(f"\n=== Turn {self.turn_count} ===")
@@ -317,14 +317,14 @@ class ModelBench:
 
     def battle(self, model1_id: str, model2_id: str, max_turns: int = 50) -> Dict:
         """Run a battle between two models for up to the specified number of turns.
-        
+
         Parameters:
-        	model1_id (str): Identifier of the first model.
-        	model2_id (str): Identifier of the second model.
-        	max_turns (int): Maximum number of turns to run.
-        
+                model1_id (str): Identifier of the first model.
+                model2_id (str): Identifier of the second model.
+                max_turns (int): Maximum number of turns to run.
+
         Returns:
-        	Dict: Battle results, including the winner, remaining health, turn count, and battle log. If either model is unknown, includes an error and no winner.
+                Dict: Battle results, including the winner, remaining health, turn count, and battle log. If either model is unknown, includes an error and no winner.
         """
         self.battle_log = []
         self.turn_count = 0
@@ -367,12 +367,12 @@ class ModelBench:
     def tournament(self, model_ids: List[str]) -> Dict:
         """
         Run a single-elimination tournament among the specified models.
-        
+
         Parameters:
-        	model_ids (List[str]): Model identifiers competing in the tournament.
-        
+                model_ids (List[str]): Model identifiers competing in the tournament.
+
         Returns:
-        	Dict: Tournament participants, round-by-round battle results, and champion details, or an error if fewer than two models are provided.
+                Dict: Tournament participants, round-by-round battle results, and champion details, or an error if fewer than two models are provided.
         """
         if len(model_ids) < 2:
             return {"error": "Need at least 2 models for tournament"}
@@ -436,12 +436,12 @@ def quick_battle(model1: str, model2: str):
 def run_tournament(model_ids: List[str]):
     """
     Run a single-elimination tournament for the specified models.
-    
+
     Parameters:
-    	model_ids (List[str]): Model identifiers participating in the tournament.
-    
+        model_ids (List[str]): Model identifiers participating in the tournament.
+
     Returns:
-    	dict: Tournament results, including the champion and battle outcomes.
+        dict: Tournament results, including the champion and battle outcomes.
     """
     arena = ModelBench()
     result = arena.tournament(model_ids)

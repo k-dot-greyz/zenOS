@@ -31,9 +31,9 @@ class DexReader:
 
     def __init__(self, index_path: str = "dex/7E-00_dex-index.md"):
         """Initialize a DEX reader and load entries from the specified Markdown index.
-        
+
         Parameters:
-        	index_path (str): Path to the Markdown index containing DEX entries.
+                index_path (str): Path to the Markdown index containing DEX entries.
         """
         self.index_path = Path(index_path)
         self.entries = []
@@ -43,7 +43,7 @@ class DexReader:
     def _load_index(self):
         """
         Load DEX entries from the configured Markdown index into the reader's collections.
-        
+
         The current entries are cleared before loading. If the index file does not exist,
         the collections remain empty.
         """
@@ -83,10 +83,10 @@ class DexReader:
     def _extract_filename(self, markdown_link: str) -> str:
         """
         Extract the filename from Markdown link text.
-        
+
         Parameters:
             markdown_link (str): Markdown text in the form `[filename](path)`.
-        
+
         Returns:
             str: The link text, or the original input when no link text is present.
         """
@@ -96,10 +96,10 @@ class DexReader:
     def _extract_path(self, markdown_link: str) -> str:
         """
         Extracts the target path from a Markdown link.
-        
+
         Parameters:
             markdown_link (str): Markdown link text in the form `[text](path)`.
-        
+
         Returns:
             str: The extracted path, or an empty string when no path is present.
         """
@@ -109,7 +109,7 @@ class DexReader:
     def get(self, dex_id: str) -> Optional[Dict]:
         """
         Retrieve the DEX entry with the specified identifier.
-        
+
         Returns:
             Optional[Dict]: The matching DEX entry, or `None` if no entry exists.
         """
@@ -117,12 +117,12 @@ class DexReader:
 
     def by_bank(self, bank: int) -> List[Dict]:
         """Return all DEX entries whose IDs belong to the specified hexadecimal bank.
-        
+
         Parameters:
-        	bank (int): The numeric bank identifier.
-        
+                bank (int): The numeric bank identifier.
+
         Returns:
-        	List[Dict]: Entries with IDs matching the bank prefix.
+                List[Dict]: Entries with IDs matching the bank prefix.
         """
         bank_hex = f"0x{bank:02X}"
         return [e for e in self.entries if e["dex_id"].startswith(bank_hex)]
@@ -130,24 +130,24 @@ class DexReader:
     def by_type(self, dex_type: str) -> List[Dict]:
         """
         Retrieve all DEX entries with the specified type.
-        
+
         Parameters:
-        	dex_type (str): DEX type to match exactly.
-        
+                dex_type (str): DEX type to match exactly.
+
         Returns:
-        	List[Dict]: Entries whose type matches `dex_type`.
+                List[Dict]: Entries whose type matches `dex_type`.
         """
         return [e for e in self.entries if e["type"] == dex_type]
 
     def search(self, query: str) -> List[Dict]:
         """
         Search entries by filename or property-exchange ID.
-        
+
         Parameters:
-        	query (str): The case-insensitive text to find.
-        
+                query (str): The case-insensitive text to find.
+
         Returns:
-        	List[Dict]: Entries whose filename or property-exchange ID contains the query.
+                List[Dict]: Entries whose filename or property-exchange ID contains the query.
         """
         query_lower = query.lower()
         return [
@@ -159,7 +159,7 @@ class DexReader:
     def list_all(self) -> List[Dict]:
         """
         List all loaded DEX entries.
-        
+
         Returns:
             List[Dict]: The loaded DEX entries.
         """
@@ -173,10 +173,10 @@ class DexReader:
 def get_dex_metadata(filepath: Path) -> Optional[Dict]:
     """
     Extract DEX metadata from a file's YAML frontmatter or Python docstring.
-    
+
     Parameters:
         filepath (Path): Path to the file containing the metadata.
-    
+
     Returns:
         Optional[Dict]: A mapping of extracted metadata fields, or `None` when the file is unreadable or does not contain a DEX ID.
     """

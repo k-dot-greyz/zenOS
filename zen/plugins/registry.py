@@ -34,10 +34,10 @@ class PluginManifest:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "PluginManifest":
         """Create a plugin manifest from a dictionary.
-        
+
         Parameters:
             data (Dict[str, Any]): Manifest data, either directly or nested under the ``plugin`` key.
-        
+
         Returns:
             PluginManifest: The initialized plugin manifest.
         """
@@ -76,9 +76,9 @@ class PluginEntry:
     @property
     def tier(self) -> str:
         """Classifies the plugin into a tier based on its usage count and capability count.
-        
+
         Returns:
-        	str (str): The plugin tier: "common", "uncommon", "rare", "epic", or "legendary".
+                str (str): The plugin tier: "common", "uncommon", "rare", "epic", or "legendary".
         """
         if self.usage_count > 1000 and len(self.manifest.capabilities) > 5:
             return "legendary"
@@ -95,9 +95,9 @@ class PluginEntry:
     def overall_score(self) -> float:
         """
         Calculate the plugin's overall score from its capabilities, usage count, and success rate.
-        
+
         Returns:
-        	float: The average score across capability, usage, and performance measures.
+                float: The average score across capability, usage, and performance measures.
         """
         capability_score = len(self.manifest.capabilities) * 10
         usage_score = min(self.usage_count, 1000) / 10
@@ -166,12 +166,12 @@ class PluginRegistry:
     def register_plugin(self, manifest: PluginManifest, git_url: str, local_path: Path) -> bool:
         """
         Register a plugin and persist it in the registry.
-        
+
         Parameters:
             manifest (PluginManifest): Metadata describing the plugin.
             git_url (str): Repository URL for the plugin.
             local_path (Path): Local filesystem path of the plugin.
-        
+
         Returns:
             bool: `True` if registration succeeds, `False` otherwise.
         """
@@ -198,10 +198,10 @@ class PluginRegistry:
     def unregister_plugin(self, plugin_id: str) -> bool:
         """
         Remove a plugin from the registry.
-        
+
         Parameters:
             plugin_id (str): Identifier of the plugin to remove.
-        
+
         Returns:
             bool: `True` if the plugin was removed, `False` if no plugin has the specified identifier.
         """
@@ -220,12 +220,12 @@ class PluginRegistry:
     def get_plugins_by_category(self, category: str) -> List[PluginEntry]:
         """
         Retrieve all registered plugins associated with a category.
-        
+
         Parameters:
-        	category (str): The category used to filter plugins.
-        
+                category (str): The category used to filter plugins.
+
         Returns:
-        	List[PluginEntry]: Plugins associated with the category.
+                List[PluginEntry]: Plugins associated with the category.
         """
         plugin_ids = self.categories.get(category, set())
         return [self.plugins[pid] for pid in plugin_ids if pid in self.plugins]
@@ -238,12 +238,12 @@ class PluginRegistry:
     def search_plugins(self, query: str) -> List[PluginEntry]:
         """
         Search registered plugins by name, description, or capability.
-        
+
         Parameters:
-        	query (str): Text to match against plugin metadata.
-        
+                query (str): Text to match against plugin metadata.
+
         Returns:
-        	List[PluginEntry]: Matching plugins sorted by overall score in descending order.
+                List[PluginEntry]: Matching plugins sorted by overall score in descending order.
         """
         query_lower = query.lower()
         results = []
@@ -266,10 +266,10 @@ class PluginRegistry:
 
     def get_most_used_plugins(self, limit: int = 10) -> List[PluginEntry]:
         """Return plugins ordered by descending usage count.
-        
+
         Parameters:
             limit (int): Maximum number of plugins to return.
-        
+
         Returns:
             List[PluginEntry]: The most-used plugins, up to the specified limit.
         """
@@ -279,10 +279,10 @@ class PluginRegistry:
     def get_recommended_plugins(self, task: str) -> List[PluginEntry]:
         """
         Select active plugins whose capabilities match the task and rank them by overall score.
-        
+
         Parameters:
             task (str): Task description used to match plugin capabilities.
-        
+
         Returns:
             List[PluginEntry]: Matching plugins sorted from highest to lowest overall score.
         """
@@ -303,7 +303,7 @@ class PluginRegistry:
     def update_usage(self, plugin_id: str, success: bool = True):
         """
         Update a plugin's usage count and success-rate metric.
-        
+
         Parameters:
             plugin_id (str): Identifier of the plugin to update.
             success (bool): Whether the recorded usage was successful.
@@ -325,9 +325,9 @@ class PluginRegistry:
 
     def get_collection_stats(self) -> Dict[str, Any]:
         """Return statistics for the registered plugin collection.
-        
+
         Returns:
-        	dict: Counts of total and active plugins, plugins by category and capability, plugins by tier, and total usage.
+                dict: Counts of total and active plugins, plugins by category and capability, plugins by tier, and total usage.
         """
         total_plugins = len(self.plugins)
         active_plugins = len([p for p in self.plugins.values() if p.is_active])
@@ -370,9 +370,9 @@ class PluginRegistry:
 
     def _remove_from_indexes(self, entry: PluginEntry):
         """Remove a plugin entry from the category and capability indexes.
-        
+
         Parameters:
-        	entry (PluginEntry): The plugin entry whose identifier is removed from the indexes.
+                entry (PluginEntry): The plugin entry whose identifier is removed from the indexes.
         """
         # Remove from category index
         category = entry.manifest.category

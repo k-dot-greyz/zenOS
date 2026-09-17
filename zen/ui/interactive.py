@@ -60,10 +60,10 @@ class ModelCompleter(Completer):
 
     def get_completions(self, document, complete_event):
         """Provide model-name completions matching the text before the cursor.
-        
+
         Parameters:
             document: The current prompt document used to determine the partial model name.
-        
+
         Yields:
             Completion: A matching model-name completion.
         """
@@ -171,7 +171,7 @@ class InteractiveChat:
     async def chat_loop(self):
         """
         Run the interactive chat loop and process user input until the session ends.
-        
+
         Blank input is ignored, slash commands are dispatched to their handlers, and other input is added to the conversation before requesting an AI response. Keyboard interrupts restart the loop, while end-of-file input exits it.
         """
         while True:
@@ -223,7 +223,7 @@ class InteractiveChat:
         def get_input():
             """
             Run the prompt session and complete the associated future with the user's input.
-            
+
             EOF and keyboard-interrupt exceptions are propagated through the future.
             """
             try:
@@ -242,9 +242,9 @@ class InteractiveChat:
 
     async def get_ai_response(self, prompt: str):
         """Generate and display a streamed AI response, then record it in the conversation history.
-        
+
         Parameters:
-        	prompt (str): The user's request to send to the AI provider.
+                prompt (str): The user's request to send to the AI provider.
         """
         # Show thinking animation
         with console.status("[cyan]Contemplating your request...[/cyan]", spinner="dots"):
@@ -298,12 +298,12 @@ class InteractiveChat:
     def _build_prompt_with_context(self, prompt: str) -> str:
         """
         Build a prompt that combines personality, project, conversation, file, and request context.
-        
+
         Parameters:
-        	prompt (str): The user's current request.
-        
+                prompt (str): The user's current request.
+
         Returns:
-        	str: The assembled prompt with relevant context.
+                str: The assembled prompt with relevant context.
         """
         parts = []
 
@@ -338,7 +338,7 @@ class InteractiveChat:
     async def handle_command(self, command: str):
         """
         Handle a slash command and its optional arguments.
-        
+
         Parameters:
             command (str): Slash command entered by the user.
         """
@@ -355,9 +355,9 @@ class InteractiveChat:
     async def show_help(self, args: str = ""):
         """
         Display the available chat commands and keyboard shortcuts.
-        
+
         Parameters:
-        	args (str): Unused command arguments.
+                args (str): Unused command arguments.
         """
         help_table = Table(title="🧘 zenOS Chat Commands", show_header=True)
         help_table.add_column("Command", style="cyan")
@@ -415,7 +415,7 @@ class InteractiveChat:
 
     async def show_history(self, args: str = ""):
         """Display up to the ten most recent conversation messages with timestamps.
-        
+
         Long message content is truncated to 200 characters.
         """
         if not self.conversation_history:
@@ -436,7 +436,7 @@ class InteractiveChat:
     async def switch_model(self, model_name: str):
         """
         Switch the active chat model or display the currently selected model.
-        
+
         Parameters:
             model_name (str): Model name or supported alias to activate. An empty value displays the current model.
         """
@@ -493,7 +493,7 @@ class InteractiveChat:
     async def add_context(self, file_path: str):
         """
         Add an existing path to the conversation context, or display the paths currently loaded.
-        
+
         Parameters:
             file_path (str): Path to add to the context; an empty value lists loaded paths.
         """
@@ -533,9 +533,9 @@ class InteractiveChat:
     async def save_conversation(self, file_path: str):
         """
         Save the current chat session as a Markdown file.
-        
+
         Parameters:
-        	file_path (str): Destination path; an empty value uses a timestamped filename.
+                file_path (str): Destination path; an empty value uses a timestamped filename.
         """
         if not file_path:
             file_path = f"zenOS_chat_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
@@ -610,7 +610,7 @@ class InteractiveChat:
 
     async def show_project_context(self, args: str = ""):
         """Display the current project's workspace, zenOS status, version, and structure preview.
-        
+
         If project context is unavailable, display a corresponding notice.
         """
         context = self.context.project_context
@@ -656,7 +656,7 @@ class InteractiveChat:
     async def show_genesis_wisdom(self, args: str = ""):
         """
         Display loaded genesis documents, core principles, and cultural touchstones.
-        
+
         If no genesis documents are loaded, display the expected directories instead.
         """
         if not self.context.genesis_docs:

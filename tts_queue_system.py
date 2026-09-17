@@ -145,7 +145,7 @@ class AudioManager:
     def estimate_duration(self, text: str) -> float:
         """
         Estimate the playback duration for the given text based on its word count.
-        
+
         Returns:
             float: Estimated duration in seconds, with a minimum of 0.5 seconds.
         """
@@ -161,7 +161,7 @@ class RateLimiter:
     def __init__(self, config: TTSConfig):
         """
         Initialize the rate limiter with the provided configuration.
-        
+
         Parameters:
             config (TTSConfig): Configuration controlling whether rate limiting is enabled and the allowed requests per minute.
         """
@@ -221,11 +221,11 @@ class TTSWorker:
     async def process_message(self, message: TTSMessage, tts_engine: Callable) -> bool:
         """
         Process a message through audio generation, scheduling, and playback.
-        
+
         Parameters:
             message (TTSMessage): The message to process; its status is updated during processing.
             tts_engine (Callable): The engine supplied for audio generation.
-        
+
         Returns:
             bool: `True` if processing and playback complete successfully, `False` if an error occurs.
         """
@@ -275,11 +275,11 @@ class TTSWorker:
     async def _generate_audio(self, message: TTSMessage, tts_engine: Callable) -> bytes:
         """
         Produce placeholder audio data for a text-to-speech message.
-        
+
         Parameters:
             message (TTSMessage): The message associated with the audio.
             tts_engine (Callable): Reserved for the text-to-speech engine integration.
-        
+
         Returns:
             bytes: Placeholder audio data.
         """
@@ -316,7 +316,7 @@ class TTSQueueManager:
     def __init__(self, config: TTSConfig = None):
         """
         Initialize the queue manager with the specified configuration.
-        
+
         Parameters:
             config (TTSConfig, optional): Queue, worker, audio, and rate-limiting settings. Defaults to a new TTSConfig instance.
         """
@@ -354,7 +354,7 @@ class TTSQueueManager:
     def set_tts_engine(self, tts_engine: Callable):
         """
         Configure the audio-generation callable used by the queue.
-        
+
         Parameters:
             tts_engine (Callable): Callable assigned as the text-to-speech engine.
         """
@@ -380,7 +380,7 @@ class TTSQueueManager:
     async def stop(self):
         """
         Stop queue processing and release worker resources.
-        
+
         Signals workers to stop, waits briefly for in-flight tasks to finish, and shuts down the worker pool.
         """
         self.is_running = False
@@ -440,16 +440,16 @@ class TTSQueueManager:
     ) -> str:
         """
         Enqueue a text message for text-to-speech processing.
-        
+
         Parameters:
             text (str): The message content to synthesize.
             priority (MessagePriority): The message's queue priority.
             metadata (Dict[str, Any]): Optional metadata attached to the message.
             created_by (str): Identifier for the message originator.
-        
+
         Returns:
             str: The unique identifier assigned to the message.
-        
+
         Raises:
             RuntimeError: If the queue system is not running or the queue is full.
         """

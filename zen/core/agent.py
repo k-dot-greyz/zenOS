@@ -31,10 +31,10 @@ class AgentManifest:
     def from_yaml(cls, yaml_path: Path) -> "AgentManifest":
         """
         Create an agent manifest from a YAML file.
-        
+
         Parameters:
             yaml_path (Path): Path to the YAML file containing the manifest definition.
-        
+
         Returns:
             AgentManifest: Manifest populated from the YAML data, with defaults for omitted fields.
         """
@@ -65,11 +65,11 @@ class Agent(ABC):
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """
         Execute the agent using the rendered prompt and runtime variables.
-        
+
         Parameters:
             prompt (str): The rendered prompt to execute.
             variables (Dict[str, Any]): Runtime variables available to the agent.
-        
+
         Returns:
             Any: The result produced by the concrete agent implementation.
         """
@@ -78,11 +78,11 @@ class Agent(ABC):
     def render_prompt(self, prompt: str, variables: Dict[str, Any]) -> str:
         """
         Render the final prompt from the manifest configuration and runtime variables.
-        
+
         Parameters:
             prompt (str): The user's prompt to include in the rendered result.
             variables (Dict[str, Any]): Runtime values available to templates and modules.
-        
+
         Returns:
             str: The fully rendered prompt.
         """
@@ -129,14 +129,14 @@ class Agent(ABC):
 
     def load_module(self, module_type: str, module_name: str) -> str:
         """Load a Markdown module from the configured or built-in modules directory.
-        
+
         Parameters:
             module_type (str): The module category directory.
             module_name (str): The module filename without the `.md` extension.
-        
+
         Returns:
             str: The contents of the requested module.
-        
+
         Raises:
             FileNotFoundError: If the module is unavailable in both locations.
         """
@@ -167,10 +167,10 @@ class PythonAgent(Agent):
 
     def __init__(self, manifest: AgentManifest, execute_func):
         """Initialize a Python agent with its manifest and execution function.
-        
+
         Parameters:
-        	manifest (AgentManifest): Agent metadata and configuration.
-        	execute_func: Function used to execute the rendered prompt.
+                manifest (AgentManifest): Agent metadata and configuration.
+                execute_func: Function used to execute the rendered prompt.
         """
         super().__init__(manifest)
         self.execute_func = execute_func
@@ -218,7 +218,7 @@ class AgentRegistry:
 
     def _load_promptos_agents(self) -> None:
         """Load and register the built-in PromptOS agents.
-        
+
         If the PromptOS agent implementations cannot be imported, emit a warning and leave the registry unchanged.
         """
         try:
@@ -286,13 +286,13 @@ class AgentRegistry:
     def create_agent(self, name: str) -> Path:
         """
         Create a YAML template for a named agent.
-        
+
         Parameters:
             name (str): Name of the agent and resulting YAML file.
-        
+
         Returns:
             Path: Path to the newly created agent file.
-        
+
         Raises:
             ValueError: If an agent with the specified name already exists.
         """

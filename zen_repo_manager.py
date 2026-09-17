@@ -33,11 +33,7 @@ from clone_all_repos import (
     get_github_token,
 )
 from clone_all_repos import parse_arguments as parse_clone_args
-from clone_all_repos import (
-    repo_exists_locally,
-    save_results_to_json,
-    update_repository,
-)
+from clone_all_repos import repo_exists_locally, save_results_to_json, update_repository
 
 # Import our existing modules
 from find_all_local_repos import (
@@ -64,12 +60,12 @@ class ZenRepoManager:
     def command_scan(self, args) -> int:
         """
         Scan the filesystem for local Git repositories and optionally display or save the results.
-        
+
         Parameters:
             args (argparse.Namespace): Parsed command-line arguments, including scan paths,
                 maximum depth, exclusion patterns, detail display, and an optional JSON output
                 path.
-        
+
         Returns:
             int: `0` when scanning completes, or `1` when no valid scan paths are available.
         """
@@ -320,12 +316,12 @@ class ZenRepoManager:
     def _perform_audit(self, repositories: List[Dict]) -> Dict:
         """
         Build an audit report for the specified repositories.
-        
+
         Parameters:
-        	repositories (List[Dict]): Repository status dictionaries to evaluate.
-        
+                repositories (List[Dict]): Repository status dictionaries to evaluate.
+
         Returns:
-        	Dict: An audit containing a timestamp, aggregated status summary, flattened issues and recommendations, and per-repository audit results.
+                Dict: An audit containing a timestamp, aggregated status summary, flattened issues and recommendations, and per-repository audit results.
         """
         audit = {
             "timestamp": datetime.now().isoformat(),
@@ -356,11 +352,11 @@ class ZenRepoManager:
     def _audit_single_repo(self, repo: Dict) -> Dict:
         """
         Evaluate a repository's health and produce identified issues, recommendations, and a score.
-        
+
         Parameters:
             repo (Dict): Repository metadata, including its name, path, status, remote URL,
                 change state, ahead/behind state, and last commit timestamp.
-        
+
         Returns:
             Dict: Audit summary containing the repository name and path, detected issues,
                 recommendations, and a health score from 0 to 100.

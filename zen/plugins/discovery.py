@@ -59,14 +59,14 @@ class PluginDiscovery:
     ) -> List[DiscoveredPlugin]:
         """
         Search GitHub repositories for compatible plugins matching the query and optional category.
-        
+
         Parameters:
-        	query (str): Search terms used to find plugin repositories.
-        	category (Optional[str]): Category used to narrow the search.
-        	limit (int): Maximum number of plugins to return.
-        
+                query (str): Search terms used to find plugin repositories.
+                category (Optional[str]): Category used to narrow the search.
+                limit (int): Maximum number of plugins to return.
+
         Returns:
-        	List[DiscoveredPlugin]: Discovered plugins ordered by GitHub star count.
+                List[DiscoveredPlugin]: Discovered plugins ordered by GitHub star count.
         """
         try:
             if not self.session:
@@ -114,23 +114,23 @@ class PluginDiscovery:
     async def discover_by_category(self, category: str, limit: int = 20) -> List[DiscoveredPlugin]:
         """
         Discover plugins that belong to a specified category.
-        
+
         Parameters:
-        	category (str): The plugin category to search for
-        	limit (int): The maximum number of plugins to return
-        
+                category (str): The plugin category to search for
+                limit (int): The maximum number of plugins to return
+
         Returns:
-        	List[DiscoveredPlugin]: Plugins matching the category
+                List[DiscoveredPlugin]: Plugins matching the category
         """
         return await self.search_plugins("", category, limit)
 
     async def discover_trending(self, limit: int = 20) -> List[DiscoveredPlugin]:
         """
         Discover plugins from repositories with the most recent updates.
-        
+
         Parameters:
             limit (int): Maximum number of plugins to return.
-        
+
         Returns:
             List[DiscoveredPlugin]: Recently updated compatible plugins, or an empty list if discovery fails.
         """
@@ -174,12 +174,12 @@ class PluginDiscovery:
     async def discover_featured(self, limit: int = 10) -> List[DiscoveredPlugin]:
         """
         Discover highly starred plugins.
-        
+
         Parameters:
-        	limit (int): Maximum number of plugins to return.
-        
+                limit (int): Maximum number of plugins to return.
+
         Returns:
-        	list[DiscoveredPlugin]: Featured plugins sorted by GitHub star count, or an empty list if discovery fails.
+                list[DiscoveredPlugin]: Featured plugins sorted by GitHub star count, or an empty list if discovery fails.
         """
         try:
             if not self.session:
@@ -220,10 +220,10 @@ class PluginDiscovery:
 
     async def _process_repository(self, repo: Dict[str, Any]) -> Optional[DiscoveredPlugin]:
         """Create plugin metadata from a GitHub repository and its manifest.
-        
+
         Parameters:
             repo (Dict[str, Any]): GitHub repository metadata, including its full name and repository details.
-        
+
         Returns:
             Optional[DiscoveredPlugin]: A discovered plugin when the repository has a valid manifest; `None` if the manifest is unavailable or processing fails.
         """
@@ -258,10 +258,10 @@ class PluginDiscovery:
 
     async def _get_plugin_manifest(self, repo_name: str) -> Optional[Dict[str, Any]]:
         """Retrieve a repository's plugin manifest.
-        
+
         Parameters:
             repo_name (str): GitHub repository name.
-        
+
         Returns:
             Optional[Dict[str, Any]]: The parsed plugin manifest, or `None` if it cannot be retrieved or parsed.
         """
@@ -296,10 +296,10 @@ class PluginDiscovery:
     def _calculate_compatibility_score(self, manifest: Dict[str, Any]) -> float:
         """
         Calculate a plugin's compatibility score from its manifest metadata.
-        
+
         Parameters:
             manifest (Dict[str, Any]): Plugin manifest data used to assess compatibility.
-        
+
         Returns:
             float: Compatibility score from 0.0 to 1.0.
         """
@@ -341,7 +341,7 @@ class PluginDiscovery:
     async def get_plugin_categories(self) -> List[str]:
         """
         Collect available plugin categories from discovered plugin manifests.
-        
+
         Returns:
             List[str]: Unique category names sorted alphabetically.
         """
@@ -377,9 +377,9 @@ class PluginDiscovery:
 
     async def get_plugin_capabilities(self) -> List[str]:
         """Collect the unique capabilities declared by discovered plugins.
-        
+
         Returns:
-        	List[str]: Sorted capability names, or an empty list when discovery is unavailable or fails.
+                List[str]: Sorted capability names, or an empty list when discovery is unavailable or fails.
         """
         try:
             if not self.session:
@@ -419,15 +419,15 @@ async def search_plugins(
 ) -> List[DiscoveredPlugin]:
     """
     Search GitHub repositories for plugins matching a query.
-    
+
     Parameters:
-    	query (str): Search terms used to find plugin repositories.
-    	category (Optional[str]): Category used to filter the results.
-    	limit (int): Maximum number of plugins to return.
-    	github_token (Optional[str]): GitHub token used for API access.
-    
+        query (str): Search terms used to find plugin repositories.
+        category (Optional[str]): Category used to filter the results.
+        limit (int): Maximum number of plugins to return.
+        github_token (Optional[str]): GitHub token used for API access.
+
     Returns:
-    	List[DiscoveredPlugin]: Plugins matching the query and optional category.
+        List[DiscoveredPlugin]: Plugins matching the query and optional category.
     """
     async with PluginDiscovery(github_token) as discovery:
         return await discovery.search_plugins(query, category, limit)
@@ -437,13 +437,13 @@ async def discover_trending(
     limit: int = 20, github_token: Optional[str] = None
 ) -> List[DiscoveredPlugin]:
     """Discover plugins from repositories with the most recent updates.
-    
+
     Parameters:
-    	limit (int): Maximum number of plugins to return.
-    	github_token (Optional[str]): GitHub token used for API access.
-    
+        limit (int): Maximum number of plugins to return.
+        github_token (Optional[str]): GitHub token used for API access.
+
     Returns:
-    	List[DiscoveredPlugin]: Trending plugins, or an empty list if discovery fails.
+        List[DiscoveredPlugin]: Trending plugins, or an empty list if discovery fails.
     """
     async with PluginDiscovery(github_token) as discovery:
         return await discovery.discover_trending(limit)
@@ -454,11 +454,11 @@ async def discover_featured(
 ) -> List[DiscoveredPlugin]:
     """
     Discover featured plugins from GitHub repositories.
-    
+
     Parameters:
         limit (int): Maximum number of plugins to return.
         github_token (Optional[str]): Optional GitHub token for authenticated requests.
-    
+
     Returns:
         List[DiscoveredPlugin]: Featured plugins ordered by popularity.
     """

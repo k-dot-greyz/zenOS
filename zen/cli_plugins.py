@@ -35,12 +35,12 @@ def plugins():
 @click.option("--local", is_flag=True, help="Install from local directory")
 def install(source: str, version: str, force: bool, local: bool):
     """Install a plugin from a Git repository or local directory.
-    
+
     Parameters:
-    	source (str): Git repository URL or local plugin directory path.
-    	version (str): Git version, branch, tag, or commit to install.
-    	force (bool): Whether to reinstall an existing Git-installed plugin without confirmation.
-    	local (bool): Whether to interpret `source` as a local directory path.
+        source (str): Git repository URL or local plugin directory path.
+        version (str): Git version, branch, tag, or commit to install.
+        force (bool): Whether to reinstall an existing Git-installed plugin without confirmation.
+        local (bool): Whether to interpret `source` as a local directory path.
     """
 
     async def _install():
@@ -129,7 +129,7 @@ def list():
 def info(plugin_id: str):
     """
     Display detailed metadata and available procedures for a registered plugin.
-    
+
     Parameters:
         plugin_id (str): Identifier of the plugin to inspect.
     """
@@ -172,7 +172,7 @@ def info(plugin_id: str):
 def remove(plugin_id: str):
     """
     Remove a registered plugin after requesting confirmation.
-    
+
     Parameters:
         plugin_id (str): Identifier of the plugin to remove.
     """
@@ -197,7 +197,7 @@ def remove(plugin_id: str):
 def test(plugin_id: str):
     """
     Run a sample test for the specified plugin and display the result.
-    
+
     Parameters:
         plugin_id (str): Identifier of the plugin to test.
     """
@@ -243,7 +243,7 @@ def test(plugin_id: str):
 def execute(plugin_id: str, procedure_id: str, input_data: str, user_id: str, session_id: str):
     """
     Execute a plugin procedure with the supplied input and execution context.
-    
+
     Parameters:
         plugin_id (str): Identifier of the plugin to execute.
         procedure_id (str): Identifier of the procedure to run.
@@ -306,11 +306,11 @@ def execute(plugin_id: str, procedure_id: str, input_data: str, user_id: str, se
 def search(query: str, category: Optional[str], limit: int):
     """
     Search GitHub for plugins matching the specified query and optional category.
-    
+
     Parameters:
-    	query (str): Search terms used to find plugins.
-    	category (Optional[str]): Category used to filter results.
-    	limit (int): Maximum number of results to display.
+        query (str): Search terms used to find plugins.
+        category (Optional[str]): Category used to filter results.
+        limit (int): Maximum number of results to display.
     """
 
     async def _search():
@@ -366,7 +366,7 @@ def search(query: str, category: Optional[str], limit: int):
 def trending(limit: int):
     """
     Display trending plugins, including repository, description, star count, and update date.
-    
+
     Parameters:
         limit (int): Maximum number of trending plugins to display.
     """

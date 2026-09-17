@@ -163,13 +163,13 @@ class GeminiExtractor:
     async def _get_conversation_list(self, max_conversations: Optional[int] = None) -> List[str]:
         """
         Provide demonstration Gemini conversation URLs after confirming access to the Gemini homepage.
-        
+
         Parameters:
             max_conversations (Optional[int]): Maximum number of URLs to return when a positive limit is provided.
-        
+
         Returns:
             List[str]: Gemini conversation URLs, or an empty list if the homepage request fails or another retrieval error occurs.
-        
+
         Raises:
             RuntimeError: If the HTTP session has not been initialized.
         """
@@ -274,7 +274,7 @@ class GeminiExtractor:
     def _extract_conversation_id(self, url: str) -> str:
         """
         Derive a conversation identifier from a conversation URL.
-        
+
         Returns:
             str: The final URL path segment, or a timestamp-based identifier in the form
                 `conv_<timestamp>` when the path has no additional segment.
@@ -315,10 +315,10 @@ class GeminiExtractor:
     def _extract_messages(self, soup: BeautifulSoup) -> List[Message]:
         """
         Extract messages from a conversation page.
-        
+
         Parameters:
             soup (BeautifulSoup): Parsed conversation page content.
-        
+
         Returns:
             List[Message]: Extracted messages in page order, or an empty list when no usable content is found.
         """
@@ -366,10 +366,10 @@ class GeminiExtractor:
     async def _save_conversation(self, conversation: Conversation):
         """
         Persist a conversation in the configured JSON, Markdown, or combined format.
-        
+
         Parameters:
             conversation (Conversation): The conversation to save, named using its identifier.
-        
+
         """
         # Save as JSON
         if self.config.storage_format in ["json", "both"]:

@@ -16,13 +16,13 @@ import yaml
 def load_templates(yaml_path="../ai_post_templates.yaml"):
     """
     Load post templates from a YAML file.
-    
+
     Parameters:
         yaml_path (str): Path to the YAML file containing the ``ai_post_templates`` mapping.
-    
+
     Returns:
         dict: The template mapping from the YAML file.
-    
+
     Exits:
         Exits with status 1 if the file is missing or does not contain the expected mapping.
     """
@@ -41,10 +41,10 @@ def load_templates(yaml_path="../ai_post_templates.yaml"):
 def copy_to_clipboard_cross_platform(text):
     """
     Copy text to the system clipboard using the platform's available clipboard utility.
-    
+
     Parameters:
         text (str): Text to copy to the clipboard.
-    
+
     Returns:
         bool: `True` if the text was copied successfully, `False` if the platform is unsupported or the clipboard operation fails.
     """
@@ -78,15 +78,15 @@ def copy_to_clipboard_cross_platform(text):
 def present_choices(templates):
     """
     Display available templates and prompt for a selection.
-    
+
     Parameters:
-    	templates (dict): Mapping of template keys to template data containing a title and vibe.
-    
+        templates (dict): Mapping of template keys to template data containing a title and vibe.
+
     Returns:
-    	str: Key of the selected template.
-    
+        str: Key of the selected template.
+
     Exits:
-    	The program exits when the user enters "q".
+        The program exits when the user enters "q".
     """
     print("\n🎭 zenOS AI Post Template Selector")
     print("=" * 50)

@@ -57,10 +57,10 @@ def is_git_repository(path: Path) -> bool:
 def get_git_info(repo_path: Path) -> Dict:
     """
     Gather metadata for a Git repository.
-    
+
     Parameters:
         repo_path (Path): Path to the repository root.
-    
+
     Returns:
         Dict: Repository metadata including its path, name, validity status, origin
         URL, current branch, latest commit, ahead/behind status, and change
@@ -171,12 +171,12 @@ def scan_for_repositories(
 ) -> List[Dict]:
     """
     Search root directories for Git repositories within the depth limit.
-    
+
     Parameters:
         root_paths (List[Path]): Root directories to search.
         max_depth (int): Maximum repository depth relative to each root.
         exclude_patterns (List[str] | None): Substrings that cause matching repository paths to be skipped. Defaults to common dependency, cache, virtual-environment, and Git directories.
-    
+
     Returns:
         List[Dict]: Repository metadata dictionaries for detected repositories.
     """
@@ -406,7 +406,7 @@ def save_to_json(repositories: List[Dict], output_file: Path) -> None:
 def main():
     """
     Parse command-line arguments, scan selected filesystem paths for Git repositories, and report the results.
-    
+
     The scan uses explicitly provided paths or platform-specific defaults, applies depth and exclusion options, displays repository summaries and optional details, and saves JSON output when requested. Exits with status 1 when no valid scan paths are available.
     """
     parser = argparse.ArgumentParser(

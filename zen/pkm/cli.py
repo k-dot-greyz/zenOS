@@ -191,7 +191,7 @@ def process(config: Optional[str]):
     async def run_processing():
         """
         Process and save conversations that have not yet been processed.
-        
+
         Reports the number of conversations processed and associated knowledge entries.
         """
         conversations = storage.list_conversations()

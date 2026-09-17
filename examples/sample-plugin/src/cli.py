@@ -10,11 +10,11 @@ from .main import TextProcessorPlugin, create_plugin
 
 def main():
     """Run the text processor plugin using command-line arguments.
-    
+
     Uses the first argument as the procedure identifier and the optional second
     argument as input data. Defaults to ``"Hello, world!"`` when input data is
     omitted.
-    
+
     Raises:
         SystemExit: If no procedure argument is provided.
     """

@@ -208,7 +208,7 @@ def get_configuration(args) -> Dict:
 def get_github_token() -> Optional[str]:
     """
     Retrieve and validate a GitHub personal access token from the `GITHUB_TOKEN` environment variable.
-    
+
     Returns:
         Optional[str]: The validated token, or `None` if it is missing, invalid, or cannot be validated.
     """
@@ -421,12 +421,12 @@ def clone_repository(repo: Dict, destination: Path, dry_run: bool = False) -> Tu
 def update_repository(repo_name: str, destination: Path, dry_run: bool = False) -> Tuple[bool, str]:
     """
     Update an existing local Git repository with its latest changes.
-    
+
     Parameters:
         repo_name (str): Name of the repository directory.
         destination (Path): Parent directory containing the repository.
         dry_run (bool): Whether to report the update without performing it.
-    
+
     Returns:
         tuple[bool, str]: A success indicator and status: ``"updated"`` for a successful update,
         ``"dry_run"`` for a simulated update, ``"not_git_repo"`` when Git cannot run in the
@@ -470,7 +470,7 @@ def update_repository(repo_name: str, destination: Path, dry_run: bool = False) 
 def save_results_to_json(config: Dict, all_results: List[Dict], json_file: Path) -> None:
     """
     Write repository operation results and selected runtime configuration to a JSON file.
-    
+
     Parameters:
         config (Dict): Runtime configuration containing the usernames, destination, execution mode, and repository filters.
         all_results (List[Dict]): Per-repository operation results to include in the file.

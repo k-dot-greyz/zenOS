@@ -34,11 +34,11 @@ Provide an improved version with explanations for each change.""",
     async def execute_async(self, prompt: str, variables: dict) -> str:
         """
         Analyze the rendered prompt and return the critic agent's response.
-        
+
         Parameters:
             prompt (str): The prompt template to analyze.
             variables (dict): Values used to render the prompt.
-        
+
         Returns:
             str: The generated response, or an error message containing the rendered prompt if the provider call fails.
         """
@@ -56,11 +56,11 @@ Provide an improved version with explanations for each change.""",
     def execute(self, prompt: str, variables: dict) -> str:
         """
         Execute the critic agent synchronously.
-        
+
         Parameters:
             prompt (str): The prompt to analyze.
             variables (dict): Values used to render the prompt.
-        
+
         Returns:
             str: The critic agent's analysis.
         """

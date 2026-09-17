@@ -71,10 +71,10 @@ class PKMStorage:
     def load_conversation(self, conversation_id: str) -> Optional[Conversation]:
         """
         Load a stored conversation by its identifier.
-        
+
         Parameters:
             conversation_id (str): Identifier of the conversation to load.
-        
+
         Returns:
             Optional[Conversation]: The loaded conversation, or `None` if its file is missing or cannot be read or parsed.
         """
@@ -94,10 +94,10 @@ class PKMStorage:
     def list_conversations(self, limit: Optional[int] = None) -> List[Conversation]:
         """
         Retrieve stored conversations sorted by most recently updated.
-        
+
         Parameters:
                 limit (int | None): Optional maximum number of conversations to return. A value of 0 or None returns all conversations.
-        
+
         Returns:
                 conversations (List[Conversation]): Conversations sorted by `updated_at` in descending order, optionally truncated to `limit`.
         """
@@ -119,13 +119,13 @@ class PKMStorage:
     def search_conversations(self, query: str, limit: Optional[int] = None) -> List[Conversation]:
         """
         Find conversations containing a case-insensitive substring in their titles, messages, or summaries.
-        
+
         Parameters:
-        	query (str): The substring to search for.
-        	limit (Optional[int]): Maximum number of results to return.
-        
+                query (str): The substring to search for.
+                limit (Optional[int]): Maximum number of results to return.
+
         Returns:
-        	List[Conversation]: Matching conversations in listing order.
+                List[Conversation]: Matching conversations in listing order.
         """
         results = []
         query_lower = query.lower()
@@ -184,10 +184,10 @@ class PKMStorage:
     def save_knowledge_entry(self, entry: KnowledgeEntry) -> bool:
         """
         Persist a knowledge entry as a JSON file in the configured knowledge base directory.
-        
+
         Parameters:
             entry (KnowledgeEntry): The knowledge entry to save.
-        
+
         Returns:
             bool: `True` if the entry was saved successfully, `False` otherwise.
         """
@@ -226,10 +226,10 @@ class PKMStorage:
     def list_knowledge_entries(self, limit: Optional[int] = None) -> List[KnowledgeEntry]:
         """
         List stored knowledge entries in descending order of their update time.
-        
+
         Parameters:
             limit (Optional[int]): Maximum number of entries to return. Omitted, `None`, or zero returns all entries.
-        
+
         Returns:
             List[KnowledgeEntry]: Valid stored knowledge entries ordered from newest to oldest.
         """
@@ -253,11 +253,11 @@ class PKMStorage:
     ) -> List[KnowledgeEntry]:
         """
         Search knowledge entries for case-insensitive matches in their titles, content, or tags.
-        
+
         Parameters:
             query (str): Text to find in each entry's title, content, or tags.
             limit (Optional[int]): Positive maximum number of results to return.
-        
+
         Returns:
             List[KnowledgeEntry]: Matching entries, truncated to the specified positive limit.
         """

@@ -27,7 +27,7 @@ class TextProcessorPlugin:
 
     def __init__(self, config: Dict[str, Any]):
         """Initialize the text processor plugin with the supplied configuration.
-        
+
         Parameters:
             config (Dict[str, Any]): Plugin configuration, including optional language,
                 maximum input length, and sentiment analysis settings.
@@ -40,9 +40,9 @@ class TextProcessorPlugin:
 
     async def initialize(self) -> bool:
         """Initialize the text processor plugin.
-        
+
         Returns:
-        	bool: `True` if initialization succeeds, `False` if it fails.
+                bool: `True` if initialization succeeds, `False` if it fails.
         """
         try:
             # Initialize any required resources
@@ -55,13 +55,13 @@ class TextProcessorPlugin:
     async def process(self, input_data: Any, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process text according to the procedure specified in the context.
-        
+
         Parameters:
-        	input_data (Any): Text or text-containing data to process.
-        	context (Dict[str, Any]): Procedure settings that determine the processing operation.
-        
+                input_data (Any): Text or text-containing data to process.
+                context (Dict[str, Any]): Procedure settings that determine the processing operation.
+
         Returns:
-        	Dict[str, Any]: A result containing success status, processed data, and metadata, or an error message.
+                Dict[str, Any]: A result containing success status, processed data, and metadata, or an error message.
         """
         try:
             if not self.is_initialized:
@@ -106,11 +106,11 @@ class TextProcessorPlugin:
     async def _process_text(self, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process text according to the requested operation.
-        
+
         Parameters:
             text (str): Text to process.
             context (Dict[str, Any]): Operation name and operation-specific options.
-        
+
         Returns:
             Dict[str, Any]: Operation results, or an error message for an unknown operation or processing failure.
         """
@@ -135,7 +135,7 @@ class TextProcessorPlugin:
     async def _analyze_text(self, text: str) -> Dict[str, Any]:
         """
         Analyze text for linguistic, language, sentiment, and readability metrics.
-        
+
         Returns:
             Dict[str, Any]: Analysis results containing word count, sentence count,
             average word length, detected language, optional sentiment data, and
@@ -177,11 +177,11 @@ class TextProcessorPlugin:
     async def _summarize_text(self, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Create an extractive summary of the text using the requested formatting style.
-        
+
         Parameters:
             text (str): Text to summarize.
             context (Dict[str, Any]): Options including `max_sentences` and `style` (`bullet`, `paragraph`, or `outline`).
-        
+
         Returns:
             Dict[str, Any]: Summary text with length, compression ratio, and sentence count, or an error message.
         """
@@ -221,12 +221,12 @@ class TextProcessorPlugin:
     async def _analyze_sentiment(self, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze the sentiment of text and optionally provide sentence-level details.
-        
+
         Parameters:
             text (str): Text to analyze.
             context (Dict[str, Any]): Options controlling the analysis. Set ``detailed`` to
                 ``True`` to include sentence-level sentiment and sentiment distribution.
-        
+
         Returns:
             Dict[str, Any]: Sentiment polarity, subjectivity, and classification, with
                 optional detailed results. Contains an ``error`` key if analysis fails.
@@ -268,11 +268,11 @@ class TextProcessorPlugin:
     async def _translate_text(self, text: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Translate text to the language specified in the processing context when needed.
-        
+
         Parameters:
             context (Dict[str, Any]): Processing context containing the target language under
                 the ``language`` key; defaults to English when omitted.
-        
+
         Returns:
             Dict[str, Any]: Translation details including the original text, translated text,
                 source language, and target language. Includes a note when the text already
@@ -309,10 +309,10 @@ class TextProcessorPlugin:
     def _extract_text(self, input_data: Any) -> str:
         """
         Extract text from a string, mapping, list of strings, or other value.
-        
+
         Parameters:
             input_data (Any): Value containing or representing the text.
-        
+
         Returns:
             str: Extracted text, with list elements joined by spaces or other values converted to strings.
         """
@@ -333,10 +333,10 @@ class TextProcessorPlugin:
     def _calculate_readability(self, text: str) -> float:
         """
         Calculate an approximate Flesch Reading Ease score for the text.
-        
+
         Parameters:
             text (str): Text to evaluate.
-        
+
         Returns:
             float: Readability score from 0.0 to 100.0, or 0.0 when the text cannot be evaluated.
         """
@@ -360,9 +360,9 @@ class TextProcessorPlugin:
 
     def _count_syllables(self, word: str) -> int:
         """Estimate the number of syllables in a word.
-        
+
         Returns:
-        	int: An estimated syllable count of at least one.
+                int: An estimated syllable count of at least one.
         """
         word = word.lower()
         vowels = "aeiouy"
@@ -384,12 +384,12 @@ class TextProcessorPlugin:
     def _classify_sentiment(self, polarity: float) -> str:
         """
         Classify sentiment from a polarity score.
-        
+
         Parameters:
-        	polarity (float): Sentiment polarity score.
-        
+                polarity (float): Sentiment polarity score.
+
         Returns:
-        	str: "positive" for scores above 0.1, "negative" for scores below -0.1, and "neutral" for all other scores.
+                str: "positive" for scores above 0.1, "negative" for scores below -0.1, and "neutral" for all other scores.
         """
         if polarity > 0.1:
             return "positive"
@@ -401,12 +401,12 @@ class TextProcessorPlugin:
     def _calculate_sentiment_distribution(self, sentence_sentiments: List[Dict]) -> Dict[str, int]:
         """
         Count sentence-level sentiment classifications.
-        
+
         Parameters:
-        	sentence_sentiments (List[Dict]): Sentence sentiment results containing polarity values.
-        
+                sentence_sentiments (List[Dict]): Sentence sentiment results containing polarity values.
+
         Returns:
-        	Dict[str, int]: Counts of positive, negative, and neutral sentences.
+                Dict[str, int]: Counts of positive, negative, and neutral sentences.
         """
         distribution = {"positive": 0, "negative": 0, "neutral": 0}
 
@@ -419,7 +419,7 @@ class TextProcessorPlugin:
     async def cleanup(self) -> bool:
         """
         Mark the plugin as no longer initialized.
-        
+
         Returns:
             bool: `true` if cleanup succeeds, `false` if an exception occurs.
         """
@@ -434,11 +434,11 @@ class TextProcessorPlugin:
 # Plugin instance factory
 def create_plugin(config: Dict[str, Any]) -> TextProcessorPlugin:
     """Create a text processor plugin from the supplied configuration.
-    
+
     Parameters:
-    	config (Dict[str, Any]): Plugin configuration values.
-    
+        config (Dict[str, Any]): Plugin configuration values.
+
     Returns:
-    	TextProcessorPlugin: The configured text processor plugin.
+        TextProcessorPlugin: The configured text processor plugin.
     """
     return TextProcessorPlugin(config)

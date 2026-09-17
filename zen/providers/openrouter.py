@@ -130,10 +130,10 @@ class OpenRouterProvider:
     def __init__(self, api_key: Optional[str] = None):
         """
         Initialize the provider with an API key.
-        
+
         Parameters:
             api_key (Optional[str]): API key to use. If omitted, the OPENROUTER_API_KEY environment variable is used.
-        
+
         Raises:
             ValueError: If no API key is provided or found in the environment.
         """
@@ -150,7 +150,7 @@ class OpenRouterProvider:
     async def __aenter__(self):
         """
         Initialize the HTTP session for context-managed use.
-        
+
         Returns:
             OpenRouterProvider: This provider instance.
         """
@@ -169,14 +169,14 @@ class OpenRouterProvider:
     ) -> str:
         """
         Select a model based on the requested tier and prompt characteristics.
-        
+
         Parameters:
             prompt (str): The prompt used to determine the model when no tier is specified.
             tier (Optional[ModelTier]): Preferred model tier. The least expensive registered
                 model in this tier is selected when available.
             max_cost (Optional[float]): Accepted for interface compatibility but does not
                 affect model selection.
-        
+
         Returns:
             str: The selected model identifier.
         """
@@ -221,7 +221,7 @@ class OpenRouterProvider:
     ) -> AsyncIterator[str]:
         """
         Obtain a completion from OpenRouter.
-        
+
         Parameters:
             prompt (str): The user prompt to send.
             model (Optional[str]): Model identifier; selected automatically when omitted.
@@ -230,10 +230,10 @@ class OpenRouterProvider:
             max_tokens (int): Maximum number of response tokens.
             temperature (float): Sampling temperature.
             **kwargs: Additional completion request parameters.
-        
+
         Returns:
             str: Response text, yielded incrementally when streaming or as one complete response otherwise.
-        
+
         Raises:
             Exception: If the OpenRouter request or response handling fails.
         """
@@ -283,14 +283,14 @@ class OpenRouterProvider:
     ) -> AsyncIterator[str]:
         """
         Stream completion content from OpenRouter.
-        
+
         Args:
             data: The chat-completion request payload.
             headers: HTTP headers for the request.
-        
+
         Yields:
             Content fragments from the streamed completion.
-        
+
         Raises:
             Exception: If OpenRouter returns a non-successful HTTP status.
         """
@@ -319,16 +319,16 @@ class OpenRouterProvider:
 
     async def _get_completion(self, data: Dict[str, Any], headers: Dict[str, str]) -> str:
         """Retrieve a non-streaming completion from OpenRouter.
-        
+
         Parameters:
-        	data (Dict[str, Any]): The request payload.
-        	headers (Dict[str, str]): HTTP headers for the request.
-        
+                data (Dict[str, Any]): The request payload.
+                headers (Dict[str, str]): HTTP headers for the request.
+
         Returns:
-        	str: The content of the first completion choice.
-        
+                str: The content of the first completion choice.
+
         Raises:
-        	Exception: If the API request fails or returns no completion.
+                Exception: If the API request fails or returns no completion.
         """
         data["stream"] = False
 
@@ -348,12 +348,12 @@ class OpenRouterProvider:
     def estimate_cost(self, prompt: str, model: str, max_tokens: int = 2000) -> float:
         """
         Estimate the completion cost in US dollars.
-        
+
         Parameters:
             prompt (str): Prompt text used to estimate input tokens.
             model (str): Model identifier from the model registry.
             max_tokens (int): Maximum number of output tokens.
-        
+
         Returns:
             float: Estimated input and output cost in US dollars, or 0.0 for an unregistered model.
         """
@@ -378,10 +378,10 @@ class OpenRouterProvider:
     def list_models(self, tier: Optional[ModelTier] = None) -> List[ModelConfig]:
         """
         List the available model configurations, optionally filtered by tier.
-        
+
         Parameters:
             tier (Optional[ModelTier]): Restrict results to models in this tier.
-        
+
         Returns:
             List[ModelConfig]: The matching model configurations.
         """

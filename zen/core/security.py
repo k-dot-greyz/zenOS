@@ -32,10 +32,10 @@ class SecurityFramework:
     def scan_prompt(self, prompt: str) -> Dict[str, Any]:
         """
         Analyze a prompt for potential injection patterns and excessive length.
-        
+
         Parameters:
             prompt (str): The prompt text to analyze.
-        
+
         Returns:
             Dict[str, Any]: A security analysis containing `safe`, `risk_level`, and
                 `issues` fields. `safe` is `True` when no issues are found;
@@ -64,10 +64,10 @@ class SecurityFramework:
     def sanitize_prompt(self, prompt: str) -> str:
         """
         Remove detected prompt-injection content and limit the result to 10,000 characters.
-        
+
         Parameters:
             prompt (str): The prompt to sanitize.
-        
+
         Returns:
             str: The sanitized prompt, with detected content replaced by "[REMOVED]" and longer results truncated.
         """
@@ -86,7 +86,7 @@ class SecurityFramework:
     def validate_response(self, response: str) -> bool:
         """
         Check an AI response for common sensitive data patterns.
-        
+
         Returns:
             bool: `True` if no email address, SSN, or 16-digit numeric sequence is found; `False` otherwise.
         """

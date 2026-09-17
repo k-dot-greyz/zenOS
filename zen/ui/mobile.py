@@ -85,10 +85,10 @@ class MobileUI:
     def show_response(self, text: str, title: Optional[str] = None):
         """
         Display a response in a mobile-optimized panel, using a compact layout in portrait mode.
-        
+
         Parameters:
-        	text (str): The response content to display
-        	title (Optional[str]): An optional panel title, truncated when it exceeds 20 characters
+                text (str): The response content to display
+                title (Optional[str]): An optional panel title, truncated when it exceeds 20 characters
         """
         # Truncate title for mobile
         if title and len(title) > 20:
@@ -119,10 +119,10 @@ class MobileUI:
     def show_cost(self, cost: float, total: float):
         """
         Display the current and cumulative costs when the current cost is significant.
-        
+
         Parameters:
-        	cost (float): The current cost.
-        	total (float): The cumulative cost.
+                cost (float): The current cost.
+                total (float): The cumulative cost.
         """
         if cost > 0.001:  # Only show if significant
             self.console.print(f"[dim]${cost:.3f} | Σ${total:.3f}[/dim]", justify="right")
@@ -150,12 +150,12 @@ class MobileUI:
     def format_prompt(self, model: str) -> str:
         """
         Format a mobile chat prompt using a compact or descriptive model identifier.
-        
+
         Parameters:
-        	model (str): Model identifier, optionally including a provider prefix.
-        
+                model (str): Model identifier, optionally including a provider prefix.
+
         Returns:
-        	str: A prompt prefix containing the model's short code in portrait mode or name in landscape mode.
+                str: A prompt prefix containing the model's short code in portrait mode or name in landscape mode.
         """
         if self.is_portrait:
             # Ultra short
@@ -175,7 +175,7 @@ class MobileUI:
     def show_message(self, role: str, content: str, timestamp: Optional[datetime] = None):
         """
         Display a chat message using a layout suited to the current mobile orientation.
-        
+
         Parameters:
             role (str): The message author's role.
             content (str): The message text to display.
@@ -244,7 +244,7 @@ class MobileChat:
     async def start(self):
         """
         Start the mobile chat session and manage Termux wake-lock resources.
-        
+
         The welcome screen is displayed before the backend session starts. When running
         in Termux, a wake lock is held for the duration of the session and released
         afterward, including when the session ends with an error.
@@ -273,10 +273,10 @@ class MobileChat:
     def expand_shortcut(self, command: str) -> str:
         """
         Expand a mobile command shortcut and supported model alias.
-        
+
         Parameters:
             command (str): The command, optionally followed by arguments.
-        
+
         Returns:
             str: The expanded command with its arguments.
         """
@@ -335,9 +335,9 @@ class MobileChat:
     async def handle_voice_input(self) -> Optional[str]:
         """
         Capture voice input through the Termux API.
-        
+
         Returns:
-        	str: The recognized voice input, or `None` when the Termux API is unavailable or no input is received.
+                str: The recognized voice input, or `None` when the Termux API is unavailable or no input is received.
         """
         if not self.termux.is_api_available():
             self.ui.show_error("Termux API not available")
@@ -358,7 +358,7 @@ class MobileChat:
     async def handle_clipboard_input(self) -> Optional[str]:
         """
         Retrieve text from the system clipboard.
-        
+
         Returns:
             Optional[str]: The clipboard text, or `None` when the clipboard is empty.
         """
@@ -383,9 +383,9 @@ class MobileChat:
     def notify_complete(self, query: str, response: str):
         """
         Notify the user when a query completes.
-        
+
         Parameters:
-        	response (str): Completed response text used in the notification preview.
+                response (str): Completed response text used in the notification preview.
         """
         if self.termux.is_api_available():
             preview = response[:100] + "..." if len(response) > 100 else response
@@ -406,9 +406,9 @@ class TermuxInterface:
     def is_termux() -> bool:
         """
         Determine whether the current environment is Termux.
-        
+
         Returns:
-        	bool: `True` if Termux is detected, `False` otherwise.
+                bool: `True` if Termux is detected, `False` otherwise.
         """
         return os.environ.get("TERMUX_VERSION") is not None or os.path.exists(
             "/data/data/com.termux"
@@ -418,9 +418,9 @@ class TermuxInterface:
     def is_api_available() -> bool:
         """
         Determine whether the Termux speech-to-text API command is available.
-        
+
         Returns:
-        	bool: `True` if the Termux speech-to-text command exists, `False` otherwise.
+                bool: `True` if the Termux speech-to-text command exists, `False` otherwise.
         """
         return os.path.exists("/data/data/com.termux/files/usr/bin/termux-speech-to-text")
 
@@ -428,7 +428,7 @@ class TermuxInterface:
     def voice_input() -> Optional[str]:
         """
         Retrieve voice input from the Termux speech-to-text service.
-        
+
         Returns:
             str: Transcribed speech, or `None` if the service is unavailable or the request fails.
         """
@@ -495,7 +495,7 @@ class TermuxInterface:
     @staticmethod
     def notify(title: str, content: str, actions: Optional[List[str]] = None):
         """Send a notification through the Termux API.
-        
+
         Parameters:
             actions (Optional[List[str]]): Optional actions to attach to the notification.
         """
@@ -521,9 +521,9 @@ class TermuxInterface:
     def vibrate(duration_ms: int = 200):
         """
         Vibrate the device for the specified duration.
-        
+
         Parameters:
-        	duration_ms (int): Vibration duration in milliseconds.
+                duration_ms (int): Vibration duration in milliseconds.
         """
         if not TermuxInterface.is_api_available():
             return
@@ -539,7 +539,7 @@ class TermuxInterface:
     def battery_status() -> Optional[Dict[str, Any]]:
         """
         Retrieve the current Termux battery status.
-        
+
         Returns:
             Optional[Dict[str, Any]]: Battery status data when available; otherwise, `None`.
         """
@@ -610,7 +610,7 @@ VoiceInterface = TermuxInterface
 # Auto-detect and setup
 def get_ui():
     """Select the user interface appropriate for the current environment.
-    
+
     Returns:
         MobileUI: The mobile interface in mobile mode.
         DisplayManager: The standard interface otherwise.
@@ -626,7 +626,7 @@ def get_ui():
 def get_chat():
     """
     Select the chat interface appropriate for the current environment.
-    
+
     Returns:
         MobileChat or InteractiveChat: The mobile or standard interactive chat interface.
     """

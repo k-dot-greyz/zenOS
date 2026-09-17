@@ -44,10 +44,10 @@ class EnvironmentDetector:
     def detect_environment(self, zenos_root: Path) -> EnvironmentInfo:
         """
         Detect and analyze the current operating environment.
-        
+
         Parameters:
             zenos_root (Path): Root directory used to construct the setup log path.
-        
+
         Returns:
             EnvironmentInfo: Detected platform, shell, tool availability, environment flags, and relevant paths.
         """
@@ -114,9 +114,9 @@ class EnvironmentDetector:
     def _detect_shell(self) -> str:
         """
         Detects the current shell.
-        
+
         Returns:
-        	str: The shell name, or ``"bash"`` when detection is unavailable.
+                str: The shell name, or ``"bash"`` when detection is unavailable.
         """
         # Check environment variables
         shell = os.environ.get("SHELL", "")
@@ -168,9 +168,9 @@ class EnvironmentDetector:
     def _detect_termux(self) -> bool:
         """
         Determine whether the current environment is Termux or a Termux-like Android environment.
-        
+
         Returns:
-        	bool: `True` if Termux indicators are detected, `False` otherwise.
+                bool: `True` if Termux indicators are detected, `False` otherwise.
         """
         # Check for Termux-specific environment variables
         termux_vars = ["TERMUX_VERSION", "PREFIX"]
@@ -193,10 +193,10 @@ class EnvironmentDetector:
 
     def get_platform_specific_commands(self, env_info: EnvironmentInfo) -> Dict[str, List[str]]:
         """Build setup commands for the detected operating system.
-        
+
         Parameters:
             env_info (EnvironmentInfo): Detected platform and environment details.
-        
+
         Returns:
             Dict[str, List[str]]: Command lists grouped by Python dependencies, Node.js
                 dependencies, shell aliases, Git configuration, and MCP servers.
@@ -262,10 +262,10 @@ class EnvironmentDetector:
     def get_environment_warnings(self, env_info: EnvironmentInfo) -> List[str]:
         """
         Identify environment conditions that may limit setup functionality.
-        
+
         Parameters:
             env_info (EnvironmentInfo): Detected platform, shell, dependency, and Python version information.
-        
+
         Returns:
             List[str]: Warning messages for detected platform limitations, unavailable tools, outdated Python versions, or Windows shell compatibility concerns.
         """
@@ -297,10 +297,10 @@ class EnvironmentDetector:
     def get_optimization_suggestions(self, env_info: EnvironmentInfo) -> List[str]:
         """
         Provide platform-specific suggestions for improving the zenOS environment.
-        
+
         Parameters:
             env_info (EnvironmentInfo): Detected platform and environment information.
-        
+
         Returns:
             List[str]: Recommendations applicable to the detected environment.
         """

@@ -92,10 +92,10 @@ Please analyze the above prompt and provide your constructive critique.
     def load_context(self, context_name: str) -> str:
         """
         Load the Markdown context associated with a context name.
-        
+
         Parameters:
             context_name (str): Name of the context file without the `.md` extension.
-        
+
         Returns:
             str: Contents of the context file, or an empty string when the file is unavailable.
         """
@@ -107,11 +107,11 @@ Please analyze the above prompt and provide your constructive critique.
     def critique_prompt(self, prompt: str, context: Optional[Dict] = None) -> str:
         """
         Critique a prompt and provide suggestions for improving its clarity and specificity.
-        
+
         Parameters:
             prompt (str): The prompt to evaluate.
             context (Optional[Dict]): Additional values to use when preparing the critique.
-        
+
         Returns:
             str: A critique containing the original prompt, analysis, improvement suggestions, and an example of an improved prompt.
         """
@@ -168,25 +168,25 @@ Please help me write [specific type of code] in [programming language] that [spe
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """
         Execute prompt critique for the specified prompt and variables.
-        
+
         Parameters:
-        	prompt (str): The prompt to analyze.
-        	variables (Dict[str, Any]): Additional values used during critique.
-        
+                prompt (str): The prompt to analyze.
+                variables (Dict[str, Any]): Additional values used during critique.
+
         Returns:
-        	Any: The prompt critique result.
+                Any: The prompt critique result.
         """
         return self.critique_prompt(prompt, variables)
 
     def get_improved_prompt(self, original_prompt: str) -> str:
         """
         Extract an improved prompt from a generated critique.
-        
+
         Parameters:
-        	original_prompt (str): The prompt to improve.
-        
+                original_prompt (str): The prompt to improve.
+
         Returns:
-        	The extracted improved prompt, or the original prompt with the critique when no improved section is found.
+                The extracted improved prompt, or the original prompt with the critique when no improved section is found.
         """
         critique = self.critique_prompt(original_prompt)
 
@@ -216,10 +216,10 @@ Please help me write [specific type of code] in [programming language] that [spe
 def critique_prompt(prompt: str) -> str:
     """
     Critique a prompt and provide recommendations for improving it.
-    
+
     Parameters:
         prompt (str): The prompt to evaluate.
-    
+
     Returns:
         str: A critique of the prompt with suggested improvements.
     """
@@ -230,12 +230,12 @@ def critique_prompt(prompt: str) -> str:
 def improve_prompt(prompt: str) -> str:
     """
     Generate an improved version of a prompt.
-    
+
     Parameters:
-    	prompt (str): The prompt to improve
-    
+        prompt (str): The prompt to improve
+
     Returns:
-    	str: The improved prompt
+        str: The improved prompt
     """
     agent = PromptCriticAgent()
     return agent.get_improved_prompt(prompt)

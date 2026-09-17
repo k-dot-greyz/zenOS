@@ -82,7 +82,7 @@ For help: zen help
 def bench(model1, model2, tournament):
     """
     Compare AI models in a single battle or tournament and display the results.
-    
+
     Parameters:
         model1 (str): Name of the first model.
         model2 (str): Name of the second model.
@@ -126,7 +126,7 @@ def bench(model1, model2, tournament):
 def sync(force):
     """
     Synchronize model data and rankings with the OpenRouter API.
-    
+
     Parameters:
         force (bool): Whether to clear the existing synchronization cache before syncing.
     """
@@ -193,7 +193,7 @@ def arena():
 def dex(category, task, tier):
     """
     Explore the model or procedure Dex and display information filtered by category and optional criteria.
-    
+
     Parameters:
         category (str): Dex category to display, such as ``"models"`` or ``"procedures"``.
         task (str): Task category used to show model recommendations.
@@ -307,7 +307,7 @@ def dex(category, task, tier):
 @click.option("--ai-mode", is_flag=True, help="Check AI integration")
 def doctor(ai_mode):
     """Check zenOS configuration and data files, then report system readiness.
-    
+
     Parameters:
         ai_mode (bool): Whether AI mode is enabled for this diagnostic run.
     """

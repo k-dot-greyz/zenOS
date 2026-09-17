@@ -44,9 +44,9 @@ class PluginSandbox:
     def __init__(self, config: Optional[SandboxConfig] = None):
         """
         Initialize the sandbox manager with the provided configuration.
-        
+
         Parameters:
-        	config (Optional[SandboxConfig]): Configuration for sandbox resource and access limits. Uses default settings when omitted.
+                config (Optional[SandboxConfig]): Configuration for sandbox resource and access limits. Uses default settings when omitted.
         """
         self.config = config or SandboxConfig()
         self.active_sandboxes: Dict[str, Dict[str, Any]] = {}
@@ -54,10 +54,10 @@ class PluginSandbox:
     async def create_sandbox(self, plugin_id: str) -> str:
         """
         Create an isolated workspace for a plugin.
-        
+
         Parameters:
             plugin_id (str): Identifier used to associate the sandbox with the plugin.
-        
+
         Returns:
             str or None: The sandbox identifier if creation succeeds, or `None` if it fails.
         """
@@ -100,17 +100,17 @@ class PluginSandbox:
     ) -> Dict[str, Any]:
         """
         Execute a command within a registered sandbox and collect its results.
-        
+
         Parameters:
-        	sandbox_id (str): Identifier of the sandbox in which to run the command.
-        	command (List[str]): Command and arguments to execute.
-        	input_data (Any): Optional data to write as JSON input for the command.
-        	timeout (int): Maximum execution time in seconds.
-        
+                sandbox_id (str): Identifier of the sandbox in which to run the command.
+                command (List[str]): Command and arguments to execute.
+                input_data (Any): Optional data to write as JSON input for the command.
+                timeout (int): Maximum execution time in seconds.
+
         Returns:
-        	Dict[str, Any]: Execution status, captured output and error streams, return
-        		code, execution duration, and resource usage. Failed executions include
-        		an error description.
+                Dict[str, Any]: Execution status, captured output and error streams, return
+                        code, execution duration, and resource usage. Failed executions include
+                        an error description.
         """
         try:
             if sandbox_id not in self.active_sandboxes:
@@ -167,15 +167,15 @@ class PluginSandbox:
     ) -> subprocess.Popen:
         """
         Start a subprocess in the specified sandbox with configured resource limits.
-        
+
         Parameters:
             command (List[str]): The executable and arguments to run.
             sandbox_path (Path): The working directory for the subprocess.
             sandbox_id (str): The identifier of the sandbox that tracks the process.
-        
+
         Returns:
             subprocess.Popen: The started subprocess.
-        
+
         Raises:
             Exception: Re-raises any error encountered while starting the subprocess.
         """
@@ -231,7 +231,7 @@ class PluginSandbox:
     async def _update_resource_usage(self, sandbox_id: str, process: subprocess.Popen):
         """
         Update recorded memory, CPU, and disk usage for a sandbox process.
-        
+
         Parameters:
             sandbox_id (str): Identifier of the sandbox whose usage is updated.
             process (subprocess.Popen): Process whose resource usage is measured.
@@ -266,12 +266,12 @@ class PluginSandbox:
 
     async def cleanup_sandbox(self, sandbox_id: str) -> bool:
         """Terminate tracked processes, remove the sandbox directory, and unregister the sandbox.
-        
+
         Parameters:
-        	sandbox_id (str): Identifier of the sandbox to clean up.
-        
+                sandbox_id (str): Identifier of the sandbox to clean up.
+
         Returns:
-        	bool: `true` if the sandbox was removed successfully, `false` if it was not registered or cleanup failed.
+                bool: `true` if the sandbox was removed successfully, `false` if it was not registered or cleanup failed.
         """
         try:
             if sandbox_id not in self.active_sandboxes:
@@ -308,9 +308,9 @@ class PluginSandbox:
     async def cleanup_all_sandboxes(self) -> bool:
         """
         Clean up all active sandboxes.
-        
+
         Returns:
-        	bool: `True` if cleanup completes without an exception, `False` otherwise.
+                bool: `True` if cleanup completes without an exception, `False` otherwise.
         """
         try:
             for sandbox_id in list(self.active_sandboxes.keys()):
@@ -325,19 +325,19 @@ class PluginSandbox:
     def get_sandbox_info(self, sandbox_id: str) -> Optional[Dict[str, Any]]:
         """
         Retrieve metadata for a registered sandbox.
-        
+
         Parameters:
-        	sandbox_id (str): Identifier of the sandbox.
-        
+                sandbox_id (str): Identifier of the sandbox.
+
         Returns:
-        	Optional[Dict[str, Any]]: The sandbox metadata, or `None` if the sandbox is not registered.
+                Optional[Dict[str, Any]]: The sandbox metadata, or `None` if the sandbox is not registered.
         """
         return self.active_sandboxes.get(sandbox_id)
 
     def get_all_sandboxes(self) -> Dict[str, Dict[str, Any]]:
         """
         Return metadata for all currently active sandboxes.
-        
+
         Returns:
             Dict[str, Dict[str, Any]]: A shallow copy of the active-sandbox registry.
         """
@@ -346,13 +346,13 @@ class PluginSandbox:
     async def check_resource_limits(self, sandbox_id: str) -> Dict[str, bool]:
         """
         Check whether a sandbox's current resource usage complies with its configured limits.
-        
+
         Parameters:
-        	sandbox_id (str): Identifier of the sandbox to check.
-        
+                sandbox_id (str): Identifier of the sandbox to check.
+
         Returns:
-        	Dict[str, bool]: Resource check results and overall validity. Includes a
-        		reason string when the sandbox is missing or exceeds one or more limits.
+                Dict[str, bool]: Resource check results and overall validity. Includes a
+                        reason string when the sandbox is missing or exceeds one or more limits.
         """
         if sandbox_id not in self.active_sandboxes:
             return {"valid": False, "reason": "Sandbox not found"}
@@ -380,13 +380,13 @@ class PluginSandbox:
 async def create_sandbox(plugin_id: str, config: Optional[SandboxConfig] = None) -> str:
     """
     Create a sandbox for the specified plugin.
-    
+
     Parameters:
-    	plugin_id (str): Identifier of the plugin that will use the sandbox.
-    	config (Optional[SandboxConfig]): Resource and access limits for the sandbox.
-    
+        plugin_id (str): Identifier of the plugin that will use the sandbox.
+        config (Optional[SandboxConfig]): Resource and access limits for the sandbox.
+
     Returns:
-    	str: The created sandbox's identifier.
+        str: The created sandbox's identifier.
     """
     sandbox = PluginSandbox(config)
     return await sandbox.create_sandbox(plugin_id)

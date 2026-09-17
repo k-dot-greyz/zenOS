@@ -56,11 +56,11 @@ class SystemTroubleshooterAgent(Agent):
 
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """Run system troubleshooting for the provided prompt and variables.
-        
+
         Parameters:
             prompt (str): The troubleshooting request.
             variables (Dict[str, Any]): Contextual values used during troubleshooting.
-        
+
         Returns:
             Any: The troubleshooting report.
         """
@@ -69,11 +69,11 @@ class SystemTroubleshooterAgent(Agent):
     def diagnose_and_fix(self, query: str, context: Optional[Dict] = None) -> str:
         """
         Diagnose the local system and produce a troubleshooting report with recommended and safely applied fixes.
-        
+
         Parameters:
             query (str): Description of the system issue to investigate.
             context (Optional[Dict]): Additional troubleshooting context.
-        
+
         Returns:
             str: Markdown-formatted troubleshooting report.
         """
@@ -100,12 +100,12 @@ class SystemTroubleshooterAgent(Agent):
     def _run_system_diagnostic(self, query: str) -> Dict:
         """
         Collect diagnostic information about the operating system, environment, Git status, shell, permissions, and dependencies.
-        
+
         Parameters:
-        	query (str): Diagnostic request context.
-        
+                query (str): Diagnostic request context.
+
         Returns:
-        	Dict: A mapping containing the collected system diagnostic information.
+                Dict: A mapping containing the collected system diagnostic information.
         """
         diagnostic_info = {
             "os": os.name,
@@ -123,7 +123,7 @@ class SystemTroubleshooterAgent(Agent):
     def _check_git_status(self) -> Dict:
         """
         Check Git availability, configuration, and repository status.
-        
+
         Returns:
             Dict: Git availability, version, configured username and email, and whether
                 the current directory is inside a repository. Returns an error message
@@ -156,7 +156,7 @@ class SystemTroubleshooterAgent(Agent):
 
     def _check_shell_info(self) -> Dict:
         """Collect the active shell, executable search path, and home directory from the environment.
-        
+
         Returns:
             Dict: Shell configuration values keyed by ``shell``, ``path``, and ``home``.
         """
@@ -170,9 +170,9 @@ class SystemTroubleshooterAgent(Agent):
     def _check_permissions(self) -> Dict:
         """
         Check read, write, and execute access for the current directory.
-        
+
         Returns:
-        	dict: Access status for the current directory, or an error message if inspection fails.
+                dict: Access status for the current directory, or an error message if inspection fails.
         """
         try:
             current_dir = Path.cwd()
@@ -187,7 +187,7 @@ class SystemTroubleshooterAgent(Agent):
     def _check_dependencies(self) -> Dict:
         """
         Check the availability of common Python and Node.js dependencies.
-        
+
         Returns:
             Dict[str, bool]: A mapping of dependency names to availability status.
         """
@@ -221,11 +221,11 @@ class SystemTroubleshooterAgent(Agent):
     def _analyze_diagnostic_results(self, diagnostic_result: Dict, query: str) -> Dict:
         """
         Analyze diagnostic results and identify system issues with recommended remediation steps.
-        
+
         Parameters:
             diagnostic_result (Dict): Diagnostic data collected from the system.
             query (str): User query associated with the diagnostic request.
-        
+
         Returns:
             Dict: A report containing identified issues, recommendations, and an overall severity.
         """
@@ -266,11 +266,11 @@ class SystemTroubleshooterAgent(Agent):
     def _generate_fixes(self, analysis: Dict, query: str) -> List[Dict]:
         """
         Generate proposed fixes for the issues identified in a diagnostic analysis.
-        
+
         Parameters:
             analysis (Dict): Diagnostic analysis containing an "issues" list.
             query (str): Original troubleshooting query.
-        
+
         Returns:
             List[Dict]: Fix records containing issue details, commands, and safety status.
         """
@@ -304,10 +304,10 @@ class SystemTroubleshooterAgent(Agent):
     def _apply_safe_fixes(self, fixes: List[Dict]) -> List[Dict]:
         """
         Apply fixes marked as safe and record the outcome of each command.
-        
+
         Parameters:
             fixes (List[Dict]): Fix definitions containing an identifier, safety flag, and commands.
-        
+
         Returns:
             List[Dict]: Results for each executed command, including its fix identifier, command, success status, and any error message.
         """
@@ -343,13 +343,13 @@ class SystemTroubleshooterAgent(Agent):
     ) -> str:
         """
         Builds a Markdown report summarizing diagnostic findings, recommended fixes, applied fixes, and system information.
-        
+
         Parameters:
             diagnostic_result (Dict): Collected system information.
             analysis (Dict): Identified issues and their analysis.
             fixes (List[Dict]): Recommended fixes and their commands.
             applied_fixes (List[Dict]): Fixes that were attempted and their outcomes.
-        
+
         Returns:
             str: A formatted troubleshooting report.
         """
@@ -402,12 +402,12 @@ class SystemTroubleshooterAgent(Agent):
 
     def _run_dependency_checker(self, query: str) -> str:
         """Reports the availability of supported project dependencies.
-        
+
         Parameters:
-        	query (str): The troubleshooting query associated with the dependency check.
-        
+                query (str): The troubleshooting query associated with the dependency check.
+
         Returns:
-        	str: A string representation of dependency availability results.
+                str: A string representation of dependency availability results.
         """
         return str(self._check_dependencies())
 

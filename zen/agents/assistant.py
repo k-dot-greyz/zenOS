@@ -37,11 +37,11 @@ Be conversational and engaging while maintaining professionalism.""",
     async def execute_async(self, prompt: str, variables: dict) -> str:
         """
         Generate an assistant response from a prompt and its variables.
-        
+
         Parameters:
             prompt (str): Prompt template to render.
             variables (dict): Values used to render the prompt.
-        
+
         Returns:
             str: The generated response, or an error message containing the rendered prompt if generation fails.
         """
@@ -59,11 +59,11 @@ Be conversational and engaging while maintaining professionalism.""",
     def execute(self, prompt: str, variables: dict) -> str:
         """
         Execute the assistant agent synchronously.
-        
+
         Parameters:
             prompt (str): Prompt template to render.
             variables (dict): Values used to render the prompt.
-        
+
         Returns:
             str: The assistant's response or an error message.
         """

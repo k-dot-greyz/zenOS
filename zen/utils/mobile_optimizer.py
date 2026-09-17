@@ -71,7 +71,7 @@ class ResponseCache:
     def _load_index(self) -> Dict[str, Any]:
         """
         Load the cache index from disk.
-        
+
         Returns:
             Dict[str, Any]: The stored cache index, or an empty dictionary when the index is unavailable or unreadable.
         """
@@ -114,14 +114,14 @@ class ResponseCache:
 
     def _get_cache_key(self, prompt: str, model: str, **kwargs) -> str:
         """Generate a deterministic cache key from a prompt, model, and request settings.
-        
+
         Parameters:
-        	prompt (str): The request prompt.
-        	model (str): The model used for the request.
-        	**kwargs: Additional request settings included in the key.
-        
+                prompt (str): The request prompt.
+                model (str): The model used for the request.
+                **kwargs: Additional request settings included in the key.
+
         Returns:
-        	str: The hexadecimal MD5 digest identifying the request configuration.
+                str: The hexadecimal MD5 digest identifying the request configuration.
         """
         # Create deterministic key from inputs
         key_data = {"prompt": prompt, "model": model, **kwargs}
@@ -130,12 +130,12 @@ class ResponseCache:
 
     def get(self, prompt: str, model: str, **kwargs) -> Optional[str]:
         """Retrieve a cached response for the specified prompt, model, and options.
-        
+
         Parameters:
             prompt (str): The request text used to identify the cached response.
             model (str): The model associated with the request.
             **kwargs: Additional request options used to identify the cached response.
-        
+
         Returns:
             Optional[str]: The cached response, or `None` if no readable cached response is available.
         """
@@ -161,7 +161,7 @@ class ResponseCache:
 
     def set(self, prompt: str, model: str, response: str, **kwargs):
         """Store a response and its request metadata in the response cache when caching is enabled.
-        
+
         Parameters:
             prompt (str): The request prompt.
             model (str): The model used to generate the response.
@@ -218,7 +218,7 @@ class ResponseCache:
     def get_stats(self) -> Dict[str, Any]:
         """
         Return statistics for the cached responses.
-        
+
         Returns:
             Dict[str, Any]: Cache entry count, total size in megabytes, total hit count,
                 and average hits per entry.
@@ -248,7 +248,7 @@ class BatteryManager:
     def check_battery(self) -> Optional[int]:
         """
         Determine the current battery charge percentage.
-        
+
         Returns:
             Optional[int]: The battery percentage, or `None` if it cannot be determined.
         """
@@ -280,9 +280,9 @@ class BatteryManager:
     def should_use_eco_mode(self) -> bool:
         """
         Determine whether power-saving mode should be enabled based on the current battery level.
-        
+
         Returns:
-        	bool: `True` if eco mode is enabled, `False` otherwise.
+                bool: `True` if eco mode is enabled, `False` otherwise.
         """
         # Rate limit checks (every 60 seconds)
         current_time = time.time()
@@ -300,12 +300,12 @@ class BatteryManager:
     def get_optimal_model(self, requested_model: str) -> str:
         """
         Select the model appropriate for the current battery conditions.
-        
+
         Parameters:
-        	requested_model (str): Model to use when eco mode is inactive.
-        
+                requested_model (str): Model to use when eco mode is inactive.
+
         Returns:
-        	str: The configured eco model when eco mode is active; otherwise, the requested model.
+                str: The configured eco model when eco mode is active; otherwise, the requested model.
         """
         if self.should_use_eco_mode():
             return self.config.eco_model
@@ -314,9 +314,9 @@ class BatteryManager:
     def get_sleep_duration(self) -> float:
         """
         Determine the delay between requests based on the current power-saving mode.
-        
+
         Returns:
-        	float: The configured delay, doubled when eco mode is active.
+                float: The configured delay, doubled when eco mode is active.
         """
         if self.should_use_eco_mode():
             return self.config.sleep_between_requests * 2  # Double sleep in eco mode
@@ -341,10 +341,10 @@ class DataOptimizer:
     def decompress_text(compressed: str) -> str:
         """
         Decompress Base64-encoded, zlib-compressed text.
-        
+
         Parameters:
             compressed (str): The encoded compressed text.
-        
+
         Returns:
             str: The decompressed UTF-8 text.
         """
@@ -358,10 +358,10 @@ class DataOptimizer:
     def strip_markdown(text: str) -> str:
         """
         Remove common Markdown formatting and excess blank lines from text.
-        
+
         Parameters:
             text (str): Text containing Markdown formatting.
-        
+
         Returns:
             str: Text with formatting removed and surrounding whitespace trimmed.
         """
@@ -386,11 +386,11 @@ class DataOptimizer:
     def truncate_context(messages: List[Dict], max_tokens: int) -> List[Dict]:
         """
         Limit conversation messages to fit within an estimated token budget.
-        
+
         Parameters:
             messages (List[Dict]): Conversation messages ordered from oldest to newest.
             max_tokens (int): Maximum estimated token count to retain.
-        
+
         Returns:
             List[Dict]: The newest messages that fit within the token budget.
         """
@@ -432,7 +432,7 @@ class MobileOptimizer:
     def _apply_env_overrides(self):
         """
         Apply supported environment variable overrides to the mobile configuration.
-        
+
         Environment variables:
             COMPACT_MODE (str): Enables compact mode when set to ``"1"``.
             ZEN_MAX_TOKENS (str): Sets the maximum token limit.
@@ -454,12 +454,12 @@ class MobileOptimizer:
     def optimize_request(self, prompt: str, model: str, **kwargs) -> Dict[str, Any]:
         """
         Prepare a request using cached results or mobile-appropriate settings.
-        
+
         Parameters:
             prompt (str): The request text used for cache lookup.
             model (str): The requested model.
             **kwargs: Additional request options to preserve or optimize.
-        
+
         Returns:
             Dict[str, Any]: A cached response with its cache status, or optimized model and request parameters.
         """
@@ -486,11 +486,11 @@ class MobileOptimizer:
     def optimize_response(self, response: str, compress: bool = True) -> str:
         """
         Optimize response text for mobile use, optionally stripping Markdown and compressing the result.
-        
+
         Parameters:
             response (str): The response text to optimize.
             compress (bool): Whether compression is allowed.
-        
+
         Returns:
             str: The optimized response text, compressed when enabled by the argument and configuration.
         """
@@ -510,7 +510,7 @@ class MobileOptimizer:
     def get_sleep_duration(self) -> float:
         """
         Determine the delay to apply between requests based on the current battery mode.
-        
+
         Returns:
             float: The configured inter-request delay, increased when eco mode is active.
         """
@@ -518,7 +518,7 @@ class MobileOptimizer:
 
     def cache_response(self, prompt: str, model: str, response: str, **kwargs):
         """Cache a model response for the specified prompt and request options.
-        
+
         Parameters:
             prompt (str): The input prompt associated with the response.
             model (str): The model that generated the response.
@@ -529,7 +529,7 @@ class MobileOptimizer:
 
     def get_stats(self) -> Dict[str, Any]:
         """Return cache, battery, and configuration statistics for the optimizer.
-        
+
         Returns:
             Dict[str, Any]: A mapping containing cache statistics, the current battery
             level and eco-mode status, and the optimizer configuration.
@@ -548,7 +548,7 @@ _optimizer: Optional[MobileOptimizer] = None
 def get_optimizer() -> MobileOptimizer:
     """
     Get the shared mobile optimizer instance.
-    
+
     Returns:
         MobileOptimizer: The module-level mobile optimizer instance.
     """
@@ -561,7 +561,7 @@ def get_optimizer() -> MobileOptimizer:
 # Convenience functions
 def is_mobile() -> bool:
     """Determine whether the application is running in a mobile environment.
-    
+
     Returns:
         bool: `True` when Termux, compact mode, or the Termux application path is detected; `False` otherwise.
     """
@@ -575,10 +575,10 @@ def is_mobile() -> bool:
 def optimize_for_mobile(func):
     """
     Decorate an asynchronous function with mobile-specific model, token, and pacing adjustments.
-    
+
     Parameters:
         func: The asynchronous function to optimize.
-    
+
     Returns:
         The wrapped asynchronous function.
     """
@@ -588,10 +588,10 @@ def optimize_for_mobile(func):
     async def wrapper(*args, **kwargs):
         """
         Adapt a wrapped asynchronous function for mobile execution.
-        
+
         On mobile, adjusts the model and token limit when provided and pauses after
         execution when battery-saving behavior requires it.
-        
+
         Returns:
             The result produced by the wrapped function.
         """

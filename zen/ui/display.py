@@ -97,12 +97,12 @@ class DisplayManager:
     def show_thinking(self, message: str = "Contemplating your request..."):
         """
         Create a spinner-based progress display for an in-progress operation.
-        
+
         Parameters:
-        	message (str): Text shown alongside the spinner.
-        
+                message (str): Text shown alongside the spinner.
+
         Returns:
-        	tuple: The progress display and its task identifier.
+                tuple: The progress display and its task identifier.
         """
         with Progress(
             SpinnerColumn(spinner_name="dots"),
@@ -115,7 +115,7 @@ class DisplayManager:
     def show_response(self, response: str, title: str = "🧘 zenOS", format: str = "markdown"):
         """
         Display a response in a titled Rich panel.
-        
+
         Parameters:
             response (str): The response content to display.
             title (str): The panel title.
@@ -168,7 +168,7 @@ class DisplayManager:
     def show_cost_breakdown(self, costs: List[Dict[str, Any]]):
         """
         Display a table of session costs and their accumulated total.
-        
+
         Parameters:
             costs (List[Dict[str, Any]]): Cost records containing `timestamp`, `model`,
                 and `cost` fields; token counts default to zero when omitted.
@@ -233,7 +233,7 @@ class DisplayManager:
     def show_stats(self, stats: Dict[str, Any]):
         """
         Display session statistics for messages, tokens, cost, and duration.
-        
+
         Parameters:
             stats (Dict[str, Any]): Statistics values, including total messages, total
                 tokens, total cost, and duration in seconds. Missing values default to
@@ -272,10 +272,10 @@ class DisplayManager:
 
     def create_progress_bar(self, total: int, description: str = "Processing"):
         """Create a progress display for long-running operations.
-        
+
         Parameters:
             total (int): Total number of work units.
-        
+
         Returns:
             Progress: A configured Rich progress display.
         """

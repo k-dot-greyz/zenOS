@@ -32,11 +32,11 @@ class GitPluginLoader:
     ) -> Optional[PluginEntry]:
         """
         Load and register a plugin from a Git repository.
-        
+
         Parameters:
             git_url (str): URL of the Git repository containing the plugin.
             version (str): Branch or version to clone.
-        
+
         Returns:
             Optional[PluginEntry]: The registered plugin entry, or `None` if loading,
                 validation, or registration fails.
@@ -83,7 +83,7 @@ class GitPluginLoader:
     async def update_plugin(self, plugin_id: str) -> bool:
         """
         Update a registered plugin from its Git repository and refresh its registry entry.
-        
+
         Returns:
             bool: `True` if the plugin is updated successfully, `False` otherwise.
         """
@@ -119,10 +119,10 @@ class GitPluginLoader:
     async def install_dependencies(self, plugin_path: Path) -> bool:
         """
         Install the Python and Node.js dependencies declared by a plugin.
-        
+
         Parameters:
             plugin_path (Path): Directory containing the plugin dependency files.
-        
+
         Returns:
             bool: `True` if dependency installation completes or a Python dependency installation fails; `False` if Node.js installation or another operation fails.
         """
@@ -173,10 +173,10 @@ class GitPluginLoader:
     def _parse_git_url(self, git_url: str) -> Optional[Dict[str, str]]:
         """
         Parse a supported GitHub URL into repository metadata.
-        
+
         Parameters:
             git_url (str): HTTPS, SSH, or abbreviated GitHub repository URL.
-        
+
         Returns:
             Optional[Dict[str, str]]: Repository owner, name, and platform, or `None` for unsupported or malformed URLs.
         """
@@ -215,11 +215,11 @@ class GitPluginLoader:
     async def _clone_repository(self, git_url: str, version: str = "main") -> Optional[Path]:
         """
         Clone a Git repository branch into a temporary directory.
-        
+
         Parameters:
             git_url (str): URL of the Git repository to clone.
             version (str): Branch or version to clone.
-        
+
         Returns:
             Optional[Path]: Local repository path on success, or `None` if cloning fails.
         """
@@ -257,10 +257,10 @@ class GitPluginLoader:
     async def _load_manifest(self, plugin_path: Path) -> Optional[PluginManifest]:
         """
         Load a plugin manifest from the plugin directory.
-        
+
         Parameters:
             plugin_path (Path): Directory containing ``zenos-plugin.yaml``.
-        
+
         Returns:
             Optional[PluginManifest]: The parsed plugin manifest, or ``None`` if the manifest is missing or cannot be loaded.
         """
@@ -281,11 +281,11 @@ class GitPluginLoader:
     async def _validate_plugin(self, manifest: PluginManifest, plugin_path: Path) -> bool:
         """
         Validate a plugin's declared entry-point files and dependencies.
-        
+
         Parameters:
             manifest (PluginManifest): Plugin metadata containing the declared entry points.
             plugin_path (Path): Local directory containing the plugin files.
-        
+
         Returns:
             bool: `True` if all declared entry-point files exist, `False` otherwise.
         """
@@ -316,10 +316,10 @@ class GitPluginLoader:
     async def _git_pull(self, plugin_path: Path) -> subprocess.CompletedProcess:
         """
         Pull the latest changes from the repository at the specified path.
-        
+
         Parameters:
             plugin_path (Path): Local repository directory.
-        
+
         Returns:
             subprocess.CompletedProcess: The Git subprocess result.
         """
@@ -336,13 +336,13 @@ class GitPluginLoader:
     async def discover_plugins(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
         """
         Provide plugin discovery results for a search query.
-        
+
         Parameters:
-        	query (str): Search terms used to identify plugins.
-        	limit (int): Maximum number of plugins to return.
-        
+                query (str): Search terms used to identify plugins.
+                limit (int): Maximum number of plugins to return.
+
         Returns:
-        	List[Dict[str, Any]]: An empty list.
+                List[Dict[str, Any]]: An empty list.
         """
         try:
             # This would use GitHub API to search for repositories with zenos-plugin.yaml
@@ -356,10 +356,10 @@ class GitPluginLoader:
     async def load_plugin_from_local(self, local_path: Path) -> Optional[PluginEntry]:
         """
         Load and register a plugin from a local directory.
-        
+
         Parameters:
             local_path (Path): Directory containing the plugin manifest and entry points.
-        
+
         Returns:
             Optional[PluginEntry]: The registered plugin entry, or `None` if loading, validation, or registration fails.
         """
@@ -389,11 +389,11 @@ class GitPluginLoader:
 async def load_plugin_from_git(git_url: str, version: str = "main") -> Optional[PluginEntry]:
     """
     Load and register a plugin from a Git repository.
-    
+
     Parameters:
         git_url (str): URL of the Git repository.
         version (str): Branch or version to load.
-    
+
     Returns:
         Optional[PluginEntry]: The registered plugin entry, or `None` if loading fails.
     """

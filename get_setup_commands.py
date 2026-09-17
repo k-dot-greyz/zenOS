@@ -16,9 +16,9 @@ from pathlib import Path
 def detect_environment():
     """
     Select setup commands for the current operating system.
-    
+
     Returns:
-    	dict: Platform-specific setup commands.
+        dict: Platform-specific setup commands.
     """
 
     # Detect OS
@@ -152,7 +152,7 @@ def get_generic_commands():
 def check_termux():
     """
     Determine whether the script is running in Termux.
-    
+
     Returns:
         bool: `true` if the `TERMUX_VERSION` environment variable is set, `false` otherwise.
     """
@@ -187,7 +187,7 @@ def get_termux_commands():
 def print_commands(commands):
     """
     Print platform-specific setup commands and related documentation references.
-    
+
     Parameters:
         commands (dict): Setup command data containing the platform name, one-command setup command, prerequisite commands, manual setup steps, and validation command.
     """

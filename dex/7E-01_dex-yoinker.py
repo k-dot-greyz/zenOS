@@ -49,10 +49,10 @@ OUTPUT_FILE = DEX_DIR / "7E-00_dex-index.md"
 def parse_file(filepath):
     """
     Extract DEX metadata from a file's YAML frontmatter or leading Python docstring.
-    
+
     Parameters:
         filepath (Path): Path to the file to inspect.
-    
+
     Returns:
         dict: Metadata including the relative path, filename, and extracted DEX fields, or None when no DEX ID is found or the file cannot be read.
     """
@@ -98,11 +98,11 @@ def parse_file(filepath):
 def generate_markdown_index(entries):
     """
     Generate a Markdown index from DEX metadata entries.
-    
+
     Parameters:
         entries (list): Metadata dictionaries containing DEX identifiers, types,
             statuses, filenames, paths, and property-exchange IDs.
-    
+
     Returns:
         str: Markdown content for the generated DEX index.
     """

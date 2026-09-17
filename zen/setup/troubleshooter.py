@@ -57,10 +57,10 @@ class SetupTroubleshooter:
     def validate_system(self, env_info) -> Dict:
         """
         Validate the system environment and summarize the results.
-        
+
         Parameters:
             env_info: Environment information containing the zenOS root directory.
-        
+
         Returns:
             A dictionary containing failed validations and counts for issues, passed
             validations, and total validations.
@@ -86,7 +86,7 @@ class SetupTroubleshooter:
     def _validate_python_environment(self) -> ValidationResult:
         """
         Validate that the current Python version meets the minimum requirement.
-        
+
         Returns:
             ValidationResult: The validation status and, if applicable, a remediation message.
         """
@@ -129,7 +129,7 @@ class SetupTroubleshooter:
     def _validate_shell_configuration(self) -> ValidationResult:
         """
         Validate whether the active shell is supported on the current platform.
-        
+
         Returns:
             ValidationResult: The validation status, message, and remediation details when
                 the shell is unsupported.
@@ -157,10 +157,10 @@ class SetupTroubleshooter:
     def _validate_directory_structure(self, zenos_root: Path) -> ValidationResult:
         """
         Validate that the zenOS root contains the required directories.
-        
+
         Parameters:
             zenos_root (Path): Root directory expected to contain `zen`, `docs`, and `inbox`.
-        
+
         Returns:
             ValidationResult: Validation status and details about any missing directories.
         """
@@ -183,12 +183,12 @@ class SetupTroubleshooter:
     def _validate_permissions(self, zenos_root: Path) -> ValidationResult:
         """
         Check whether the zenOS directory permits creating and deleting files.
-        
+
         Parameters:
-        	zenos_root (Path): Root directory to test for write permissions.
-        
+                zenos_root (Path): Root directory to test for write permissions.
+
         Returns:
-        	ValidationResult: Validation status and, if applicable, permission remediation details.
+                ValidationResult: Validation status and, if applicable, permission remediation details.
         """
         test_file = zenos_root / ".permission_test"
         try:
@@ -206,7 +206,7 @@ class SetupTroubleshooter:
     def _validate_internet_connectivity(self) -> ValidationResult:
         """
         Check whether GitHub can be reached over the network.
-        
+
         Returns:
             ValidationResult: A passing result when GitHub is reachable; otherwise, a failed result with a network troubleshooting recommendation.
         """
@@ -226,12 +226,12 @@ class SetupTroubleshooter:
     def diagnose_issues(self, issues: List[ValidationResult]) -> Dict:
         """
         Analyze validation results and identify applicable setup fixes.
-        
+
         Parameters:
-        	issues (List[ValidationResult]): Validation results representing detected setup issues.
-        
+                issues (List[ValidationResult]): Validation results representing detected setup issues.
+
         Returns:
-        	Dict: Diagnosis containing an analysis summary, applicable fixes, and a priority level.
+                Dict: Diagnosis containing an analysis summary, applicable fixes, and a priority level.
         """
         diagnosis = {"analysis": "", "fixes": [], "priority": "high" if issues else "low"}
 
@@ -254,12 +254,12 @@ class SetupTroubleshooter:
     def _generate_fix_for_issue(self, issue: ValidationResult) -> Optional[Fix]:
         """
         Generate a remediation fix for a validation issue.
-        
+
         Parameters:
-        	issue (ValidationResult): The validation result whose message identifies the required fix.
-        
+                issue (ValidationResult): The validation result whose message identifies the required fix.
+
         Returns:
-        	Fix: A remediation fix for recognized Python, Git, permission, or internet issues; `None` when no fix is available.
+                Fix: A remediation fix for recognized Python, Git, permission, or internet issues; `None` when no fix is available.
         """
         if "Python" in issue.message and "required" in issue.message:
             return Fix(
@@ -326,12 +326,12 @@ class SetupTroubleshooter:
     def apply_fixes(self, fixes: List[Fix]) -> bool:
         """
         Apply the provided fixes and report whether any fix was handled successfully.
-        
+
         Parameters:
-        	fixes (List[Fix]): Fixes to apply, including automated actions or manual instructions.
-        
+                fixes (List[Fix]): Fixes to apply, including automated actions or manual instructions.
+
         Returns:
-        	bool: `True` if at least one fix succeeds or is handled, `False` otherwise.
+                bool: `True` if at least one fix succeeds or is handled, `False` otherwise.
         """
         success_count = 0
 
@@ -393,7 +393,7 @@ class SetupTroubleshooter:
     def create_helper_tools(self) -> List[Dict]:
         """
         Create setup validation and troubleshooting tools.
-        
+
         Returns:
             List[Dict]: Metadata for each helper file created successfully.
         """
@@ -427,7 +427,7 @@ class SetupTroubleshooter:
 
     def _create_validation_script(self) -> Optional[Path]:
         """Create an executable setup validation script and return its path.
-        
+
         Returns:
             Path: The path to the created validation script, or `None` if creation fails.
         """
@@ -483,7 +483,7 @@ if __name__ == '__main__':
 
     def _create_troubleshooting_guide(self) -> Optional[Path]:
         """Create a troubleshooting guide file and return its path.
-        
+
         Returns:
             Optional[Path]: The path to the created guide, or `None` if creation fails.
         """

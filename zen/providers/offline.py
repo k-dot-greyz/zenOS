@@ -157,9 +157,9 @@ class OllamaProvider:
     async def list_models(self) -> List[str]:
         """
         List the models installed on the Ollama server.
-        
+
         Returns:
-        	list (List[str]): Model names, or an empty list if the request fails.
+                list (List[str]): Model names, or an empty list if the request fails.
         """
         try:
             import aiohttp
@@ -176,10 +176,10 @@ class OllamaProvider:
     async def pull_model(self, model_name: str) -> bool:
         """
         Download an Ollama model.
-        
+
         Parameters:
             model_name (str): Name of the model to download.
-        
+
         Returns:
             bool: True if the model download succeeds, False otherwise.
         """
@@ -201,13 +201,13 @@ class OllamaProvider:
     ) -> AsyncIterator[str]:
         """
         Generate a response from a local Ollama model.
-        
+
         Parameters:
             model (str): Name of the model to use.
             prompt (str): Input prompt for generation.
             stream (bool): Whether to yield response fragments as they arrive.
             **kwargs: Additional generation options included in the request.
-        
+
         Yields:
             str: Response fragments when streaming, or the complete response otherwise.
         """
@@ -245,9 +245,9 @@ class LlamaCppProvider:
 
     def _find_binary(self) -> Optional[Path]:
         """Locate an available llama.cpp executable.
-        
+
         Returns:
-        	Path or None: The path to the executable if found, otherwise None.
+                Path or None: The path to the executable if found, otherwise None.
         """
         # Common locations
         candidates = [
@@ -281,16 +281,16 @@ class LlamaCppProvider:
     ) -> str:
         """
         Generate text with a llama.cpp model.
-        
+
         Parameters:
             model_path (str): Path to the model file.
             prompt (str): Input prompt for generation.
             max_tokens (int): Maximum number of tokens to generate.
             temperature (float): Sampling temperature.
-        
+
         Returns:
             str: The generated text.
-        
+
         Raises:
             RuntimeError: If llama.cpp is unavailable or generation fails.
         """
@@ -358,9 +358,9 @@ class OfflineManager:
     def _get_device_ram(self) -> int:
         """
         Determine the device's available memory in megabytes.
-        
+
         Returns:
-        	int: Available RAM in megabytes, or a device-type-based fallback when memory information cannot be read.
+                int: Available RAM in megabytes, or a device-type-based fallback when memory information cannot be read.
         """
         try:
             if sys.platform == "linux":
@@ -384,12 +384,12 @@ class OfflineManager:
     def select_best_model(self, task: str = "chat") -> Optional[LocalModel]:
         """
         Selects the highest-resource model that supports the requested task and fits within the device's available memory limit.
-        
+
         Parameters:
-        	task (str): The task the model must support.
-        
+                task (str): The task the model must support.
+
         Returns:
-        	Optional[LocalModel]: The most resource-intensive suitable model, or `None` if no model meets the requirements.
+                Optional[LocalModel]: The most resource-intensive suitable model, or `None` if no model meets the requirements.
         """
         available_ram = self._get_device_ram()
 
@@ -414,12 +414,12 @@ class OfflineManager:
     async def ensure_model(self, model: LocalModel) -> bool:
         """
         Ensure the specified model is available for generation.
-        
+
         Parameters:
-        	model (LocalModel): Model to verify or download.
-        
+                model (LocalModel): Model to verify or download.
+
         Returns:
-        	bool: `true` if the model is available or successfully downloaded, `false` if it cannot be prepared.
+                bool: `true` if the model is available or successfully downloaded, `false` if it cannot be prepared.
         """
         # Check Ollama first
         if self.ollama.is_available and model.backend == LocalModelType.OLLAMA:
@@ -436,15 +436,15 @@ class OfflineManager:
     async def generate(self, prompt: str, model: Optional[str] = None, **kwargs) -> str:
         """
         Generate a response using the best available offline model or a specified model.
-        
+
         Parameters:
             prompt (str): The input prompt.
             model (Optional[str]): The model name to use. If omitted, a suitable chat model is selected.
             **kwargs: Additional generation options passed to the selected backend.
-        
+
         Returns:
             str: The generated response.
-        
+
         Raises:
             RuntimeError: If no suitable model or backend is available, or the model cannot be prepared.
             ValueError: If the specified model is unknown.
@@ -482,7 +482,7 @@ class OfflineManager:
     def get_status(self) -> Dict[str, Any]:
         """
         Report the device resources, backend availability, configured models, and recommended chat model.
-        
+
         Returns:
             Dict[str, Any]: Status information including mobile mode, available RAM, backend
             availability, model names, and the recommended chat model name.
@@ -538,13 +538,13 @@ class HybridProvider:
     ) -> Dict[str, Any]:
         """
         Generate a response using an offline or online provider according to availability and preference.
-        
+
         Parameters:
             prompt (str): The user prompt to process.
             model (Optional[str]): The model to use, or a suitable default when omitted.
             force_offline (bool): Whether to require offline generation.
             **kwargs: Additional generation options passed to the selected provider.
-        
+
         Returns:
             Dict[str, Any]: A result containing the response, model name, execution mode,
                 cache status, and online usage details when available.

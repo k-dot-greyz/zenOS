@@ -152,7 +152,7 @@ class GTTS_Engine:
     async def play_audio(self, audio_data: bytes) -> None:
         """
         Play MP3 audio data and wait until playback is complete.
-        
+
         Parameters:
             audio_data (bytes): Raw MP3-formatted audio data to play.
         """
@@ -232,7 +232,7 @@ class StreamerBotIntegration:
     def __init__(self, tts_manager: TTSQueueManager):
         """
         Initialize the integration with a TTS queue manager and default event priorities.
-        
+
         Parameters:
             tts_manager (TTSQueueManager): Manager used to enqueue and manage TTS messages.
         """
@@ -254,12 +254,12 @@ class StreamerBotIntegration:
     def process_donation(self, donor_name: str, amount: float, message: str = ""):
         """
         Create and enqueue a donation announcement with priority based on the donation amount.
-        
+
         Parameters:
             donor_name (str): Donor display name included in the announcement.
             amount (float): Donation amount used to determine priority.
             message (str): Optional additional text included in the announcement.
-        
+
         Returns:
             Identifier of the queued TTS message.
         """
@@ -338,12 +338,12 @@ class StreamerBotIntegration:
     def process_chat_message(self, username: str, message: str, is_mod: bool = False):
         """
         Queue a chat message for speech when it is sent by a moderator or includes a supported TTS command.
-        
+
         Parameters:
             username (str): Display name of the chat user.
             message (str): Chat message text; supported commands are `!tts`, `!say`, and `!announce`.
             is_mod (bool): Whether the sender is a moderator.
-        
+
         Returns:
             str | None: The queued message ID, or `None` when the message is ignored.
         """
@@ -396,7 +396,7 @@ class WebSocketServer:
     async def handle_message(self, websocket, path):
         """
         Handle incoming WebSocket messages and dispatch supported streamer events.
-        
+
         Each message must contain a JSON object with a ``type`` field. Supported types are
         ``donation``, ``subscription``, ``follow``, ``chat``, and ``stats``. Queued events
         return a message ID; chat messages that do not meet the announcement criteria

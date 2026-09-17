@@ -72,12 +72,12 @@ class ConversationProcessor:
     async def _generate_summary(self, conversation: Conversation) -> str:
         """
         Create a concise extractive summary of a conversation.
-        
+
         The summary may include topics from user messages, the total message count,
         and key insights from assistant messages. Empty conversations return
         "Empty conversation"; conversations without summary components return
         "No summary available".
-        
+
         Returns:
             str: A human-readable conversation summary.
         """
@@ -195,10 +195,10 @@ class ConversationProcessor:
     async def _extract_keywords(self, conversation: Conversation) -> List[str]:
         """
         Extract the most frequent keywords from all messages in a conversation.
-        
+
         Parameters:
             conversation (Conversation): Conversation whose messages will be analyzed.
-        
+
         Returns:
             List[str]: Up to 10 lowercase keywords ordered by descending frequency.
         """

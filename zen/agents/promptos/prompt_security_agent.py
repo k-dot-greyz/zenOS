@@ -34,7 +34,7 @@ class PromptSecurityAgent(Agent):
     def __init__(self, config: Optional[Dict] = None):
         # Create agent manifest
         """Initialize the prompt security agent and its attack detection configuration.
-        
+
         Parameters:
             config (Optional[Dict]): Optional agent configuration.
         """
@@ -65,9 +65,9 @@ class PromptSecurityAgent(Agent):
     def _load_attack_patterns(self) -> List[Dict]:
         """
         Define regular-expression patterns for common prompt security threats.
-        
+
         Returns:
-        	List[Dict]: Attack pattern definitions containing names, regular expressions, severity levels, descriptions, and remediation suggestions.
+                List[Dict]: Attack pattern definitions containing names, regular expressions, severity levels, descriptions, and remediation suggestions.
         """
         # This would normally load from PromptOS security patterns
         # For now, we'll define some common patterns
@@ -126,23 +126,23 @@ class PromptSecurityAgent(Agent):
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """
         Execute security analysis for a prompt.
-        
+
         Parameters:
-        	prompt (str): The prompt to analyze.
-        	variables (Dict[str, Any]): Variables available during analysis.
-        
+                prompt (str): The prompt to analyze.
+                variables (Dict[str, Any]): Variables available during analysis.
+
         Returns:
-        	Any: The formatted security analysis report.
+                Any: The formatted security analysis report.
         """
         return self.analyze_security(prompt, variables)
 
     def analyze_security(self, prompt: str, context: Optional[Dict] = None) -> str:
         """
         Analyze a prompt for security threats and produce a prioritized security report.
-        
+
         Parameters:
             prompt (str): The prompt to evaluate for potential security threats.
-        
+
         Returns:
             str: A formatted security analysis report.
         """
@@ -164,12 +164,12 @@ class PromptSecurityAgent(Agent):
 
     def _analyze_patterns(self, prompt: str) -> List[SecurityThreat]:
         """Identifies configured security threats in a prompt using pattern matching.
-        
+
         Parameters:
-        	prompt (str): The prompt to analyze.
-        
+                prompt (str): The prompt to analyze.
+
         Returns:
-        	List[SecurityThreat]: Threats detected by the configured attack patterns.
+                List[SecurityThreat]: Threats detected by the configured attack patterns.
         """
         threats = []
 
@@ -191,12 +191,12 @@ class PromptSecurityAgent(Agent):
     def _analyze_with_ai(self, prompt: str) -> List[SecurityThreat]:
         """
         Analyze a prompt for security threats using the AI analysis pathway.
-        
+
         Parameters:
-        	prompt (str): The prompt to evaluate.
-        
+                prompt (str): The prompt to evaluate.
+
         Returns:
-        	List[SecurityThreat]: An empty list because AI-based analysis is currently disabled.
+                List[SecurityThreat]: An empty list because AI-based analysis is currently disabled.
         """
         try:
             analysis_prompt = f"""
@@ -242,10 +242,10 @@ class PromptSecurityAgent(Agent):
         def threat_score(threat: SecurityThreat) -> float:
             """
             Calculate a threat score from its severity and confidence.
-            
+
             Parameters:
                 threat (SecurityThreat): The threat to score.
-            
+
             Returns:
                 float: The severity-weighted confidence score.
             """
@@ -257,11 +257,11 @@ class PromptSecurityAgent(Agent):
     def _generate_security_report(self, prompt: str, threats: List[SecurityThreat]) -> str:
         """
         Generate a formatted security report for the detected threats.
-        
+
         Parameters:
             prompt (str): The prompt analyzed for security threats.
             threats (List[SecurityThreat]): Threats detected during analysis.
-        
+
         Returns:
             str: A security report containing the overall risk level, detected threats,
                 recommendations, and security score.
@@ -334,12 +334,12 @@ Threats Found: {len(threats)}
     def _calculate_security_score(self, threats: List[SecurityThreat]) -> int:
         """
         Calculate an overall security score from detected threats.
-        
+
         Parameters:
-        	threats (List[SecurityThreat]): Threats to evaluate.
-        
+                threats (List[SecurityThreat]): Threats to evaluate.
+
         Returns:
-        	int: A score from 0 to 100, where 100 indicates no detected threats.
+                int: A score from 0 to 100, where 100 indicates no detected threats.
         """
         if not threats:
             return 100
@@ -361,12 +361,12 @@ Threats Found: {len(threats)}
     def is_safe(self, prompt: str) -> bool:
         """
         Determine whether a prompt contains a critical security threat.
-        
+
         Parameters:
-        	prompt (str): The prompt to evaluate.
-        
+                prompt (str): The prompt to evaluate.
+
         Returns:
-        	bool: `True` if no critical threat is detected, `False` otherwise.
+                bool: `True` if no critical threat is detected, `False` otherwise.
         """
         threats = self._analyze_patterns(prompt)
         critical_threats = [t for t in threats if t.severity == "critical"]
@@ -375,12 +375,12 @@ Threats Found: {len(threats)}
     def get_threat_level(self, prompt: str) -> str:
         """
         Determine the highest severity level detected in a prompt.
-        
+
         Parameters:
-        	prompt (str): The prompt to analyze.
-        
+                prompt (str): The prompt to analyze.
+
         Returns:
-        	str: The highest detected threat level, or "safe" when no threats are found.
+                str: The highest detected threat level, or "safe" when no threats are found.
         """
         threats = self._analyze_patterns(prompt)
         if not threats:
@@ -395,10 +395,10 @@ Threats Found: {len(threats)}
 def analyze_prompt_security(prompt: str) -> str:
     """
     Analyze a prompt for security threats and produce a security report.
-    
+
     Parameters:
         prompt (str): The prompt to analyze.
-    
+
     Returns:
         str: A formatted security analysis report.
     """
@@ -408,12 +408,12 @@ def analyze_prompt_security(prompt: str) -> str:
 
 def is_prompt_safe(prompt: str) -> bool:
     """Quickly checks whether a prompt contains a critical security threat.
-    
+
     Parameters:
-    	prompt (str): The prompt to analyze.
-    
+        prompt (str): The prompt to analyze.
+
     Returns:
-    	bool: `True` if the prompt contains no critical threat, `False` otherwise.
+        bool: `True` if the prompt contains no critical threat, `False` otherwise.
     """
     agent = PromptSecurityAgent()
     return agent.is_safe(prompt)
