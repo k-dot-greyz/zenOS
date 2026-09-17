@@ -110,7 +110,7 @@ class SetupTroubleshooter:
                     fix_command="Install Git",
                     ai_diagnosis="Git required for version control and repository management",
                 )
-        except subprocess.TimeoutExpired, FileNotFoundError:
+        except (subprocess.TimeoutExpired, FileNotFoundError):
             return ValidationResult(
                 passed=False,
                 message="Git not found in PATH",
