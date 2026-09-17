@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo skip-install",
+  "buildCommand": "mkdir -p .vercel-out && printf '%s\\n' '<!doctype html><meta charset=\"utf-8\"><title>zenOS</title><p>zenOS is a Python CLI / DSP repo; this preview is a static placeholder so GitHub checks can go green.</p>' > .vercel-out/index.html",
+  "outputDirectory": ".vercel-out"
+}
