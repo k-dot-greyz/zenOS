@@ -39,6 +39,12 @@ pub enum Isa {
 #[derive(Debug)]
 pub struct Error(&'static str);
 
+impl Error {
+    pub const fn new(msg: &'static str) -> Self {
+        Self(msg)
+    }
+}
+
 /// Planar f32 view. Lifetime is the caller's buffer.
 pub struct PlanarMut<'a> {
     pub channels: &'a mut [&'a mut [f32]],
@@ -48,7 +54,14 @@ pub struct PlanarMut<'a> {
 pub fn begin_block() {}
 
 pub fn isa() -> Isa {
-    Isa::Scalar
+    #[cfg(target_arch = "aarch64")]
+    {
+        Isa::Neon
+    }
+    #[cfg(not(target_arch = "aarch64"))]
+    {
+        Isa::Scalar
+    }
 }
 
 pub trait Kernel {
