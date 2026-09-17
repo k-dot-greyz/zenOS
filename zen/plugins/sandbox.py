@@ -206,7 +206,7 @@ class PluginSandbox:
                 disk_usage = sum(f.stat().st_size for f in sandbox_path.rglob("*") if f.is_file())
                 sandbox_info["resource_usage"]["disk_space_mb"] = disk_usage / 1024 / 1024
 
-            except psutil.NoSuchProcess, psutil.AccessDenied:
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
                 # Process already terminated
                 pass
 
@@ -228,7 +228,7 @@ class PluginSandbox:
                     proc = psutil.Process(pid)
                     proc.terminate()
                     proc.wait(timeout=5)
-                except psutil.NoSuchProcess, psutil.TimeoutExpired:
+                except (psutil.NoSuchProcess, psutil.TimeoutExpired):
                     try:
                         proc.kill()
                     except psutil.NoSuchProcess:

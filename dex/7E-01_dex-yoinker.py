@@ -90,7 +90,7 @@ def parse_file(filepath):
             return None
 
         return metadata
-    except OSError, UnicodeDecodeError:
+    except (OSError, UnicodeDecodeError):
         # Skip files that can't be read or decoded
         return None
 

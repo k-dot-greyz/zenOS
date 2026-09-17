@@ -133,7 +133,7 @@ def check_dependencies() -> bool:
     # Check if git is available
     try:
         subprocess.run(["git", "--version"], capture_output=True, check=True)
-    except subprocess.CalledProcessError, FileNotFoundError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         missing.append("git")
 
     if missing:

@@ -6,6 +6,7 @@ hard fail if Python is below 3.14, plus a real status dump of deps/CLI wiring.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -124,6 +125,56 @@ def test_env_doctor_skips_outdated_by_default(monkeypatch):
     assert report.checks
 
 
+def test_vuln_audit_is_not_opt_in(monkeypatch):
+    """Unlike outdated-package staleness, a known CVE isn't informational —
+    check_dependency_vulnerabilities always runs, no include_ flag needed."""
+    from zen.setup import env_doctor as ed
+
+    called = {"n": 0}
+
+    def spy(*_a, **_k):
+        called["n"] += 1
+        return ed.CheckResult(name="vuln_audit", ok=True, severity="ok", message="stub")
+
+    monkeypatch.setattr(ed, "check_dependency_vulnerabilities", spy)
+    ed.run_env_doctor(root=ROOT)
+    assert called["n"] == 1
+
+
+def test_vuln_audit_skips_without_requirements_file(tmp_path: Path):
+    from zen.setup.env_doctor import check_dependency_vulnerabilities
+
+    result = check_dependency_vulnerabilities(root=tmp_path)
+    assert result.ok is True
+    assert result.severity == "warn"
+    assert "requirements.txt" in result.message
+
+
+def test_vuln_audit_scopes_to_requirements_not_whole_env(monkeypatch, tmp_path: Path):
+    """Must pass -r <requirements.txt> — never fall back to auditing the live
+    interpreter's full site-packages (distro-vendored packages aren't ours)."""
+    from zen.setup import env_doctor as ed
+
+    (tmp_path / "requirements.txt").write_text("click>=8.0\n", encoding="utf-8")
+    captured: dict = {}
+
+    class FakeCompletedProcess:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return FakeCompletedProcess()
+
+    monkeypatch.setattr(ed.importlib.util, "find_spec", lambda name: object())
+    monkeypatch.setattr(ed.subprocess, "run", fake_run)
+    result = ed.check_dependency_vulnerabilities(root=tmp_path)
+    assert result.ok is True
+    assert "-r" in captured["cmd"]
+    assert str(tmp_path / "requirements.txt") in captured["cmd"]
+
+
 def test_fallback_requirements_match_runtime_imports():
     from zen.setup.unified_setup import FALLBACK_REQUIREMENTS
 
@@ -157,10 +208,17 @@ def test_install_sh_windows_uses_python_bin_module_entrypoint():
     assert "-m zen.cli" in text
 
 
-def test_env_install_restores_setup_py_on_failure():
+def test_env_install_no_longer_needs_setup_py_rename_workaround():
+    """setup.py is now a PEP 517-safe shim (see check_setup_py_landmine below),
+    so zenos-env-install.sh no longer needs to rename it out of the way before
+    `uv pip install -e .` and restore it via a trap — that workaround existed
+    only because the root cause (setup.py importing zen unconditionally,
+    including during the build-backend hook) wasn't fixed yet.
+    """
     install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
-    assert "trap" in install
-    assert "_setup.py.bak" in install
+    assert "_setup.py.bak" not in install
+    assert "restore_setup" not in install  # the removed workaround's trap handler, by name
+    assert "uv pip install --python .venv -e" in install
 
 
 def test_env_start_fails_without_zen_runtime():
@@ -174,6 +232,37 @@ def test_ruff_uses_lint_select_not_deprecated_top_level_select():
     assert "[tool.ruff.lint]" in pyproject
     # Top-level tool.ruff.select is deprecated in current Ruff.
     assert "\nselect = " not in pyproject.split("[tool.ruff]\n", 1)[-1].split("[", 1)[0]
+
+
+def test_real_setup_py_is_pep517_safe():
+    from zen.setup.env_doctor import check_setup_py_landmine
+
+    result = check_setup_py_landmine(root=ROOT)
+    assert result.ok is True
+    assert result.severity == "ok"
+
+
+def test_black_and_ruff_target_version_stay_below_py314():
+    """py314 makes Black emit PEP 758 except-clauses older CPython cannot parse."""
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "target-version = ['py312']" in pyproject
+    assert 'target-version = "py312"' in pyproject
+    assert "target-version = ['py314']" not in pyproject
+    assert 'target-version = "py314"' not in pyproject
+
+
+def test_no_pep758_unparenthesized_multi_except():
+    """Black py314 rewrote these on main; py312 target must keep them parenthesized."""
+    pep758 = re.compile(r"^\s*except\s+[A-Za-z_][\w.]*(?:\s*,\s*[A-Za-z_][\w.]+)+\s*:")
+    skip_dirs = {".git", ".venv", "venv", "node_modules", "__pycache__", ".tox"}
+    hits: list[str] = []
+    for path in ROOT.rglob("*.py"):
+        if any(part in skip_dirs for part in path.parts):
+            continue
+        for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if pep758.search(line):
+                hits.append(f"{path.relative_to(ROOT)}:{i}:{line.strip()}")
+    assert hits == []
 
 
 def test_env_doctor_flags_root_setup_py_landmine(tmp_path: Path):
