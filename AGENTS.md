@@ -25,13 +25,13 @@ source .venv/bin/activate
 | Task | Command |
 |------|---------|
 | Lint (format check) | `black --check .` |
-| Lint (ruff) | `ruff check .` |
+| Lint (import sort) | `isort --check-only .` |
 | Lint (flake8 errors only) | `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` |
 | Run tests | `pytest` |
-| Custom test runner | `python test_runner.py` |
 | Import check | `python -c "import zen; print(zen.__version__)"` |
+| Env setup tests | `RUN_ENV_SETUP_TESTS=1 pytest tests/test_env_setup_resilience.py -v --no-cov` |
 
-The CI workflow (`.github/workflows/python-app.yml`) also runs `isort --check-only .`, `mypy .`, `bandit -r .`, and `pytest --cov`. These have `continue-on-error: true` on some steps.
+The CI workflow (`.github/workflows/zenos-ci.yml`) runs lint, test, security, shell-check, and docs jobs. Python 3.14 is used in CI. The `pyproject.toml` requires `>=3.14` but the Cloud Agent VM has Python 3.12 — the install script uses `--ignore-requires-python` to work around this.
 
 ### Dependencies
 
