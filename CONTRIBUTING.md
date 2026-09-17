@@ -275,7 +275,7 @@ Before committing, verify boundary hygiene and diff scope:
 
 We use [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```text
 <type>(<scope>): <short summary>
 ```
 
