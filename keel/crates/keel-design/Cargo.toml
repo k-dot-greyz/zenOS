@@ -8,3 +8,10 @@ description = "Offline SOS / Kirkeby IR design (f64 allowed)"
 
 [dependencies]
 keel-iir = { path = "../keel-iir" }
+num-complex = "0.4"
+rustfft = "6.2"
+
+[dev-dependencies]
+keel-core = { path = "../keel-core", features = ["test-rt"] }
+keel-iir = { path = "../keel-iir" }
+num-complex = "0.4"
