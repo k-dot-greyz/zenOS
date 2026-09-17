@@ -269,6 +269,9 @@ Before committing, verify boundary hygiene and diff scope:
 4. **Confirm secrets stay untracked**
    - Ensure `.env`, credentials, and local inbox payloads are not staged.
 
+5. **Documentation maintenance**
+   - If the change affects platform behavior, public APIs, or repository relationships, complete the Documentation maintenance items in [`.github/COMMIT_WORKFLOW_CHECKLIST.md`](.github/COMMIT_WORKFLOW_CHECKLIST.md).
+
 ---
 
 ## Commit message style
