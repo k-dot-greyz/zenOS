@@ -1,60 +1,41 @@
-# Multi-stage build for efficient image
-FROM python:3.11-slim as builder
+# zenOS — Python 3.14 security lab / CLI image
+# Secrets stay out of the image. Pass GITHUB_TOKEN at runtime.
 
-# Install build dependencies
+FROM python:3.14-slim-bookworm
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+        git \
+        curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -s /bin/bash zen \
+    && mkdir -p /home/zen/.zenOS /config /workspace /app
 
-# Set working directory
-WORKDIR /build
-
-# Copy requirements first for better caching
-COPY pyproject.toml .
-COPY README.md .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip wheel --no-cache-dir --wheel-dir /wheels .
-
-# Final stage
-FROM python:3.11-slim
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create non-root user
-RUN useradd -m -s /bin/bash zen && \
-    mkdir -p /home/zen/.zenOS /config /workspace && \
-    chown -R zen:zen /home/zen /config /workspace
-
-# Set working directory
 WORKDIR /app
 
-# Copy wheels and install
-COPY --from=builder /wheels /wheels
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir /wheels/*.whl && \
-    rm -rf /wheels
+COPY pyproject.toml requirements.txt README.md ./
+COPY zen/ /app/zen/
+COPY dex/ /app/dex/
+COPY scripts/ /app/scripts/
+COPY .env.template /app/.env.template
+COPY .cursor/mcp.json.template /app/.cursor/mcp.json.template
 
-# Copy application code
-COPY --chown=zen:zen zen/ /app/zen/
-COPY --chown=zen:zen agents/ /app/agents/
-COPY --chown=zen:zen modules/ /app/modules/
-COPY --chown=zen:zen configs/ /app/configs/
+# setup.py is an installer script, not setuptools — install deps from requirements.
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && chown -R zen:zen /app /home/zen /config /workspace
 
-# Switch to non-root user
 USER zen
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PORT=8080 \
     ZEN_CONFIG_PATH=/config \
     HOME=/home/zen
 
-# Default command - start in chat mode
-CMD ["python", "-m", "zen.cli", "chat"]
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -fsS "http://127.0.0.1:${PORT:-8080}/health" || exit 1
+
+CMD ["python", "-m", "zen.lab"]

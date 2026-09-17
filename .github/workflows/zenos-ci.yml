@@ -103,12 +103,49 @@ jobs:
       - name: Run Bandit security scan
         run: |
           bandit -r . -f json -o bandit-report.json || true
-          bandit -r . -ll || true
+          bandit -r zen -ll || true
         continue-on-error: true
       
       - name: Check for known vulnerabilities
         run: safety check --json || true
         continue-on-error: true
+
+  secrets:
+    name: Secret Scan + Auth Preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt detect-secrets
+
+      - name: Pattern secret scan
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python -m zen.auth.secret_scan --root .
+
+      - name: detect-secrets
+        run: |
+          if [ -f .secrets.baseline ]; then
+            detect-secrets scan --baseline .secrets.baseline
+          else
+            detect-secrets scan > .secrets.baseline
+            echo "::notice::No .secrets.baseline yet — generated for this run"
+          fi
+
+      - name: zen auth status (CI)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python -m zen.cli auth status --format json --offline --ci
 
   # Shell script validation
   shell-check:
@@ -159,7 +196,7 @@ jobs:
   ci-success:
     name: CI Status Check
     runs-on: ubuntu-24.04
-    needs: [lint, test, security, shell-check, docs]
+    needs: [lint, test, security, secrets, shell-check, docs]
     if: always()
     steps:
       - name: Check all jobs status
@@ -167,11 +204,13 @@ jobs:
           echo "Lint: ${{ needs.lint.result }}"
           echo "Test: ${{ needs.test.result }}"
           echo "Security: ${{ needs.security.result }}"
+          echo "Secrets: ${{ needs.secrets.result }}"
           echo "Shell Check: ${{ needs.shell-check.result }}"
           echo "Docs: ${{ needs.docs.result }}"
           
           if [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ]; then
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.secrets.result }}" != "success" ]; then
             echo "::warning::Some checks failed or were skipped"
             exit 1
           fi

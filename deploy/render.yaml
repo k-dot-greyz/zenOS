@@ -1,0 +1,17 @@
+# Render Blueprint — zenOS security lab
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: zenos-security-lab
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: ZEN_ENGINE_MODE
+        value: product
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false

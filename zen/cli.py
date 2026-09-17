@@ -68,7 +68,6 @@ def run(
     no_critique: bool,
     upgrade_only: bool,
     debug: bool,
-    version: bool,
     chat: bool,
     offline: bool,
     model: Optional[str],
@@ -86,10 +85,6 @@ def run(
         zen --list
         zen --create my-agent
     """
-
-    if version:
-        console.print(f"[cyan]zenOS version {__version__}[/cyan]")
-        return
 
     if chat or (agent and agent == "chat"):
         # Start interactive chat mode
@@ -263,6 +258,9 @@ def run_agent(
     launcher = Launcher(debug=debug)
 
     try:
+        auth_warning = _auth_preflight()
+        if auth_warning:
+            console.print(auth_warning)
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -377,29 +375,113 @@ cli.add_command(sync)
 cli.add_command(arena)
 
 
-def _run_env_doctor(ai_mode: bool, outdated: bool) -> None:
-    from zen.setup.env_doctor import format_report, run_env_doctor
+def _auth_preflight() -> Optional[str]:
+    """Soft-fail gate: warn with a repair hint, never crash the agent run."""
+    try:
+        from zen.auth.credentials import collect_auth_status, repair_hints
 
-    report = run_env_doctor(include_outdated=outdated)
-    console.print(format_report(report, ai_mode=ai_mode), highlight=False)
-    if report.has_failures:
-        raise SystemExit(1)
+        report = collect_auth_status(validate=False)
+        if report.ok:
+            return None
+        hints = repair_hints(report)
+        hint = hints[0] if hints else "Run zen auth status"
+        return (
+            f"[yellow]Auth preflight:[/yellow] credentials are not healthy "
+            f"(exit {report.exit_code}). Repair hint: {hint}\n"
+            "[dim]Continuing anyway — this is a soft fail, not a crash.[/dim]\n"
+        )
+    except Exception as exc:  # pragma: no cover - never block the agent
+        return f"[yellow]Auth preflight skipped:[/yellow] {exc}"
+
+
+def _run_env_doctor(
+    ai_mode: bool,
+    outdated: bool,
+    fmt: str = "human",
+    offline: bool = False,
+) -> None:
+    from zen.setup.env_doctor import format_report, format_report_json, run_env_doctor
+
+    report = run_env_doctor(
+        include_outdated=outdated,
+        include_auth=True,
+        validate_auth=not offline,
+    )
+    if fmt == "json":
+        click.echo(format_report_json(report), nl=False)
+    else:
+        console.print(format_report(report, ai_mode=ai_mode), highlight=False)
+    code = report.exit_code
+    if code:
+        raise SystemExit(code)
 
 
 @cli.command("doctor")
 @click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
 @click.option("--outdated", is_flag=True, help="Also query pip for outdated packages")
-def doctor(ai_mode: bool, outdated: bool) -> None:
+@click.option(
+    "--format",
+    "fmt",
+    type=click.Choice(["human", "json"]),
+    default="human",
+    help="Output format",
+)
+@click.option("--offline", is_flag=True, help="Skip live token validation")
+def doctor(ai_mode: bool, outdated: bool, fmt: str, offline: bool) -> None:
     """Check zenOS system + environment health."""
-    _run_env_doctor(ai_mode, outdated)
+    _run_env_doctor(ai_mode, outdated, fmt, offline)
 
 
 @cli.command("env-doctor")
 @click.option("--ai-mode", is_flag=True, help="Check AI integration / compact output")
 @click.option("--outdated", is_flag=True, help="Also query pip for outdated packages")
-def env_doctor(ai_mode: bool, outdated: bool) -> None:
+@click.option(
+    "--format",
+    "fmt",
+    type=click.Choice(["human", "json"]),
+    default="human",
+    help="Output format",
+)
+@click.option("--offline", is_flag=True, help="Skip live token validation")
+def env_doctor(ai_mode: bool, outdated: bool, fmt: str, offline: bool) -> None:
     """Alias for doctor — environment, Python floor, and dependency status."""
-    _run_env_doctor(ai_mode, outdated)
+    _run_env_doctor(ai_mode, outdated, fmt, offline)
+
+
+@cli.group("auth")
+def auth() -> None:
+    """Credential status, rotation, and repair hints."""
+
+
+@auth.command("status")
+@click.option(
+    "--format",
+    "fmt",
+    type=click.Choice(["human", "json"]),
+    default="human",
+    help="Output format",
+)
+@click.option("--offline", is_flag=True, help="Skip live API validation")
+@click.option("--ci", is_flag=True, help="CI mode: GITHUB_TOKEN required, others optional")
+def auth_status(fmt: str, offline: bool, ci: bool) -> None:
+    """Check configured credentials. Never prints secret values."""
+    from zen.auth.credentials import collect_auth_status, format_human
+
+    report = collect_auth_status(validate=not offline, ci=ci)
+    if fmt == "json":
+        click.echo(json.dumps(report.to_dict(), indent=2))
+    else:
+        console.print(format_human(report), highlight=False)
+    if report.exit_code:
+        raise SystemExit(report.exit_code)
+
+
+@auth.command("rotate")
+def auth_rotate() -> None:
+    """Print PAT naming convention and GitHub token settings URLs."""
+    from zen.auth.credentials import rotate_message
+
+    console.print(rotate_message(), highlight=False)
 
 
 if __name__ == "__main__":

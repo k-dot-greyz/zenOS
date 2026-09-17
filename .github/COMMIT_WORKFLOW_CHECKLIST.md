@@ -35,6 +35,8 @@
 ### Security & Dependencies
 - [ ] No security vulnerabilities introduced
 - [ ] No sensitive data (keys, passwords, tokens) in code
+- [ ] `.env` and `.cursor/mcp.json` are not staged
+- [ ] 90-day PAT rotation: GitHub tokens named `zenos-mcp-<env>-YYYY-MM` still in date (or `zen auth rotate`)
 - [ ] Dependencies are up to date and necessary
 - [ ] No debugging code or console logs left in production code
 

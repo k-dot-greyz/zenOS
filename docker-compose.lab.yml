@@ -1,0 +1,29 @@
+# Hosted zenOS security lab — no database ports, no host secret mounts.
+# Usage: docker compose -f docker-compose.lab.yml up --build
+
+services:
+  zen-lab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: zenos/lab:latest
+    container_name: zen-lab
+    environment:
+      PORT: ${PORT:-8080}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GITHUB_MCP_URL: ${GITHUB_MCP_URL:-https://api.githubcopilot.com/mcp/}
+      GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID:-}
+      ZEN_ENGINE_MODE: ${ZEN_ENGINE_MODE:-product}
+    ports:
+      - "${PORT:-8080}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5

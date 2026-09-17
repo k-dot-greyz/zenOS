@@ -1,5 +1,8 @@
 version: '3.8'
 
+# Local stack. Hosted security lab lives in docker-compose.lab.yml
+#   docker compose -f docker-compose.lab.yml up --build
+
 services:
   # Core zenOS CLI service
   zen-cli:
@@ -9,14 +12,15 @@ services:
     image: zenos/cli:latest
     container_name: zen-cli
     environment:
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - ZEN_CONFIG_PATH=/config
       - ZEN_DB_URL=postgresql://zen:${DB_PASSWORD:-zenpass}@zen-memory:5432/zenos
       - REDIS_URL=redis://zen-cache:6379
+      - PYTHONPATH=/app
     volumes:
       - ./config:/config
       - ./workspace:/workspace
-      - ~/.zenOS:/home/zen/.zenOS
       - ./zen:/app/zen:ro  # Mount source code for development
     networks:
       - zen-network
@@ -25,7 +29,26 @@ services:
     depends_on:
       - zen-memory
       - zen-cache
-    command: ["python", "-m", "zen.cli", "chat"]  # Default to interactive chat mode
+    command: ["python", "-m", "zen.cli", "run", "--chat"]
+
+  zen-lab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: zenos/lab:latest
+    container_name: zen-lab
+    profiles: ["lab"]
+    environment:
+      - PORT=8080
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - GITHUB_MCP_URL=${GITHUB_MCP_URL:-https://api.githubcopilot.com/mcp/}
+      - ZEN_ENGINE_MODE=${ZEN_ENGINE_MODE:-product}
+    ports:
+      - "8080:8080"
+    networks:
+      - zen-network
+    command: ["python", "-m", "zen.lab"]
 
   # PostgreSQL for conversation history & vector storage
   zen-memory:
