@@ -31,12 +31,18 @@ def test_require_runtime_passes_on_this_interpreter():
     require_runtime()
 
 
-def test_require_runtime_docstring_is_import_gate():
-    from zen.runtime import require_runtime as fn
+def test_require_runtime_exits_when_required_module_missing(monkeypatch, capsys):
+    from zen import runtime as rt
 
-    doc = fn.__doc__ or ""
-    assert "importability gate" in doc.lower()
-    assert "missing/outdated" not in doc.lower()
+    def fake_import(name, *args, **kwargs):
+        raise ImportError(name)
+
+    monkeypatch.setattr(rt.importlib, "import_module", fake_import)
+    with pytest.raises(SystemExit) as exc:
+        rt.require_runtime(version_info=(3, 14, 0))
+    assert exc.value.code == 1
+    err = capsys.readouterr().err
+    assert "missing required packages" in err
 
 
 def test_main_invokes_runtime_gate(monkeypatch):
