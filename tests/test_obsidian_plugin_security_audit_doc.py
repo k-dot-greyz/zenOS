@@ -161,7 +161,8 @@ def test_doc_contains_kql_detection_rules_block(doc_text: str):
     kql_body = match.group(1)
     assert "process.name" in kql_body
     assert "Obsidian.exe" in kql_body
-    assert "file.directory" in kql_body
+    # Current guide uses file.path (not file.directory) for full-path matching.
+    assert "file.path" in kql_body
     assert ".obsidian/plugins" in kql_body
 
 
