@@ -1,0 +1,38 @@
+# zenOS review config. Process: docs/guides/REVIEW.md
+language: "en-US"
+reviews:
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  pre_merge_checks:
+    docstrings:
+      mode: "off"
+  path_filters:
+    - "!docs/archive/**"
+    - "!inbox/**"
+  path_instructions:
+    - path: "install*"
+      instructions: >-
+        Functional review of installers. Prefer in-place install when a local
+        checkout exists; curl|bash is last resort. Do not request checksums or
+        signing of unsigned raw GitHub blobs. Do not demand 80% docstring
+        coverage.
+    - path: "scripts/**/*.sh"
+      instructions: >-
+        Functional review. Same installer rules: no signed-release theater on
+        unsigned blobs. Empty/placeholder origin keys are unset.
+    - path: "zen/origin.py"
+      instructions: >-
+        Functional review of origin SSOT. Resolve order is process env, then
+        .env, then git remote. Empty strings and placeholders count as unset.
+        Authenticated remotes must not leak tokens into clone_url. Do not
+        demand docstring coverage or signed releases.
+    - path: "docs/archive/**"
+      instructions: >-
+        Identity-only. Flag personal GitHub/user identity, vault paths, and
+        Gemini share links. Do not request functional changes, docstring
+        coverage, or signed releases.
+    - path: "inbox/**"
+      instructions: >-
+        Identity-only. Same as docs/archive. Do not request functional changes,
+        docstring coverage, or signed releases.
