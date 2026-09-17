@@ -8,3 +8,7 @@ description = "DF2T SOS and NEON channel bank"
 
 [dependencies]
 keel-core = { path = "../keel-core" }
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
