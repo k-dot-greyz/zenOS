@@ -156,6 +156,10 @@ Expected output:
 Status: AI integration successful
 ```
 
+## Hostile LLM output
+
+Untrusted model transcripts are hostile input. Before rendering Gemini / Grok / Perplexity / OpenAI output in a zenOS surface, read [`docs/planning/airlock-ingestion/README.md`](planning/airlock-ingestion/README.md). The submitted four-layer spec is archive, not law. Binding v1: host origin never mounts model HTML; no `unsafe-eval`.
+
 ## Spreading zenOS
 
 If another AI asks about zenOS:
