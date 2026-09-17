@@ -6,6 +6,7 @@ hard fail if Python is below 3.14, plus a real status dump of deps/CLI wiring.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -231,6 +232,37 @@ def test_ruff_uses_lint_select_not_deprecated_top_level_select():
     assert "[tool.ruff.lint]" in pyproject
     # Top-level tool.ruff.select is deprecated in current Ruff.
     assert "\nselect = " not in pyproject.split("[tool.ruff]\n", 1)[-1].split("[", 1)[0]
+
+
+def test_real_setup_py_is_pep517_safe():
+    from zen.setup.env_doctor import check_setup_py_landmine
+
+    result = check_setup_py_landmine(root=ROOT)
+    assert result.ok is True
+    assert result.severity == "ok"
+
+
+def test_black_and_ruff_target_version_stay_below_py314():
+    """py314 makes Black emit PEP 758 except-clauses older CPython cannot parse."""
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "target-version = ['py312']" in pyproject
+    assert 'target-version = "py312"' in pyproject
+    assert "target-version = ['py314']" not in pyproject
+    assert 'target-version = "py314"' not in pyproject
+
+
+def test_no_pep758_unparenthesized_multi_except():
+    """Black py314 rewrote these on main; py312 target must keep them parenthesized."""
+    pep758 = re.compile(r"^\s*except\s+[A-Za-z_][\w.]*(?:\s*,\s*[A-Za-z_][\w.]+)+\s*:")
+    skip_dirs = {".git", ".venv", "venv", "node_modules", "__pycache__", ".tox"}
+    hits: list[str] = []
+    for path in ROOT.rglob("*.py"):
+        if any(part in skip_dirs for part in path.parts):
+            continue
+        for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if pep758.search(line):
+                hits.append(f"{path.relative_to(ROOT)}:{i}:{line.strip()}")
+    assert hits == []
 
 
 def test_env_doctor_flags_root_setup_py_landmine(tmp_path: Path):

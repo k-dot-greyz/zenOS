@@ -45,10 +45,10 @@ versa.
 **Don't match `[tool.black]`/`[tool.ruff]` `target-version` to
 `requires-python`:** they're pinned at `py312`, deliberately below the
 `py314` floor. Black's `py314` target auto-adopts PEP 758 (unparenthesized
-`except A, B:`), which nothing older than 3.14 can parse — that's a real,
-reproduced CI break (`Lint & Format Check` wants to rewrite files into
-PEP-758 syntax the moment `target-version` includes `py314`), not a
-hypothetical. Bump it only as an explicit, reviewed style decision.
+`except A, B:`), which nothing older than 3.14 can parse. Matching the
+tool target to the runtime floor is how `main` briefly "fixed" lint by
+rewriting sources into PEP-758 — that's the regression, not the fix.
+Bump it only as an explicit, reviewed style decision.
 
 **What we refuse:**
 - Multi-version Python theater (a `python-app.yml` template workflow with a
