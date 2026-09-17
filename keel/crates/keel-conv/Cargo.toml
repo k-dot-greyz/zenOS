@@ -1,0 +1,12 @@
+[package]
+name = "keel-conv"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Uniform partitioned convolution + FIR head"
+
+[dependencies]
+keel-core = { path = "../keel-core" }
+keel-fft = { path = "../keel-fft" }
+keel-fir = { path = "../keel-fir" }
