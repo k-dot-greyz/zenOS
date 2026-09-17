@@ -22,7 +22,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Log "hydrating scaffold"
-& bash "$DuckyRoot\hydrate.sh"
+$bash = Get-Command bash -ErrorAction SilentlyContinue
+if (-not $bash) {
+    throw "bash is required for hydrate.sh. Install Git for Windows or WSL and ensure bash is on PATH."
+}
+& bash "$DuckyRoot/hydrate.sh"
 if ($LASTEXITCODE -ne 0) {
     throw "hydrate.sh failed"
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# hydrate.sh — scaffold local workspace from dev-master, zenOS-dev, or ducky templates
+# hydrate.sh — scaffold local workspace from dev-master or in-repo ducky templates
 
 set -euo pipefail
 
@@ -27,6 +27,7 @@ resolve_hydration_source() {
     fi
   done
 
+  SOURCE_NAME="ducky-templates"
   case "${PROFILE}" in
     mobile)
       SOURCE_PATH="${DUCKY_ROOT}/hydrate/mobile"
@@ -60,6 +61,7 @@ hydrate_from_dir() {
     return 1
   fi
 
+  local rel dest_rel
   while IFS= read -r -d '' file; do
     rel="${file#${template_dir}/}"
     dest_rel="${rel}"

@@ -2,57 +2,83 @@
 """
 env-doctor — local environment diagnostics for ducky payloads.
 
-Wraps zenOS EnvironmentDetector + SetupTroubleshooter and emits machine-readable
-local deets for hydration orchestration.
+Prefers zen.setup.env_doctor when the package is installed; otherwise uses a
+stdlib-only collector so ducky works from USB before pip install.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import platform
+import shutil
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Resolve zenOS root (parent of ducky/)
 DUCKY_ROOT = Path(__file__).resolve().parent
 ZENOS_ROOT = DUCKY_ROOT.parent
-SETUP_ROOT = ZENOS_ROOT / "zen" / "setup"
-sys.path.insert(0, str(SETUP_ROOT))
-
-# Import setup modules directly to avoid zen package __init__ side effects
-from environment_detector import EnvironmentDetector  # noqa: E402
-from troubleshooter import SetupTroubleshooter  # noqa: E402
 
 
-def _env_presence() -> dict[str, Any]:
-    env_path = ZENOS_ROOT / ".env"
-    example_path = ZENOS_ROOT / "env.example"
+def _command_available(name: str) -> bool:
+    if shutil.which(name) is None:
+        return False
+    try:
+        subprocess.run([name, "--version"], capture_output=True, timeout=5, check=False)
+        return True
+    except OSError, subprocess.TimeoutExpired:
+        return False
+
+
+def _detect_termux() -> bool:
+    return bool(os.environ.get("TERMUX_VERSION")) or Path("/data/data/com.termux").is_dir()
+
+
+def _detect_platform_name() -> str:
+    system = platform.system().lower()
+    if system == "windows":
+        return "windows"
+    if system == "darwin":
+        return "macos"
+    if system == "linux":
+        return "termux" if _detect_termux() else "linux"
+    return "unknown"
+
+
+def _env_presence(zenos_root: Path) -> dict[str, Any]:
+    env_path = zenos_root / ".env"
+    example_path = zenos_root / "env.example"
     return {
         "env_file_exists": env_path.exists(),
         "env_example_exists": example_path.exists(),
         "openrouter_key_configured": bool(
             os.environ.get("OPENROUTER_API_KEY")
-            and os.environ.get("OPENROUTER_API_KEY") not in ("", "your-api-key-here", "sk-or-v1-your-api-key-here")
+            and os.environ.get("OPENROUTER_API_KEY")
+            not in ("", "your-api-key-here", "sk-or-v1-your-api-key-here")
         ),
     }
 
 
-def _pokedex_status() -> dict[str, bool]:
+def _dex_status(zenos_root: Path) -> dict[str, bool]:
+    dex = zenos_root / "dex"
+    legacy = zenos_root / "pokedex"
     return {
-        "models_yaml": (ZENOS_ROOT / "pokedex" / "models.yaml").exists(),
-        "procedures_yaml": (ZENOS_ROOT / "pokedex" / "procedures.yaml").exists(),
-        "arena_rankings_yaml": (ZENOS_ROOT / "pokedex" / "arena_rankings.yaml").exists(),
+        "models_yaml": (dex / "models.yaml").exists() or (legacy / "models.yaml").exists(),
+        "procedures_yaml": (dex / "procedures.yaml").exists()
+        or (legacy / "procedures.yaml").exists(),
+        "arena_rankings_yaml": (dex / "arena_rankings.yaml").exists()
+        or (legacy / "arena_rankings.yaml").exists(),
     }
 
 
-def _hydration_source_hints() -> dict[str, Any]:
-    candidates: list[dict[str, str]] = []
+def _hydration_source_hints(zenos_root: Path) -> dict[str, Any]:
+    candidates: list[dict[str, Any]] = []
     for label, raw in (
         ("ZEN_DEV_MASTER", os.environ.get("ZEN_DEV_MASTER", "")),
-        ("../dev-master", str((ZENOS_ROOT / "../dev-master").resolve())),
-        ("../../dev-master", str((ZENOS_ROOT / "../../dev-master").resolve())),
+        ("../dev-master", str((zenos_root / "../dev-master").resolve())),
+        ("../../dev-master", str((zenos_root / "../../dev-master").resolve())),
     ):
         if not raw:
             continue
@@ -68,49 +94,96 @@ def _hydration_source_hints() -> dict[str, Any]:
     return {"candidates": candidates}
 
 
-def collect_local_deets(zenos_root: Path | None = None) -> dict[str, Any]:
-    root = zenos_root or ZENOS_ROOT
-    detector = EnvironmentDetector()
-    env_info = detector.detect_environment(root)
-    troubleshooter = SetupTroubleshooter()
-    validation = troubleshooter.validate_system(env_info)
+def _collect_standalone(zenos_root: Path) -> dict[str, Any]:
+    py = sys.version_info
+    python_version = f"{py.major}.{py.minor}.{py.micro}"
+    issues: list[dict[str, Any]] = []
+    passed = 0
+    total = 3
 
-    issues = []
-    for item in validation.get("issues", []):
-        issues.append(
-            {
-                "message": getattr(item, "message", str(item)),
-                "fix_command": getattr(item, "fix_command", None),
-            }
-        )
+    if py.major == 3 and py.minor >= 7:
+        passed += 1
+    else:
+        issues.append({"message": f"Python {python_version} below 3.7", "fix_command": None})
 
+    if _command_available("git"):
+        passed += 1
+    else:
+        issues.append({"message": "git not available", "fix_command": "Install git"})
+
+    if zenos_root.is_dir():
+        passed += 1
+    else:
+        issues.append({"message": f"zenOS root missing: {zenos_root}", "fix_command": None})
+
+    system = platform.system().lower()
     return {
         "schema": "zenos.ducky.local-deets/v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "zenos_root": str(root),
+        "zenos_root": str(zenos_root),
         "ducky_root": str(DUCKY_ROOT),
+        "collector": "standalone",
         "platform": {
-            "name": env_info.platform,
-            "shell": env_info.shell,
-            "python_version": env_info.python_version,
-            "is_termux": env_info.is_termux,
-            "is_windows": env_info.is_windows,
-            "is_macos": env_info.is_macos,
-            "is_linux": env_info.is_linux,
-            "git_available": env_info.git_available,
-            "node_available": env_info.node_available,
-            "user_home": str(env_info.user_home),
+            "name": _detect_platform_name(),
+            "shell": Path(os.environ.get("SHELL", "unknown")).name,
+            "python_version": python_version,
+            "is_termux": _detect_termux(),
+            "is_windows": system == "windows",
+            "is_macos": system == "darwin",
+            "is_linux": system == "linux",
+            "git_available": _command_available("git"),
+            "node_available": _command_available("node"),
+            "user_home": str(Path.home()),
         },
-        "env": _env_presence(),
-        "pokedex": _pokedex_status(),
+        "env": _env_presence(zenos_root),
+        "dex": _dex_status(zenos_root),
         "validation": {
-            "passed": validation.get("validations_passed", 0),
-            "total": validation.get("validations_total", 0),
-            "issue_count": validation.get("total_issues", 0),
+            "passed": passed,
+            "total": total,
+            "issue_count": len(issues),
             "issues": issues,
         },
-        "hydration_hints": _hydration_source_hints(),
+        "hydration_hints": _hydration_source_hints(zenos_root),
     }
+
+
+def _collect_from_zen_doctor(zenos_root: Path) -> dict[str, Any]:
+    if str(zenos_root) not in sys.path:
+        sys.path.insert(0, str(zenos_root))
+
+    from zen.setup.env_doctor import run_env_doctor  # noqa: PLC0415
+
+    report = run_env_doctor(root=zenos_root)
+    issues = [
+        {
+            "message": check.message,
+            "fix_command": None,
+            "severity": check.severity,
+            "ok": check.ok,
+        }
+        for check in report.checks
+        if not check.ok
+    ]
+    passed = sum(1 for check in report.checks if check.ok)
+    total = len(report.checks)
+    standalone = _collect_standalone(zenos_root)
+    standalone["collector"] = "zen.setup.env_doctor"
+    standalone["validation"] = {
+        "passed": passed,
+        "total": total,
+        "issue_count": len(issues),
+        "issues": issues,
+    }
+    standalone["zen_doctor_failures"] = report.has_failures
+    return standalone
+
+
+def collect_local_deets(zenos_root: Path | None = None) -> dict[str, Any]:
+    root = (zenos_root or ZENOS_ROOT).resolve()
+    try:
+        return _collect_from_zen_doctor(root)
+    except Exception:
+        return _collect_standalone(root)
 
 
 def write_reports(
@@ -127,20 +200,19 @@ def write_reports(
 
 
 def print_summary(deets: dict[str, Any]) -> None:
-    platform = deets["platform"]
+    platform_info = deets["platform"]
     print("\n🦆 ducky env-doctor\n")
-    print(f"  Platform:  {platform['name']} ({platform['shell']})")
-    print(f"  Python:    {platform['python_version']}")
-    print(f"  Termux:    {'yes' if platform['is_termux'] else 'no'}")
-    print(f"  Git:       {'yes' if platform['git_available'] else 'no'}")
-    print(f"  Node:      {'yes' if platform['node_available'] else 'no'}")
+    print(f"  Collector: {deets.get('collector', 'unknown')}")
+    print(f"  Platform:  {platform_info['name']} ({platform_info['shell']})")
+    print(f"  Python:    {platform_info['python_version']}")
+    print(f"  Termux:    {'yes' if platform_info['is_termux'] else 'no'}")
+    print(f"  Git:       {'yes' if platform_info['git_available'] else 'no'}")
+    print(f"  Node:      {'yes' if platform_info['node_available'] else 'no'}")
     print(f"  .env:      {'found' if deets['env']['env_file_exists'] else 'missing'}")
     print(
         f"  API key:   {'configured' if deets['env']['openrouter_key_configured'] else 'not configured'}"
     )
-    print(
-        f"  Checks:    {deets['validation']['passed']}/{deets['validation']['total']} passed"
-    )
+    print(f"  Checks:    {deets['validation']['passed']}/{deets['validation']['total']} passed")
     if deets["validation"]["issue_count"]:
         print(f"  Issues:    {deets['validation']['issue_count']} need attention")
     print()
@@ -159,14 +231,16 @@ def main() -> int:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=ZENOS_ROOT / ".zen-hydration",
-        help="Directory for JSON reports",
+        default=None,
+        help="Directory for JSON reports (default: <zenos-root>/.zen-hydration)",
     )
     parser.add_argument("--json-only", action="store_true", help="Suppress human summary")
     args = parser.parse_args()
 
-    deets = collect_local_deets(args.zenos_root)
-    local_path, report_path = write_reports(deets, args.output_dir)
+    zenos_root = args.zenos_root.resolve()
+    output_dir = args.output_dir or (zenos_root / ".zen-hydration")
+    deets = collect_local_deets(zenos_root)
+    local_path, report_path = write_reports(deets, output_dir)
 
     if not args.json_only:
         print_summary(deets)
