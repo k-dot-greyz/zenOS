@@ -1,0 +1,49 @@
+name: Something else
+description: Docs, chores, questions, or work that is not a bug or a feature
+title: "[chore]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you submit:** search [open issues](https://github.com/k-dot-greyz/zenOS/issues) and [unmerged pull requests](https://github.com/k-dot-greyz/zenOS/pulls). Check stale branches for work already in flight. Duplicate reports get closed.
+
+        Use this form when the request is not a bug or a feature. Questions often belong in [Discussions](https://github.com/k-dot-greyz/zenOS/discussions).
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Documentation
+        - Chore / maintenance
+        - Question / discussion
+        - Security (non-exploit)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: What needs to happen, and who is affected.
+      placeholder: |
+        - Current: CONTRIBUTING.md does not mention checking stale branches
+        - Desired: one sentence in the issue/PR templates and the guide
+        - Affected: reporters and agents opening issues
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: Why this belongs in zenOS now, and any related issues or unmerged PRs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Links, screenshots, or approaches you already considered.

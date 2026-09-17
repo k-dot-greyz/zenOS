@@ -1,3 +1,10 @@
+## Prior art
+
+<!-- Check unmerged pull requests and stale branches before opening. -->
+
+- [ ] Searched [open pull requests](https://github.com/k-dot-greyz/zenOS/pulls) and stale branches for overlapping work
+- [ ] Linked related PRs/issues below, or noted why this change is distinct
+
 ## What
 
 <!-- Concrete changes—not a file list. -->

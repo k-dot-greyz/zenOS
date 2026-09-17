@@ -7,6 +7,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        **Before you submit:** search [open issues](https://github.com/k-dot-greyz/zenOS/issues) and [unmerged pull requests](https://github.com/k-dot-greyz/zenOS/pulls). Check stale branches for work already in flight. Duplicate reports get closed.
+
         Thanks for taking the time to report a bug. See [CONTRIBUTING.md](https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md#writing-bug-reports) for what makes a great report.
 
   - type: textarea
@@ -49,8 +51,8 @@ body:
       label: Environment
       description: OS, Python version, install method (pip, Termux, docker), zenOS version or commit.
       placeholder: |
-        - OS: Ubuntu 22.04 / Termux
-        - Python: 3.12.3
+        - OS: Ubuntu 24.04 / Termux
+        - Python: 3.14.7
         - Install: pip install -e .
     validations:
       required: true
