@@ -9,7 +9,8 @@ import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass, field
-from importlib.metadata import PackageNotFoundError, version as pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
