@@ -1,0 +1,15 @@
+# Harness Contract v1 — portable preflight / PR intake / capability index
+#
+# Extractable to `dev-master`. Consumed here by zenOS (`zen env-doctor`,
+# `zen dex search`, CI). See contracts/harness-v1/*.schema.json.
+
+contract: "1.0"
+intent: feat
+risk: medium
+supersedes: []
+depends_on: []
+touches_contracts: true
+expiry_days: 14
+summary: >-
+  Track 2/3/6 slice of ZEN-313: env-doctor JSON contract, PR intent gate,
+  and dex capability registry (Harness Contract v1).

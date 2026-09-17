@@ -1,3 +1,10 @@
+## Harness intent
+
+Machine-readable twin: update `.github/pr-intent.yaml` in this PR
+(`intent`, `risk`, `supersedes`, `depends_on`, `touches_contracts`, `expiry_days`).
+Contract diffs (`contracts/`, `zen/contracts/`, `dex/registry.yaml`, `.github/CODEOWNERS`)
+**must** set `touches_contracts: true`. Overlapping open PRs **must** declare `supersedes`.
+
 ## What
 
 <!-- Concrete changes—not a file list. -->

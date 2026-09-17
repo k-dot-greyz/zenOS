@@ -1,0 +1,47 @@
+# zenOS capability registry — Harness Contract v1
+# Every entry answers: what / how / proof / supersedes
+# Search: zen dex search <query> [--format json]
+
+contract: "1.0"
+entries:
+  - id: env-doctor
+    what:
+      owner: zenOS
+      maturity: stable
+      risk: low
+      purpose: Portable preflight for runtime, package manager, lockfile, secrets, and git state
+    how:
+      entrypoint: zen env-doctor --format json --profile ci
+      env_doctor_profile: ci
+    proof:
+      test: pytest tests/test_env_doctor_contract.py -m contract --no-cov
+      artifact: doctor JSON object with contract 1.0 and exit_code in {0,10,20}
+    supersedes: null
+
+  - id: pr-intent
+    what:
+      owner: zenOS
+      maturity: beta
+      risk: medium
+      purpose: PR intake metadata so overlapping diffs declare supersedes and contract touches
+    how:
+      entrypoint: python scripts/validate_harness_contracts.py
+      env_doctor_profile: ci
+    proof:
+      test: pytest tests/test_pr_intent.py -m contract --no-cov
+      artifact: .github/pr-intent.yaml validating against contracts/harness-v1/pr-intent.schema.json
+    supersedes: null
+
+  - id: dex-capability-registry
+    what:
+      owner: zenOS
+      maturity: beta
+      risk: low
+      purpose: Machine-actionable dex index for GlitchWorks / agents (`zen dex search`)
+    how:
+      entrypoint: zen dex search
+      env_doctor_profile: local
+    proof:
+      test: pytest tests/test_capability_registry.py -m harness --no-cov
+      artifact: dex/registry.yaml with ≥3 entries answering what/how/proof/supersedes
+    supersedes: null
