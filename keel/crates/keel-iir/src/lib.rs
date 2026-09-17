@@ -52,7 +52,8 @@ impl Kernel for Sos {
         for ch in io.channels.iter_mut() {
             for s in ch.iter_mut() {
                 let mut x = *s;
-                for i in 0..self.len {
+                let nsec = self.len.min(self.sections.len());
+                for i in 0..nsec {
                     x = tick(x, self.sections[i], &mut self.state[i]);
                 }
                 *s = x;
