@@ -30,14 +30,12 @@ _MODELS_FIXTURE = {
 }
 
 
-def _make_bench(tmp_path: Path, models: dict | None = None) -> "ModelBench":  # noqa: F821
+def _make_bench(tmp_path: Path, models: dict | None = None) -> "ModelBench":
     from zen.dex.bench import ModelBench
 
     dex_dir = tmp_path / "dex"
     dex_dir.mkdir(exist_ok=True)
-    (dex_dir / "models.yaml").write_text(
-        yaml.dump(models or _MODELS_FIXTURE), encoding="utf-8"
-    )
+    (dex_dir / "models.yaml").write_text(yaml.dump(models or _MODELS_FIXTURE), encoding="utf-8")
     return ModelBench(dex_path=dex_dir)
 
 
@@ -122,3 +120,52 @@ def test_defend_boost_does_not_compound_across_turns(tmp_path: Path):
             f"(expected {baseline_defense}, got {f_def.defense}). "
             "battle_turn() must restore the baseline defense after each turn."
         )
+
+
+def test_defend_keeps_combat_stats_as_ints(tmp_path: Path):
+    """DEFEND must not promote defense/hp to float via `defense *= 1.5`.
+
+    take_damage() uses `self.defense // 4`. A float defense makes actual_damage
+    (and then hp) floats, which leak into logs and the battle result dict.
+    """
+    from zen.dex.bench import BattleMove
+
+    models = {
+        "models": [
+            {
+                "id": "defender",
+                "name": "Defender",
+                "tier": "common",
+                "stats": {"intelligence": 70, "reliability": 70, "speed": 50},
+                "feats": [],
+                "cost_per_1k": {"input": 5.0},
+            },
+            {
+                "id": "attacker",
+                "name": "Attacker",
+                "tier": "common",
+                "stats": {"intelligence": 50, "reliability": 50, "speed": 40},
+                "feats": [],
+                "cost_per_1k": {"input": 0.001},
+            },
+        ]
+    }
+
+    bench = _make_bench(tmp_path, models)
+    fighter = bench.create_fighter("defender")
+    opponent = bench.create_fighter("attacker")
+    assert fighter is not None and opponent is not None
+
+    baseline = fighter.defense
+    damage = bench.calculate_damage(fighter, BattleMove.DEFEND, opponent)
+
+    assert isinstance(fighter.defense, int), (
+        f"DEFEND turned defense into {type(fighter.defense).__name__} "
+        f"({fighter.defense!r}); combat stats must stay ints."
+    )
+    assert fighter.defense == int(baseline * 1.5)
+    assert isinstance(damage, int)
+
+    actual = fighter.take_damage(40)
+    assert isinstance(actual, int)
+    assert isinstance(fighter.hp, int)

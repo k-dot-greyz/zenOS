@@ -135,7 +135,8 @@ class ModelBench:
         elif move == BattleMove.DEFEND:
             # Defensive move, small counter damage
             base_damage = attacker.defense * 0.3
-            attacker.defense *= 1.5  # Temporary defense boost
+            # Temporary within-turn boost — keep int so take_damage() // stays int
+            attacker.defense = int(attacker.defense * 1.5)
             self.log(f"{attacker.name} takes defensive stance!")
 
         elif move == BattleMove.SPECIAL:
