@@ -27,7 +27,7 @@ Key automated checks (inferred from official docs and ecosystem tooling):
 
 - **Malware & known vulnerabilities:** static analysis for malicious patterns and known CVEs in dependencies.
 - **Policy adherence:** compliance with Developer Policies (e.g., no closed-source new submissions, proper manifest, README disclosures).
-- **Code quality & ESLint rules:** enforcement of Obsidian's plugin guidelines via `eslint-plugin-obsidianmd` (36 rules as of 2026).
+- **Code quality & ESLint rules:** enforcement of Obsidian's plugin guidelines via [`eslint-plugin-obsidianmd`](https://github.com/obsidianmd/eslint-plugin) (see the [current rule list](https://github.com/obsidianmd/eslint-plugin/tree/master/docs/rules); rule count changes with upstream releases).
 - **Dependency hygiene:** presence of lockfiles (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`), minimal and pinned dependencies.
 - **Telemetry & ads:** detection of client-side telemetry, analytics, or ad networks that collect sensitive usage data.
 - **Disclosures:** README must declare payments, account requirements, network use, external file access, ads, telemetry, and closed-source components.
@@ -120,7 +120,7 @@ sources:
   - name: "The future of Obsidian plugins (May 2026)"
     url: "https://obsidian.md/blog/future-of-plugins/"
     role: "Automated reviews, scorecards, disclosures, verified authors"
-  - name: "Obsidian October plugin self-critique checklist"
+  - name: "Obsidian plugin self-critique checklist"
     url: "https://docs.obsidian.md/oo/plugin"
     role: "Security disclosures, dependencies, telemetry, lockfiles"
   - name: "Less is safer (supply-chain philosophy)"
@@ -136,16 +136,16 @@ sources:
 For SOC/IR contexts monitoring Obsidian abuse (e.g., PHANTOMPULSE-style campaigns):
 
 ```kql
-// Obsidian spawning shells/script interpreters
-process.name : ("Obsidian.exe" OR "Obsidian") 
-and process.parent.name : ("powershell.exe" OR "cmd.exe" OR "bash" OR "zsh" OR "osascript")
+// Shell/script interpreter spawned by Obsidian (plugin abuse indicator)
+process.name : ("powershell.exe" OR "cmd.exe" OR "bash" OR "zsh" OR "osascript")
+and process.parent.name : ("Obsidian.exe" OR "Obsidian")
 
-// File activity under plugin directories
-file.directory : ("*.obsidian/plugins/*") 
+// File activity under plugin directories (use file.path for full-path matching)
+file.path : *".obsidian/plugins/"*
 and process.name : ("Obsidian.exe" OR "Obsidian")
 ```
 
-Adjust paths and process names per platform (Windows/macOS/Linux).
+Adjust paths and process names per platform (Windows/macOS/Linux). If plugins spawn helper processes before a shell, correlate with ancestry-aware rules (for example `process.Ext.ancestry`) instead of relying only on direct parent name.
 
 ## 10. zenOS integration notes
 
