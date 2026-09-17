@@ -21,8 +21,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
@@ -63,8 +61,6 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
@@ -97,8 +93,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
@@ -135,8 +129,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       
       - name: Run ShellCheck
         run: |
@@ -155,8 +147,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
