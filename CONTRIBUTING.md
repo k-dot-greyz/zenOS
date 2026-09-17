@@ -291,6 +291,8 @@ docs(contributing): add Gumroad-inspired PR and issue guidelines
 
 ## Writing issues
 
+Before opening an issue or pull request, search [unmerged pull requests](https://github.com/k-dot-greyz/zenOS/pulls) and stale branches so we do not duplicate in-flight work.
+
 Issues for enhancements, features, or refactors use this structure (templates in [`.github/ISSUE_TEMPLATE/`](https://github.com/k-dot-greyz/zenOS/blob/main/.github/ISSUE_TEMPLATE/)):
 
 ### What

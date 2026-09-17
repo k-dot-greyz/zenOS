@@ -7,6 +7,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        **Before you submit:** search [open issues](https://github.com/k-dot-greyz/zenOS/issues) and [unmerged pull requests](https://github.com/k-dot-greyz/zenOS/pulls). Check stale branches for work already in flight. Duplicate requests get closed.
+
         See [CONTRIBUTING.md](https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md#writing-issues) for the What/Why structure we prefer.
 
   - type: textarea
