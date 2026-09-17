@@ -128,9 +128,10 @@ def test_pull_request_template_has_review_sections_in_workflow_order():
         "`black --check .`",
         "`isort --check-only .`",
         "`flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics`",
-        "`pytest --cov=. --cov-report=term-missing -v`",
+        "`PYTHONPATH=. pytest --cov=. --cov-report=term-missing -v`",
+        "`yamllint` (optional; non-blocking in CI)",
         "Tests updated where behavior changed",
-        "No secrets, `.env`, or dev-master-only docs in the diff",
+        "No secrets, `.env`, or superproject-only docs in the diff",
     }
     checklist_items = set(re.findall(r"^- \[ \] (.+)$", template, flags=re.MULTILINE))
     assert expected_checks <= checklist_items
@@ -157,9 +158,9 @@ def test_local_documentation_links_resolve(document: Path):
         if urlparse(target).scheme or target.startswith("#"):
             continue
         local_target = target.split("#", 1)[0]
-        assert (document.parent / local_target).resolve().exists(), (
-            f"{document.relative_to(ROOT)} links to missing path {local_target}"
-        )
+        assert (
+            (document.parent / local_target).resolve().exists()
+        ), f"{document.relative_to(ROOT)} links to missing path {local_target}"
 
 
 def test_contributing_guide_internal_anchors_resolve():
@@ -169,11 +170,7 @@ def test_contributing_guide_internal_anchors_resolve():
         github_heading_slug(heading)
         for heading in re.findall(r"^#{1,6} (.+)$", text, flags=re.MULTILINE)
     }
-    internal_links = {
-        target[1:]
-        for target in markdown_links(guide)
-        if target.startswith("#")
-    }
+    internal_links = {target[1:] for target in markdown_links(guide) if target.startswith("#")}
 
     assert internal_links
     assert internal_links <= anchors
@@ -184,7 +181,7 @@ def test_contributing_guide_documents_the_complete_workflow():
     headings = set(re.findall(r"^## (.+)$", guide, flags=re.MULTILINE))
 
     assert {
-        "The prime directive: platform code here, internal guides in dev-master",
+        "The prime directive: platform code here, internal guides elsewhere",
         "Fork-and-PR workflow",
         "Pull requests",
         "AI-assisted contributions",
@@ -200,6 +197,6 @@ def test_contributing_guide_documents_the_complete_workflow():
         "black --check .",
         "isort --check-only .",
         "flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics",
-        "pytest --cov=. --cov-report=term-missing -v",
+        "PYTHONPATH=. pytest --cov=. --cov-report=term-missing -v",
     ):
         assert quality_gate in guide
