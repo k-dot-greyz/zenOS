@@ -81,6 +81,8 @@ jobs:
           if [ -f _setup.py.bak ]; then mv _setup.py.bak setup.py; fi
 
       - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/ -o addopts= -v
 
   security:

@@ -27,13 +27,14 @@ These have to be green. Everything else is noise until they are.
 
 3. **Tests.** Root `setup.py` is an installer, not setuptools. Park it, install,
    restore, then run pytest **without** the pyproject `addopts` coverage hook
-   (that needs pytest-cov on the PATH):
+   (that needs pytest-cov on the PATH). Root scripts (`clone_all_repos`,
+   `get_setup_commands`) import via `PYTHONPATH` / pytest `pythonpath = ["."]`:
 
    ```bash
    mv setup.py _setup.py.bak
    pip install -e ".[dev]"
    mv _setup.py.bak setup.py
-   pytest tests/ -o addopts=
+   PYTHONPATH=. pytest tests/ -o addopts=
    ```
 
 CI (`.github/workflows/zenos-ci.yml`) runs lint, identity, and tests in

@@ -71,6 +71,16 @@ def test_ci_runs_identity_scanner_and_does_not_block_tests_on_lint():
     assert "pytest tests/" in ci_text
     assert "-o addopts=" in ci_text
 
+    pythonpath_values = []
+    for step in test_job.get("steps") or []:
+        env = step.get("env") or {}
+        if "PYTHONPATH" in env:
+            pythonpath_values.append(str(env["PYTHONPATH"]))
+    assert pythonpath_values, (
+        "test job must set PYTHONPATH so root scripts "
+        "(clone_all_repos, get_setup_commands) import in CI"
+    )
+
     lint = jobs["lint"]
     lint_python = str(lint)
     assert "3.14" in lint_python
@@ -128,6 +138,19 @@ def test_review_guide_names_merge_blocking_vs_push_back():
     assert "coderabbit" in lower
     assert "suggestions" in lower
     assert "pytest tests/" in review
+    assert "PYTHONPATH" in review
+
+
+def test_pytest_puts_repo_root_on_pythonpath():
+    import tomllib
+
+    cfg = tomllib.loads(_read("pyproject.toml"))
+    pythonpath = cfg["tool"]["pytest"]["ini_options"].get("pythonpath") or []
+    if isinstance(pythonpath, str):
+        pythonpath = [pythonpath]
+    assert any(
+        p in {".", ""} for p in pythonpath
+    ), "pytest pythonpath must include repo root so clone_all_repos imports"
 
 
 def test_readme_points_at_review_guide():
