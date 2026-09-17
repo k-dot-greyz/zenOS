@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "bash -c 'prev=\"${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}\"; git diff --quiet \"$prev\" HEAD -- . \":!keel\" \":!docs/blueprints/keel\" \":!docs/planning\" \":!rust-toolchain.toml\" \":!vercel.json\"'"
+}
