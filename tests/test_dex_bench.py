@@ -30,7 +30,7 @@ _MODELS_FIXTURE = {
 }
 
 
-def _make_bench(tmp_path: Path, models: dict | None = None) -> "ModelBench":
+def _make_bench(tmp_path: Path, models: dict | None = None):
     from zen.dex.bench import ModelBench
 
     dex_dir = tmp_path / "dex"
