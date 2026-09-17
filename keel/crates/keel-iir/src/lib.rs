@@ -43,16 +43,23 @@ impl Default for Sos {
 
 impl Kernel for Sos {
     fn prepare(&mut self, _p: keel_core::Prepare) -> Result<keel_core::Needs, keel_core::Error> {
+        self.len = self.len.min(16);
         Ok(keel_core::Needs::default())
     }
     fn reset(&mut self) {
         self.state = [BiquadState::default(); 16];
     }
-    fn process(&mut self, _rt: keel_core::Rt<'_>, io: keel_core::PlanarMut<'_>, _scratch: &mut [f32]) {
+    fn process(
+        &mut self,
+        _rt: keel_core::Rt<'_>,
+        io: keel_core::PlanarMut<'_>,
+        _scratch: &mut [f32],
+    ) {
+        let n = self.len.min(16);
         for ch in io.channels.iter_mut() {
             for s in ch.iter_mut() {
                 let mut x = *s;
-                for i in 0..self.len {
+                for i in 0..n {
                     x = tick(x, self.sections[i], &mut self.state[i]);
                 }
                 *s = x;
