@@ -9,6 +9,7 @@ use core::marker::PhantomData;
 #[derive(Clone, Copy)]
 pub struct Rt<'a>(PhantomData<&'a ()>);
 
+#[cfg(any(test, feature = "test-support"))]
 impl Rt<'static> {
     /// Test / harness constructor. Production plugins should use a tighter lifetime.
     pub fn now() -> Rt<'static> {
@@ -25,8 +26,10 @@ pub struct Prepare {
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Needs {
-    pub state: usize,
-    pub scratch: usize,
+    /// Bytes of persistent kernel state the caller must provide.
+    pub state_bytes: usize,
+    /// Bytes of per-callback scratch the caller must provide.
+    pub scratch_bytes: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -37,7 +40,7 @@ pub enum Isa {
 }
 
 #[derive(Debug)]
-pub struct Error(&'static str);
+pub struct Error(pub &'static str);
 
 /// Planar f32 view. Lifetime is the caller's buffer.
 pub struct PlanarMut<'a> {
