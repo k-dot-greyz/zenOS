@@ -7,10 +7,10 @@ Blocks merge of: [PR #18](https://github.com/k-dot-greyz/zenOS/pull/18)
 
 | | Count |
 |---|------|
-| Total tracked tasks | 23 |
+| Total tracked tasks | 24 |
 | Done in #18 | 7 |
 | Partial | 2 |
-| Open | 14 |
+| Open | 15 |
 
 ## GitHub issues (workstreams)
 

@@ -2,7 +2,7 @@
 
 > **Status:** Planning / follow-up to [#18](https://github.com/k-dot-greyz/zenOS/pull/18)  
 > **Audience:** Kaspars (greyZ), reviewers, future agents  
-> **Last updated:** 2026-08-23  
+> **Last updated:** 2026-09-17  
 > **Tone:** constructive roast with receipts — love the ambition, side-eye the archaeology
 
 ---
@@ -82,7 +82,7 @@ A **Template Dex** (naming per repo policy — not Pokédex) that lets humans an
 
 ---
 
-## Task board (total: **18 items**)
+## Task board (total: **24 items**)
 
 Legend: `✅` fixed in #18 post-rebase · `🔶` partial · `❌` open · `🚫` blocked on rehydration
 
@@ -135,7 +135,7 @@ Legend: `✅` fixed in #18 post-rebase · `🔶` partial · `❌` open · `🚫`
 | T-22 | Evolution entry for `metadata.registry.schema` | ✅ | `evolution.yaml` |
 | T-23 | Daily standup schema tightening | ✅ | `format: date`, `additionalProperties: false` |
 
-**Totals:** 23 tracked items · **7 ✅** · **2 🔶** · **14 ❌** · Phase 0 blocks merge
+**Totals:** 24 tracked items (T-00…T-23) · **7 ✅** · **2 🔶** · **15 ❌** · Phase 0 blocks merge
 
 ---
 
@@ -177,7 +177,7 @@ flowchart TD
 | Artifact | URL |
 |----------|-----|
 | Original PR | https://github.com/k-dot-greyz/zenOS/pull/18 |
-| Follow-up planning PR | *(see PR after push)* |
+| Follow-up planning PR | https://github.com/k-dot-greyz/zenOS/pull/61 |
 | Phase 0 issue | https://github.com/k-dot-greyz/zenOS/issues/57 |
 | Phase 1 issue | https://github.com/k-dot-greyz/zenOS/issues/60 |
 | Phase 2 issue | https://github.com/k-dot-greyz/zenOS/issues/58 |
