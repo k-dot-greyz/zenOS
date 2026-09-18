@@ -145,6 +145,7 @@ jobs:
       - name: zen auth status (CI)
         env:
           PYTHONPATH: ${{ github.workspace }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python -m zen.cli auth status --format json --offline --ci
 
   # Shell script validation

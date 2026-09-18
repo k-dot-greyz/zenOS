@@ -108,6 +108,19 @@ def _env(environ: Mapping[str, str], key: str) -> str:
     return str(environ.get(key, "") or "")
 
 
+def _first_present(environ: Mapping[str, str], *keys: str) -> str:
+    for key in keys:
+        value = _env(environ, key)
+        if _present(value):
+            return value
+    return ""
+    for key in keys:
+        value = _env(environ, key)
+        if _present(value):
+            return value
+    return ""
+
+
 def default_http() -> HttpClient:
     import httpx
 
@@ -262,16 +275,14 @@ def collect_auth_status(
     mcp = _env(env, "GITHUB_MCP_URL").strip() or DEFAULT_GITHUB_MCP_URL
     engine = _env(env, "ZEN_ENGINE_MODE").strip() or "product"
     report = AuthReport(github_mcp_url=mcp, engine_mode=engine)
-    report.credentials.append(
-        check_github_token(_env(env, "GITHUB_TOKEN"), validate=validate, http=http)
-    )
-    # OpenRouter is optional for the exit-code contract unless it is present
-    # and rejected. `--ci` keeps the same rule so Actions can pass with only
-    # GITHUB_TOKEN. Agent preflight still *warns* when it is missing.
+    gh_token = _first_present(env, "GITHUB_TOKEN", "GH_TOKEN")
+    report.credentials.append(check_github_token(gh_token, validate=validate, http=http))
+    # OpenRouter is optional unless present-and-rejected. `--ci` skips the
+    # live OpenRouter call so Actions can pass with only GITHUB_TOKEN.
     report.credentials.append(
         check_openrouter_key(
             _env(env, "OPENROUTER_API_KEY"),
-            validate=validate,
+            validate=validate and not ci,
             required=False,
             http=http,
         )

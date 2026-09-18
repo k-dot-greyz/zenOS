@@ -150,6 +150,25 @@ def test_ci_mode_requires_github_token_only():
     assert ok.exit_code == AUTH_OK
 
 
+def test_ci_mode_accepts_gh_token_alias():
+    from zen.auth.credentials import AUTH_OK, collect_auth_status
+
+    report = collect_auth_status(
+        environ={"GH_TOKEN": "ghs_actions"},
+        validate=False,
+        ci=True,
+    )
+    assert report.credential("GITHUB_TOKEN").status == "ok"
+    assert report.exit_code == AUTH_OK
+
+
+def test_ci_workflow_injects_actions_token():
+    text = (ROOT / ".github" / "workflows" / "zenos-ci.yml").read_text(encoding="utf-8")
+    assert "secrets.GITHUB_TOKEN" in text
+    assert "auth status" in text
+    assert "--offline --ci" in text
+
+
 def test_cli_auth_status_json_and_exit_codes(monkeypatch):
     from zen.cli import cli
 

@@ -100,7 +100,7 @@ def scan(root: Path) -> List[str]:
             continue
         try:
             text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
+        except UnicodeDecodeError, OSError:
             continue
         for label, pattern in FORBIDDEN:
             for match in pattern.finditer(text):
