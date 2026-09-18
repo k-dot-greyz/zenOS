@@ -227,12 +227,17 @@ def test_agent_run_soft_fails_when_auth_missing(monkeypatch):
     from zen.cli import cli
 
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
-    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    # Empty (not deleted): dotenv load_dotenv(override=False) must not
+    # resurrect a workspace .env placeholder the way a missing key would.
+    monkeypatch.setenv("OPENROUTER_API_KEY", "")
 
     runner = CliRunner()
-    # --list should still work (not an agent execution)
+    # Listing agents is not an execution — it must not require OpenRouter.
     listed = runner.invoke(cli, ["run", "--list"])
-    assert listed.exit_code == 0
+    assert listed.exception is None, listed.exception
+    assert listed.exit_code == 0, listed.output
+    assert "Available Agents" in listed.output or "No agents found" in listed.output
 
     # executing an agent should warn, not hard-crash on missing auth
     from zen.core import launcher as launcher_mod
