@@ -48,8 +48,9 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup
 
 2. **Set up environment:**
    ```bash
-   cp env.example .env
-   # Edit .env with your API key
+   python scripts/setup_env.py    # idempotent wizard; validates GITHUB_TOKEN
+   # or: cp .env.template .env && $EDITOR .env
+   zen auth status --format json
    ```
 
 3. **Install dependencies:**
@@ -61,6 +62,15 @@ curl -sSL https://raw.githubusercontent.com/k-dot-greyz/zenOS/main/scripts/setup
    ```bash
    zen chat
    ```
+
+Hosted security lab (Docker):
+
+```bash
+docker compose -f docker-compose.lab.yml up --build
+curl -sS localhost:8080/scan
+```
+
+See `docs/guides/SECURITY_LAB.md` and `docs/guides/CURSOR_MCP_SETUP.md`.
 
 ---
 

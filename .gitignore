@@ -248,3 +248,10 @@ temp/
 workspace/temp/
 inbox/temp/
 .zenos_setup_complete
+
+# Secrets / key material (Track A hygiene)
+*.pem
+*.key
+secrets/
+.cursor/mcp.json
+

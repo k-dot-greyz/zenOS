@@ -44,6 +44,7 @@ class CheckResult:
 @dataclass
 class DoctorReport:
     checks: list[CheckResult] = field(default_factory=list)
+    auth: object | None = None
 
     @property
     def has_failures(self) -> bool:
@@ -52,6 +53,39 @@ class DoctorReport:
     @property
     def has_warnings(self) -> bool:
         return any(c.severity == "warn" for c in self.checks)
+
+    @property
+    def exit_code(self) -> int:
+        from zen.auth.credentials import AUTH_INVALID, AUTH_MISSING
+
+        auth_code = 0
+        if self.auth is not None:
+            auth_code = int(getattr(self.auth, "exit_code", 0) or 0)
+        if auth_code in {AUTH_MISSING, AUTH_INVALID}:
+            return auth_code
+        if self.has_failures:
+            return 1
+        return 0
+
+    def to_dict(self) -> dict:
+        payload = {
+            "ok": not self.has_failures and self.exit_code == 0,
+            "exit_code": self.exit_code,
+            "result": "ok" if self.exit_code == 0 else ("fail" if self.has_failures else "warn"),
+            "checks": [
+                {
+                    "name": c.name,
+                    "ok": c.ok,
+                    "severity": c.severity,
+                    "message": c.message,
+                }
+                for c in self.checks
+            ],
+        }
+        if self.auth is not None and hasattr(self.auth, "to_dict"):
+            payload["credentials"] = self.auth.to_dict().get("credentials", [])
+            payload["github_mcp_url"] = getattr(self.auth, "github_mcp_url", None)
+        return payload
 
 
 def _version_tuple(info: Sequence[int]) -> tuple[int, int, int]:
@@ -259,18 +293,18 @@ def check_env_file(root: Optional[Path] = None) -> CheckResult:
             severity="ok",
             message="Environment file found (.env)",
         )
-    if (repo / "env.example").exists():
+    if (repo / ".env.template").exists() or (repo / "env.example").exists():
         return CheckResult(
             name="dotenv",
             ok=True,
             severity="warn",
-            message="No .env yet — copy env.example to .env and add keys",
+            message="No .env yet — copy .env.template (or env.example) to .env and add keys",
         )
     return CheckResult(
         name="dotenv",
         ok=False,
         severity="fail",
-        message="Neither .env nor env.example found",
+        message="Neither .env nor .env.template/env.example found",
     )
 
 
@@ -375,6 +409,9 @@ def run_env_doctor(
     root: Optional[Path] = None,
     version_info: Optional[Sequence[int]] = None,
     include_outdated: bool = False,
+    include_auth: bool = True,
+    validate_auth: bool = False,
+    environ: Optional[dict] = None,
 ) -> DoctorReport:
     repo = Path(root) if root is not None else Path.cwd()
     report = DoctorReport()
@@ -388,6 +425,28 @@ def run_env_doctor(
     report.checks.extend(check_core_imports())
     if include_outdated:
         report.checks.append(check_outdated_packages())
+    if include_auth:
+        from zen.auth.credentials import collect_auth_status
+
+        auth = collect_auth_status(environ=environ, validate=validate_auth)
+        report.auth = auth
+        gh = auth.credential("GITHUB_TOKEN")
+        report.checks.append(
+            CheckResult(
+                name="GITHUB_TOKEN",
+                ok=gh.status == "ok",
+                severity="ok" if gh.status == "ok" else "fail",
+                message=gh.message,
+            )
+        )
+        report.checks.append(
+            CheckResult(
+                name="GITHUB_MCP_URL",
+                ok=True,
+                severity="ok",
+                message=f"GITHUB_MCP_URL={auth.github_mcp_url}",
+            )
+        )
     return report
 
 
@@ -411,3 +470,7 @@ def format_report(report: DoctorReport, *, ai_mode: bool = False) -> str:
     else:
         lines.append("Result: OK — Python floor, CLI entrypoint, and core deps look current.")
     return "\n".join(lines) + "\n"
+
+
+def format_report_json(report: DoctorReport) -> str:
+    return json.dumps(report.to_dict(), indent=2) + "\n"

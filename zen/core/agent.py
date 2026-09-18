@@ -211,7 +211,10 @@ class AgentRegistry:
             self._agents["system_troubleshooter"] = SystemTroubleshooterAgent()
             self._agents["prompt_security"] = PromptSecurityAgent()
 
-        except ImportError as e:
+        except (ImportError, ValueError) as e:
+            # ValueError: OpenRouterProvider refuses to construct without
+            # OPENROUTER_API_KEY. Listing agents must still work on a
+            # fresh box with no secrets (auth soft-fail contract).
             print(f"Warning: Could not load PromptOS agents: {e}")
 
     def get_agent(self, name: str) -> Agent:

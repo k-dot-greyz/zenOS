@@ -1,0 +1,39 @@
+# fly.toml — zenOS security lab
+#   fly launch --config deploy/fly.toml
+#   fly secrets set GITHUB_TOKEN=… OPENROUTER_API_KEY=…
+#   fly deploy
+
+app = "zenos-security-lab"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  ZEN_ENGINE_MODE = "product"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 50
+    soft_limit = 25
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "15s"
+  method = "GET"
+  path = "/health"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
