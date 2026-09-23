@@ -20,16 +20,8 @@ CORE_IMPORTS: tuple[tuple[str, str], ...] = (
     ("click", "click"),
     ("rich", "rich"),
     ("yaml", "pyyaml"),
-    ("jinja2", "jinja2"),
-    ("pydantic", "pydantic"),
-    ("aiohttp", "aiohttp"),
-    ("httpx", "httpx"),
     ("dotenv", "python-dotenv"),
     ("prompt_toolkit", "prompt-toolkit"),
-    ("bs4", "beautifulsoup4"),
-    ("schedule", "schedule"),
-    ("aiofiles", "aiofiles"),
-    ("psutil", "psutil"),
 )
 
 

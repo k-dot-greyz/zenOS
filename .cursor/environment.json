@@ -1,0 +1,5 @@
+{
+  "name": "zenOS",
+  "install": "bash scripts/python-first-coldstart.sh",
+  "start": "bash /workspace/scripts/zenos-env-start.sh"
+}

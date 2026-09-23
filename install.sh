@@ -54,26 +54,20 @@ require_python_314() {
     exit 1
 }
 
-# install_deps installs current stable zenOS dependencies via pyproject.toml on Python 3.14+.
+# install_deps: Python 3.14.7+ FIRST, then pip. Never ignore requires-python.
 install_deps() {
-    require_python_314
-    echo -e "${YELLOW}🐍 Installing zenOS (Python 3.14+, current stables from pyproject.toml)...${NC}"
-    restore_setup() {
-        if [ -f _setup.py.bak ]; then
-            mv _setup.py.bak setup.py
-        fi
-    }
-    trap restore_setup EXIT
-    if [ -f setup.py ]; then
-        mv setup.py _setup.py.bak
+    local root
+    root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    echo -e "${YELLOW}🐍 Python-first coldstart (3.14.7+ then .[dev])...${NC}"
+    if ! bash "$root/scripts/python-first-coldstart.sh" "$root"; then
+        echo -e "${RED}FLOOR_UNMET: python3.14 >= 3.14.7 required before pip${NC}"
+        exit 2
     fi
-    "$PYTHON_BIN" -m pip install --upgrade pip setuptools wheel
-    if ! "$PYTHON_BIN" -m pip install -e ".[dev]"; then
-        echo -e "${YELLOW}Retrying with --break-system-packages...${NC}"
-        "$PYTHON_BIN" -m pip install --break-system-packages -e ".[dev]"
+    if [[ -x "$root/.venv/bin/python" ]]; then
+        PYTHON_BIN="$root/.venv/bin/python"
+    else
+        require_python_314
     fi
-    restore_setup
-    trap - EXIT
 }
 setup_env() {
     echo "🔧 Setting up environment..."
@@ -107,17 +101,21 @@ install_sample() {
     echo "✅ Sample plugin installed!"
 }
 
-# main orchestrates the zenOS installation: clones the repository if missing, installs dependencies, configures the environment, verifies the installation, installs a sample plugin, and prints quick-start and guide links.
+# main orchestrates the zenOS installation. If already in a checkout, do not nest-clone.
 main() {
-    # Clone repository if not already present
-    if [[ ! -d "zenOS" ]]; then
-        echo "📥 Cloning zenOS repository..."
-        git clone https://github.com/k-dot-greyz/zenOS.git
+    local root
+    root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [[ -f "$root/pyproject.toml" && -d "$root/zen" ]]; then
+        cd "$root"
+    else
+        if [[ ! -d "zenOS" ]]; then
+            echo "📥 Cloning zenOS repository..."
+            git clone https://github.com/k-dot-greyz/zenOS.git
+        fi
+        cd zenOS
     fi
-    
-    cd zenOS
-    
-    # Install dependencies
+
+    # Install dependencies (python-first)
     install_deps
     
     # Setup environment
