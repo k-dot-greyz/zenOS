@@ -16,16 +16,8 @@ REQUIRED_MODULES: tuple[str, ...] = (
     "click",
     "rich",
     "yaml",
-    "jinja2",
-    "pydantic",
-    "aiohttp",
-    "httpx",
     "dotenv",
     "prompt_toolkit",
-    "bs4",
-    "schedule",
-    "aiofiles",
-    "psutil",
 )
 
 

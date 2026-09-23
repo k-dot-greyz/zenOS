@@ -61,18 +61,17 @@ zen repo optimize          # Suggest improvements
 
 ## Requirements
 
-zenOS **will not start** on anything below **Python 3.14**. That includes the `zen` CLI, `install.sh`, and Cursor Cloud Agent `start`. Use the current stables from `pyproject.toml` / `requirements.txt` (Click 8.2+, Rich 14+, Pydantic 2.13.5+ (<2.14), aiohttp 3.11+, httpx 0.28+, …).
+zenOS **will not start** on anything below **Python 3.14.7**. The first mutation on a new env is `scripts/python-first-coldstart.sh` (CPython, then latest pip, then `.[dev]`, then `npm@latest` best-effort). Default deps are CLI QoL only (`click`, `rich`, `pyyaml`, `python-dotenv`, `prompt-toolkit`). Product libs (`aiohttp`, `pydantic`, `httpx`, …) are `pip install -e ".[product]"`.
 
 ```bash
 # Check the interpreter before install
-python3.14 --version   # must be 3.14.x
+python3.14 --version   # must be 3.14.7+
 # or
-uv python install 3.14
+bash scripts/python-first-coldstart.sh   # ensure-python314 then pip; never hydrates a 3.12 venv
 
-bash scripts/zenos-env-install.sh   # preferred: uv 3.14 venv + current deps
-# or: python3.14 -m pip install -e .
-bash scripts/zenos-env-start.sh     # per-boot gate used by Cloud Agent start
-zen env-doctor                      # fails hard if the floor is wrong
+bash scripts/zenos-env-install.sh        # thin wrapper around python-first
+bash scripts/zenos-env-start.sh          # per-boot gate used by Cloud Agent start
+zen env-doctor                           # fails hard if the floor is wrong
 ```
 
 ---

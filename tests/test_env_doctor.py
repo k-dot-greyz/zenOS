@@ -62,9 +62,12 @@ def test_startup_docs_require_python_3_14():
 def test_env_start_script_gates_python_3_14():
     start = (ROOT / "scripts" / "zenos-env-start.sh").read_text(encoding="utf-8")
     install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
+    first = (ROOT / "scripts" / "python-first-coldstart.sh").read_text(encoding="utf-8")
     assert "3.14" in start
     assert "require_runtime" in start
-    assert "uv python install 3.14" in install
+    assert "python-first-coldstart.sh" in install
+    assert "ensure-python314" in first
+    assert "--ignore-requires-python" not in first
 
 
 def test_pyproject_requires_python_3_14():
@@ -125,26 +128,20 @@ def test_env_doctor_skips_outdated_by_default(monkeypatch):
 
 
 def test_fallback_requirements_match_runtime_imports():
-    from zen.setup.unified_setup import FALLBACK_REQUIREMENTS
-
+    src = (ROOT / "zen" / "setup" / "unified_setup.py").read_text(encoding="utf-8")
+    start = src.index('FALLBACK_REQUIREMENTS = """')
+    end = src.index('"""', start + len('FALLBACK_REQUIREMENTS = """'))
+    text = src[start:end].lower()
     required = (
         "click",
         "rich",
         "pyyaml",
-        "jinja2",
-        "pydantic",
-        "aiohttp",
-        "httpx",
         "python-dotenv",
         "prompt-toolkit",
-        "beautifulsoup4",
-        "schedule",
-        "aiofiles",
-        "psutil",
     )
-    text = FALLBACK_REQUIREMENTS.lower()
     for name in required:
         assert name in text, name
+    assert "aiohttp" not in text
     assert "nltk" not in text
 
 
@@ -158,15 +155,15 @@ def test_install_sh_windows_uses_python_bin_module_entrypoint():
 
 
 def test_env_install_restores_setup_py_on_failure():
-    install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
-    assert "trap" in install
-    assert "_setup.py.bak" in install
+    first = (ROOT / "scripts" / "python-first-coldstart.sh").read_text(encoding="utf-8")
+    assert "trap" in first
+    assert "_setup.py.bak" in first
 
 
 def test_env_start_fails_without_zen_runtime():
     start = (ROOT / "scripts" / "zenos-env-start.sh").read_text(encoding="utf-8")
-    assert "cannot import zen.runtime" in start
-    assert "aiofiles" in start or "require_runtime()" in start
+    assert "cannot load zen.runtime" in start
+    assert "require_runtime()" in start
 
 
 def test_ruff_uses_lint_select_not_deprecated_top_level_select():

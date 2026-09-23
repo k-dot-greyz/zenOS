@@ -59,20 +59,12 @@ class SetupContext:
 
 
 # Must stay aligned with pyproject.toml [project].dependencies / zen.runtime.REQUIRED_MODULES.
-FALLBACK_REQUIREMENTS = """# zenOS Core Dependencies (Python 3.14+)
-click>=8.2
-rich>=14.0
-pyyaml>=6.0.2
-jinja2>=3.1.6
-pydantic>=2.13.5,<2.14
-aiohttp>=3.11
-python-dotenv>=1.1
-prompt-toolkit>=3.0.50
-beautifulsoup4>=4.13
-schedule>=1.2.2
-httpx>=0.28
-aiofiles>=24.1
-psutil>=7.0
+FALLBACK_REQUIREMENTS = """# zenOS CLI QoL (Python 3.14.7+). Product libs: pip install -e ".[product]"
+click>=8.5
+rich>=15.0
+pyyaml>=6.0.3
+python-dotenv>=1.2
+prompt-toolkit>=3.0.53
 """
 
 
