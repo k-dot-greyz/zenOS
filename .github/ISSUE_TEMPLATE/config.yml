@@ -6,3 +6,6 @@ contact_links:
   - name: Contributing guide
     url: https://github.com/k-dot-greyz/zenOS/blob/main/CONTRIBUTING.md
     about: PR workflow, architecture rules, and quality gates
+  - name: Launch readiness checklist
+    url: https://github.com/k-dot-greyz/zenOS/blob/main/docs/planning/LAUNCH_READINESS_CHECKLIST.md
+    about: Architectural invariants to complete before staging or production traffic

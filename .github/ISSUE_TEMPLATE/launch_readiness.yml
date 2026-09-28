@@ -1,0 +1,47 @@
+name: Launch readiness
+description: Track a staging or production cutover against the architectural compliance matrix
+title: "[launch]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Walk [`docs/planning/LAUNCH_READINESS_CHECKLIST.md`](https://github.com/k-dot-greyz/zenOS/blob/main/docs/planning/LAUNCH_READINESS_CHECKLIST.md) before staging or production traffic. Status here is the cutover record; the doc is the invariant spec.
+
+  - type: textarea
+    id: surface
+    attributes:
+      label: Surface going live
+      description: What is being cut over (hosted API, web UI, mobile, mail, billing, accounts, UGC, telemetry sink).
+      placeholder: First hosted web workspace + waitlist email
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: matrix
+    attributes:
+      label: Launch readiness matrix
+      description: Check only when the structural fix is in the shipped path. Use N/A in notes when the surface does not exist.
+      options:
+        - label: "1. Zero-egress static assets (CSP default-src 'self'; no third-party font/CDN hotlinks)"
+        - label: "2. Affirmative clickwrap ledger (unticked checkbox + immutable terms-hash event log)"
+        - label: "3. Hardened age gate (neutral DOB/age before any identifier is stored)"
+        - label: "4. Default-deny telemetry and replay (opt-in state machine; input masking at source)"
+        - label: "5. RFC 8058 outbound mail (List-Unsubscribe, List-Unsubscribe-Post, postal address in CI)"
+        - label: "6. Symmetric click-to-cancel (equal or fewer clicks than signup; no retention wall)"
+        - label: "7. Pre-checkout renewal notice (cadence, price, cancel URL contiguous to CTA)"
+        - label: "8. Merchant of Record isolation (no naked gateway as seller of record)"
+        - label: "9. DMCA safe harbor agent (registered designated agent + public /dmca URL + takedown states)"
+        - label: "10. Accessibility navigation model (WCAG 2.2 AA; semantic HTML; keyboard focus)"
+        - label: "11. Programmatic DSAR pipelines (self-service export + cascading purge hooks)"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: N/A reasons, evidence, and open hazards
+      description: For each unchecked or N/A row, one line. Link PRs, schemas, CSP headers, or MoR contracts for checked rows.
+      placeholder: |
+        1. [x] CSP in hosting PR #…
+        8. N/A — no payments in this cutover
+        4. [ ] crash reporter still ships before consent — blocking
+    validations:
+      required: true

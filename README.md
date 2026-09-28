@@ -226,6 +226,7 @@ zen dex sync
 - **[Quick Start Guide](docs/guides/QUICKSTART.md)** - Get started in minutes
 - **[AI Instructions](docs/AI_INSTRUCTIONS.md)** - For AI agents
 - **[Integration Blueprint](docs/planning/AI_INTEGRATION_BLUEPRINT.md)** - Architecture deep dive
+- **[Launch Readiness Checklist](docs/planning/LAUNCH_READINESS_CHECKLIST.md)** - Pre-staging / production cutover invariants
 - **[Setup Guides](docs/guides/)** - Platform-specific instructions
 - **[Genesis Log (archive)](docs/archive/zenOS-genesis-log.md)** - The origin story (historical)
 
