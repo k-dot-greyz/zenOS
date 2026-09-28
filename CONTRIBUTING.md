@@ -50,7 +50,7 @@ Know where changes belong before you open a PR:
 | `.github/` | CI workflows, PR template, commit checklist |
 | `tests/`, `test_*.py` | Pytest modules (see CI) |
 
-For AI agent onboarding and platform conventions, start with [`docs/AI_INSTRUCTIONS.md`](docs/AI_INSTRUCTIONS.md). For local environment setup, see [`docs/guides/DEV_ENVIRONMENT_SETUP.md`](docs/guides/DEV_ENVIRONMENT_SETUP.md).
+For AI agent onboarding and platform conventions, start with [`docs/AI_INSTRUCTIONS.md`](docs/AI_INSTRUCTIONS.md). For local environment setup, see [`docs/guides/DEV_ENVIRONMENT_SETUP.md`](docs/guides/DEV_ENVIRONMENT_SETUP.md). Before a staging or production cutover, walk [`docs/planning/LAUNCH_READINESS_CHECKLIST.md`](docs/planning/LAUNCH_READINESS_CHECKLIST.md).
 
 ---
 
@@ -235,6 +235,12 @@ All development within zenOS should adhere to the **GlitchWorks Agnostic Archite
 | State hydration | Stateful subsystems should support serialize/restore (JSON, SQLite, YAML). |
 | Graceful degradation | Missing API keys or offline providers must surface actionable errors, not crash the host. |
 | Agnostic telemetry | Domain logic emits events; the host decides stdout, files, or remote sinks. |
+
+### Launch readiness
+
+Compliance for zenOS surfaces is an architectural invariant problem, not post-hoc copy. Before any staging deployment or production traffic cutover of a user-facing network surface (hosted API, web UI, mobile client, outbound mail, payments, accounts, or UGC), complete the matrix in [`docs/planning/LAUNCH_READINESS_CHECKLIST.md`](docs/planning/LAUNCH_READINESS_CHECKLIST.md).
+
+Move a row from `N/A` to `[ ]` in the **same PR** that introduces the surface. Do not defer the legal pass to a follow-up.
 
 ---
 

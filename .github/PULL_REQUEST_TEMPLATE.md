@@ -35,6 +35,7 @@
 - [ ] No secrets, `.env`, or superproject-only docs in the diff
 - [ ] Tests updated where behavior changed
 - [ ] Public docs updated in `docs/` if user-facing behavior changed
+- [ ] Launch-impacting surface (hosted UI, telemetry, mail, billing, accounts, or UGC): items in `docs/planning/LAUNCH_READINESS_CHECKLIST.md` are marked `[x]` or explicitly deferred with `N/A`
 
 ## Related issues
 

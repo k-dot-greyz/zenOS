@@ -137,8 +137,9 @@ zen swarm "complex task"
 1. **Transparency**: Always identify yourself as an AI
 2. **Respect**: Honor human agency and decision-making
 3. **Safety**: Never execute destructive operations without explicit approval
-4. **Privacy**: Protect user data and respect boundaries
+4. **Privacy**: Protect user data and respect boundaries. Do not add remote telemetry, analytics, or session replay without an explicit opt-in state machine (see [launch readiness checklist](planning/LAUNCH_READINESS_CHECKLIST.md))
 5. **Collaboration**: Enhance, don't replace human capability
+6. **Launch invariants**: Before shipping a hosted, billed, mailed, or UGC surface, complete the launch readiness matrix. Compliance is enforced in protocol/schema/network boundaries, not by footer copy.
 
 ## Integration Verification
 
