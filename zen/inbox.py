@@ -5,11 +5,25 @@ zenOS Inbox System - Process incoming items
 
 import json
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
 import click
+
+_UNSAFE_ITEM_ID = re.compile(r"[/\\]|\.\.")
+
+
+def _safe_type_slug(item_type: str) -> str:
+    """Filesystem-safe segment for inbox item ids (blocks path traversal in type)."""
+    tail = item_type.replace("\\", "/").split("/")[-1]
+    slug = re.sub(r"[^\w.-]+", "_", tail).strip("._")[:64]
+    return slug or "item"
+
+
+def _item_id_is_safe(item_id: str) -> bool:
+    return bool(item_id) and _UNSAFE_ITEM_ID.search(item_id) is None
 
 
 class InboxManager:
@@ -23,7 +37,7 @@ class InboxManager:
     def add_item(self, item_type: str, content: str, metadata: Dict[str, Any] = None) -> str:
         """Add a new item to the inbox"""
         timestamp = datetime.now().isoformat()
-        item_id = f"{item_type}_{timestamp.replace(':', '-')}"
+        item_id = f"{_safe_type_slug(item_type)}_{timestamp.replace(':', '-')}"
 
         item = {
             "id": item_id,
@@ -35,8 +49,10 @@ class InboxManager:
             "updated_at": timestamp,
         }
 
-        # Save to incoming
-        item_file = self.incoming_path / f"{item_id}.json"
+        # Save to incoming (resolved path must stay under incoming/)
+        item_file = (self.incoming_path / f"{item_id}.json").resolve()
+        if not str(item_file).startswith(str(self.incoming_path.resolve())):
+            raise ValueError("refusing to write inbox item outside incoming/")
         with open(item_file, "w") as f:
             json.dump(item, f, indent=2)
 
@@ -71,9 +87,15 @@ class InboxManager:
 
         if from_status not in status_paths or to_status not in status_paths:
             return False
+        if not _item_id_is_safe(item_id):
+            return False
 
-        source_path = status_paths[from_status] / f"{item_id}.json"
-        target_path = status_paths[to_status] / f"{item_id}.json"
+        source_path = (status_paths[from_status] / f"{item_id}.json").resolve()
+        target_path = (status_paths[to_status] / f"{item_id}.json").resolve()
+        if not str(source_path).startswith(str(status_paths[from_status].resolve())):
+            return False
+        if not str(target_path).startswith(str(status_paths[to_status].resolve())):
+            return False
 
         if not source_path.exists():
             return False
@@ -149,10 +171,13 @@ def move(item_id: str, to_status: str):
     """Move an item to a different status"""
     manager = InboxManager()
 
-    # Find current status
+    status_dirs = {
+        "new": manager.incoming_path,
+        "processing": manager.processing_path,
+        "processed": manager.processed_path,
+    }
     current_status = None
-    for status in ["new", "processing", "processed"]:
-        status_path = getattr(manager, f"{status}_path")
+    for status, status_path in status_dirs.items():
         if (status_path / f"{item_id}.json").exists():
             current_status = status
             break
