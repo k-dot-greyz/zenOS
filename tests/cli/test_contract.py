@@ -3,6 +3,7 @@ from __future__ import annotations
 REQUIRED_COMMANDS = {
     "arena",
     "bench",
+    "chat",
     "dex",
     "doctor",
     "env-doctor",
