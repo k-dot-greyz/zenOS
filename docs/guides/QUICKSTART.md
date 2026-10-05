@@ -99,16 +99,13 @@ grep "tier: \"epic\|legendary\"" dex/procedures.yaml
 
 ```bash
 # Basic chat
-zen chat "Hello, zenOS!"
+zen chat
 
-# Analyze code
-zen analyze main.py
+# List agents
+zen run --list
 
 # Check system health
 zen doctor
-
-# Enable AI mode (for AI agents)
-zen --ai-mode
 
 # Get help
 zen help
@@ -120,7 +117,7 @@ zen help
 
 ### Human Leading
 ```bash
-zen chat --copilot  # AI assists you
+zen chat  # Interactive TTY chat (copilot mode is parked)
 ```
 
 ### AI Leading

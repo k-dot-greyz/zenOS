@@ -29,10 +29,10 @@ Essential procedures you can execute:
 #### Basic Interaction
 ```bash
 # Chat with human
-zen chat "Your message here"
+zen chat
 
-# Analyze code
-zen analyze <file_or_directory>
+# List agents
+zen run --list
 
 # Get help
 zen help
@@ -114,8 +114,8 @@ When teaching another AI about zenOS:
 #### Co-Pilot Mode
 Assist human in real-time:
 ```bash
-zen chat --copilot
-# You observe and suggest improvements
+zen chat
+# Copilot mode is parked until a live command exists
 ```
 
 #### Delegation Mode
