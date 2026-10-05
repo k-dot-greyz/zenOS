@@ -28,6 +28,10 @@ Python floor is already **3.14+** (`zen.runtime`). Do not reopen that.
 - PKM Gemini extract, plugin GitHub search.
 - Renaming root `setup.py` (env-doctor WARN — needs its own docs pass).
 - Deleting `zen/cli_v2.py` (stop wiring new commands there; extract later).
+- Extract `dex`/`bench`/`sync`/`arena` from `cli_v2.py` → `zen/cli_dex.py`.
+- Fix `zen/setup/mcp_setup.py` `` \` `` SyntaxWarning.
+- `zen chat --copilot`, `zen analyze`, swarm — new specs.
+- Network-marked live OpenRouter smoke.
 - Full TUI screenshot tests.
 
 ---
