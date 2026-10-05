@@ -39,9 +39,7 @@ def test_run_execute_uses_launcher(runner, zen_cli, monkeypatch):
             return "pong"
 
     monkeypatch.setattr("zen.cli.Launcher", FakeLauncher)
-    result = runner.invoke(
-        zen_cli, ["run", "assistant", "ping", "--no-critique"]
-    )
+    result = runner.invoke(zen_cli, ["run", "assistant", "ping", "--no-critique"])
     assert result.exit_code == 0
     assert calls["agent"] == "assistant"
     assert calls["prompt"] == "ping"
