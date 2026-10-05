@@ -49,6 +49,7 @@ def main() -> None:
 @cli.command("help")
 @click.pass_context
 def help_command(ctx: click.Context) -> None:
+    """Show the top-level command list (alias of --help)."""
     click.echo(ctx.parent.get_help() if ctx.parent else ctx.get_help())
 
 
