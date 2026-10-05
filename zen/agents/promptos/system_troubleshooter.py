@@ -39,9 +39,9 @@ class SystemTroubleshooterAgent(Agent):
             "Methodical, diagnostic-focused, and solution-oriented with step-by-step guidance"
         )
 
-        # Initialize components
+        # Initialize components lazily — listing agents must not shell git.
         self.provider = OpenRouterProvider()
-        self.safe_executor = SafeCommandExecutor()
+        self._safe_executor: Optional[SafeCommandExecutor] = None
 
         # Available tools
         self.tools = {
@@ -52,6 +52,12 @@ class SystemTroubleshooterAgent(Agent):
             "dependency_checker": self._run_dependency_checker,
             "environment_validator": self._run_environment_validator,
         }
+
+    @property
+    def safe_executor(self) -> SafeCommandExecutor:
+        if self._safe_executor is None:
+            self._safe_executor = SafeCommandExecutor()
+        return self._safe_executor
 
     def execute(self, prompt: str, variables: Dict[str, Any]) -> Any:
         """Execute system troubleshooting"""

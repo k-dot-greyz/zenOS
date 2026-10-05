@@ -31,19 +31,84 @@ from zen.utils.config import Config
 console = Console()
 
 
-@click.group()
-@click.option("--version", is_flag=True, help="Show version")
-def cli(version: bool):
+@click.group(invoke_without_command=True)
+@click.version_option(version=__version__, prog_name="zen", message="zenOS v%(version)s")
+@click.pass_context
+def cli(ctx: click.Context) -> None:
     """🧘 zenOS - The Zen of AI Workflow Orchestration"""
-    if version:
-        console.print(f"zenOS v{__version__}")
-        return
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 def main() -> None:
     """Console-script entrypoint (`zen` / `zenos` → zen.cli:main)."""
     require_runtime()
     cli()
+
+
+@cli.command("help")
+@click.pass_context
+def help_command(ctx: click.Context) -> None:
+    """Show the top-level command list (alias of --help)."""
+    click.echo(ctx.parent.get_help() if ctx.parent else ctx.get_help())
+
+
+def _start_chat(*, offline: bool = False, eco: bool = False, model: str | None = None) -> None:
+    import asyncio
+    import os
+
+    if not sys.stdin.isatty():
+        console.print("[red]zen chat needs a TTY. Use an interactive terminal.[/red]")
+        raise SystemExit(1)
+
+    if offline:
+        os.environ["ZEN_PREFER_OFFLINE"] = "true"
+        console.print("[green]🔌 Offline mode enabled - using local models[/green]")
+
+    if eco:
+        os.environ["ZEN_ECO_MODE"] = "true"
+        console.print("[yellow]🔋 Eco mode enabled - optimizing for battery[/yellow]")
+
+    if model:
+        os.environ["ZEN_DEFAULT_MODEL"] = model
+
+    is_mobile = (
+        os.environ.get("COMPACT_MODE") == "1"
+        or os.environ.get("TERMUX_VERSION")
+        or int(os.environ.get("COLUMNS", 80)) < 60
+    )
+
+    if is_mobile:
+        from zen.ui.mobile import MobileChat
+
+        console.print("[cyan]🧘 zenOS Mobile Mode[/cyan]")
+
+        if offline:
+            from zen.providers.offline import get_offline_manager
+
+            mgr = get_offline_manager()
+            status = mgr.get_status()
+            if status["recommended_model"]:
+                console.print(
+                    f"[green]📱 Using {status['recommended_model']} (optimized for your device)[/green]"
+                )
+
+        chat_session = MobileChat()
+    else:
+        from zen.ui.interactive import InteractiveChat
+
+        chat_session = InteractiveChat()
+
+    asyncio.run(chat_session.start())
+
+
+@cli.command("chat")
+@click.option("--offline", is_flag=True, help="Force offline mode with local models")
+@click.option("--eco", is_flag=True, help="Battery-saving eco mode (mobile)")
+@click.option("--model", "-m", help="Specify model to use")
+def chat(offline: bool, eco: bool, model: Optional[str]) -> None:
+    """Start interactive chat mode."""
+    _start_chat(offline=offline, eco=eco, model=model)
 
 
 @cli.command()
@@ -55,7 +120,7 @@ def main() -> None:
 @click.option("--no-critique", is_flag=True, help="Disable auto-critique")
 @click.option("--upgrade-only", is_flag=True, help="Only upgrade the prompt, don't execute")
 @click.option("--debug", is_flag=True, help="Enable debug mode")
-@click.option("--chat", is_flag=True, help="Start interactive chat mode")
+@click.option("--chat", "start_chat", is_flag=True, help="Start interactive chat mode")
 @click.option("--offline", is_flag=True, help="Force offline mode with local models")
 @click.option("--model", "-m", help="Specify model to use")
 @click.option("--eco", is_flag=True, help="Battery-saving eco mode (mobile)")
@@ -68,8 +133,7 @@ def run(
     no_critique: bool,
     upgrade_only: bool,
     debug: bool,
-    version: bool,
-    chat: bool,
+    start_chat: bool,
     offline: bool,
     model: Optional[str],
     eco: bool,
@@ -87,57 +151,8 @@ def run(
         zen --create my-agent
     """
 
-    if version:
-        console.print(f"[cyan]zenOS version {__version__}[/cyan]")
-        return
-
-    if chat or (agent and agent == "chat"):
-        # Start interactive chat mode
-        import asyncio
-        import os
-
-        # Configure offline/eco modes
-        if offline:
-            os.environ["ZEN_PREFER_OFFLINE"] = "true"
-            console.print("[green]🔌 Offline mode enabled - using local models[/green]")
-
-        if eco:
-            os.environ["ZEN_ECO_MODE"] = "true"
-            console.print("[yellow]🔋 Eco mode enabled - optimizing for battery[/yellow]")
-
-        if model:
-            os.environ["ZEN_DEFAULT_MODEL"] = model
-
-        # Auto-detect mobile/compact mode
-        is_mobile = (
-            os.environ.get("COMPACT_MODE") == "1"
-            or os.environ.get("TERMUX_VERSION")
-            or int(os.environ.get("COLUMNS", 80)) < 60
-        )
-
-        if is_mobile:
-            from zen.ui.mobile import MobileChat
-
-            console.print("[cyan]🧘 zenOS Mobile Mode[/cyan]")
-
-            # Show offline status if available
-            if offline:
-                from zen.providers.offline import get_offline_manager
-
-                mgr = get_offline_manager()
-                status = mgr.get_status()
-                if status["recommended_model"]:
-                    console.print(
-                        f"[green]📱 Using {status['recommended_model']} (optimized for your device)[/green]"
-                    )
-
-            chat_session = MobileChat()
-        else:
-            from zen.ui.interactive import InteractiveChat
-
-            chat_session = InteractiveChat()
-
-        asyncio.run(chat_session.start())
+    if start_chat or (agent and agent == "chat"):
+        _start_chat(offline=offline, eco=eco, model=model)
         return
 
     if list_agents:

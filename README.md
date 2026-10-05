@@ -36,9 +36,11 @@ zen dex sync            # Update from OpenRouter and other sources
 ### 2. **Bender (Multi-Agent Framework)**
 Orchestrate multiple AI agents for complex tasks:
 ```bash
-zen swarm "analyze security vulnerabilities"  # Multi-AI collaboration
-zen delegate "refactor auth module"           # Single AI takes over
-zen chat --copilot                           # AI assists you
+zen swarm "analyze security vulnerabilities"  # Multi-AI collaboration (parked)
+zen delegate "refactor auth module"           # Single AI takes over (parked)
+zen chat                                      # Interactive TTY chat
+zen run --list                                # List built-in agents
+zen --help                                    # Live Click command inventory
 ```
 
 ### 3. **PKM (Personal Knowledge Management)**

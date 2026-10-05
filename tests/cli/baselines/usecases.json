@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "python_min": [3, 14],
+  "cases": [
+    {"id": "no_args", "argv": [], "expect_exit": [0], "max_ms": 3000},
+    {"id": "help", "argv": ["--help"], "expect_exit": [0], "max_ms": 3000},
+    {"id": "version", "argv": ["--version"], "expect_exit": [0], "max_ms": 3000},
+    {"id": "doctor", "argv": ["doctor"], "expect_exit": [0, 1], "max_ms": 15000},
+    {"id": "chat_help", "argv": ["chat", "--help"], "expect_exit": [0], "max_ms": 3000},
+    {"id": "run_list", "argv": ["run", "--list"], "expect_exit": [0], "max_ms": 8000},
+    {"id": "dex", "argv": ["dex"], "expect_exit": [0], "max_ms": 8000},
+    {"id": "dex_procedures", "argv": ["dex", "procedures"], "expect_exit": [0], "max_ms": 8000}
+  ]
+}
