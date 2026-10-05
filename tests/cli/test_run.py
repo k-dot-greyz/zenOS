@@ -6,6 +6,7 @@ def test_run_list_includes_builtin_agents(runner, zen_cli):
     assert result.exit_code == 0
     for name in ("troubleshooter", "critic", "assistant"):
         assert name in result.output
+    assert "git config --global" not in result.output
 
 
 def test_run_unknown_agent_exits_one(runner, zen_cli, monkeypatch):
