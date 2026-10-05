@@ -1,0 +1,16 @@
+from __future__ import annotations
+
+import pytest
+from click.testing import CliRunner
+
+
+@pytest.fixture
+def runner() -> CliRunner:
+    return CliRunner()
+
+
+@pytest.fixture
+def zen_cli():
+    from zen.cli import cli
+
+    return cli

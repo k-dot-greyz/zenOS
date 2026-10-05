@@ -31,19 +31,25 @@ from zen.utils.config import Config
 console = Console()
 
 
-@click.group()
-@click.option("--version", is_flag=True, help="Show version")
-def cli(version: bool):
+@click.group(invoke_without_command=True)
+@click.version_option(version=__version__, prog_name="zen")
+@click.pass_context
+def cli(ctx: click.Context) -> None:
     """🧘 zenOS - The Zen of AI Workflow Orchestration"""
-    if version:
-        console.print(f"zenOS v{__version__}")
-        return
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 def main() -> None:
     """Console-script entrypoint (`zen` / `zenos` → zen.cli:main)."""
     require_runtime()
     cli()
+
+
+@cli.command("help")
+@click.pass_context
+def help_command(ctx: click.Context) -> None:
+    click.echo(ctx.parent.get_help() if ctx.parent else ctx.get_help())
 
 
 @cli.command()
