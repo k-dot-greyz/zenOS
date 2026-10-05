@@ -318,13 +318,32 @@ def check_dex_files(root: Optional[Path] = None) -> list[CheckResult]:
 
 
 def requires_python_meets_floor(spec: str, floor: tuple[int, int] = MIN_PYTHON) -> bool:
-    """True if requires-python's lower bound is at least `floor`.
+    """True if requires-python does not allow interpreters below `floor`.
 
-    Accepts compound specs such as ``>=3.14,<4``. Does not require exact
-    quoting or spacing from the TOML source.
+    Accepts PEP 440 ranges (`>=3.14,<4`, `>3.14`, `~=3.14`, `==3.14.*`).
     """
+    spec = spec.strip()
+    if not spec:
+        return False
+    below = f"{floor[0]}.{floor[1] - 1}.999999" if floor[1] else f"{floor[0] - 1}.999999"
+    try:
+        from packaging.specifiers import SpecifierSet
+        from packaging.version import Version
+
+        return Version(below) not in SpecifierSet(spec)
+    except Exception:
+        return _requires_python_meets_floor_fallback(spec, floor)
+
+
+def _requires_python_meets_floor_fallback(spec: str, floor: tuple[int, int]) -> bool:
     compact = spec.replace(" ", "")
+    match = re.search(r"~=(\d+)\.(\d+)", compact)
+    if match:
+        return (int(match.group(1)), int(match.group(2))) >= floor
     match = re.search(r">=(\d+)\.(\d+)", compact)
+    if match:
+        return (int(match.group(1)), int(match.group(2))) >= floor
+    match = re.search(r">(\d+)\.(\d+)", compact)
     if match:
         return (int(match.group(1)), int(match.group(2))) >= floor
     match = re.search(r"==(\d+)\.(\d+)", compact)
