@@ -60,11 +60,13 @@ def test_startup_docs_require_python_3_14():
 
 
 def test_env_start_script_gates_python_3_14():
-    start = (ROOT / "scripts" / "zenos-env-start.sh").read_text(encoding="utf-8")
-    install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
+    start = (ROOT / "dex/ops/scripts/bash/zenos-env-start.sh").read_text(encoding="utf-8")
+    install = (ROOT / "dex/ops/scripts/bash/zenos-env-install.sh").read_text(encoding="utf-8")
     assert "3.14" in start
     assert "require_runtime" in start
     assert "uv python install 3.14" in install
+    shim_start = (ROOT / "scripts" / "zenos-env-start.sh").read_text(encoding="utf-8")
+    assert "dex/ops/scripts/bash/zenos-env-start.sh" in shim_start
 
 
 def test_pyproject_requires_python_3_14():
@@ -182,13 +184,13 @@ def test_install_sh_windows_uses_python_bin_module_entrypoint():
 
 
 def test_env_install_restores_setup_py_on_failure():
-    install = (ROOT / "scripts" / "zenos-env-install.sh").read_text(encoding="utf-8")
+    install = (ROOT / "dex/ops/scripts/bash/zenos-env-install.sh").read_text(encoding="utf-8")
     assert "trap" in install
     assert "_setup.py.bak" in install
 
 
 def test_env_start_fails_without_zen_runtime():
-    start = (ROOT / "scripts" / "zenos-env-start.sh").read_text(encoding="utf-8")
+    start = (ROOT / "dex/ops/scripts/bash/zenos-env-start.sh").read_text(encoding="utf-8")
     assert "cannot import zen.runtime" in start
     assert "aiofiles" in start or "require_runtime()" in start
 

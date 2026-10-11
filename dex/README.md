@@ -43,11 +43,23 @@ the yoinker scans zenOS for files with MIDI 2.0 frontmatter:
 ## relationship to dev-master
 
 **dev-master/dex/** - protocol specification and infrastructure procedures  
-**zenOS/dex/** - runtime resources and operational catalog
+**zenOS/dex/** - runtime catalog **and** the asset-lib scaffold (`SCHEMA.md`, `banks.yaml`)
 
 both use the same protocol, different domains:
 - dev-master: how to build (0x7F kernel, 0x7E ops, 0x7D dev)
 - zenOS: what's running (0x7C agents, 0x7B audio, runtime resources)
+
+Bank parents in this repo (draft, roast on PR):
+
+| bank | dir |
+| --- | --- |
+| 0x7F | `dex/kernel/` |
+| 0x7E | `dex/ops/` |
+| 0x7D | `dex/dev/` |
+| 0x7C | `dex/agents/` |
+| 0x7B | `dex/audio/` |
+
+Each bank splits `modules/`, `components/`, `projects/`, and `scripts/` by **named** language (`python`, `rust`, `bash`, `termux-bash`, `powershell`, …). There is no generic `shell/`. See `dex/SCHEMA.md`.
 
 ## protocol reference
 

@@ -7,6 +7,7 @@ Active development area for zenOS features and experiments.
 - **`current/`** - Current active development work
 - **`experiments/`** - Testing new features and ideas
 - **`prototypes/`** - UI prototypes and mockups
+- **Mobile prototype** moved to `dex/dev/projects/typescript/mobile-prototype/`
 
 ## 🎯 Usage
 
