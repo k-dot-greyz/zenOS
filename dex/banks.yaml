@@ -1,0 +1,81 @@
+# zenOS asset-lib banks — aligned to the dev-master dex protocol mapping
+# documented in dex/README.md (private spec lives in k-dot-greyz/dev-master).
+#
+# 0x7F kernel / 0x7E ops / 0x7D dev  → how to build (dev-master domain)
+# 0x7C agents / 0x7B audio           → what's running (zenOS domain)
+#
+# Inner layout of every bank: schemas/ + modules|components|projects|scripts
+# split by *named* implementation language. There is no generic `shell/` bucket.
+
+schema_version: 1
+protocol_source: "dev-master dex (0x7F kernel, 0x7E ops, 0x7D dev, 0x7C agents, 0x7B audio)"
+
+banks:
+  - id: "0x7F"
+    dir: kernel
+    domain: how-to-build
+    purpose: runtime-adjacent kernel contracts, boot, floors
+  - id: "0x7E"
+    dir: ops
+    domain: how-to-build
+    purpose: install, env, bridges, indexing, one-shot ops scripts
+  - id: "0x7D"
+    dir: dev
+    domain: how-to-build
+    purpose: developer tooling, prototypes, private-dev workflows
+  - id: "0x7C"
+    dir: agents
+    domain: whats-running
+    purpose: agent manifests, prompt modules, reusable agent components
+  - id: "0x7B"
+    dir: audio
+    domain: whats-running
+    purpose: TTS, voice bridges, audio pipeline assets
+
+# Implementation stacks. `family` is the shell family when relevant.
+# Never add `shell` or `sh` — pick bash, termux-bash, powershell, or posix-sh.
+languages:
+  agnostic:
+    runtime: none
+    family: none
+    glob: ["*.yaml", "*.yml", "*.json", "*.md"]
+    notes: Specs, schemas-as-data, prompt packs. No interpreter.
+  python:
+    runtime: "CPython >=3.14"
+    family: none
+    glob: ["*.py"]
+  rust:
+    runtime: "rustc (stub until a caller exists)"
+    family: none
+    glob: ["*.rs", "Cargo.toml"]
+  bash:
+    runtime: "GNU Bash >=4.2"
+    family: bash
+    glob: ["*.sh"]
+    shebang: ["#!/usr/bin/env bash", "#!/bin/bash"]
+  termux-bash:
+    runtime: "Termux Bash on Android"
+    family: bash
+    glob: ["*.sh"]
+    shebang: ["#!/data/data/com.termux/files/usr/bin/bash"]
+  powershell:
+    runtime: "Windows PowerShell 5.1 or PowerShell 7+"
+    family: powershell
+    glob: ["*.ps1"]
+  javascript:
+    runtime: "Node.js"
+    family: none
+    glob: ["*.js", "package.json"]
+  typescript:
+    runtime: "TypeScript"
+    family: none
+    glob: ["*.ts", "*.tsx", "tsconfig.json"]
+  sql:
+    runtime: "dialect documented per file"
+    family: none
+    glob: ["*.sql"]
+  posix-sh:
+    runtime: "POSIX sh (dash/ash). Do not put bashisms here."
+    family: posix-sh
+    glob: ["*.sh"]
+    shebang: ["#!/bin/sh"]

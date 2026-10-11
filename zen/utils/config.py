@@ -20,7 +20,9 @@ class ZenConfig:
     root_dir: Path = field(default_factory=Path.cwd)
     config_dir: Path = field(default_factory=lambda: Path.home() / ".zenOS")
     agents_dir: Path = field(default_factory=lambda: Path.cwd() / "agents")
-    modules_dir: Path = field(default_factory=lambda: Path.cwd() / "modules")
+    modules_dir: Path = field(
+        default_factory=lambda: Path.cwd() / "dex" / "agents" / "modules" / "agnostic"
+    )
     workspace_dir: Path = field(default_factory=lambda: Path.cwd() / "workspace")
 
     # API Configuration
