@@ -248,3 +248,8 @@ temp/
 workspace/temp/
 inbox/temp/
 .zenos_setup_complete
+
+# Broken gitlink placeholders (no .gitmodules) — keep empty dirs local-only
+mcp-config/
+neuro-spicy-devkit/
+zenOS-dev/

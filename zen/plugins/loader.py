@@ -1,5 +1,4 @@
-"""
-Git Plugin Loader - Clone and load GitHub repositories as VST plugins
+"""Git Plugin Loader - Clone and load GitHub repositories as VST plugins
 This is where the magic happens - turning Git repos into live plugins!
 """
 
@@ -57,7 +56,7 @@ class GitPluginLoader:
                 return None
 
             # Register plugin
-            success = self.registry.register_plugin(manifest, git_url, local_path)
+            success = self.registry.register_plugin(manifest, git_url, local_path, version)
             if success:
                 print(f"🎉 Successfully loaded plugin: {manifest.name} ({manifest.id})")
                 return self.registry.get_plugin(manifest.id)
@@ -78,7 +77,7 @@ class GitPluginLoader:
 
         try:
             # Pull latest changes
-            result = await self._git_pull(entry.local_path)
+            result = await self._git_pull(entry.local_path, entry.version)
             if result.returncode != 0:
                 print(f"Failed to update {plugin_id}: {result.stderr}")
                 return False
@@ -256,13 +255,15 @@ class GitPluginLoader:
             print(f"Error validating plugin: {e}")
             return False
 
-    async def _git_pull(self, plugin_path: Path) -> subprocess.CompletedProcess:
+    async def _git_pull(
+        self, plugin_path: Path, version: str = "main"
+    ) -> subprocess.CompletedProcess:
         """Pull latest changes from Git repository"""
         return await asyncio.create_subprocess_exec(
             "git",
             "pull",
             "origin",
-            "main",
+            version,
             cwd=plugin_path,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -292,7 +293,9 @@ class GitPluginLoader:
                 return None
 
             # Register plugin
-            success = self.registry.register_plugin(manifest, f"local:{local_path}", local_path)
+            success = self.registry.register_plugin(
+                manifest, f"local:{local_path}", local_path, version="local"
+            )
             if success:
                 return self.registry.get_plugin(manifest.id)
 
@@ -304,8 +307,11 @@ class GitPluginLoader:
 
 
 # Convenience function
-async def load_plugin_from_git(git_url: str, version: str = "main") -> Optional[PluginEntry]:
+async def load_plugin_from_git(
+    git_url: str, version: str = "main", registry: Optional[PluginRegistry] = None
+) -> Optional[PluginEntry]:
     """Load a plugin from Git URL"""
-    registry = PluginRegistry()
+    if registry is None:
+        registry = PluginRegistry()
     loader = GitPluginLoader(registry)
     return await loader.load_plugin_from_git(git_url, version)
