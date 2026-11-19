@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentCard",
+  "type": "object",
+  "required": ["id", "display_name", "role"],
+  "properties": {
+    "id": { "type": "string" },
+    "display_name": { "type": "string" },
+    "role": { "type": "string" },
+    "reacts_to": { "type": "array", "items": { "type": "string" } },
+    "tone": { "type": "string" },
+    "grok_agent_id": { "type": "string" },
+    "discord_bot_token_env": { "type": "string" }
+  }
+}
