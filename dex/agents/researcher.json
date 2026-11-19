@@ -1,9 +1,3 @@
 {
-  "id": "researcher",
-  "display_name": "Researcher",
-  "role": "Gathers evidence and surfaces relevant facts for the current task.",
-  "reacts_to": ["task", "progress_report"],
-  "tone": "precise, source-aware",
-  "grok_agent_id": "REPLACE_WITH_RESEARCH_ID",
-  "discord_bot_token_env": "DISCORD_TOKEN_RESEARCHER"
+  "_note": "Agent cards moved to private k-dot-greyz/Prompt_OS (agents/council/). Do not add real role definitions to this public template."
 }

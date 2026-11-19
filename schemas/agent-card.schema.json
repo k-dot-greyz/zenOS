@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AgentCard",
+  "description": "Public schema only. Concrete cards live in private Prompt_OS.",
   "type": "object",
   "required": ["id", "display_name", "role"],
   "properties": {
