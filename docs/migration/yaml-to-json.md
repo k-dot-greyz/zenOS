@@ -1,9 +1,7 @@
-# YAML → JSON migration (council)
+# Boundary
 
-| Old | New |
-|-----|-----|
-| `dex/procedures.yaml` | `dex/procedures.json` (to be added) |
-| (none) | `dex/agents/*.json` |
-| (none) | `schemas/*.schema.json` |
+Agent cards and experimental procedures are **not** in this public repo.
 
-JSON is the new source of truth. YAML kept until migration is complete.
+Source of truth: private `k-dot-greyz/Prompt_OS` → `agents/council/*.json`
+
+zenOS only provides the loader interface and orchestration crates.
